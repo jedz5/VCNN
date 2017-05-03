@@ -47,18 +47,18 @@ def  conv2d(x, W, b, strides=1):
 
 
 # Create model
-def conv_net(x, weights, biases, dropout,is_train):
+def conv_net(x, weights, biases, dropout):
     # Reshape input picture
     #x = tf.reshape(x, shape=[-1, 28, 28, 1])
 
-    x = batch_norm(x,is_train,bool(1),0.999)
+    x = batch_norm(x,bool(1),0.999)
     # Convolution Layer
     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
-    conv1 = batch_norm(conv1,bool(1),bool(1),0.999)
+    conv1 = batch_norm(conv1,bool(1),0.999)
 
     # Convolution Layer
     conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
-    conv2 = batch_norm(conv2,is_train,bool(1),0.999)
+    conv2 = batch_norm(conv2,bool(1),0.999)
 
     # Fully connected layer
     # Reshape conv2 output to fit fully connected layer input
@@ -92,7 +92,7 @@ biases = {
     'out': tf.Variable(tf.random_normal([n_classes]))
 }
 
-def batch_norm(inputs, is_training,is_conv_out=True,decay = 0.999):
+def batch_norm(inputs,is_conv_out=True,decay = 0.999):
 
     scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
     beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
@@ -120,7 +120,7 @@ def batch_norm(inputs, is_training,is_conv_out=True,decay = 0.999):
             batch_mean, batch_var, beta, scale, 0.001)
 def train(batch_x,batch_y):
     # Construct model
-    pred = conv_net(x, weights, biases, keep_prob,is_train)
+    pred = conv_net(x, weights, biases, keep_prob)
 
     # Define loss and optimizer
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
