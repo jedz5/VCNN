@@ -15,7 +15,7 @@ import tensorflow as tf
 learning_rate = 0.003
 training_iters = 20000
 #batch_size = 128
-display_step = 10
+display_step = 100
 
 # Network Parameters
 hexY = 11
@@ -28,6 +28,7 @@ dropout = 0.5 # Dropout, probability to keep units
 x = tf.placeholder(tf.float32, [None, hexY,hexX,hexDepth])
 y = tf.placeholder(tf.float32, [None, n_classes])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
+is_train = tf.placeholder(tf.bool)
 
 
 # Create some wrappers for simplicity
@@ -45,18 +46,18 @@ def  conv2d(x, W, b, strides=1):
 
 
 # Create model
-def conv_net(x, weights, biases, dropout):
+def conv_net(x, weights, biases, dropout,is_train):
     # Reshape input picture
     #x = tf.reshape(x, shape=[-1, 28, 28, 1])
 
-    x = batch_norm(x,bool(1),bool(1),0.999)
+    x = batch_norm(x,is_train,bool(1),0.999)
     # Convolution Layer
     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
     conv1 = batch_norm(conv1,bool(1),bool(1),0.999)
 
     # Convolution Layer
     conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
-    conv2 = batch_norm(conv2,bool(1),bool(1),0.999)
+    conv2 = batch_norm(conv2,is_train,bool(1),0.999)
 
     # Fully connected layer
     # Reshape conv2 output to fit fully connected layer input
@@ -115,7 +116,7 @@ def batch_norm(inputs, is_training,is_conv_out=True,decay = 0.999):
             pop_mean, pop_var, beta, scale, 0.001)
 def train(batch_x,batch_y):
     # Construct model
-    pred = conv_net(x, weights, biases, keep_prob)
+    pred = conv_net(x, weights, biases, keep_prob,is_train)
 
     # Define loss and optimizer
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
@@ -136,12 +137,12 @@ def train(batch_x,batch_y):
         while step  < 5000:
             # Run optimization op (backprop)
             sess.run(optimizer, feed_dict={x: batch_x, y: batch_y,
-                                           keep_prob: dropout})
+                                           keep_prob: dropout,is_train:bool(1)})
             if step % display_step == 0:
                 # Calculate batch loss and accuracy
                 loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x,
                                                                   y: batch_y,
-                                                                  keep_prob: 1.})
+                                                                  keep_prob: 1.,is_train:bool(0)})
                 print("Iter " + str(step) + ", Minibatch Loss= " + \
                       "{:.6f}".format(loss) + ", Training Accuracy= " + \
                       "{:.5f}".format(acc))
