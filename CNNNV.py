@@ -10,7 +10,8 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 from __future__ import print_function
 
 import tensorflow as tf
-
+from tensorflow.python.ops import control_flow_ops
+from tensorflow.python.training import moving_averages
 # Parameters
 learning_rate = 0.003
 training_iters = 20000
@@ -98,22 +99,25 @@ def batch_norm(inputs, is_training,is_conv_out=True,decay = 0.999):
     pop_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
     pop_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
 
-    if is_training:
-        if is_conv_out:
-            batch_mean, batch_var = tf.nn.moments(inputs,[0,1,2])
-        else:
-            batch_mean, batch_var = tf.nn.moments(inputs,[0])
-
-        train_mean = tf.assign(pop_mean,
-                               pop_mean * decay + batch_mean * (1 - decay))
-        train_var = tf.assign(pop_var,
-                              pop_var * decay + batch_var * (1 - decay))
-        with tf.control_dependencies([train_mean, train_var]):
-            return tf.nn.batch_normalization(inputs,
-                batch_mean, batch_var, beta, scale, 0.001)
+    if is_conv_out:
+        batch_mean, batch_var = tf.nn.moments(inputs,[0,1,2])
     else:
+        batch_mean, batch_var = tf.nn.moments(inputs,[0])
+
+    train_mean = tf.assign(pop_mean,
+                           pop_mean * decay + batch_mean * (1 - decay))
+    train_var = tf.assign(pop_var,
+                          pop_var * decay + batch_var * (1 - decay))
+    #     train_mean = moving_averages.assign_moving_average(pop_mean,
+    #                                                            batch_mean, decay)
+    #     train_var = moving_averages.assign_moving_average(
+    #     pop_var, batch_var, decay)
+    with tf.control_dependencies([train_mean, train_var]):
+        mean, variance = control_flow_ops.cond(
+            is_train, lambda: (batch_mean, batch_var),
+            lambda: (pop_mean, pop_var))
         return tf.nn.batch_normalization(inputs,
-            pop_mean, pop_var, beta, scale, 0.001)
+            batch_mean, batch_var, beta, scale, 0.001)
 def train(batch_x,batch_y):
     # Construct model
     pred = conv_net(x, weights, biases, keep_prob,is_train)
