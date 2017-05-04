@@ -16,7 +16,7 @@ from tensorflow.python.training import moving_averages
 learning_rate = 0.003
 training_iters = 20000
 #batch_size = 128
-display_step = 100
+display_step = 10
 
 # Network Parameters
 hexY = 11
@@ -30,7 +30,7 @@ x = tf.placeholder(tf.float32, [None, hexY,hexX,hexDepth])
 y = tf.placeholder(tf.float32, [None, n_classes])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-
+ema = tf.train.ExponentialMovingAverage(0.999)
 
 # Create some wrappers for simplicity
 def  conv2d(x, W, b, strides=1):
@@ -103,21 +103,24 @@ def batch_norm(inputs,is_conv_out=True,decay = 0.999):
         batch_mean, batch_var = tf.nn.moments(inputs,[0,1,2])
     else:
         batch_mean, batch_var = tf.nn.moments(inputs,[0])
-
-    train_mean = tf.assign(pop_mean,
-                           pop_mean * decay + batch_mean * (1 - decay))
-    train_var = tf.assign(pop_var,
-                          pop_var * decay + batch_var * (1 - decay))
+    with tf.control_dependencies([batch_mean, batch_var]):
+        ema_op = ema.apply([batch_mean,batch_var])
+    with tf.control_dependencies([ema_op]):
+        pop_mean = ema.average(batch_mean)
+        pop_var = ema.average(batch_var)
+    # train_mean = tf.assign(pop_mean,
+    #                        pop_mean * decay + batch_mean * (1 - decay))
+    # train_var = tf.assign(pop_var,
+    #                       pop_var * decay + batch_var * (1 - decay))
     #     train_mean = moving_averages.assign_moving_average(pop_mean,
     #                                                            batch_mean, decay)
     #     train_var = moving_averages.assign_moving_average(
     #     pop_var, batch_var, decay)
-    with tf.control_dependencies([train_mean, train_var]):
-        mean, variance = control_flow_ops.cond(
-            is_train, lambda: (batch_mean, batch_var),
-            lambda: (pop_mean, pop_var))
-        return tf.nn.batch_normalization(inputs,
-            batch_mean, batch_var, beta, scale, 0.001)
+    #with tf.control_dependencies([train_mean, train_var]):
+    mean, variance = control_flow_ops.cond(
+        is_train, lambda: (batch_mean, batch_var),
+        lambda: (pop_mean, pop_var))
+    return tf.nn.batch_normalization(inputs,mean, variance, beta, scale, 0.001)
 def train(batch_x,batch_y):
     # Construct model
     pred = conv_net(x, weights, biases, keep_prob)
