@@ -11,7 +11,8 @@ from __future__ import print_function
 
 import tensorflow as tf
 from tensorflow.python.ops import control_flow_ops
-from tensorflow.python.training import moving_averages
+# from tensorflow.contrib.layers import batch_norm
+from tensorflow.contrib.layers.python.layers import utils
 # Parameters
 learning_rate = 0.003
 training_iters = 20000
@@ -31,7 +32,35 @@ y = tf.placeholder(tf.float32, [None, n_classes])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
 ema = tf.train.ExponentialMovingAverage(0.999)
+fk1 = 3
+fk2 = 3
+c1 = 16
+c2 = 16
+fc1 = 64
+# Store layers weight & bias
+weights = {
+    # 5x5 conv, 1 input, 32 outputs
+    'bnM0': tf.Variable([hexDepth],trainable=False),
+    'bnV0': tf.Variable([hexDepth],trainable=False),
+    'wc1': tf.Variable(tf.random_normal([fk1, fk1, hexDepth, c1])),
+    'bnM1': tf.Variable([c1],trainable=False),
+    'bnV1': tf.Variable([c1],trainable=False),
+    # 5x5 conv, 32 inputs, 64 outputs
+    'wc2': tf.Variable(tf.random_normal([fk2, fk2, c1,c2])),
+    'bnM2': tf.Variable([c2],trainable=False),
+    'bnV2': tf.Variable([c2],trainable=False),
+    # fully connected, 7*7*64 inputs, 1024 outputs
+    'wd1': tf.Variable(tf.random_normal([hexY*hexX*c2, fc1])),
+    # 1024 inputs, 10 outputs (class prediction)
+    'out': tf.Variable(tf.random_normal([fc1, n_classes]))
+}
 
+biases = {
+    'bc1': tf.Variable(tf.random_normal([c1])),
+    'bc2': tf.Variable(tf.random_normal([c2])),
+    'bd1': tf.Variable(tf.random_normal([fc1])),
+    'out': tf.Variable(tf.random_normal([n_classes]))
+}
 # Create some wrappers for simplicity
 def  conv2d(x, W, b, strides=1):
     # Conv2D wrapper, with bias and relu activation
@@ -45,24 +74,25 @@ def  conv2d(x, W, b, strides=1):
 #     return tf.nn.max_pool(x, ksize=[1, k, k, 1], strides=[1, k, k, 1],
 #                           padding='SAME')
 
-
 # Create model
-def conv_net(x, weights, biases, dropout):
+def conv_net(x,dropout):
     # Reshape input picture
     #x = tf.reshape(x, shape=[-1, 28, 28, 1])
-
-    x = batch_norm(x,bool(1),0.999)
+    with tf.variable_scope("batch_norm1") as bn1:
+        bx = batch_norm(x)
     # Convolution Layer
     conv1 = conv2d(x, weights['wc1'], biases['bc1'])
-    conv1 = batch_norm(conv1,bool(1),0.999)
+    with tf.variable_scope("batch_norm2") as bn2:
+        bc1 = batch_norm(bx)
 
     # Convolution Layer
     conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
-    conv2 = batch_norm(conv2,bool(1),0.999)
+    with tf.variable_scope("batch_norm3") as bn3:
+        bc2 = batch_norm(bc1)
 
     # Fully connected layer
     # Reshape conv2 output to fit fully connected layer input
-    fc1 = tf.reshape(conv2, [-1, weights['wd1'].get_shape().as_list()[0]])
+    fc1 = tf.reshape(bc2, [-1, weights['wd1'].get_shape().as_list()[0]])
     fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
     fc1 = tf.nn.relu(fc1)
     # Apply Dropout
@@ -73,64 +103,46 @@ def conv_net(x, weights, biases, dropout):
     return out
 
 
-# Store layers weight & bias
-weights = {
-    # 5x5 conv, 1 input, 32 outputs
-    'wc1': tf.Variable(tf.random_normal([3, 3, hexDepth, 16])),
-    # 5x5 conv, 32 inputs, 64 outputs
-    'wc2': tf.Variable(tf.random_normal([3, 3, 16,16])),
-    # fully connected, 7*7*64 inputs, 1024 outputs
-    'wd1': tf.Variable(tf.random_normal([hexY*hexX*16, 64])),
-    # 1024 inputs, 10 outputs (class prediction)
-    'out': tf.Variable(tf.random_normal([64, n_classes]))
-}
-
-biases = {
-    'bc1': tf.Variable(tf.random_normal([16])),
-    'bc2': tf.Variable(tf.random_normal([16])),
-    'bd1': tf.Variable(tf.random_normal([64])),
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
 
 def batch_norm(inputs,is_conv_out=True,decay = 0.999):
 
     scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
     beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
-    pop_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
-    pop_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
-
-    if is_conv_out:
-        batch_mean, batch_var = tf.nn.moments(inputs,[0,1,2])
-    else:
-        batch_mean, batch_var = tf.nn.moments(inputs,[0])
-    with tf.control_dependencies([batch_mean, batch_var]):
-        ema_op = ema.apply([batch_mean,batch_var])
-    with tf.control_dependencies([ema_op]):
-        pop_mean = ema.average(batch_mean)
-        pop_var = ema.average(batch_var)
-    # train_mean = tf.assign(pop_mean,
-    #                        pop_mean * decay + batch_mean * (1 - decay))
-    # train_var = tf.assign(pop_var,
-    #                       pop_var * decay + batch_var * (1 - decay))
-    #     train_mean = moving_averages.assign_moving_average(pop_mean,
-    #                                                            batch_mean, decay)
-    #     train_var = moving_averages.assign_moving_average(
-    #     pop_var, batch_var, decay)
-    #with tf.control_dependencies([train_mean, train_var]):
-    mean, variance = control_flow_ops.cond(
-        is_train, lambda: (batch_mean, batch_var),
-        lambda: (pop_mean, pop_var))
-    return tf.nn.batch_normalization(inputs,mean, variance, beta, scale, 0.001)
+    batch_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
+    batch_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
+    def in_train(batch_mean,batch_var):
+        if is_conv_out:
+            temp_mean,temp_var = tf.nn.moments(inputs,[0,1,2])
+            assM = tf.assign(batch_mean,temp_mean)
+            assV = tf.assign(batch_var,temp_var)
+        else:
+            temp_mean, temp_var = tf.nn.moments(inputs, [0])
+            assM = tf.assign(batch_mean, temp_mean)
+            assV = tf.assign(batch_var, temp_var)
+        with tf.control_dependencies([assM,assV]):
+            train_mean = ema.apply([batch_mean,batch_var])
+        # tf.add_to_collection("updateEMA", train_mean)
+        print(ema.average_name(batch_mean))
+        print(ema.average_name(batch_var))
+        with tf.control_dependencies([train_mean]):
+            return tf.nn.batch_normalization(inputs,
+                    batch_mean, batch_var, beta, scale, 0.001)
+    def in_val():
+        # op = tf.get_collection("updateEMA")
+        # with tf.control_dependencies(op):
+        return tf.nn.batch_normalization(inputs,ema.average(batch_mean), ema.average(batch_var), beta, scale, 0.001)
+    return utils.smart_cond(is_train,in_train(batch_mean,batch_var),in_val())
 def train(batch_x,batch_y):
     # Construct model
-    pred = conv_net(x, weights, biases, keep_prob)
+    pred = conv_net(x,keep_prob)
 
     # Define loss and optimizer
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
+    update_ops = tf.get_collection("updateEMA")
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
     # Evaluate model
-    correct_pred = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+    correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
     # Initializing the variables
@@ -143,13 +155,13 @@ def train(batch_x,batch_y):
         # Keep training until reach max iterations
         while step  < 5000:
             # Run optimization op (backprop)
-            sess.run(optimizer, feed_dict={x: batch_x, y: batch_y,
-                                           keep_prob: dropout,is_train:bool(1)})
+            sess.run([update_ops,optimizer], feed_dict={x: batch_x, y: batch_y,
+                                           keep_prob: dropout,is_train:True})
             if step % display_step == 0:
                 # Calculate batch loss and accuracy
                 loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x,
                                                                   y: batch_y,
-                                                                  keep_prob: 1.,is_train:bool(0)})
+                                                                  keep_prob: 1.,is_train:False})
                 print("Iter " + str(step) + ", Minibatch Loss= " + \
                       "{:.6f}".format(loss) + ", Training Accuracy= " + \
                       "{:.5f}".format(acc))
