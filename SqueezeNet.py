@@ -9,6 +9,15 @@ hexY = 11
 hexX = 17
 hexDepth = 16
 n_classes = 8
+s11 = 8
+e11 = 4
+e13 = 4
+s21 = 8
+e21 = 4
+e23 = 4
+s31 = 8
+e31 = 4
+e33 = 4
 dropout = 0.5 # Dropout, probability to keep units
 class SqueezeNet(object):
     def __init__(self, session, alpha, optimizer=tf.train.GradientDescentOptimizer, squeeze_ratio=1):
@@ -44,30 +53,20 @@ class SqueezeNet(object):
         net['input'] = self.imgs
 
         # conv1_1
-        net['conv1'] = self.conv_layer('conv1', net['input'],
-                              W=self.weight_variable([3, 3, 3, 64], name='conv1_w'), stride=[1, 2, 2, 1])
+        # net['conv1'] = self.conv_layer('conv1', net['input'],
+        #                       W=self.weight_variable([3, 3, 3, 64], name='conv1_w'), stride=[1, 2, 2, 1])
+        #
+        # net['relu1'] = self.relu_layer('relu1', net['conv1'], b=self.bias_variable([64], 'relu1_b'))
+        # net['pool1'] = self.pool_layer('pool1', net['relu1'])
 
-        net['relu1'] = self.relu_layer('relu1', net['conv1'], b=self.bias_variable([64], 'relu1_b'))
-        net['pool1'] = self.pool_layer('pool1', net['relu1'])
-
-        net['fire2'] = self.fire_module('fire2', net['pool1'], self.sq_ratio * 16, 64, 64)
-        net['fire3'] = self.fire_module('fire3', net['fire2'], self.sq_ratio * 16, 64, 64,   True)
-        net['pool3'] = self.pool_layer('pool3', net['fire3'])
-
-        net['fire4'] = self.fire_module('fire4', net['pool3'], self.sq_ratio * 32, 128, 128)
-        net['fire5'] = self.fire_module('fire5', net['fire4'], self.sq_ratio * 32, 128, 128, True)
-        net['pool5'] = self.pool_layer('pool5', net['fire5'])
-
-        net['fire6'] = self.fire_module('fire6', net['pool5'], self.sq_ratio * 48, 192, 192)
-        net['fire7'] = self.fire_module('fire7', net['fire6'], self.sq_ratio * 48, 192, 192, True)
-        net['fire8'] = self.fire_module('fire8', net['fire7'], self.sq_ratio * 64, 256, 256)
-        net['fire9'] = self.fire_module('fire9', net['fire8'], self.sq_ratio * 64, 256, 256, True)
-
+        net['fire2'] = self.fire_module('fire2', net['input'], s11, e11, e13)
+        net['fire3'] = self.fire_module('fire3', net['fire2'], s21, e21, e23)
+        net['fire4'] = self.fire_module('fire4', net['fire3'], s31, e31, e33)
         # 50% dropout
-        net['dropout9'] = tf.nn.dropout(net['fire9'], self.dropout)
+        net['dropout9'] = tf.nn.dropout(net['fire4'], self.dropout)
         net['conv10']   = self.conv_layer('conv10', net['dropout9'],
-                               W=self.weight_variable([1, 1, 512, 1000], name='conv10', init='normal'))
-        net['relu10'] = self.relu_layer('relu10', net['conv10'], b=self.bias_variable([1000], 'relu10_b'))
+                               W=self.weight_variable([1, 1, e31+e33, n_classes], name='conv10', init='normal'))
+        net['relu10'] = self.relu_layer('relu10', net['conv10'], b=self.bias_variable([n_classes], 'relu10_b'))
         net['pool10'] = self.pool_layer('pool10', net['relu10'], pooling_type='avg')
 
         avg_pool_shape        = tf.shape(net['pool10'])
@@ -81,6 +80,10 @@ class SqueezeNet(object):
     def init_opt(self):
         self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.target))
         self.optimize = self.optimizer(self.alpha).minimize(self.cost)
+
+        # Evaluate model
+        correct_pred = tf.equal(tf.argmax(self.logits, 1), tf.argmax(self.target, 1))
+        self.accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
     def init_model(self):
         init_op = tf.global_variables_initializer()
@@ -110,7 +113,7 @@ class SqueezeNet(object):
 
     def pool_layer(self, layer_name, layer_input, pooling_type='max'):
         if pooling_type == 'avg':
-            pool = tf.nn.avg_pool(layer_input, ksize=[1, 13, 13, 1],
+            pool = tf.nn.avg_pool(layer_input, ksize=[1, hexY, hexX, 1],
                               strides=[1, 1, 1, 1], padding='VALID')
         elif pooling_type == 'max':
             pool = tf.nn.max_pool(layer_input, ksize=[1, 3, 3, 1],
@@ -183,10 +186,10 @@ if __name__ == '__main__':
     # Keep training until reach max iterations
     while step  < 5000:
         # Run optimization op (backprop)
-        sess.run(net.optimize, feed_dict={net.net['input']: img1, net.target: label, net.dropout: 0.5})
+        sess.run(net.optimize, feed_dict={net.net['input']: img1, net.target: label, net.dropout: 0.5,alpha:0.8})
         if step % display_step == 0:
             # Calculate batch loss and accuracy
-            acc = sess.run(net.probs, feed_dict={net.net['input']: img1, net.dropout: 1.0})
+            acc = sess.run(net.accuracy, feed_dict={net.net['input']: img1, net.dropout: 1.0,net.target: label,alpha:0.8})
             print("Iter " + str(step) + ", Training Accuracy= " + \
                   "{:.5f}".format(acc))
         step += 1
