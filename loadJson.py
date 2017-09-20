@@ -48,7 +48,18 @@ def load(inFile):
         label[root['action']['actionType'] - 1] = 1.0
     return plane,label
 
-
+def loadData(path):
+    batch = []
+    y = []
+    f_list = os.listdir(path)
+    for i in f_list:
+        if os.path.splitext(i)[1] == ".json":
+            batch.append(load(i)[0])
+            y.append(load(i)[1])
+    print("end")
+    bx = np.asarray(batch)
+    by = np.asarray(y)
+    return bx,by
 if __name__ == "__main__":
     batch = []
     y = []
