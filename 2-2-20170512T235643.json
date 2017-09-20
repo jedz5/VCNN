@@ -1,0 +1,262 @@
+{
+	"action" : {
+		"actionType" : 3
+	},
+	"activeStack" : {
+		"amount" : 1,
+		"attack" : 7,
+		"defense" : 12,
+		"firstHPleft" : 10,
+		"health" : 10,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 1,
+		"name" : "Pikeman",
+		"speed" : 5,
+		"x" : 1,
+		"y" : 2
+	},
+	"hero" : {
+		"attack" : 2,
+		"casted" : false,
+		"defense" : 4,
+		"knowledge" : 4,
+		"mana" : 12,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 2
+			},
+			{
+				"id" : 1,
+				"level" : 2
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 1,
+			"x" : 4,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 5,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 6,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 11,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 12,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 2
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 2
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 28,
+			"attack" : 9,
+			"defense" : 8,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 11,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 7,
+			"health" : 20,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Zombie",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 4
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 6
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

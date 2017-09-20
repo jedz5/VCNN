@@ -1,0 +1,239 @@
+{
+	"action" : {
+		"actionType" : 7,
+		"x" : 12,
+		"y" : 6
+	},
+	"activeStack" : {
+		"amount" : 1,
+		"attack" : 12,
+		"defense" : 12,
+		"firstHPleft" : 250,
+		"health" : 250,
+		"isCanMove" : true,
+		"isCanShoot" : true,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : false,
+		"isWaited" : false,
+		"isWide" : true,
+		"maxDamage" : 3,
+		"minDamage" : 2,
+		"name" : "Ballista",
+		"speed" : 0,
+		"x" : 1,
+		"y" : 3
+	},
+	"hero" : {
+		"attack" : 2,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 20,
+				"level" : 1
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 3,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 4,
+			"y" : 9
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 1,
+			"attack" : 12,
+			"defense" : 12,
+			"firstHPleft" : 250,
+			"health" : 250,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Ballista",
+			"speed" : 0,
+			"x" : 1,
+			"y" : 3
+		},
+		{
+			"amount" : 20,
+			"attack" : 7,
+			"defense" : 9,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 4,
+			"y" : 4
+		},
+		{
+			"amount" : 34,
+			"attack" : 3,
+			"defense" : 5,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 3
+		},
+		{
+			"amount" : 1,
+			"attack" : 33,
+			"defense" : 33,
+			"firstHPleft" : 250,
+			"health" : 250,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Archangel",
+			"speed" : 19,
+			"x" : 4,
+			"y" : 5
+		},
+		{
+			"amount" : 17,
+			"attack" : 3,
+			"defense" : 5,
+			"firstHPleft" : 4,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 6
+		},
+		{
+			"amount" : 18,
+			"attack" : 9,
+			"defense" : 6,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 6
+		},
+		{
+			"amount" : 6,
+			"attack" : 15,
+			"defense" : 10,
+			"firstHPleft" : 30,
+			"health" : 30,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Monk",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

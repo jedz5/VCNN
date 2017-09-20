@@ -1,0 +1,316 @@
+{
+	"action" : {
+		"actionType" : 7,
+		"x" : 4,
+		"y" : 2
+	},
+	"activeStack" : {
+		"amount" : 31,
+		"attack" : 14,
+		"defense" : 12,
+		"firstHPleft" : 10,
+		"health" : 10,
+		"isCanMove" : true,
+		"isCanShoot" : true,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 2,
+		"name" : "Marksman",
+		"speed" : 6,
+		"x" : 1,
+		"y" : 8
+	},
+	"hero" : {
+		"attack" : 8,
+		"casted" : false,
+		"defense" : 9,
+		"knowledge" : 2,
+		"mana" : 17,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 2
+			},
+			{
+				"id" : 1,
+				"level" : 2
+			},
+			{
+				"id" : 22,
+				"level" : 1
+			},
+			{
+				"id" : 23,
+				"level" : 2
+			},
+			{
+				"id" : 17,
+				"level" : 1
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 2
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 7
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 8
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 8
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 4
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 22,
+			"attack" : 20,
+			"defense" : 21,
+			"firstHPleft" : 40,
+			"health" : 40,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 16,
+			"minDamage" : 13,
+			"name" : "Master Genie",
+			"speed" : 11,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 6,
+			"attack" : 12,
+			"defense" : 12,
+			"firstHPleft" : 40,
+			"health" : 40,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 16,
+			"minDamage" : 13,
+			"name" : "Master Genie",
+			"speed" : 11,
+			"x" : 4,
+			"y" : 2
+		},
+		{
+			"amount" : 23,
+			"attack" : 12,
+			"defense" : 14,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"attack" : 12,
+			"defense" : 12,
+			"firstHPleft" : 25,
+			"health" : 40,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 16,
+			"minDamage" : 13,
+			"name" : "Master Genie",
+			"speed" : 11,
+			"x" : 4,
+			"y" : 8
+		},
+		{
+			"amount" : 37,
+			"attack" : 11,
+			"defense" : 14,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 4
+		},
+		{
+			"amount" : 1,
+			"attack" : 11,
+			"defense" : 14,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 5
+		},
+		{
+			"amount" : 30,
+			"attack" : 14,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 6
+		},
+		{
+			"amount" : 31,
+			"attack" : 14,
+			"defense" : 12,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 2,
+			"attack" : 11,
+			"defense" : 14,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

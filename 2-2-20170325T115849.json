@@ -1,0 +1,237 @@
+{
+	"action" : {
+		"actionType" : 8
+	},
+	"activeStack" : {
+		"amount" : 47,
+		"attack" : 7,
+		"defense" : 8,
+		"firstHPleft" : 10,
+		"health" : 10,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 1,
+		"name" : "Pikeman",
+		"speed" : 5,
+		"x" : 4,
+		"y" : 5
+	},
+	"hero" : {
+		"attack" : 2,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 5,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 1,
+				"level" : 1
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 1,
+			"x" : 4,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 5,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 6,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 11,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 12,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 5
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 47,
+			"attack" : 7,
+			"defense" : 8,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 4,
+			"y" : 5
+		},
+		{
+			"amount" : 3,
+			"attack" : 10,
+			"defense" : 13,
+			"firstHPleft" : 55,
+			"health" : 55,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 14,
+			"minDamage" : 10,
+			"name" : "Dendroid Guard",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 2
+		},
+		{
+			"amount" : 22,
+			"attack" : 9,
+			"defense" : 6,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 3,
+			"attack" : 10,
+			"defense" : 13,
+			"firstHPleft" : 55,
+			"health" : 55,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 14,
+			"minDamage" : 10,
+			"name" : "Dendroid Guard",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 3
+		},
+		{
+			"amount" : 3,
+			"attack" : 10,
+			"defense" : 13,
+			"firstHPleft" : 55,
+			"health" : 55,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 14,
+			"minDamage" : 10,
+			"name" : "Dendroid Guard",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 8
+		},
+		{
+			"amount" : 2,
+			"attack" : 10,
+			"defense" : 13,
+			"firstHPleft" : 46,
+			"health" : 55,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 14,
+			"minDamage" : 10,
+			"name" : "Dendroid Guard",
+			"speed" : 4,
+			"x" : 12,
+			"y" : 9
+		}
+	]
+}
