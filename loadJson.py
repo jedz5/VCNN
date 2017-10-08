@@ -2,6 +2,7 @@ import json
 import os
 import traceback
 import numpy as np
+import CNNNV as cnn
 hexY = 11
 hexX = 17
 hexDepth = 16
@@ -71,7 +72,7 @@ if __name__ == "__main__":
     bx = np.asarray(batch)
     by = np.asarray(y)
     print("end")
-    #cnn.train(bx,by)
+    cnn.train(bx,by)
 # matrix1 = tf.constant([[3., 3.]])
     # matrix2 = tf.constant([[2.], [2.]])
     # product = tf.matmul(matrix1, matrix2)

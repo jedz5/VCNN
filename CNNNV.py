@@ -14,7 +14,7 @@ from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
-learning_rate = 0.003
+learning_rate = 0.05
 training_iters = 20000
 #batch_size = 128
 display_step = 10
@@ -55,17 +55,17 @@ weights = {
     'out': tf.Variable(tf.random_normal([fc1, n_classes]))
 }
 
-biases = {
-    'bc1': tf.Variable(tf.random_normal([c1])),
-    'bc2': tf.Variable(tf.random_normal([c2])),
-    'bd1': tf.Variable(tf.random_normal([fc1])),
-    'out': tf.Variable(tf.random_normal([n_classes]))
-}
+# biases = {
+#     'bc1': tf.Variable(tf.random_normal([c1])),
+#     'bc2': tf.Variable(tf.random_normal([c2])),
+#     'bd1': tf.Variable(tf.random_normal([fc1])),
+#     'out': tf.Variable(tf.random_normal([n_classes]))
+# }
 # Create some wrappers for simplicity
-def  conv2d(x, W, b, strides=1):
+def  conv2d(x, W, strides=1):
     # Conv2D wrapper, with bias and relu activation
     x = tf.nn.conv2d(x, W, strides=[1, strides, strides, 1], padding='SAME')
-    x = tf.nn.bias_add(x, b)
+    x = tf.layers.batch_normalization(x,training=is_train)
     return tf.nn.relu(x)
 
 
@@ -78,68 +78,70 @@ def  conv2d(x, W, b, strides=1):
 def conv_net(x,dropout):
     # Reshape input picture
     #x = tf.reshape(x, shape=[-1, 28, 28, 1])
-    with tf.variable_scope("batch_norm1") as bn1:
-        bx = batch_norm(x)
+    # with tf.variable_scope("batch_norm1") as bn1:
+    #     bx = batch_norm(x)
     # Convolution Layer
-    conv1 = conv2d(x, weights['wc1'], biases['bc1'])
-    with tf.variable_scope("batch_norm2") as bn2:
-        bc1 = batch_norm(bx)
+    x = conv2d(x, weights['wc1'])
+    # with tf.variable_scope("batch_norm2") as bn2:
+    #     bc1 = batch_norm(bx)
 
     # Convolution Layer
-    conv2 = conv2d(conv1, weights['wc2'], biases['bc2'])
-    with tf.variable_scope("batch_norm3") as bn3:
-        bc2 = batch_norm(bc1)
+    x = conv2d(x, weights['wc2'])
+    # with tf.variable_scope("batch_norm3") as bn3:
+    #     bc2 = batch_norm(bc1)
 
     # Fully connected layer
     # Reshape conv2 output to fit fully connected layer input
-    fc1 = tf.reshape(bc2, [-1, weights['wd1'].get_shape().as_list()[0]])
-    fc1 = tf.add(tf.matmul(fc1, weights['wd1']), biases['bd1'])
+    fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
+    fc1 = tf.matmul(fc1, weights['wd1'])
+    fc1 = tf.layers.batch_normalization(fc1,training=is_train)
     fc1 = tf.nn.relu(fc1)
     # Apply Dropout
-    fc1 = tf.nn.dropout(fc1, dropout)
+    # fc1 = tf.nn.dropout(fc1, dropout)
 
     # Output, class prediction
-    out = tf.add(tf.matmul(fc1, weights['out']), biases['out'])
+    out = tf.matmul(fc1, weights['out'])
+    out = tf.layers.batch_normalization(out, training=is_train)
     return out
 
 
 
-def batch_norm(inputs,is_conv_out=True,decay = 0.999):
-
-    scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
-    beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
-    batch_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
-    batch_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
-    def in_train(batch_mean,batch_var):
-        if is_conv_out:
-            temp_mean,temp_var = tf.nn.moments(inputs,[0,1,2])
-            assM = tf.assign(batch_mean,temp_mean)
-            assV = tf.assign(batch_var,temp_var)
-        else:
-            temp_mean, temp_var = tf.nn.moments(inputs, [0])
-            assM = tf.assign(batch_mean, temp_mean)
-            assV = tf.assign(batch_var, temp_var)
-        with tf.control_dependencies([assM,assV]):
-            train_mean = ema.apply([batch_mean,batch_var])
-        # tf.add_to_collection("updateEMA", train_mean)
-        print(ema.average_name(batch_mean))
-        print(ema.average_name(batch_var))
-        with tf.control_dependencies([train_mean]):
-            return tf.nn.batch_normalization(inputs,
-                    batch_mean, batch_var, beta, scale, 0.001)
-    def in_val():
-        # op = tf.get_collection("updateEMA")
-        # with tf.control_dependencies(op):
-        return tf.nn.batch_normalization(inputs,ema.average(batch_mean), ema.average(batch_var), beta, scale, 0.001)
-    return utils.smart_cond(is_train,in_train(batch_mean,batch_var),in_val())
+# def batch_norm(inputs,is_conv_out=True,decay = 0.5):
+#
+#     scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
+#     beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
+#     batch_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
+#     batch_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
+#     def in_train(batch_mean,batch_var):
+#         if is_conv_out:
+#             temp_mean,temp_var = tf.nn.moments(inputs,[0,1,2])
+#             assM = tf.assign(batch_mean,temp_mean)
+#             assV = tf.assign(batch_var,temp_var)
+#         else:
+#             temp_mean, temp_var = tf.nn.moments(inputs, [0])
+#             assM = tf.assign(batch_mean, temp_mean)
+#             assV = tf.assign(batch_var, temp_var)
+#         with tf.control_dependencies([assM,assV]):
+#             train_mean = ema.apply([batch_mean,batch_var])
+#         # tf.add_to_collection("updateEMA", train_mean)
+#         print(ema.average_name(batch_mean))
+#         print(ema.average_name(batch_var))
+#         with tf.control_dependencies([train_mean]):
+#             return tf.nn.batch_normalization(inputs,
+#                     batch_mean, batch_var, beta, scale, 0.001)
+#     def in_val():
+#         # op = tf.get_collection("updateEMA")
+#         # with tf.control_dependencies(op):
+#         return tf.nn.batch_normalization(inputs,ema.average(batch_mean), ema.average(batch_var), beta, scale, 0.001)
+#     return utils.smart_cond(is_train,in_train(batch_mean,batch_var),in_val())
 def train(batch_x,batch_y):
     # Construct model
     pred = conv_net(x,keep_prob)
 
     # Define loss and optimizer
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
-    update_ops = tf.get_collection("updateEMA")
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
     # Evaluate model
     correct_pred = tf.equal(tf.argmax(pred,1), tf.argmax(y, 1))
@@ -155,7 +157,7 @@ def train(batch_x,batch_y):
         # Keep training until reach max iterations
         while step  < 5000:
             # Run optimization op (backprop)
-            sess.run([update_ops,optimizer], feed_dict={x: batch_x, y: batch_y,
+            sess.run([optimizer], feed_dict={x: batch_x, y: batch_y,
                                            keep_prob: dropout,is_train:True})
             if step % display_step == 0:
                 # Calculate batch loss and accuracy
