@@ -1,24 +1,59 @@
 import tensorflow as tf
 import numpy as np
-import sys
 import loadJson
-#import cv2
+from tensorflow.contrib.layers.python.layers import utils
 
 # Network Parameters
 hexY = 11
 hexX = 17
 hexDepth = 16
 n_classes = 8
-s11 = 8
-e11 = 4
-e13 = 4
-s21 = 8
-e21 = 4
-e23 = 4
-s31 = 8
-e31 = 4
-e33 = 4
-dropout = 0.5 # Dropout, probability to keep units
+double=2
+s11 = 8 * double
+e11 = 4* double
+e13 = 4* double
+s21 = 8* double
+e21 = 4* double
+e23 = 4* double
+s31 = 8* double
+e31 = 4* double
+e33 = 4* double
+# dropout = 0.5 # Dropout, probability to keep units
+is_train = tf.placeholder(tf.bool)
+ema = tf.train.ExponentialMovingAverage(0.5)
+
+
+# def batch_norm(inputs, is_conv_out=True, decay=0.5):
+#     scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
+#     beta = tf.Variable(tf.zeros([inputs.get_shape()[-1]]))
+#     batch_mean = tf.Variable(tf.zeros([inputs.get_shape()[-1]]), trainable=False)
+#     batch_var = tf.Variable(tf.ones([inputs.get_shape()[-1]]), trainable=False)
+#
+#     def in_train(batch_mean, batch_var):
+#         if is_conv_out:
+#             temp_mean, temp_var = tf.nn.moments(inputs, [0, 1, 2])
+#             assM = tf.assign(batch_mean, temp_mean)
+#             assV = tf.assign(batch_var, temp_var)
+#         else:
+#             temp_mean, temp_var = tf.nn.moments(inputs, [0])
+#             assM = tf.assign(batch_mean, temp_mean)
+#             assV = tf.assign(batch_var, temp_var)
+#         with tf.control_dependencies([assM, assV]):
+#             train_mean = ema.apply([batch_mean, batch_var])
+#         # tf.add_to_collection("updateEMA", train_mean)
+#         print(ema.average_name(batch_mean))
+#         print(ema.average_name(batch_var))
+#         with tf.control_dependencies([train_mean]):
+#             return tf.nn.batch_normalization(inputs,
+#                                              batch_mean, batch_var, beta, scale, 0.001)
+#
+#     def in_val():
+#         # op = tf.get_collection("updateEMA")
+#         # with tf.control_dependencies(op):
+#         return tf.nn.batch_normalization(inputs, ema.average(batch_mean), ema.average(batch_var), beta, scale,
+#                                          0.001)
+#
+#     return utils.smart_cond(is_train, in_train(batch_mean, batch_var), in_val())
 class SqueezeNet(object):
     def __init__(self, session, alpha, optimizer=tf.train.GradientDescentOptimizer, squeeze_ratio=1):
         if session:
@@ -40,6 +75,7 @@ class SqueezeNet(object):
         self.build_model()
         self.init_opt()
         self.init_model()
+
 
     def build_model(self):
         net = {}
@@ -79,7 +115,8 @@ class SqueezeNet(object):
 
     def init_opt(self):
         self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.target))
-        self.optimize = self.optimizer(self.alpha).minimize(self.cost)
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+            self.optimize = self.optimizer(self.alpha).minimize(self.cost)
 
         # Evaluate model
         correct_pred = tf.equal(tf.argmax(self.logits, 1), tf.argmax(self.target, 1))
@@ -106,8 +143,9 @@ class SqueezeNet(object):
         return self.weights[name]
 
     def relu_layer(self, layer_name, layer_input, b=None):
-        if b:
-            layer_input += b
+        # if b:
+        #     layer_input += b
+        layer_input = tf.layers.batch_normalization(layer_input,training=is_train)
         relu = tf.nn.relu(layer_input)
         return relu
 
@@ -142,10 +180,7 @@ class SqueezeNet(object):
 
         fire['e1'] = self.conv_layer(layer_name + '_e1', fire['relu1'], W=e1_weight)
         fire['e3'] = self.conv_layer(layer_name + '_e3', fire['relu1'], W=e3_weight)
-        fire['concat'] = tf.concat([tf.add(fire['e1'], self.bias_variable([e1x1],
-                                                           name=layer_name + '_fire_bias_e1' )),
-                                    tf.add(fire['e3'], self.bias_variable([e3x3],
-                                                           name=layer_name + '_fire_bias_e3' ))], 3)
+        fire['concat'] = tf.concat([fire['e1'],fire['e3']], 3)
 
         if residual:
             fire['relu2'] = self.relu_layer(layer_name + 'relu2_res', tf.add(fire['concat'],layer_input))
@@ -186,10 +221,10 @@ if __name__ == '__main__':
     # Keep training until reach max iterations
     while step  < 5000:
         # Run optimization op (backprop)
-        sess.run(net.optimize, feed_dict={net.net['input']: img1, net.target: label, net.dropout: 0.5,alpha:0.8})
+        sess.run(net.optimize, feed_dict={net.net['input']: img1, net.target: label, net.dropout: 0.5,alpha:0.8,is_train:True})
         if step % display_step == 0:
             # Calculate batch loss and accuracy
-            acc = sess.run(net.accuracy, feed_dict={net.net['input']: img1, net.dropout: 1.0,net.target: label,alpha:0.8})
+            acc = sess.run(net.accuracy, feed_dict={net.net['input']: img1, net.dropout: 1.0,net.target: label,alpha:0.8,is_train:False})
             print("Iter " + str(step) + ", Training Accuracy= " + \
                   "{:.5f}".format(acc))
         step += 1

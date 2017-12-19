@@ -10,6 +10,7 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 from __future__ import print_function
 
 import tensorflow as tf
+import numpy as np
 from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
@@ -31,24 +32,18 @@ x = tf.placeholder(tf.float32, [None, hexY,hexX,hexDepth])
 y = tf.placeholder(tf.float32, [None, n_classes])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-ema = tf.train.ExponentialMovingAverage(0.999)
+ema = tf.train.ExponentialMovingAverage(0.9)
 fk1 = 3
 fk2 = 3
 c1 = 16
 c2 = 16
-fc1 = 64
+fc1 = 48
 # Store layers weight & bias
 weights = {
     # 5x5 conv, 1 input, 32 outputs
-    'bnM0': tf.Variable([hexDepth],trainable=False),
-    'bnV0': tf.Variable([hexDepth],trainable=False),
     'wc1': tf.Variable(tf.random_normal([fk1, fk1, hexDepth, c1])),
-    'bnM1': tf.Variable([c1],trainable=False),
-    'bnV1': tf.Variable([c1],trainable=False),
     # 5x5 conv, 32 inputs, 64 outputs
     'wc2': tf.Variable(tf.random_normal([fk2, fk2, c1,c2])),
-    'bnM2': tf.Variable([c2],trainable=False),
-    'bnV2': tf.Variable([c2],trainable=False),
     # fully connected, 7*7*64 inputs, 1024 outputs
     'wd1': tf.Variable(tf.random_normal([hexY*hexX*c2, fc1])),
     # 1024 inputs, 10 outputs (class prediction)
@@ -94,14 +89,14 @@ def conv_net(x,dropout):
     # Reshape conv2 output to fit fully connected layer input
     fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
     fc1 = tf.matmul(fc1, weights['wd1'])
-    fc1 = tf.layers.batch_normalization(fc1,training=is_train)
+    # fc1 = tf.layers.batch_normalization(fc1,training=is_train)
     fc1 = tf.nn.relu(fc1)
     # Apply Dropout
     # fc1 = tf.nn.dropout(fc1, dropout)
 
     # Output, class prediction
     out = tf.matmul(fc1, weights['out'])
-    out = tf.layers.batch_normalization(out, training=is_train)
+    # out = tf.layers.batch_normalization(out, training=is_train)
     return out
 
 
@@ -149,30 +144,32 @@ def train(batch_x,batch_y):
 
     # Initializing the variables
     init = tf.global_variables_initializer()
-
+    saver = tf.train.Saver()
     # Launch the graph
+
+    # with tf.Session() as sess:
+    #     sess.run(init)
+    #     step = 1
+    #     # Keep training until reach max iterations
+    #     while step  < 800:
+    #         # Run optimization op (backprop)
+    #         sess.run([optimizer], feed_dict={x: batch_x[:800], y: batch_y[:800],
+    #                                        keep_prob: dropout,is_train:True})
+    #         if step % display_step == 0:
+    #             # Calculate batch loss and accuracy
+    #             loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x[:800],
+    #                                                               y: batch_y[:800],
+    #                                                               keep_prob: 1.,is_train:False})
+    #             print("Iter " + str(step) + ", Minibatch Loss= " + \
+    #                   "{:.6f}".format(loss) + ", 训练准确率= " + \
+    #                   "{:.5f}".format(acc))
+    #         step += 1
+    #     print("训练结束")
+    #     saver.save(sess, './result/model.ckpt')
+
     with tf.Session() as sess:
         sess.run(init)
-        step = 1
-        # Keep training until reach max iterations
-        while step  < 5000:
-            # Run optimization op (backprop)
-            sess.run([optimizer], feed_dict={x: batch_x, y: batch_y,
-                                           keep_prob: dropout,is_train:True})
-            if step % display_step == 0:
-                # Calculate batch loss and accuracy
-                loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x,
-                                                                  y: batch_y,
-                                                                  keep_prob: 1.,is_train:False})
-                print("Iter " + str(step) + ", Minibatch Loss= " + \
-                      "{:.6f}".format(loss) + ", Training Accuracy= " + \
-                      "{:.5f}".format(acc))
-            step += 1
-        print("Optimization Finished!")
-
-        # Calculate accuracy for 256 mnist test images
-        # print("Testing Accuracy:", \
-        #     sess.run(accuracy, feed_dict={x: mnist.test.images[:256],
-        #                                   y: mnist.test.labels[:256],
-        #                                   keep_prob: 1.}))
+        saver.restore(sess, tf.train.latest_checkpoint('./result'))
+        res = sess.run(accuracy, feed_dict={x: batch_x[801:], y: batch_y[801:],keep_prob: 1.,is_train:False})
+        print("测试准确率:",res)
 

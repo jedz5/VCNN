@@ -64,14 +64,15 @@ if __name__ == "__main__":
     batch = []
     y = []
     f_list = os.listdir(".")
+    # np.random.shuffle(f_list)
+    # np.save("./result/shuffle",f_list)
+    #f1_list =np.load("./result/shuffle.npy")
     for i in f_list:
         if os.path.splitext(i)[1] == ".json":
             batch.append(load(i)[0])
             y.append(load(i)[1])
-    print("end")
     bx = np.asarray(batch)
     by = np.asarray(y)
-    print("end")
     cnn.train(bx,by)
 # matrix1 = tf.constant([[3., 3.]])
     # matrix2 = tf.constant([[2.], [2.]])
