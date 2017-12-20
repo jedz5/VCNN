@@ -3,46 +3,30 @@ import os
 import traceback
 import numpy as np
 import CNNNV as cnn
-hexY = 11
-hexX = 17
-hexDepth = 16
+import tensorflow as tf
+import sys
+print(sys.path)
+side = 2
+stacks = 7
+hexDepth = 7
 def load(inFile):
     root = None
     with open(inFile) as jsonFile:
         root = json.load(jsonFile)
-        plane = np.zeros((hexY,hexX,hexDepth))
-        label = np.zeros((8))
+        plane = np.zeros((side,stacks,hexDepth))
+        label = np.zeros((9,1))
        # for x in range(hexX):
            # for y in range(hexY):
         try:
-            if 'obstacles' in root:
-                for x in root['obstacles']:
-                    plane[x['y']][x['x']][0] = 0
-                    plane[x['y']][x['x']][1] = 1
             for x in root['stacks']:
-                if x['isHuman']:
-                    plane[x['y']][x['x']][0] = 1
-                    plane[x['y']][x['x']][1] = 0
-                    if x['isWide']:
-                        plane[x['y']][x['x'] - 1][0] = 1
-                        plane[x['y']][x['x'] - 1][1] = 0
-                else:
-                    plane[x['y']][x['x']][0] = -1
-                    plane[x['y']][x['x']][1] = 0
-                plane[x['y']][x['x']][2] = x['amount']
-                plane[x['y']][x['x']][3] = x['attack']
-                plane[x['y']][x['x']][4] = x['defense']
-                plane[x['y']][x['x']][5] = x['maxDamage']
-                plane[x['y']][x['x']][6] = x['minDamage']
-                plane[x['y']][x['x']][7] = x['firstHPleft']
-                plane[x['y']][x['x']][8] = x['health']
-                plane[x['y']][x['x']][9] = x['speed']
-                plane[x['y']][x['x']][10] = x['isCanShoot']
-                plane[x['y']][x['x']][11] = x['isCanMove']
-                plane[x['y']][x['x']][12] = x['isMoved']
-                plane[x['y']][x['x']][13] = x['isRetaliate']
-                plane[x['y']][x['x']][14] = x['isWaited']
-                plane[x['y']][x['x']][15] = x['isWide']
+                plane[x['id0']][x['slot']][0] = x['id2']
+                plane[x['id0']][x['slot']][1] = x['id3']
+
+                plane[x['id0']][x['slot']][1] = (x['id4'] == 15)
+                plane[x['id0']][x['slot']][1] = (x['id5'] == 25)
+                plane[x['id0']][x['slot']][1] = (x['id6'] == 35)
+                plane[x['id0']][x['slot']][1] = (x['id7'] == 45)
+
         except:
             traceback.print_exc()
         label[root['action']['actionType'] - 1] = 1.0
@@ -60,20 +44,34 @@ def loadData(path):
     bx = np.asarray(batch)
     by = np.asarray(y)
     return bx,by
+
+def quick(jsonData):
+    print(jsonData)
+    matrix1 = tf.constant([[3., 3.]])
+    matrix2 = tf.constant([[2.], [2.]])
+    product = tf.matmul(matrix1, matrix2)
+    sess = tf.Session()
+    result = sess.run(product)
+    print(result)
+    sess.close()
+    return jsonData
 if __name__ == "__main__":
-    batch = []
-    y = []
-    f_list = os.listdir(".")
-    # np.random.shuffle(f_list)
-    # np.save("./result/shuffle",f_list)
-    #f1_list =np.load("./result/shuffle.npy")
-    for i in f_list:
-        if os.path.splitext(i)[1] == ".json":
-            batch.append(load(i)[0])
-            y.append(load(i)[1])
-    bx = np.asarray(batch)
-    by = np.asarray(y)
-    cnn.train(bx,by)
+    # batch = []
+    # y = []
+    # f_list = os.listdir(".")
+    # # np.random.shuffle(f_list)
+    # # np.save("./result/shuffle",f_list)
+    # #f1_list =np.load("./result/shuffle.npy")
+    # for i in f_list:
+    #     if os.path.splitext(i)[1] == ".json":
+    #         batch.append(load(i)[0])
+    #         y.append(load(i)[1])
+    # bx = np.asarray(batch)
+    # by = np.asarray(y)
+    # cnn.train(bx,by)
+    quick("hello")
+
+
 # matrix1 = tf.constant([[3., 3.]])
     # matrix2 = tf.constant([[2.], [2.]])
     # product = tf.matmul(matrix1, matrix2)
