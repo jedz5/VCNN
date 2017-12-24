@@ -1,0 +1,343 @@
+{
+	"action" : {
+		"actionType" : 2,
+		"x" : 5,
+		"y" : 3
+	},
+	"activeStack" : {
+		"amount" : 17,
+		"attack" : 9,
+		"defense" : 5,
+		"firstHPleft" : 10,
+		"health" : 10,
+		"isCanMove" : true,
+		"isCanShoot" : true,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 2,
+		"name" : "Marksman",
+		"speed" : 6,
+		"x" : 1,
+		"y" : 0
+	},
+	"hero" : {
+		"attack" : 3,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 1,
+				"level" : 1
+			},
+			{
+				"id" : 15,
+				"level" : 1
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 1,
+			"x" : 3,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 4,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 5,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 6,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 11,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 12,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 13,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 3
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 17,
+			"attack" : 9,
+			"defense" : 5,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 5,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 13,
+			"health" : 13,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Magog",
+			"speed" : 6,
+			"x" : 15,
+			"y" : 0
+		},
+		{
+			"amount" : 44,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 5,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 13,
+			"health" : 13,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Magog",
+			"speed" : 6,
+			"x" : 15,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 4
+		},
+		{
+			"amount" : 5,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 13,
+			"health" : 13,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Magog",
+			"speed" : 6,
+			"x" : 15,
+			"y" : 5
+		},
+		{
+			"amount" : 2,
+			"attack" : 11,
+			"defense" : 10,
+			"firstHPleft" : 25,
+			"health" : 25,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 6,
+			"minDamage" : 3,
+			"name" : "Griffin",
+			"speed" : 6,
+			"x" : 2,
+			"y" : 6
+		},
+		{
+			"amount" : 5,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 13,
+			"health" : 13,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Magog",
+			"speed" : 6,
+			"x" : 15,
+			"y" : 8
+		},
+		{
+			"amount" : 5,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 13,
+			"health" : 13,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Magog",
+			"speed" : 6,
+			"x" : 15,
+			"y" : 10
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

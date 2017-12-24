@@ -1,0 +1,378 @@
+{
+	"action" : {
+		"actionType" : 7,
+		"x" : 2,
+		"y" : 2
+	},
+	"activeStack" : {
+		"amount" : 33,
+		"attack" : 10,
+		"defense" : 7,
+		"firstHPleft" : 10,
+		"health" : 10,
+		"isCanMove" : true,
+		"isCanShoot" : true,
+		"isHuman" : true,
+		"isMoved" : true,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 2,
+		"name" : "Marksman",
+		"speed" : 7,
+		"x" : 1,
+		"y" : 0
+	},
+	"hero" : {
+		"attack" : 3,
+		"casted" : false,
+		"defense" : 3,
+		"knowledge" : 1,
+		"mana" : 5,
+		"power" : 3,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 15,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 31,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 32,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 42,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 43,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 53,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 1,
+			"x" : 4,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 5,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 6,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 3
+		},
+		{
+			"type" : 1,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 1,
+			"x" : 10,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 11,
+			"y" : 6
+		},
+		{
+			"type" : 1,
+			"x" : 12,
+			"y" : 7
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 33,
+			"attack" : 10,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 1,
+			"health" : 16,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Obsidian Gargoyle",
+			"speed" : 9,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 12,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 0
+		},
+		{
+			"amount" : 7,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 16,
+			"health" : 16,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Obsidian Gargoyle",
+			"speed" : 9,
+			"x" : 2,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 8,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 1
+		},
+		{
+			"amount" : 0,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 4,
+			"health" : 16,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Obsidian Gargoyle",
+			"speed" : 9,
+			"x" : 3,
+			"y" : 0
+		},
+		{
+			"amount" : 0,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 4,
+			"health" : 10,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 1
+		},
+		{
+			"amount" : 0,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 4,
+			"health" : 10,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 3,
+			"y" : 1
+		},
+		{
+			"amount" : 1,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 3
+		},
+		{
+			"amount" : 1,
+			"attack" : 8,
+			"defense" : 9,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 5
+		}
+	]
+}

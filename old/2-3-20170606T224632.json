@@ -1,0 +1,374 @@
+{
+	"action" : {
+		"actionType" : 8
+	},
+	"activeStack" : {
+		"amount" : 12,
+		"attack" : 17,
+		"defense" : 16,
+		"firstHPleft" : 35,
+		"health" : 35,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 10,
+		"minDamage" : 7,
+		"name" : "Crusader",
+		"speed" : 7,
+		"x" : 1,
+		"y" : 4
+	},
+	"hero" : {
+		"attack" : 4,
+		"casted" : false,
+		"defense" : 3,
+		"knowledge" : 6,
+		"mana" : 1,
+		"power" : 7,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 13,
+				"level" : 3
+			},
+			{
+				"id" : 15,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 31,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 32,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 42,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 43,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 53,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 8
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 37,
+			"attack" : 11,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 6,
+			"attack" : 13,
+			"defense" : 7,
+			"firstHPleft" : 44,
+			"health" : 60,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 12,
+			"minDamage" : 6,
+			"name" : "Ogre Mage",
+			"speed" : 5,
+			"x" : 10,
+			"y" : 2
+		},
+		{
+			"amount" : 9,
+			"attack" : 9,
+			"defense" : 10,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 12,
+			"attack" : 13,
+			"defense" : 7,
+			"firstHPleft" : 60,
+			"health" : 60,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 12,
+			"minDamage" : 6,
+			"name" : "Ogre Mage",
+			"speed" : 5,
+			"x" : 10,
+			"y" : 4
+		},
+		{
+			"amount" : 12,
+			"attack" : 17,
+			"defense" : 16,
+			"firstHPleft" : 35,
+			"health" : 35,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 4
+		},
+		{
+			"amount" : 4,
+			"attack" : 13,
+			"defense" : 7,
+			"firstHPleft" : 3,
+			"health" : 60,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 12,
+			"minDamage" : 6,
+			"name" : "Ogre Mage",
+			"speed" : 5,
+			"x" : 11,
+			"y" : 7
+		},
+		{
+			"amount" : 3,
+			"attack" : 25,
+			"defense" : 24,
+			"firstHPleft" : 175,
+			"health" : 200,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Angel",
+			"speed" : 13,
+			"x" : 1,
+			"y" : 7
+		},
+		{
+			"amount" : 4,
+			"attack" : 17,
+			"defense" : 11,
+			"firstHPleft" : 30,
+			"health" : 30,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Monk",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 32,
+			"attack" : 11,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}
