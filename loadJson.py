@@ -24,6 +24,8 @@ def load(inFile):
         try:
             if not 'hero' in root:
                 return
+            if root['quickBattle']:
+                return
             heroStrength = np.math.sqrt((1 + 0.05 * root['hero']['attack']) * (1 + 0.05 * root['hero']['defense']))
             for x in root['stacks']:
                 plane[~x['isHuman']][x['slot']][0] = x['baseAmount']

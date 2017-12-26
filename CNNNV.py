@@ -89,14 +89,14 @@ def conv_net(x,dropout):
     # Reshape conv2 output to fit fully connected layer input
     fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
     fc1 = tf.matmul(fc1, weights['wd1'])
-    # fc1 = tf.layers.batch_normalization(fc1,training=is_train)
+    fc1 = tf.layers.batch_normalization(fc1,training=is_train)
     fc1 = tf.nn.relu(fc1)
     # Apply Dropout
     # fc1 = tf.nn.dropout(fc1, dropout)
 
     # Output, class prediction
     out = tf.matmul(fc1, weights['out'])
-    # out = tf.layers.batch_normalization(out, training=is_train)
+    out = tf.layers.batch_normalization(out, training=is_train)
     return out
 
 

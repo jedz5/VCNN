@@ -16,10 +16,10 @@ from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
-learning_rate = 0.05
+learning_rate = 0.005
 training_iters = 20000
 #batch_size = 128
-display_step = 10
+display_step = 5
 
 # Network Parameters
 hexY = lj.side
@@ -36,20 +36,21 @@ in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-fc1 = 20
-fc2 = 20
+fcn1 = 40
+fcn2 = 40
 # Store layers weight & bias
 weights = {
     # fully connected, 7*7*64 inputs, 1024 outputs
-    'fc1': tf.Variable(tf.random_normal([n_all, fc1])),
-    #'fc2': tf.Variable(tf.random_normal([fc1, fc2])),
+    'fc1': tf.Variable(tf.random_normal([n_all, fcn1])),
+    'fc2': tf.Variable(tf.random_normal([fcn1, fcn2])),
     # 1024 inputs, 10 outputs (class prediction)
-    'casul': tf.Variable(tf.random_normal([fc1, stacks])),
-    'mana': tf.Variable(tf.random_normal([fc1, 1]))
+    'casul': tf.Variable(tf.random_normal([fcn2, stacks])),
+    'mana': tf.Variable(tf.random_normal([fcn2, 1]))
 }
 
 biases = {
-    'fc1': tf.Variable(tf.random_normal([fc1])),
+    'fc1': tf.Variable(tf.random_normal([fcn1])),
+    'fc2': tf.Variable(tf.random_normal([fcn2])),
     'casul': tf.Variable(tf.random_normal([stacks])),
     'mana': tf.Variable(tf.random_normal([1]))
 }
@@ -75,13 +76,23 @@ def conv_net(x,dropout):
     # Reshape conv2 output to fit fully connected layer input
     #fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
     fc1 = tf.matmul(x, weights['fc1'])+biases['fc1']
-    fc1 = tf.nn.relu(fc1)
+    fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    fc1 = tf.nn.sigmoid(fc1)
     # Apply Dropout
     fc1 = tf.nn.dropout(fc1, dropout)
 
+    fc1 = tf.matmul(fc1, weights['fc2']) + biases['fc2']
+    fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    fc1 = tf.nn.sigmoid(fc1)
+    # Apply Dropout
+    fc1 = tf.nn.dropout(fc1, dropout)
     # Output, class prediction
     casul = tf.matmul(fc1, weights['casul'])+biases['casul'] #每个slot的伤亡比例
+    casul = tf.layers.batch_normalization(casul, training=is_train)
+    casul = tf.nn.sigmoid(casul)
     mana = tf.matmul(fc1, weights['mana']) + biases['mana'] #魔法消耗比例
+    mana = tf.layers.batch_normalization(mana, training=is_train)
+    mana = tf.nn.sigmoid(mana)
     return casul,mana
 
 if __name__ == '__main__':
@@ -89,13 +100,14 @@ if __name__ == '__main__':
     mPercent = bym / bxm
     # Construct model
     predC,predM = conv_net(x,keep_prob)
-    lossC1 = tf.reduce_sum(tf.round(predC*in_amout)*in_value,1) #每个slot比例*总数取整 再*aiValue
+    calsu = tf.round(predC * in_amout)
+    lossC1 = tf.reduce_sum(calsu *in_value,1) #每个slot比例*总数取整 再*aiValue
     lossC2 = tf.reduce_sum(y_C*in_value,1)
     lossC = tf.abs(lossC1 - lossC2)/lossC2
     lossM = tf.abs(predM - y_M)
     accuracyC = tf.reduce_mean(lossC)
     accuracyM = tf.reduce_mean(lossM)
-    cost = (accuracyC+0.5*accuracyM)/2
+    cost = (accuracyC+accuracyM)/2
     with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
     init = tf.global_variables_initializer()
@@ -105,7 +117,7 @@ if __name__ == '__main__':
         sess.run(init)
         step = 1
         # Keep training until reach max iterations
-        while step  < 800:
+        while step  < 50:
             # Run optimization op (backprop)
             sess.run([optimizer], feed_dict={x: bx,
                                              y_C: byc,
@@ -120,25 +132,39 @@ if __name__ == '__main__':
                                              y_M:mPercent,
                                              in_amout:b_amount,
                                              in_value:b_value,
-                                           keep_prob: dropout,is_train:True})
-                print("Iter " + str(step) + ", 伤亡准确率= " + \
-                      "{:.6f}".format(loss) + ", mana准确率= " + \
+                                           keep_prob: 1,is_train:False})
+                print("Iter " + str(step) + ", 伤亡误差= " + \
+                      "{:.6f}".format(loss) + ", mana误差= " + \
                       "{:.6f}".format(acc))
             step += 1
         print("训练结束")
-        saver.save(sess, './result/model.ckpt')
+        for n in range(5, 12):
+            cas,mc,loss, acc = sess.run([calsu,predM,accuracyC, accuracyM], feed_dict={x: bx[n:n+1],
+                                                                y_C: byc[n:n+1],
+                                                                y_M: mPercent[n:n+1],
+                                                                in_amout: b_amount[n:n+1],
+                                                                in_value: b_value[n:n+1],
+                                                                keep_prob: 1, is_train: False})
+            print("iter: ",n)
+            print(byc[n:n+1],mPercent[n:n + 1])
+            print(cas,mc)
+            print(np.floor(b_value[n:n + 1]))
+            print("伤亡误差= " + \
+                  "{:.6f}".format(loss) + ", mana误差= " + \
+                  "{:.6f}".format(acc))
+            saver.save(sess, './result/model.ckpt')
 
-    with tf.Session() as sess:
-        sess.run(init)
-        saver.restore(sess, tf.train.latest_checkpoint('./NN1'))
-        loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: bx,
-                                                                y_C: byc,
-                                                                y_M: mPercent,
-                                                                in_amout: b_amount,
-                                                                in_value: b_value,
-                                                                keep_prob: dropout, is_train: True})
-        print("Iter " + str(step) + ", 伤亡准确率= " + \
-              "{:.6f}".format(loss) + ", mana准确率= " + \
-              "{:.6f}".format(acc))
-        print("测试准确率:",res)
+    # with tf.Session() as sess:
+    #     sess.run(init)
+    #     saver.restore(sess, tf.train.latest_checkpoint('./NN1'))
+    #     loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: bx,
+    #                                                             y_C: byc,
+    #                                                             y_M: mPercent,
+    #                                                             in_amout: b_amount,
+    #                                                             in_value: b_value,
+    #                                                             keep_prob: dropout, is_train: True})
+    #     print("测试准确率 " + str(step) + ", 伤亡准确率= " + \
+    #           "{:.6f}".format(loss) + ", mana准确率= " + \
+    #           "{:.6f}".format(acc))
+       # print("测试准确率:",res)
 
