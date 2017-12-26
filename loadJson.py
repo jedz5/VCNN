@@ -15,10 +15,11 @@ def load(inFile):
     with open(inFile) as jsonFile:
         root = json.load(jsonFile)
         plane = np.zeros((side,stacks,hexDepth))
-        plane_m = 0;
+        plane_m = np.zeros((n_manaCost));
         label_c = np.zeros((stacks))
-        label_m = 0
-        hero = np.zeros((n_spells))
+        label_m = np.zeros((n_manaCost));
+        amout = np.zeros((stacks))
+        value = np.zeros((stacks))
         spells = {'26':1,'41':2,'53':3,'54':4}
         try:
             if not 'hero' in root:
@@ -31,27 +32,31 @@ def load(inFile):
                 if x['isHuman']:
                     #plane[~x['isHuman']][x['slot']][1] = x['fightValue'] * heroStrength
                     plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength
+                    amout[x['slot']] = x['baseAmount']
+                    value[x['slot']] = x['aiValue'] * heroStrength
                     label_c[x['slot']] = x['killed']
-            #plane.resize((n_all,),refcheck=False)
+            plane.resize((n_all,),refcheck=False)
             if 'spells' in root['hero']:
                 for y in root['hero']['spells']:
                     if str(y['id']) in spells:
-                        hero[spells[str(y['id'])]-1] = 1
+                        plane[spells[str(y['id'])]+n_all-5 -1] = 1
 
         except:
             traceback.print_exc()
             return
-        plane_m = root['hero']['mana']
-        label_m = root['manaCost']
-        #label[1][0] = root['win']
-    return plane,plane_m,label_c,label_m,hero
+        plane[-1] = root['manaCost']
+        plane_m[0] = root['hero']['mana']
+        label_m[0] = root['manaCost']
+
+    return plane,plane_m,label_c,label_m,amout,value
 
 def loadData(path):
     batchx = []
     batchm = []
     yc = []
     ym = []
-    hero = []
+    batch_amout = []
+    batch_value = []
     f_list = os.listdir(path)
     for i in f_list:
         try:
@@ -62,7 +67,8 @@ def loadData(path):
                     batchm.append(rr[1])
                     yc.append(rr[2])
                     ym.append(rr[3])
-                    hero.append(rr[4])
+                    batch_amout.append(rr[4])
+                    batch_value.append(rr[5])
                 else:
                     print("data lost")
         except:
@@ -73,8 +79,9 @@ def loadData(path):
     bxm = np.asarray(batchm)
     byc = np.asarray(yc)
     bym = np.asarray(ym)
-    bh = np.asarray(hero)
-    return bx,bxm,byc,bym,bh
+    b_amount = np.asarray(batch_amout)
+    b_value = np.asarray(batch_value)
+    return bx,bxm,byc,bym,b_amount,b_value
 
 # def quick(jsonData):
 #     print(jsonData)
@@ -87,15 +94,8 @@ def loadData(path):
 #     sess.close()
 #     return jsonData
 if __name__ == "__main__":
-    bx, bxm, byc, bym, bh = loadData(".")
-    b_amount = np.copy(bx[:, 0, :, 0])
-    b_value = np.copy(bx[:, 0, :, 1])
-    np.resize(bx, (len(bx), n_all), refCheck=False)
-    for i in (len(bx)):
-        for j in range(4):
-            bx[i][side * stacks * hexDepth + j] = bh[i][j]
-        bx[i][-1] = bxm[i]
-    mPercent = bxm / bym
+    bx, bxm, byc, bym, b_amount,b_value = loadData(".")
+    mPercent = bym /bxm
     print()
 
 

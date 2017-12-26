@@ -29,9 +29,9 @@ n_all = lj.n_all
 dropout = 0.5 # Dropout, probability to keep units
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, n_all])
-x_M = tf.placeholder(tf.float32, [None, 1])
+x_M = tf.placeholder(tf.float32, [None,1])
 y_C = tf.placeholder(tf.float32, [None, stacks])
-y_M = tf.placeholder(tf.float32, [None, 1])
+y_M = tf.placeholder(tf.float32, [None,1])
 in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
@@ -85,15 +85,8 @@ def conv_net(x,dropout):
     return casul,mana
 
 if __name__ == '__main__':
-    bx,bxm,byc,bym,bh = lj.loadData(".")
-    b_amount = np.copy(bx[:,0,:,0])
-    b_value = np.copy(bx[:,0,:,1])
-    np.resize(bx,(len(bx),n_all),refCheck=False)
-    for i in (len(bx)):
-        for j in range(4):
-            bx[i][hexY*stacks*hexDepth+j] = bh[i][j]
-        bx[i][-1] = bxm[i]
-    mPercent = bxm/bym
+    bx, bxm, byc, bym, b_amount, b_value = lj.loadData(".")
+    mPercent = bym / bxm
     # Construct model
     predC,predM = conv_net(x,keep_prob)
     lossC1 = tf.reduce_sum(tf.round(predC*in_amout)*in_value,1) #每个slot比例*总数取整 再*aiValue
@@ -114,13 +107,20 @@ if __name__ == '__main__':
         # Keep training until reach max iterations
         while step  < 800:
             # Run optimization op (backprop)
-            sess.run([optimizer], feed_dict={x: bx, y_C: bxm,y_M:mPercent,in_amout:b_amount,in_value:b_value,
+            sess.run([optimizer], feed_dict={x: bx,
+                                             y_C: byc,
+                                             y_M:mPercent,
+                                             in_amout:b_amount,
+                                             in_value:b_value,
                                            keep_prob: dropout,is_train:True})
             if step % display_step == 0:
                 # Calculate batch loss and accuracy
-                loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: batch_x[0],
-                                                                  y: batch_y[0],
-                                                                  keep_prob: 1.,is_train:False})
+                loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: bx,
+                                             y_C: byc,
+                                             y_M:mPercent,
+                                             in_amout:b_amount,
+                                             in_value:b_value,
+                                           keep_prob: dropout,is_train:True})
                 print("Iter " + str(step) + ", 伤亡准确率= " + \
                       "{:.6f}".format(loss) + ", mana准确率= " + \
                       "{:.6f}".format(acc))
@@ -128,9 +128,17 @@ if __name__ == '__main__':
         print("训练结束")
         saver.save(sess, './result/model.ckpt')
 
-    # with tf.Session() as sess:
-    #     sess.run(init)
-    #     saver.restore(sess, tf.train.latest_checkpoint('./NN1'))
-    #     res = sess.run(accuracy, feed_dict={x: batch_x[801:], y: batch_y[801:],keep_prob: 1.,is_train:False})
-    #     print("测试准确率:",res)
+    with tf.Session() as sess:
+        sess.run(init)
+        saver.restore(sess, tf.train.latest_checkpoint('./NN1'))
+        loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: bx,
+                                                                y_C: byc,
+                                                                y_M: mPercent,
+                                                                in_amout: b_amount,
+                                                                in_value: b_value,
+                                                                keep_prob: dropout, is_train: True})
+        print("Iter " + str(step) + ", 伤亡准确率= " + \
+              "{:.6f}".format(loss) + ", mana准确率= " + \
+              "{:.6f}".format(acc))
+        print("测试准确率:",res)
 
