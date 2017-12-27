@@ -1,0 +1,232 @@
+{
+	"hero" : {
+		"attack" : 4,
+		"defense" : 4,
+		"knowledge" : 4,
+		"mana" : 13,
+		"power" : 4,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 23,
+				"level" : 2
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 11,
+			"baseAmount" : 18,
+			"defense" : 8,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				}
+			],
+			"aiValue" : 66,
+			"attack" : 4,
+			"baseAmount" : 18,
+			"defense" : 4,
+			"fightValue" : 55,
+			"health" : 4,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 18,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Master Gremlin",
+			"slot" : 0,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 28,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				}
+			],
+			"aiValue" : 66,
+			"attack" : 4,
+			"baseAmount" : 17,
+			"defense" : 4,
+			"fightValue" : 55,
+			"health" : 4,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 17,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Master Gremlin",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 2,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 4,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Forgetfulness",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 6,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}

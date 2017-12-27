@@ -1,0 +1,280 @@
+{
+	"hero" : {
+		"attack" : 10,
+		"defense" : 7,
+		"knowledge" : 5,
+		"mana" : 21,
+		"power" : 5,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 23,
+				"level" : 3
+			},
+			{
+				"id" : 15,
+				"level" : 3
+			},
+			{
+				"id" : 22,
+				"level" : 2
+			},
+			{
+				"id" : 7,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 4,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 17,
+			"baseAmount" : 41,
+			"defense" : 11,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "",
+					"type" : 78
+				},
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Immune to Meteor Shower",
+					"type" : 69
+				},
+				{
+					"desc" : "Immunity to many effects",
+					"type" : 66
+				},
+				{
+					"desc" : "Can cast Protection from Air",
+					"type" : 88
+				}
+			],
+			"aiValue" : 486,
+			"attack" : 10,
+			"baseAmount" : 17,
+			"defense" : 10,
+			"fightValue" : 324,
+			"health" : 25,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 17,
+			"maxDamage" : 8,
+			"minDamage" : 2,
+			"name" : "Storm Elemental",
+			"slot" : 0,
+			"speed" : 9
+		},
+		{
+			"aiValue" : 445,
+			"attack" : 21,
+			"baseAmount" : 25,
+			"defense" : 24,
+			"fightValue" : 445,
+			"health" : 35,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 9,
+			"minDamage" : 6,
+			"name" : "Swordsman",
+			"slot" : 1,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "",
+					"type" : 78
+				},
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Immune to Meteor Shower",
+					"type" : 69
+				},
+				{
+					"desc" : "Immunity to many effects",
+					"type" : 66
+				},
+				{
+					"desc" : "Can cast Protection from Air",
+					"type" : 88
+				}
+			],
+			"aiValue" : 486,
+			"attack" : 10,
+			"baseAmount" : 16,
+			"defense" : 10,
+			"fightValue" : 324,
+			"health" : 25,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 16,
+			"maxDamage" : 8,
+			"minDamage" : 2,
+			"name" : "Storm Elemental",
+			"slot" : 1,
+			"speed" : 9
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				}
+			],
+			"aiValue" : 5019,
+			"attack" : 31,
+			"baseAmount" : 3,
+			"defense" : 28,
+			"fightValue" : 3585,
+			"health" : 200,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Angel",
+			"slot" : 2,
+			"speed" : 14
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 15,
+			"baseAmount" : 1,
+			"defense" : 15,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				}
+			],
+			"aiValue" : 485,
+			"attack" : 23,
+			"baseAmount" : 9,
+			"defense" : 15,
+			"fightValue" : 485,
+			"health" : 30,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Monk",
+			"slot" : 5,
+			"speed" : 7
+		}
+	],
+	"win" : true
+}

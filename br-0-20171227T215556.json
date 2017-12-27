@@ -1,0 +1,242 @@
+{
+	"hero" : {
+		"attack" : 0,
+		"defense" : 0,
+		"knowledge" : 3,
+		"mana" : 30,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 25,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 15,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 24,
+				"id" : 19,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"aiValue" : 44,
+			"attack" : 3,
+			"baseAmount" : 33,
+			"defense" : 3,
+			"fightValue" : 55,
+			"health" : 4,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Gremlin",
+			"slot" : 0,
+			"speed" : 4
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "",
+					"type" : 12
+				},
+				{
+					"desc" : "",
+					"type" : 54
+				}
+			],
+			"aiValue" : 100,
+			"attack" : 7,
+			"baseAmount" : 1,
+			"defense" : 8,
+			"fightValue" : 100,
+			"health" : 8,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Centaur",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Immunity to many effects",
+					"type" : 66
+				}
+			],
+			"aiValue" : 165,
+			"attack" : 6,
+			"baseAmount" : 5,
+			"defense" : 6,
+			"fightValue" : 150,
+			"health" : 16,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Stone Gargoyle",
+			"slot" : 1,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 588,
+			"attack" : 13,
+			"baseAmount" : 13,
+			"defense" : 13,
+			"fightValue" : 588,
+			"health" : 35,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"slot" : 2,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Can cast Resurrection",
+					"type" : 88
+				}
+			],
+			"aiValue" : 8776,
+			"attack" : 31,
+			"baseAmount" : 2,
+			"defense" : 31,
+			"fightValue" : 6033,
+			"health" : 250,
+			"isHuman" : true,
+			"isWide" : true,
+			"killed" : 0,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Archangel",
+			"slot" : 3,
+			"speed" : 19
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				}
+			],
+			"aiValue" : 750,
+			"attack" : 13,
+			"baseAmount" : 6,
+			"defense" : 11,
+			"fightValue" : 500,
+			"health" : 30,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Zealot",
+			"slot" : 4,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 7,
+			"baseAmount" : 18,
+			"defense" : 4,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 5,
+			"speed" : 7
+		}
+	],
+	"win" : true
+}

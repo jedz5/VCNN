@@ -1,0 +1,302 @@
+{
+	"hero" : {
+		"attack" : 11,
+		"defense" : 9,
+		"knowledge" : 5,
+		"mana" : 50,
+		"power" : 5,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 23,
+				"level" : 3
+			},
+			{
+				"id" : 15,
+				"level" : 3
+			},
+			{
+				"id" : 22,
+				"level" : 2
+			},
+			{
+				"id" : 7,
+				"level" : 3
+			},
+			{
+				"id" : 17,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 27,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 31,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 46,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 53,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 54,
+				"level" : 1
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 17,
+			"baseAmount" : 94,
+			"defense" : 12,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Blind",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Stone Gaze",
+					"type" : 69
+				}
+			],
+			"aiValue" : 84,
+			"attack" : 6,
+			"baseAmount" : 19,
+			"defense" : 5,
+			"fightValue" : 84,
+			"health" : 6,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 19,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Infernal Troglodyte",
+			"slot" : 0,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 588,
+			"attack" : 23,
+			"baseAmount" : 25,
+			"defense" : 21,
+			"fightValue" : 588,
+			"health" : 35,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"slot" : 1,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Blind",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Stone Gaze",
+					"type" : 69
+				}
+			],
+			"aiValue" : 84,
+			"attack" : 6,
+			"baseAmount" : 19,
+			"defense" : 5,
+			"fightValue" : 84,
+			"health" : 6,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 19,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Infernal Troglodyte",
+			"slot" : 1,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Can cast Resurrection",
+					"type" : 88
+				}
+			],
+			"aiValue" : 8776,
+			"attack" : 41,
+			"baseAmount" : 3,
+			"defense" : 39,
+			"fightValue" : 6033,
+			"health" : 250,
+			"isHuman" : true,
+			"isWide" : true,
+			"killed" : 0,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Archangel",
+			"slot" : 2,
+			"speed" : 19
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Can cast Resurrection",
+					"type" : 88
+				}
+			],
+			"aiValue" : 8776,
+			"attack" : 41,
+			"baseAmount" : 3,
+			"defense" : 39,
+			"fightValue" : 6033,
+			"health" : 250,
+			"isHuman" : true,
+			"isWide" : true,
+			"killed" : 0,
+			"maxDamage" : 50,
+			"minDamage" : 50,
+			"name" : "Archangel",
+			"slot" : 3,
+			"speed" : 19
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				}
+			],
+			"aiValue" : 750,
+			"attack" : 23,
+			"baseAmount" : 7,
+			"defense" : 19,
+			"fightValue" : 500,
+			"health" : 30,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Zealot",
+			"slot" : 5,
+			"speed" : 8
+		}
+	],
+	"win" : true
+}
