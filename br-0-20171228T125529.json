@@ -1,0 +1,334 @@
+{
+	"hero" : {
+		"attack" : 5,
+		"defense" : 6,
+		"knowledge" : 1,
+		"mana" : 0,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 2
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 15,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 31,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 5,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 11,
+			"baseAmount" : 12,
+			"defense" : 9,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				},
+				{
+					"desc" : "Drains 2 mana every turn",
+					"type" : 83
+				},
+				{
+					"desc" : "May Regenerate full Health",
+					"type" : 82
+				}
+			],
+			"aiValue" : 315,
+			"attack" : 8,
+			"baseAmount" : 9,
+			"defense" : 8,
+			"fightValue" : 252,
+			"health" : 18,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 9,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Wraith",
+			"slot" : 0,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 18,
+			"defense" : 11,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 1,
+			"speed" : 4
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				},
+				{
+					"desc" : "Drains 2 mana every turn",
+					"type" : 83
+				},
+				{
+					"desc" : "May Regenerate full Health",
+					"type" : 82
+				}
+			],
+			"aiValue" : 315,
+			"attack" : 8,
+			"baseAmount" : 8,
+			"defense" : 8,
+			"fightValue" : 252,
+			"health" : 18,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Wraith",
+			"slot" : 1,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Returns after melee attack",
+					"type" : 86
+				}
+			],
+			"aiValue" : 154,
+			"attack" : 11,
+			"baseAmount" : 45,
+			"defense" : 11,
+			"fightValue" : 140,
+			"health" : 14,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 4,
+			"minDamage" : 1,
+			"name" : "Harpy",
+			"slot" : 2,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				},
+				{
+					"desc" : "Drains 2 mana every turn",
+					"type" : 83
+				},
+				{
+					"desc" : "May Regenerate full Health",
+					"type" : 82
+				}
+			],
+			"aiValue" : 315,
+			"attack" : 8,
+			"baseAmount" : 8,
+			"defense" : 8,
+			"fightValue" : 252,
+			"health" : 18,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Wraith",
+			"slot" : 2,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 11,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 4
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 13,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 4,
+			"speed" : 4
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 9,
+			"baseAmount" : 1,
+			"defense" : 13,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 5,
+			"speed" : 4
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				}
+			],
+			"aiValue" : 336,
+			"attack" : 14,
+			"baseAmount" : 14,
+			"defense" : 13,
+			"fightValue" : 240,
+			"health" : 22,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Beholder",
+			"slot" : 6,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}

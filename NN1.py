@@ -27,6 +27,7 @@ stacks = lj.stacks
 hexDepth = lj.hexDepth
 n_all = lj.n_all
 dropout = 0.5 # Dropout, probability to keep units
+epsino = 60
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, n_all])
 x_M = tf.placeholder(tf.float32, [None,1])
@@ -36,14 +37,12 @@ in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-fcn1 = 40
-fcn2 = 40
+fcn1 = 80
+fcn2 = 80
 # Store layers weight & bias
 weights = {
-    # fully connected, 7*7*64 inputs, 1024 outputs
     'fc1': tf.Variable(tf.random_normal([n_all, fcn1])),
     'fc2': tf.Variable(tf.random_normal([fcn1, fcn2])),
-    # 1024 inputs, 10 outputs (class prediction)
     'casul': tf.Variable(tf.random_normal([fcn2, stacks])),
     'mana': tf.Variable(tf.random_normal([fcn2, 1]))
 }
@@ -102,7 +101,7 @@ if __name__ == '__main__':
     predC,predM = conv_net(x,keep_prob)
     calsu = tf.round(predC * in_amout)
     lossC1 = tf.reduce_sum(calsu *in_value,1) #每个slot比例*总数取整 再*aiValue
-    lossC2 = tf.reduce_sum(y_C*in_value,1)
+    lossC2 = tf.reduce_sum(y_C*in_value,1)+ epsino
     lossC = tf.abs(lossC1 - lossC2)/lossC2
     lossM = tf.abs(predM - y_M)
     accuracyC = tf.reduce_mean(lossC)
@@ -133,8 +132,8 @@ if __name__ == '__main__':
                                              in_amout:b_amount,
                                              in_value:b_value,
                                            keep_prob: 1,is_train:False})
-                print("Iter " + str(step) + ", 伤亡误差= " + \
-                      "{:.6f}".format(loss) + ", mana误差= " + \
+                print("Iter " + str(step) + ", errorC= " + \
+                      "{:.6f}".format(loss) + ", errorM= " + \
                       "{:.6f}".format(acc))
             step += 1
         print("训练结束")
@@ -149,8 +148,8 @@ if __name__ == '__main__':
             print(byc[n:n+1],mPercent[n:n + 1])
             print(cas,mc)
             print(np.floor(b_value[n:n + 1]))
-            print("伤亡误差= " + \
-                  "{:.6f}".format(loss) + ", mana误差= " + \
+            print("errorC= " + \
+                  "{:.6f}".format(loss) + ", errorM= " + \
                   "{:.6f}".format(acc))
             saver.save(sess, './result/model.ckpt')
 

@@ -6,10 +6,33 @@ import sys
 print(sys.path)
 side = 2
 stacks = 7
-hexDepth = 2
-n_spells = 4
+hexDepth = 5
+n_spells = 5
 n_manaCost = 1
 n_all = side*stacks*hexDepth+n_spells+n_manaCost
+def isFly(x):
+    if "ability" in x:
+        for y in x['ability']:
+            if y['type'] == 43:
+                return 1
+    return 0
+def isShoot(x):
+    if "ability" in x:
+        for y in x['ability']:
+            if y['type'] == 44:
+                return 1
+    return 0
+def shootDamage(hero):
+    if "secSkills" in hero:
+        for ss in hero['secSkills']:
+            if ss['id'] == 1:
+                return 1+ ss['level']*0.15
+    return 1
+def meleeDamage(hero):
+    for ss in hero['secSkills']:
+        if ss['id'] == 22:
+            return 1+ ss['level']*0.15
+    return 1
 def load(inFile):
     root = None
     with open(inFile) as jsonFile:
@@ -20,7 +43,7 @@ def load(inFile):
         label_m = np.zeros((n_manaCost));
         amout = np.zeros((stacks))
         value = np.zeros((stacks))
-        spells = {'26':1,'41':2,'53':3,'54':4}
+        spells = {'26':0,'41':1,'53':2,'54':3}
         try:
             if not 'hero' in root:
                 return
@@ -29,25 +52,33 @@ def load(inFile):
             heroStrength = np.math.sqrt((1 + 0.05 * root['hero']['attack']) * (1 + 0.05 * root['hero']['defense']))
             for x in root['stacks']:
                 plane[~x['isHuman']][x['slot']][0] = x['baseAmount']
-                #plane[~x['isHuman']][x['slot']][1] = x['fightValue']
                 plane[~x['isHuman']][x['slot']][1] = x['aiValue']
+                plane[~x['isHuman']][x['slot']][2] = isFly(x)
+                plane[~x['isHuman']][x['slot']][3] = isShoot(x)
+                plane[~x['isHuman']][x['slot']][4] = x['speed']
                 if x['isHuman']:
-                    #plane[~x['isHuman']][x['slot']][1] = x['fightValue'] * heroStrength
-                    plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength
+                    plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength  #baseAD
+                    #archary
+                    if isShoot(x):
+                        plane[~x['isHuman']][x['slot']][1] = plane[~x['isHuman']][x['slot']][1]*shootDamage(root['hero'])
+                    else: #offence
+                        plane[~x['isHuman']][x['slot']][1] = plane[~x['isHuman']][x['slot']][1] * meleeDamage(root['hero'])
                     amout[x['slot']] = x['baseAmount']
-                    value[x['slot']] = x['aiValue'] * heroStrength
+                    value[x['slot']] = plane[~x['isHuman']][x['slot']][1]
                     label_c[x['slot']] = x['killed']
             plane.resize((n_all,),refcheck=False)
             if 'spells' in root['hero']:
                 for y in root['hero']['spells']:
                     if str(y['id']) in spells:
-                        plane[spells[str(y['id'])]+n_all-5 -1] = 1
+                        plane[spells[str(y['id'])]+n_all-n_spells-n_manaCost] = 1
+                    else:
+                        plane[-2] = 1  #other magic
 
         except:
             traceback.print_exc()
             return
         plane[-1] = root['manaCost']
-        plane_m[0] = root['hero']['mana']
+        plane_m[0] = root['hero']['mana'] + root['manaCost']
         label_m[0] = root['manaCost']
 
     return plane,plane_m,label_c,label_m,amout,value
