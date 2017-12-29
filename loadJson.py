@@ -6,7 +6,7 @@ import sys
 print(sys.path)
 side = 2
 stacks = 7
-hexDepth = 5
+hexDepth = 2
 n_spells = 5
 n_manaCost = 1
 n_all = side*stacks*hexDepth+n_spells+n_manaCost
@@ -53,9 +53,9 @@ def load(inFile):
             for x in root['stacks']:
                 plane[~x['isHuman']][x['slot']][0] = x['baseAmount']
                 plane[~x['isHuman']][x['slot']][1] = x['aiValue']
-                plane[~x['isHuman']][x['slot']][2] = isFly(x)
-                plane[~x['isHuman']][x['slot']][3] = isShoot(x)
-                plane[~x['isHuman']][x['slot']][4] = x['speed']
+                #plane[~x['isHuman']][x['slot']][2] = isFly(x)
+                #plane[~x['isHuman']][x['slot']][3] = isShoot(x)
+                #plane[~x['isHuman']][x['slot']][4] = x['speed']
                 if x['isHuman']:
                     plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength  #baseAD
                     #archary
@@ -66,6 +66,7 @@ def load(inFile):
                     amout[x['slot']] = x['baseAmount']
                     value[x['slot']] = plane[~x['isHuman']][x['slot']][1]
                     label_c[x['slot']] = x['killed']
+            origPlane = plane.copy()
             plane.resize((n_all,),refcheck=False)
             if 'spells' in root['hero']:
                 for y in root['hero']['spells']:
@@ -81,7 +82,7 @@ def load(inFile):
         plane_m[0] = root['hero']['mana'] + root['manaCost']
         label_m[0] = root['manaCost']
 
-    return plane,plane_m,label_c,label_m,amout,value
+    return plane,plane_m,label_c,label_m,amout,value,origPlane
 
 def loadData(path):
     batchx = []
@@ -90,6 +91,7 @@ def loadData(path):
     ym = []
     batch_amout = []
     batch_value = []
+    origPlane = []
     f_list = os.listdir(path)
     for i in f_list:
         try:
@@ -102,6 +104,7 @@ def loadData(path):
                     ym.append(rr[3])
                     batch_amout.append(rr[4])
                     batch_value.append(rr[5])
+                    origPlane.append(rr[6])
                 else:
                     print("data lost")
         except:
@@ -114,7 +117,8 @@ def loadData(path):
     bym = np.asarray(ym)
     b_amount = np.asarray(batch_amout)
     b_value = np.asarray(batch_value)
-    return bx,bxm,byc,bym,b_amount,b_value
+    borigPlane = np.asarray(origPlane)
+    return bx,bxm,byc,bym,b_amount,b_value,borigPlane
 
 # def quick(jsonData):
 #     print(jsonData)
@@ -127,8 +131,26 @@ def loadData(path):
 #     sess.close()
 #     return jsonData
 if __name__ == "__main__":
-    bx, bxm, byc, bym, b_amount,b_value = loadData(".")
-    mPercent = bym /bxm
+    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData(".")
+    me = origPlane[:,0,:,0]
+    meV = np.floor(origPlane[:,0,:,1])
+    you = origPlane[:, 1, :, 0]
+    youV = np.floor(origPlane[:, 1, :, 1])
+    for i in range(50,150):
+        #meV = origPlane[i][0][:][1]
+
+        threat = np.sum((me[i]*meV[i]))
+        threat1 = np.sum(you[i] * youV[i])
+        threat = threat1/threat
+        print("plane: ",i,"threat ",threat)
+        print(me[i])
+        print(byc[i])
+        print(meV[i])
+        print(you[i])
+        print(youV[i])
+
+        #print(origPlane[i][1][:][0])
+       # print(origPlane[i][1][:][1])
     print()
 
 

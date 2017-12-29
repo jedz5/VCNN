@@ -16,10 +16,10 @@ from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
-learning_rate = 0.005
+learning_rate = 0.01
 training_iters = 20000
 #batch_size = 128
-display_step = 5
+display_step = 50
 
 # Network Parameters
 hexY = lj.side
@@ -37,19 +37,22 @@ in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-fcn1 = 80
-fcn2 = 80
+fcn1 = 160
+fcn2 = 160
+fcn3 = 160
 # Store layers weight & bias
 weights = {
     'fc1': tf.Variable(tf.random_normal([n_all, fcn1])),
     'fc2': tf.Variable(tf.random_normal([fcn1, fcn2])),
-    'casul': tf.Variable(tf.random_normal([fcn2, stacks])),
-    'mana': tf.Variable(tf.random_normal([fcn2, 1]))
+    'fc3': tf.Variable(tf.random_normal([fcn2, fcn3])),
+    'casul': tf.Variable(tf.random_normal([fcn3, stacks])),
+    'mana': tf.Variable(tf.random_normal([fcn3, 1]))
 }
 
 biases = {
     'fc1': tf.Variable(tf.random_normal([fcn1])),
     'fc2': tf.Variable(tf.random_normal([fcn2])),
+    'fc3': tf.Variable(tf.random_normal([fcn3])),
     'casul': tf.Variable(tf.random_normal([stacks])),
     'mana': tf.Variable(tf.random_normal([1]))
 }
@@ -74,17 +77,22 @@ def conv_net(x,dropout):
     # Fully connected layer
     # Reshape conv2 output to fit fully connected layer input
     #fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
+    #x = tf.layers.batch_normalization(x, training=is_train)
     fc1 = tf.matmul(x, weights['fc1'])+biases['fc1']
-    fc1 = tf.layers.batch_normalization(fc1, training=is_train)
-    fc1 = tf.nn.sigmoid(fc1)
+    #fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    fc1 = tf.nn.relu(fc1)
     # Apply Dropout
-    fc1 = tf.nn.dropout(fc1, dropout)
+    #fc1 = tf.nn.dropout(fc1, dropout)
 
     fc1 = tf.matmul(fc1, weights['fc2']) + biases['fc2']
-    fc1 = tf.layers.batch_normalization(fc1, training=is_train)
-    fc1 = tf.nn.sigmoid(fc1)
+    #fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    fc1 = tf.nn.relu(fc1)
+
+    fc1 = tf.matmul(fc1, weights['fc3']) + biases['fc3']
+    # fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    fc1 = tf.nn.relu(fc1)
     # Apply Dropout
-    fc1 = tf.nn.dropout(fc1, dropout)
+    #fc1 = tf.nn.dropout(fc1, dropout)
     # Output, class prediction
     casul = tf.matmul(fc1, weights['casul'])+biases['casul'] #每个slot的伤亡比例
     casul = tf.layers.batch_normalization(casul, training=is_train)
@@ -95,28 +103,28 @@ def conv_net(x,dropout):
     return casul,mana
 
 if __name__ == '__main__':
-    bx, bxm, byc, bym, b_amount, b_value = lj.loadData(".")
+    bx, bxm, byc, bym, b_amount, b_value,origPlane = lj.loadData(".")
     mPercent = bym / bxm
     # Construct model
     predC,predM = conv_net(x,keep_prob)
     calsu = tf.round(predC * in_amout)
     lossC1 = tf.reduce_sum(calsu *in_value,1) #每个slot比例*总数取整 再*aiValue
-    lossC2 = tf.reduce_sum(y_C*in_value,1)+ epsino
-    lossC = tf.abs(lossC1 - lossC2)/lossC2
+    lossC2 = tf.reduce_sum(y_C*in_value,1)
+    lossC = tf.abs(lossC1 - lossC2)#/(lossC2 + epsino)
     lossM = tf.abs(predM - y_M)
     accuracyC = tf.reduce_mean(lossC)
     accuracyM = tf.reduce_mean(lossM)
     cost = (accuracyC+accuracyM)/2
     with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+        optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
     init = tf.global_variables_initializer()
     saver = tf.train.Saver()
     # Launch the graph
     with tf.Session() as sess:
         sess.run(init)
-        step = 1
+        step = 0
         # Keep training until reach max iterations
-        while step  < 50:
+        while step  < training_iters:
             # Run optimization op (backprop)
             sess.run([optimizer], feed_dict={x: bx,
                                              y_C: byc,
@@ -137,21 +145,21 @@ if __name__ == '__main__':
                       "{:.6f}".format(acc))
             step += 1
         print("训练结束")
-        for n in range(5, 12):
-            cas,mc,loss, acc = sess.run([calsu,predM,accuracyC, accuracyM], feed_dict={x: bx[n:n+1],
-                                                                y_C: byc[n:n+1],
-                                                                y_M: mPercent[n:n+1],
-                                                                in_amout: b_amount[n:n+1],
-                                                                in_value: b_value[n:n+1],
-                                                                keep_prob: 1, is_train: False})
-            print("iter: ",n)
-            print(byc[n:n+1],mPercent[n:n + 1])
-            print(cas,mc)
-            print(np.floor(b_value[n:n + 1]))
-            print("errorC= " + \
-                  "{:.6f}".format(loss) + ", errorM= " + \
-                  "{:.6f}".format(acc))
-            saver.save(sess, './result/model.ckpt')
+        # for n in range(5, 12):
+        #     cas,mc,loss, acc = sess.run([calsu,predM,accuracyC, accuracyM], feed_dict={x: bx[n:n+1],
+        #                                                         y_C: byc[n:n+1],
+        #                                                         y_M: mPercent[n:n+1],
+        #                                                         in_amout: b_amount[n:n+1],
+        #                                                         in_value: b_value[n:n+1],
+        #                                                         keep_prob: 1, is_train: False})
+        #     print("iter: ",n)
+        #     print(byc[n:n+1],mPercent[n:n + 1])
+        #     print(cas,mc)
+        #     print(np.floor(b_value[n:n + 1]))
+        #     print("errorC= " + \
+        #           "{:.6f}".format(loss) + ", errorM= " + \
+        #           "{:.6f}".format(acc))
+        #     saver.save(sess, './result/model.ckpt')
 
     # with tf.Session() as sess:
     #     sess.run(init)
