@@ -6,7 +6,7 @@ import sys
 print(sys.path)
 side = 2
 stacks = 7
-hexDepth = 2
+hexDepth = 5
 n_spells = 5
 n_manaCost = 1
 n_all = side*stacks*hexDepth+n_spells+n_manaCost
@@ -53,9 +53,9 @@ def load(inFile):
             for x in root['stacks']:
                 plane[~x['isHuman']][x['slot']][0] = x['baseAmount']
                 plane[~x['isHuman']][x['slot']][1] = x['aiValue']
-                #plane[~x['isHuman']][x['slot']][2] = isFly(x)
-                #plane[~x['isHuman']][x['slot']][3] = isShoot(x)
-                #plane[~x['isHuman']][x['slot']][4] = x['speed']
+                plane[~x['isHuman']][x['slot']][2] = isFly(x)
+                plane[~x['isHuman']][x['slot']][3] = isShoot(x)
+                plane[~x['isHuman']][x['slot']][4] = x['speed']
                 if x['isHuman']:
                     plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength  #baseAD
                     #archary
@@ -131,12 +131,12 @@ def loadData(path):
 #     sess.close()
 #     return jsonData
 if __name__ == "__main__":
-    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData(".")
+    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData("./test/")
     me = origPlane[:,0,:,0]
     meV = np.floor(origPlane[:,0,:,1])
     you = origPlane[:, 1, :, 0]
     youV = np.floor(origPlane[:, 1, :, 1])
-    for i in range(50,150):
+    for i in range(len(me)):
         #meV = origPlane[i][0][:][1]
 
         threat = np.sum((me[i]*meV[i]))
