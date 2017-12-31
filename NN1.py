@@ -16,8 +16,8 @@ from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
-learning_rate = 0.02
-training_iters = 5000
+#learning_rate = 0.02
+training_iters = 20000
 #batch_size = 128
 display_step = 50
 
@@ -37,7 +37,7 @@ in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
-fcn1 = 160
+fcn1 = 20
 #fcn2 = 160
 #fcn3 = 160
 # Store layers weight & bias
@@ -84,9 +84,9 @@ def conv_net(x,dropout):
     # Apply Dropout
     #fc1 = tf.nn.dropout(fc1, dropout)
 
-    fc1 = tf.matmul(fc1, weights['fc2']) + biases['fc2']
-    fc1 = tf.nn.relu(fc1)
-    fc1 = tf.layers.batch_normalization(fc1, training=is_train)
+    # fc1 = tf.matmul(fc1, weights['fc2']) + biases['fc2']
+    # fc1 = tf.nn.relu(fc1)
+    # fc1 = tf.layers.batch_normalization(fc1, training=is_train)
     #fc1 = tf.matmul(fc1, weights['fc3']) + biases['fc3']
     # fc1 = tf.layers.batch_normalization(fc1, training=is_train)
     #fc1 = tf.nn.relu(fc1)
@@ -106,16 +106,26 @@ if __name__ == '__main__':
     mPercent = bym / bxm
     # Construct model
     predC,predM = conv_net(x,keep_prob)
-    calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
+    #calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
+    calsu = predC * in_amout
     lossC1 = tf.reduce_sum(calsu *in_value,1) #每个slot比例*总数取整 再*aiValue
     lossC2 = tf.reduce_sum(y_C*in_value,1)
-    lossC = tf.abs((lossC1 - lossC2))#/(lossC2+1e-2))
+    lossCN1 = tf.reduce_sum(calsu,1)
+    lossCN2 = tf.reduce_sum(y_C, 1)
+    lossC = tf.abs((lossC1 - lossC2))#/(lossC2+100))
+    lossCN = tf.abs(lossCN1 - lossCN2)
     lossM = tf.abs((predM - y_M))
-    accuracyC = tf.reduce_mean((lossC))/100
+    accuracyC = tf.reduce_mean((lossC))/1000
+    accuracyCN = tf.reduce_mean((lossCN)) / 10
     accuracyM = tf.reduce_mean((lossM))
-    cost = (accuracyC+accuracyM)/2
+    cost = (accuracyC+accuracyCN+accuracyM)/3
+    current_epoch = tf.Variable(0)
+    learning_rate = tf.train.exponential_decay(0.05,
+                                               current_epoch,
+                                               decay_steps=training_iters,
+                                               decay_rate=0.03)
     with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost,global_step=current_epoch)
     init = tf.global_variables_initializer()
     saver = tf.train.Saver()
     # Launch the graph
@@ -125,6 +135,7 @@ if __name__ == '__main__':
         # Keep training until reach max iterations
         while step  < training_iters:
             # Run optimization op (backprop)
+            current_epoch = step
             sess.run([optimizer], feed_dict={x: bx,
                                              y_C: byc,
                                              y_M:mPercent,
@@ -133,32 +144,37 @@ if __name__ == '__main__':
                                            keep_prob: dropout,is_train:True})
             if step % display_step == 0:
                 # Calculate batch loss and accuracy
-                loss, acc = sess.run([accuracyC, accuracyM], feed_dict={x: bx,
+                accC,accCN,accM = sess.run([accuracyC,accuracyCN, accuracyM], feed_dict={x: bx,
                                              y_C: byc,
                                              y_M:mPercent,
                                              in_amout:b_amount,
                                              in_value:b_value,
                                            keep_prob: 1,is_train:False})
                 print("Iter " + str(step) + ", errorC= " + \
-                      "{:.6f}".format(loss) + ", errorM= " + \
-                      "{:.6f}".format(acc))
+                      "{:.6f}".format(accC) + ", errorCN= " + \
+                      "{:.6f}".format(accCN) + ", errorM= " + \
+                      "{:.6f}".format(accM))
             step += 1
         print("训练结束")
-        for n in (30,40,50,60,70,80,90):
-            cas,mc,loss, acc = sess.run([calsu,predM,accuracyC, accuracyM], feed_dict={x: bx[n:n+1],
-                                                                y_C: byc[n:n+1],
-                                                                y_M: mPercent[n:n+1],
-                                                                in_amout: b_amount[n:n+1],
-                                                                in_value: b_value[n:n+1],
+        cas,mc,lsC,accC,lsCN,accCN,accM = sess.run([calsu,predM,lossC,accuracyC,lossCN,accuracyCN, accuracyM], feed_dict={x: bx,
+                                                                y_C: byc,
+                                                                y_M: mPercent,
+                                                                in_amout: b_amount,
+                                                                in_value: b_value,
                                                                 keep_prob: 1, is_train: False})
-            print("iter: ",n)
-            print(byc[n:n+1],mPercent[n:n + 1])
-            print(np.floor(cas),np.floor(mc))
-            print(np.floor(b_value[n:n + 1]))
-            print("errorC= " + \
-                  "{:.6f}".format(loss) + ", errorM= " + \
-                  "{:.6f}".format(acc))
-            saver.save(sess, './result/model.ckpt')
+
+        index = np.argsort(lsC)
+        for n in (index):
+            print("iter: ",n,"lossC: ",lsC[n])
+            print(byc[n],mPercent[n])
+            #print(np.floor(cas[n]),np.floor(lsCN[n]),np.floor(mc[n]))
+            print((cas[n]), (lsCN[n]), (mc[n]))
+            print(np.floor(b_value[n]))
+            print("Iter " + str(step) + ", errorC= " + \
+                  "{:.6f}".format(accC) + ", errorCN= " + \
+                  "{:.6f}".format(accCN) + ", errorM= " + \
+                  "{:.6f}".format(accM))
+            #saver.save(sess, './result/model.ckpt')
 
     # with tf.Session() as sess:
     #     sess.run(init)
