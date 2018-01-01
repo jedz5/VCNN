@@ -1,0 +1,200 @@
+{
+	"hero" : {
+		"attack" : 3,
+		"defense" : 4,
+		"knowledge" : 10,
+		"mana" : 54,
+		"power" : 5,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 2
+			},
+			{
+				"id" : 8,
+				"level" : 1
+			},
+			{
+				"id" : 1,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 7,
+				"id" : 30,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"aiValue" : 50,
+			"attack" : 6,
+			"baseAmount" : 23,
+			"defense" : 9,
+			"fightValue" : 50,
+			"health" : 4,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 23,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Imp",
+			"slot" : 0,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				}
+			],
+			"aiValue" : 5101,
+			"attack" : 20,
+			"baseAmount" : 3,
+			"defense" : 22,
+			"fightValue" : 3759,
+			"health" : 160,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 3,
+			"maxDamage" : 40,
+			"minDamage" : 30,
+			"name" : "Devil",
+			"slot" : 0,
+			"speed" : 12
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				}
+			],
+			"aiValue" : 159,
+			"attack" : 10,
+			"baseAmount" : 7,
+			"defense" : 9,
+			"fightValue" : 145,
+			"health" : 13,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 4,
+			"minDamage" : 2,
+			"name" : "Gog",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Immune to all Fire school spells",
+					"type" : 74
+				}
+			],
+			"aiValue" : 1670,
+			"attack" : 20,
+			"baseAmount" : 10,
+			"defense" : 17,
+			"fightValue" : 1413,
+			"health" : 90,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 24,
+			"minDamage" : 16,
+			"name" : "Efreeti",
+			"slot" : 2,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				}
+			],
+			"aiValue" : 7115,
+			"attack" : 30,
+			"baseAmount" : 2,
+			"defense" : 33,
+			"fightValue" : 5243,
+			"health" : 200,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 40,
+			"minDamage" : 30,
+			"name" : "Arch Devil",
+			"slot" : 3,
+			"speed" : 18
+		},
+		{
+			"aiValue" : 765,
+			"attack" : 17,
+			"baseAmount" : 2,
+			"defense" : 21,
+			"fightValue" : 765,
+			"health" : 45,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 17,
+			"minDamage" : 13,
+			"name" : "Pit Fiend",
+			"slot" : 4,
+			"speed" : 7
+		}
+	],
+	"win" : true
+}

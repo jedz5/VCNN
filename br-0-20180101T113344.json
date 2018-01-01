@@ -1,0 +1,304 @@
+{
+	"hero" : {
+		"attack" : 1,
+		"defense" : 0,
+		"knowledge" : 2,
+		"mana" : 15,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 11,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 5,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 8,
+			"baseAmount" : 11,
+			"defense" : 4,
+			"fightValue" : 115,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 6,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				}
+			],
+			"aiValue" : 95,
+			"attack" : 3,
+			"baseAmount" : 8,
+			"defense" : 3,
+			"fightValue" : 70,
+			"health" : 3,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Sprite",
+			"slot" : 0,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 6,
+			"baseAmount" : 12,
+			"defense" : 6,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 3,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				}
+			],
+			"aiValue" : 95,
+			"attack" : 3,
+			"baseAmount" : 8,
+			"defense" : 3,
+			"fightValue" : 70,
+			"health" : 3,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Sprite",
+			"slot" : 1,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 6,
+			"baseAmount" : 1,
+			"defense" : 6,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 2,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				}
+			],
+			"aiValue" : 95,
+			"attack" : 3,
+			"baseAmount" : 8,
+			"defense" : 3,
+			"fightValue" : 70,
+			"health" : 3,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Sprite",
+			"slot" : 2,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 6,
+			"baseAmount" : 1,
+			"defense" : 6,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				}
+			],
+			"aiValue" : 95,
+			"attack" : 3,
+			"baseAmount" : 8,
+			"defense" : 3,
+			"fightValue" : 70,
+			"health" : 3,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Sprite",
+			"slot" : 3,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 6,
+			"baseAmount" : 1,
+			"defense" : 7,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 4,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				}
+			],
+			"aiValue" : 95,
+			"attack" : 3,
+			"baseAmount" : 8,
+			"defense" : 3,
+			"fightValue" : 70,
+			"health" : 3,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Sprite",
+			"slot" : 4,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 6,
+			"baseAmount" : 1,
+			"defense" : 7,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 5,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}

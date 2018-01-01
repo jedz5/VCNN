@@ -1,0 +1,180 @@
+{
+	"action" : {
+		"actionType" : 2,
+		"x" : 2,
+		"y" : 6
+	},
+	"activeStack" : {
+		"amount" : 5,
+		"amountBase" : 5,
+		"attack" : 13,
+		"defense" : 10,
+		"firstHPleft" : 25,
+		"health" : 25,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : true,
+		"isWide" : true,
+		"maxDamage" : 6,
+		"minDamage" : 3,
+		"name" : "Griffin",
+		"speed" : 6,
+		"x" : 2,
+		"y" : 8
+	},
+	"hero" : {
+		"attack" : 5,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 1,
+				"level" : 2
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 3
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 43,
+			"amountBase" : 43,
+			"attack" : 9,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 4
+		},
+		{
+			"amount" : 30,
+			"amountBase" : 30,
+			"attack" : 4,
+			"defense" : 2,
+			"firstHPleft" : 5,
+			"health" : 5,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Goblin",
+			"speed" : 5,
+			"x" : 10,
+			"y" : 2
+		},
+		{
+			"amount" : 16,
+			"amountBase" : 16,
+			"attack" : 11,
+			"defense" : 5,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Archer",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 5
+		},
+		{
+			"amount" : 23,
+			"amountBase" : 30,
+			"attack" : 4,
+			"defense" : 2,
+			"firstHPleft" : 5,
+			"health" : 5,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Goblin",
+			"speed" : 5,
+			"x" : 10,
+			"y" : 8
+		},
+		{
+			"amount" : 5,
+			"amountBase" : 5,
+			"attack" : 13,
+			"defense" : 10,
+			"firstHPleft" : 25,
+			"health" : 25,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 6,
+			"minDamage" : 3,
+			"name" : "Griffin",
+			"speed" : 6,
+			"x" : 2,
+			"y" : 8
+		}
+	]
+}

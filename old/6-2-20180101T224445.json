@@ -1,0 +1,295 @@
+{
+	"action" : {
+		"actionType" : 6,
+		"fightX" : 4,
+		"fightY" : 0,
+		"x" : 3,
+		"y" : 0
+	},
+	"activeStack" : {
+		"amount" : 4,
+		"amountBase" : 4,
+		"attack" : 16,
+		"defense" : 18,
+		"firstHPleft" : 20,
+		"health" : 35,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 10,
+		"minDamage" : 7,
+		"name" : "Crusader",
+		"speed" : 7,
+		"x" : 3,
+		"y" : 1
+	},
+	"hero" : {
+		"attack" : 3,
+		"casted" : false,
+		"defense" : 5,
+		"knowledge" : 2,
+		"mana" : 12,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 19,
+				"level" : 1
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 4
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 14,
+			"amountBase" : 14,
+			"attack" : 10,
+			"defense" : 9,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 14,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 10,
+			"health" : 15,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Walking Dead",
+			"speed" : 3,
+			"x" : 4,
+			"y" : 1
+		},
+		{
+			"amount" : 4,
+			"amountBase" : 4,
+			"attack" : 16,
+			"defense" : 18,
+			"firstHPleft" : 20,
+			"health" : 35,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"speed" : 7,
+			"x" : 3,
+			"y" : 1
+		},
+		{
+			"amount" : 6,
+			"amountBase" : 14,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 7,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Walking Dead",
+			"speed" : 3,
+			"x" : 4,
+			"y" : 0
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 14,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 1,
+			"health" : 20,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Zombie",
+			"speed" : 4,
+			"x" : 2,
+			"y" : 0
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 1,
+			"attack" : 8,
+			"defense" : 11,
+			"firstHPleft" : 7,
+			"health" : 10,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 3,
+			"y" : 0
+		},
+		{
+			"amount" : 2,
+			"amountBase" : 14,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 12,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Walking Dead",
+			"speed" : 3,
+			"x" : 4,
+			"y" : 1
+		},
+		{
+			"amount" : 5,
+			"amountBase" : 13,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 2,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Walking Dead",
+			"speed" : 3,
+			"x" : 5,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 8,
+			"defense" : 11,
+			"firstHPleft" : 1,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 1
+		}
+	]
+}

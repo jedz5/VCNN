@@ -1,0 +1,356 @@
+{
+	"action" : {
+		"actionType" : 3
+	},
+	"activeStack" : {
+		"amount" : 1,
+		"amountBase" : 1,
+		"attack" : 7,
+		"defense" : 6,
+		"firstHPleft" : 4,
+		"health" : 11,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : false,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 3,
+		"minDamage" : 1,
+		"name" : "Pikeman",
+		"speed" : 5,
+		"x" : 1,
+		"y" : 6
+	},
+	"hero" : {
+		"attack" : 2,
+		"casted" : false,
+		"defense" : 0,
+		"knowledge" : 2,
+		"mana" : 20,
+		"power" : 4,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 11,
+				"level" : 2
+			},
+			{
+				"id" : 17,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 42,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 46,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 53,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 8
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 14,
+			"amountBase" : 14,
+			"attack" : 9,
+			"defense" : 4,
+			"firstHPleft" : 11,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 12,
+			"attack" : 7,
+			"defense" : 6,
+			"firstHPleft" : 1,
+			"health" : 10,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Halberdier",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 1
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 1,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 3,
+			"amountBase" : 11,
+			"attack" : 7,
+			"defense" : 6,
+			"firstHPleft" : 7,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Halberdier",
+			"speed" : 6,
+			"x" : 2,
+			"y" : 5
+		},
+		{
+			"amount" : 4,
+			"amountBase" : 4,
+			"attack" : 15,
+			"defense" : 13,
+			"firstHPleft" : 36,
+			"health" : 36,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"speed" : 7,
+			"x" : 5,
+			"y" : 5
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 11,
+			"attack" : 7,
+			"defense" : 6,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Halberdier",
+			"speed" : 6,
+			"x" : 4,
+			"y" : 6
+		},
+		{
+			"amount" : 5,
+			"amountBase" : 5,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 11,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 5
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 7,
+			"defense" : 6,
+			"firstHPleft" : 4,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 6
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 11,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 7,
+			"defense" : 7,
+			"firstHPleft" : 11,
+			"health" : 11,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

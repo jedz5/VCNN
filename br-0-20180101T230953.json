@@ -1,0 +1,336 @@
+{
+	"hero" : {
+		"attack" : 5,
+		"defense" : 6,
+		"knowledge" : 2,
+		"mana" : 11,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 19,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 15,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 12,
+			"baseAmount" : 22,
+			"defense" : 10,
+			"fightValue" : 115,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 2,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 577,
+			"attack" : 10,
+			"baseAmount" : 4,
+			"defense" : 10,
+			"fightValue" : 423,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 4,
+			"maxDamage" : 8,
+			"minDamage" : 6,
+			"name" : "Medusa Queen",
+			"slot" : 0,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 588,
+			"attack" : 18,
+			"baseAmount" : 8,
+			"defense" : 19,
+			"fightValue" : 588,
+			"health" : 35,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"slot" : 1,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 577,
+			"attack" : 10,
+			"baseAmount" : 4,
+			"defense" : 10,
+			"fightValue" : 423,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 4,
+			"maxDamage" : 8,
+			"minDamage" : 6,
+			"name" : "Medusa Queen",
+			"slot" : 1,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				}
+			],
+			"aiValue" : 750,
+			"attack" : 18,
+			"baseAmount" : 9,
+			"defense" : 17,
+			"fightValue" : 500,
+			"health" : 30,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 12,
+			"minDamage" : 10,
+			"name" : "Zealot",
+			"slot" : 2,
+			"speed" : 8
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 577,
+			"attack" : 10,
+			"baseAmount" : 4,
+			"defense" : 10,
+			"fightValue" : 423,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 4,
+			"maxDamage" : 8,
+			"minDamage" : 6,
+			"name" : "Medusa Queen",
+			"slot" : 2,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 10,
+			"baseAmount" : 8,
+			"defense" : 12,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 577,
+			"attack" : 10,
+			"baseAmount" : 4,
+			"defense" : 10,
+			"fightValue" : 423,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 4,
+			"maxDamage" : 8,
+			"minDamage" : 6,
+			"name" : "Medusa Queen",
+			"slot" : 3,
+			"speed" : 6
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 10,
+			"baseAmount" : 1,
+			"defense" : 14,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 4,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 10,
+			"baseAmount" : 1,
+			"defense" : 14,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 5,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 10,
+			"baseAmount" : 1,
+			"defense" : 14,
+			"fightValue" : 100,
+			"health" : 10,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 6,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}

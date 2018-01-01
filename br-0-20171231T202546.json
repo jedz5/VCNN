@@ -1,0 +1,546 @@
+{
+	"hero" : {
+		"attack" : 13,
+		"defense" : 16,
+		"knowledge" : 7,
+		"mana" : 46,
+		"power" : 14,
+		"secSkills" : [
+			{
+				"id" : 0,
+				"level" : 3
+			},
+			{
+				"id" : 2,
+				"level" : 3
+			},
+			{
+				"id" : 3,
+				"level" : 3
+			},
+			{
+				"id" : 7,
+				"level" : 3
+			},
+			{
+				"id" : 17,
+				"level" : 3
+			},
+			{
+				"id" : 24,
+				"level" : 3
+			},
+			{
+				"id" : 1,
+				"level" : 3
+			},
+			{
+				"id" : 22,
+				"level" : 3
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 10,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 10,
+				"id" : 17,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 15,
+				"id" : 21,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 12,
+				"id" : 23,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 15,
+				"id" : 25,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 32,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 16,
+				"id" : 38,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 25,
+				"id" : 40,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 42,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 46,
+				"level" : 3
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 10,
+				"id" : 47,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 15,
+				"id" : 63,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 20,
+				"id" : 67,
+				"level" : 3
+			}
+		]
+	},
+	"manaCost" : 25,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Can rise creatures from corpses",
+					"type" : 73
+				}
+			],
+			"aiValue" : 1224,
+			"attack" : 27,
+			"baseAmount" : 25,
+			"defense" : 30,
+			"fightValue" : 1071,
+			"health" : 45,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 17,
+			"minDamage" : 13,
+			"name" : "Pit Lord",
+			"slot" : 0,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Can cast mass Air Shield every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Bless every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Haste every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Slow every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Stone Skin every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Weakness every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "Full damage during siege",
+					"type" : 65
+				}
+			],
+			"aiValue" : 1210,
+			"attack" : 17,
+			"baseAmount" : 27,
+			"defense" : 12,
+			"fightValue" : 805,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 27,
+			"maxDamage" : 14,
+			"minDamage" : 14,
+			"name" : "Enchanter",
+			"slot" : 0,
+			"speed" : 9
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				}
+			],
+			"aiValue" : 7115,
+			"attack" : 40,
+			"baseAmount" : 4,
+			"defense" : 45,
+			"fightValue" : 5243,
+			"health" : 200,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 40,
+			"minDamage" : 30,
+			"name" : "Arch Devil",
+			"slot" : 1,
+			"speed" : 20
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Can cast mass Air Shield every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Bless every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Haste every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Slow every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Stone Skin every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Weakness every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "Full damage during siege",
+					"type" : 65
+				}
+			],
+			"aiValue" : 1210,
+			"attack" : 17,
+			"baseAmount" : 27,
+			"defense" : 12,
+			"fightValue" : 805,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 27,
+			"maxDamage" : 14,
+			"minDamage" : 14,
+			"name" : "Enchanter",
+			"slot" : 1,
+			"speed" : 9
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Reflects melee damage",
+					"type" : 79
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Immune to all Fire school spells",
+					"type" : 74
+				}
+			],
+			"aiValue" : 1848,
+			"attack" : 30,
+			"baseAmount" : 20,
+			"defense" : 31,
+			"fightValue" : 1584,
+			"health" : 90,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 7,
+			"maxDamage" : 24,
+			"minDamage" : 16,
+			"name" : "Efreet Sultan",
+			"slot" : 2,
+			"speed" : 16
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Can cast mass Air Shield every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Bless every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Haste every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Slow every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Stone Skin every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Weakness every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "Full damage during siege",
+					"type" : 65
+				}
+			],
+			"aiValue" : 1210,
+			"attack" : 17,
+			"baseAmount" : 27,
+			"defense" : 12,
+			"fightValue" : 805,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 27,
+			"maxDamage" : 14,
+			"minDamage" : 14,
+			"name" : "Enchanter",
+			"slot" : 2,
+			"speed" : 9
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Vulnerable to adv. SLAYER",
+					"type" : 52
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				},
+				{
+					"desc" : "Does 50% more damage",
+					"type" : 50
+				}
+			],
+			"aiValue" : 7115,
+			"attack" : 40,
+			"baseAmount" : 5,
+			"defense" : 45,
+			"fightValue" : 5243,
+			"health" : 200,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 40,
+			"minDamage" : 30,
+			"name" : "Arch Devil",
+			"slot" : 3,
+			"speed" : 20
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Can cast mass Air Shield every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Bless every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Haste every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Slow every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Stone Skin every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Weakness every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "Full damage during siege",
+					"type" : 65
+				}
+			],
+			"aiValue" : 1210,
+			"attack" : 17,
+			"baseAmount" : 26,
+			"defense" : 12,
+			"fightValue" : 805,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 26,
+			"maxDamage" : 14,
+			"minDamage" : 14,
+			"name" : "Enchanter",
+			"slot" : 3,
+			"speed" : 9
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Can cast mass Air Shield every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Bless every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Haste every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Slow every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Stone Skin every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Can cast mass Weakness every turn",
+					"type" : 100
+				},
+				{
+					"desc" : "Creature has no Melee Penalty",
+					"type" : 48
+				},
+				{
+					"desc" : "Full damage during siege",
+					"type" : 65
+				}
+			],
+			"aiValue" : 1210,
+			"attack" : 17,
+			"baseAmount" : 26,
+			"defense" : 12,
+			"fightValue" : 805,
+			"health" : 30,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 26,
+			"maxDamage" : 14,
+			"minDamage" : 14,
+			"name" : "Enchanter",
+			"slot" : 4,
+			"speed" : 9
+		}
+	],
+	"win" : true
+}

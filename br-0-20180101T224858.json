@@ -1,0 +1,318 @@
+{
+	"hero" : {
+		"attack" : 2,
+		"defense" : 1,
+		"knowledge" : 2,
+		"mana" : 15,
+		"power" : 4,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 11,
+				"level" : 3
+			},
+			{
+				"id" : 17,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 5,
+				"id" : 35,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 37,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 41,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 42,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 46,
+				"level" : 1
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 53,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 5,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Creature can shoot",
+					"type" : 44
+				},
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 184,
+			"attack" : 9,
+			"baseAmount" : 14,
+			"defense" : 5,
+			"fightValue" : 115,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 552,
+			"attack" : 11,
+			"baseAmount" : 3,
+			"defense" : 11,
+			"fightValue" : 506,
+			"health" : 35,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 3,
+			"maxDamage" : 10,
+			"minDamage" : 6,
+			"name" : "Basilisk",
+			"slot" : 0,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 7,
+			"baseAmount" : 1,
+			"defense" : 8,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 552,
+			"attack" : 11,
+			"baseAmount" : 3,
+			"defense" : 11,
+			"fightValue" : 506,
+			"health" : 35,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 3,
+			"maxDamage" : 10,
+			"minDamage" : 6,
+			"name" : "Basilisk",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Attacks twice",
+					"type" : 46
+				}
+			],
+			"aiValue" : 588,
+			"attack" : 15,
+			"baseAmount" : 4,
+			"defense" : 14,
+			"fightValue" : 588,
+			"health" : 36,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 10,
+			"minDamage" : 7,
+			"name" : "Crusader",
+			"slot" : 2,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 552,
+			"attack" : 11,
+			"baseAmount" : 3,
+			"defense" : 11,
+			"fightValue" : 506,
+			"health" : 35,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 3,
+			"maxDamage" : 10,
+			"minDamage" : 6,
+			"name" : "Basilisk",
+			"slot" : 2,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 7,
+			"baseAmount" : 5,
+			"defense" : 8,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 3,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "20% to cast Stone Gaze after attack",
+					"type" : 57
+				}
+			],
+			"aiValue" : 552,
+			"attack" : 11,
+			"baseAmount" : 3,
+			"defense" : 11,
+			"fightValue" : 506,
+			"health" : 35,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 3,
+			"maxDamage" : 10,
+			"minDamage" : 6,
+			"name" : "Basilisk",
+			"slot" : 3,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 7,
+			"baseAmount" : 1,
+			"defense" : 8,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 4,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 7,
+			"baseAmount" : 1,
+			"defense" : 7,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 5,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Champion charge",
+					"type" : 45
+				}
+			],
+			"aiValue" : 80,
+			"attack" : 7,
+			"baseAmount" : 1,
+			"defense" : 7,
+			"fightValue" : 100,
+			"health" : 11,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 1,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"slot" : 6,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}

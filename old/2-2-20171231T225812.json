@@ -1,0 +1,256 @@
+{
+	"action" : {
+		"actionType" : 8
+	},
+	"activeStack" : {
+		"amount" : 5,
+		"amountBase" : 5,
+		"attack" : 13,
+		"defense" : 10,
+		"firstHPleft" : 25,
+		"health" : 25,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : true,
+		"maxDamage" : 6,
+		"minDamage" : 3,
+		"name" : "Griffin",
+		"speed" : 6,
+		"x" : 2,
+		"y" : 10
+	},
+	"hero" : {
+		"attack" : 5,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 1,
+				"level" : 2
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 4,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 4,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 4
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 16,
+			"amountBase" : 16,
+			"attack" : 11,
+			"defense" : 5,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Marksman",
+			"speed" : 6,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 12,
+			"amountBase" : 15,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 20,
+			"health" : 20,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Zombie",
+			"speed" : 4,
+			"x" : 11,
+			"y" : 2
+		},
+		{
+			"amount" : 40,
+			"amountBase" : 40,
+			"attack" : 9,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 2,
+			"y" : 0
+		},
+		{
+			"amount" : 15,
+			"amountBase" : 15,
+			"attack" : 5,
+			"defense" : 5,
+			"firstHPleft" : 20,
+			"health" : 20,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Zombie",
+			"speed" : 4,
+			"x" : 11,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 9,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 2,
+			"y" : 1
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 9,
+			"defense" : 7,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 9,
+			"defense" : 8,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Pikeman",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 5,
+			"amountBase" : 5,
+			"attack" : 13,
+			"defense" : 10,
+			"firstHPleft" : 25,
+			"health" : 25,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 6,
+			"minDamage" : 3,
+			"name" : "Griffin",
+			"speed" : 6,
+			"x" : 2,
+			"y" : 10
+		}
+	]
+}
