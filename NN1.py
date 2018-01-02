@@ -103,22 +103,30 @@ def conv_net(x,dropout):
 
 if __name__ == '__main__':
     bx, bxm, byc, bym, b_amount, b_value,origPlane = lj.loadData("./")
-    mPercent = bym / bxm
+    #mPercent = bym / bxm
+    b_fly = origPlane[:, 0, :, 2]
+    b_shoot = origPlane[:, 0, :, 3]
+    b_speed = origPlane[:,0,:,4]
+    b_health = origPlane[:,0,:,5]
     # Construct model
     predC,predM = conv_net(x,keep_prob)
     #calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
     calsu = predC * in_amout
-    lossC1 = tf.reduce_sum(calsu *in_value,1) #每个slot比例*总数取整 再*aiValue
-    lossC2 = tf.reduce_sum(y_C*in_value,1)
-    lossCN1 = tf.reduce_sum(calsu,1)
-    lossCN2 = tf.reduce_sum(y_C, 1)
-    lossC = tf.abs((lossC1 - lossC2))#/(lossC2+100))
-    lossCN = tf.abs(lossCN1 - lossCN2)
-    lossM = tf.abs((predM - y_M))
-    accuracyC = tf.reduce_mean((lossC))/1000
-    accuracyCN = tf.reduce_mean((lossCN)) / 10
+    lossC = tf.abs((tf.reduce_sum(calsu *in_value,1) - tf.reduce_sum(y_C*in_value,1)))#每个slot比例*总数取整 再*aiValue
+    lossCN = tf.abs(tf.reduce_sum(calsu,1) - tf.reduce_sum(y_C, 1))
+    lossFly = tf.abs((tf.reduce_sum(calsu *b_fly,1) - tf.reduce_sum(y_C*b_fly,1)))
+    lossShoot = tf.abs((tf.reduce_sum(calsu * b_shoot, 1) - tf.reduce_sum(y_C * b_shoot, 1)))
+    lossSpeed = tf.abs((tf.reduce_sum(calsu * b_speed, 1) - tf.reduce_sum(y_C * b_speed, 1)))
+    lossHealth = tf.abs((tf.reduce_sum(calsu * b_health, 1) - tf.reduce_sum(y_C * b_health, 1)))
+    lossM = tf.abs((predM*bxm - y_M))
+    accuracyC = tf.reduce_mean((lossC))/100
+    accuracyCN = tf.reduce_mean((lossCN))
+    accuracyFly = tf.reduce_mean((lossFly))
+    accuracyShoot = tf.reduce_mean((lossShoot))
+    accuracySpeed = tf.reduce_mean((lossSpeed))
+    accuracyHealth = tf.reduce_mean((lossHealth))
     accuracyM = tf.reduce_mean((lossM))
-    cost = (accuracyC+accuracyCN+accuracyM)/3
+    cost = (accuracyC+accuracyCN+accuracyFly+accuracyShoot+accuracySpeed+accuracyHealth+accuracyM)/7
     current_epoch = tf.Variable(0)
     learning_rate = tf.train.exponential_decay(0.05,
                                                current_epoch,
@@ -138,7 +146,7 @@ if __name__ == '__main__':
             current_epoch = step
             sess.run([optimizer], feed_dict={x: bx,
                                              y_C: byc,
-                                             y_M:mPercent,
+                                             y_M:bym,
                                              in_amout:b_amount,
                                              in_value:b_value,
                                            keep_prob: dropout,is_train:True})
@@ -146,7 +154,7 @@ if __name__ == '__main__':
                 # Calculate batch loss and accuracy
                 accC,accCN,accM = sess.run([accuracyC,accuracyCN, accuracyM], feed_dict={x: bx,
                                              y_C: byc,
-                                             y_M:mPercent,
+                                             y_M:bym,
                                              in_amout:b_amount,
                                              in_value:b_value,
                                            keep_prob: 1,is_train:False})
@@ -158,22 +166,23 @@ if __name__ == '__main__':
         print("训练结束")
         cas,mc,lsC,accC,lsCN,accCN,accM = sess.run([calsu,predM,lossC,accuracyC,lossCN,accuracyCN, accuracyM], feed_dict={x: bx,
                                                                 y_C: byc,
-                                                                y_M: mPercent,
+                                                                y_M: bym,
                                                                 in_amout: b_amount,
                                                                 in_value: b_value,
                                                                 keep_prob: 1, is_train: False})
 
         index = np.argsort(lsC)
+        it = 0
         for n in (index):
             print("iter: ",n,"lossC: ",lsC[n])
-            print(byc[n],mPercent[n])
-            #print(np.floor(cas[n]),np.floor(lsCN[n]),np.floor(mc[n]))
-            print((cas[n]), (lsCN[n]), (mc[n]))
+            print(byc[n],bym[n])
+            print(np.floor(cas[n]),np.floor(lsCN[n]),np.floor(mc[n]))
+            #print((cas[n]), (lsCN[n]), (mc[n]))
             print(np.floor(b_value[n]))
-            print("Iter " + str(step) + ", errorC= " + \
-                  "{:.6f}".format(accC) + ", errorCN= " + \
-                  "{:.6f}".format(accCN) + ", errorM= " + \
-                  "{:.6f}".format(accM))
+            #print("index " + n + ", errorC= " + \
+            #      "{:.6f}".format(accC) + ", errorCN= " + \
+            #      "{:.6f}".format(accCN) + ", errorM= " + \
+             #     "{:.6f}".format(accM))
             #saver.save(sess, './result/model.ckpt')
 
     # with tf.Session() as sess:

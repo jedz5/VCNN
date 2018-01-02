@@ -1,0 +1,150 @@
+{
+	"hero" : {
+		"attack" : 0,
+		"defense" : 0,
+		"knowledge" : 2,
+		"mana" : 20,
+		"power" : 3,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 20,
+				"id" : 38,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "Immune to Blind",
+					"type" : 69
+				},
+				{
+					"desc" : "Immune to Stone Gaze",
+					"type" : 69
+				}
+			],
+			"aiValue" : 59,
+			"attack" : 5,
+			"baseAmount" : 36,
+			"defense" : 4,
+			"fightValue" : 73,
+			"health" : 5,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Troglodyte",
+			"slot" : 0,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				}
+			],
+			"aiValue" : 85,
+			"attack" : 6,
+			"baseAmount" : 9,
+			"defense" : 6,
+			"fightValue" : 85,
+			"health" : 6,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 9,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Skeleton Warrior",
+			"slot" : 0,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				},
+				{
+					"desc" : "Enemy cannot Retaliate",
+					"type" : 68
+				},
+				{
+					"desc" : "Returns after melee attack",
+					"type" : 86
+				}
+			],
+			"aiValue" : 238,
+			"attack" : 7,
+			"baseAmount" : 11,
+			"defense" : 7,
+			"fightValue" : 196,
+			"health" : 14,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 0,
+			"maxDamage" : 4,
+			"minDamage" : 1,
+			"name" : "Harpy Hag",
+			"slot" : 1,
+			"speed" : 10
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				}
+			],
+			"aiValue" : 85,
+			"attack" : 6,
+			"baseAmount" : 8,
+			"defense" : 6,
+			"fightValue" : 85,
+			"health" : 6,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Skeleton Warrior",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Creature is Undead",
+					"type" : 80
+				}
+			],
+			"aiValue" : 85,
+			"attack" : 6,
+			"baseAmount" : 8,
+			"defense" : 6,
+			"fightValue" : 85,
+			"health" : 6,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 8,
+			"maxDamage" : 3,
+			"minDamage" : 1,
+			"name" : "Skeleton Warrior",
+			"slot" : 2,
+			"speed" : 5
+		}
+	],
+	"win" : true
+}
