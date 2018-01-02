@@ -100,7 +100,7 @@ def loadData(path):
     for i in f_list:
         try:
             if os.path.splitext(i)[1] == ".json":
-                rr = load(i)
+                rr = load(path+i)
                 if rr:
                     batchx.append(rr[0])
                     batchm.append(rr[1])
@@ -135,7 +135,7 @@ def loadData(path):
 #     sess.close()
 #     return jsonData
 if __name__ == "__main__":
-    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData(".")
+    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData("./test/")
     me = origPlane[:,0,:,0]
     meV = np.floor(origPlane[:,0,:,1])
     you = origPlane[:, 1, :, 0]
