@@ -9,6 +9,7 @@ stacks = 7
 hexDepth = 6
 n_spells = 5
 n_manaCost = 1
+addDepth = 1
 n_all = side*stacks*hexDepth+n_spells+n_manaCost
 def isFly(x):
     if "ability" in x:
@@ -20,6 +21,12 @@ def isShoot(x):
     if "ability" in x:
         for y in x['ability']:
             if y['type'] == 44:
+                return 1
+    return 0
+def noRetaliate(x):
+    if "ability" in x:
+        for y in x['ability']:
+            if y['type'] == 68:
                 return 1
     return 0
 def shootDamage(hero):
@@ -43,6 +50,11 @@ def load(inFile):
         label_m = np.zeros((n_manaCost));
         amout = np.zeros((stacks))
         value = np.zeros((stacks))
+        addPlane = np.ndarray((side,stacks,addDepth),dtype=np.dtype('a8'))
+        for i in range(side):
+            for j in range(stacks):
+                for k in range(addDepth):
+                    addPlane[i][j][k] = ''
         spells = {'26':0,'41':1,'53':2,'54':3}
         try:
             if not root['win']:
@@ -60,6 +72,7 @@ def load(inFile):
                 plane[~x['isHuman']][x['slot']][3] = isShoot(x)
                 plane[~x['isHuman']][x['slot']][4] = x['speed']
                 plane[~x['isHuman']][x['slot']][5] = x['health']
+                addPlane[~x['isHuman']][x['slot']][0] = x['name']
                 if x['isHuman']:
                     plane[~x['isHuman']][x['slot']][1] = x['aiValue'] * heroStrength  #baseAD
                     #archary
@@ -82,11 +95,11 @@ def load(inFile):
         except:
             traceback.print_exc()
             return
-        plane[-1] = root['manaCost']
+        plane[-1] = root['hero']['mana'] + root['manaCost']
         plane_m[0] = root['hero']['mana'] + root['manaCost']
         label_m[0] = root['manaCost']
 
-    return plane,plane_m,label_c,label_m,amout,value,origPlane
+    return plane,plane_m,label_c,label_m,amout,value,origPlane,addPlane
 
 def loadData(path):
     batchx = []
@@ -96,6 +109,7 @@ def loadData(path):
     batch_amout = []
     batch_value = []
     origPlane = []
+    addPlane = []
     f_list = os.listdir(path)
     for i in f_list:
         try:
@@ -109,6 +123,7 @@ def loadData(path):
                     batch_amout.append(rr[4])
                     batch_value.append(rr[5])
                     origPlane.append(rr[6])
+                    addPlane.append(rr[7])
                 else:
                     print("data lost")
         except:
@@ -122,7 +137,8 @@ def loadData(path):
     b_amount = np.asarray(batch_amout)
     b_value = np.asarray(batch_value)
     borigPlane = np.asarray(origPlane)
-    return bx,bxm,byc,bym,b_amount,b_value,borigPlane
+    baddPlane = np.asarray(addPlane)
+    return bx,bxm,byc,bym,b_amount,b_value,borigPlane,baddPlane
 
 # def quick(jsonData):
 #     print(jsonData)
@@ -135,26 +151,25 @@ def loadData(path):
 #     sess.close()
 #     return jsonData
 if __name__ == "__main__":
-    bx, bxm, byc, bym, b_amount,b_value,origPlane = loadData("./test/")
+    bx, bxm, byc, bym, b_amount,b_value,origPlane,addPlane = loadData("./train/")
     me = origPlane[:,0,:,0]
     meV = np.floor(origPlane[:,0,:,1])
+    meName = addPlane[:,0,:,0]
     you = origPlane[:, 1, :, 0]
     youV = np.floor(origPlane[:, 1, :, 1])
-    # for i in range(len(me)):
-    #     #meV = origPlane[i][0][:][1]
-    #
-    #     threat = np.sum((me[i]*meV[i]))
-    #     threat1 = np.sum(you[i] * youV[i])
-    #     threat = threat1/threat
-    #     print("plane: ",i,"threat ",threat)
-    #     print(me[i])
-    #     print(byc[i])
-    #     print(meV[i])
-    #     print(you[i])
-    #     print(youV[i])
-
-        #print(origPlane[i][1][:][0])
-       # print(origPlane[i][1][:][1])
+    youName = addPlane[:,1,:,0]
+    threat = np.sum((me * meV),1)
+    threat1 = np.sum(you * youV,1)
+    threat = threat1 / threat
+    index = np.argsort(-threat)
+    for i in (index):
+        print("plane: ",i,"threat ",threat[i],bx[i][-6:])
+        print("Amount: ",me[i],meName[i])
+        print("killed: ",byc[i],bym[i])
+        print("value： ",meV[i])
+        print("ukilled:",you[i],youName[i])
+        print("uvalue：",youV[i])
+        print()
     print()
 
 
