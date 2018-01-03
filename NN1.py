@@ -17,7 +17,7 @@ from tensorflow.python.ops import control_flow_ops
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
 #learning_rate = 0.02
-training_iters = 200
+training_iters = 20000
 #batch_size = 128
 display_step = 50
 
@@ -71,18 +71,11 @@ def  conv2d(x, W, strides=1):
 
 # Create model
 def conv_net(x,dropout):
-    # Reshape input picture
-    #x = tf.reshape(x, shape=[-1,2*7*7])
-
-    # Fully connected layer
-    # Reshape conv2 output to fit fully connected layer input
-    #fc1 = tf.reshape(x, [-1, weights['wd1'].get_shape().as_list()[0]])
-    #x = tf.layers.batch_normalization(x, training=is_train)
     fc1 = tf.matmul(x, weights['fc1'])+biases['fc1']
     fc1 = tf.nn.relu(fc1)
     fc1 = tf.layers.batch_normalization(fc1, training=is_train)
     # Apply Dropout
-    #fc1 = tf.nn.dropout(fc1, dropout)
+    fc1 = tf.nn.dropout(fc1, dropout)
 
     # fc1 = tf.matmul(fc1, weights['fc2']) + biases['fc2']
     # fc1 = tf.nn.relu(fc1)
@@ -93,15 +86,15 @@ def conv_net(x,dropout):
     # Apply Dropout
     #fc1 = tf.nn.dropout(fc1, dropout)
     # Output, class prediction
-    casul = tf.matmul(fc1, weights['casul'])+biases['casul'] #每个slot的伤亡比例
+    casul = tf.matmul(fc1, weights['casul'])+biases['casul']
     casul = tf.layers.batch_normalization(casul, training=is_train)
     casul = tf.nn.sigmoid(casul)
-    mana = tf.matmul(fc1, weights['mana']) + biases['mana'] #魔法消耗比例
+    mana = tf.matmul(fc1, weights['mana']) + biases['mana']
     mana = tf.layers.batch_normalization(mana, training=is_train)
     mana = tf.nn.sigmoid(mana)
     return casul,mana
 
-def train(path,saveModelPath):
+def vcnn(train,path,saveModelPath):
     bx, bxm, byc, bym, b_amount, b_value,origPlane = lj.loadData(path)
     #mPercent = bym / bxm
     b_fly = origPlane[:, 0, :, 2]
@@ -110,15 +103,15 @@ def train(path,saveModelPath):
     b_health = origPlane[:,0,:,5]
     # Construct model
     predC,predM = conv_net(x,keep_prob)
-    #calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
-    calsu = predC * in_amout
+    calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
+    cm = utils.smart_cond(is_train,lambda :(predM * bxm),lambda:(tf.floor(predM * bxm)))
     lossC = tf.abs((tf.reduce_sum(calsu *in_value,1) - tf.reduce_sum(y_C*in_value,1)))#每个slot比例*总数取整 再*aiValue
     lossCN = tf.abs(tf.reduce_sum(calsu,1) - tf.reduce_sum(y_C, 1))
     lossFly = tf.abs((tf.reduce_sum(calsu *b_fly,1) - tf.reduce_sum(y_C*b_fly,1)))
     lossShoot = tf.abs((tf.reduce_sum(calsu * b_shoot, 1) - tf.reduce_sum(y_C * b_shoot, 1)))
     lossSpeed = tf.abs((tf.reduce_sum(calsu * b_speed, 1) - tf.reduce_sum(y_C * b_speed, 1)))
     lossHealth = tf.abs((tf.reduce_sum(calsu * b_health, 1) - tf.reduce_sum(y_C * b_health, 1)))
-    lossM = tf.abs((predM*bxm - y_M))
+    lossM = tf.abs((cm - y_M))
     accuracyC = tf.reduce_mean((lossC))/100
     accuracyCN = tf.reduce_mean((lossCN))
     accuracyFly = tf.reduce_mean((lossFly))
@@ -135,46 +128,66 @@ def train(path,saveModelPath):
     with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost,global_step=current_epoch)
     init = tf.global_variables_initializer()
-    #saver = tf.train.Saver(max_to_keep=1)
+    # var_list = tf.trainable_variables()
+    # g_list = tf.global_variables()
+    # bn_moving_vars = [g for g in g_list if 'moving_mean' in g.name]
+    # bn_moving_vars += [g for g in g_list if 'moving_variance' in g.name]
+    # var_list += bn_moving_vars
+    # saver = tf.train.Saver(var_list=var_list)
+    saver = tf.train.Saver()
     # Launch the graph
-    with tf.Session() as sess:
-        sess.run(init)
-        step = 0
-        min_err = 65535
-        while step  < training_iters:
-            # Run optimization op (backprop)
-            current_epoch = step
-            sess.run([optimizer], feed_dict={x: bx,
-                                             y_C: byc,
-                                             y_M:bym,
-                                             in_amout:b_amount,
-                                             in_value:b_value,
-                                           keep_prob: dropout,is_train:True})
-            if step % display_step == 0:
-                # Calculate batch loss and accuracy
-                accC,accCN,accM = sess.run([accuracyC,accuracyCN, accuracyM], feed_dict={x: bx,
-                                             y_C: byc,
-                                             y_M:bym,
-                                             in_amout:b_amount,
-                                             in_value:b_value,
-                                           keep_prob: 1,is_train:False})
-                if accCN < min_err:
-                    min_err = accCN
-                    #saver.save(sess, saveModelPath,global_step=step+1)
-                print("Iter " + str(step) + ", errorC= " + \
-                      "{:.6f}".format(accC) + ", errorCN= " + \
-                      "{:.6f}".format(accCN) + ", errorM= " + \
-                      "{:.6f}".format(accM))
-            step += 1
-        print("训练结束")
-        var_list = tf.trainable_variables()
-        g_list = tf.global_variables()
-        bn_moving_vars = [g for g in g_list if 'moving_mean' in g.name]
-        bn_moving_vars += [g for g in g_list if 'moving_variance' in g.name]
-        var_list += bn_moving_vars
-        saver = tf.train.Saver(var_list=var_list)
-        saver.save(sess, saveModelPath)
-        sess.close()
+    if train:
+        with tf.Session() as sess:
+            sess.run(init)
+            step = 0
+            min_err = 65535
+            while step  < training_iters:
+                # Run optimization op (backprop)
+                current_epoch = step
+                sess.run([optimizer], feed_dict={x: bx,
+                                                 y_C: byc,
+                                                 y_M:bym,
+                                                 in_amout:b_amount,
+                                                 in_value:b_value,
+                                               keep_prob: dropout,is_train:True})
+                if step % display_step == 0:
+                    # Calculate batch loss and accuracy
+                    accC,accCN,accM = sess.run([accuracyC,accuracyCN, accuracyM], feed_dict={x: bx,
+                                                 y_C: byc,
+                                                 y_M:bym,
+                                                 in_amout:b_amount,
+                                                 in_value:b_value,
+                                               keep_prob: 1,is_train:False})
+                    if accCN < min_err:
+                        min_err = accCN
+                        saver.save(sess, saveModelPath,global_step=step)
+                    print("Iter " + str(step) + ", errorC= " + \
+                          "{:.6f}".format(accC) + ", errorCN= " + \
+                          "{:.6f}".format(accCN) + ", errorM= " + \
+                          "{:.6f}".format(accM))
+                step += 1
+            print("训练结束")
+
+            saver.save(sess, saveModelPath)
+            sess.close()
+    else:
+        with tf.Session() as sess:
+            sess.run(init)
+            saver.restore(sess, saveModelPath)
+            cas, mc, lsC = sess.run([calsu, cm, lossC], feed_dict={x: bx,
+                                                                   y_C: byc,
+                                                                   y_M: bym,
+                                                                   in_amout: b_amount,
+                                                                   in_value: b_value,
+                                                                   keep_prob: 1, is_train: False})
+
+            index = np.argsort(lsC)
+            for n in (index):
+                print("iter: ", n, "lossC: ", lsC[n])
+                print(byc[n], bym[n])
+                print((cas[n]), (mc[n]))
+                print(np.floor(b_value[n]))
+            sess.close()
 def pred(path,saveModelPath):
     bx, bxm, byc, bym, b_amount, b_value, origPlane = lj.loadData(path)
     # mPercent = bym / bxm
@@ -230,5 +243,5 @@ def pred(path,saveModelPath):
             print(np.floor(b_value[n]))
         sess.close()
 if __name__ == '__main__':
-    train('./','./result/model.ckpt')
-    pred('./', './result/')
+    # vcnn(True,'./train/','./result/model.ckpt')
+    vcnn(False,'./test/', './result/model.ckpt')
