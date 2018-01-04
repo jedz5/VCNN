@@ -50,7 +50,7 @@ def load(inFile):
         label_m = np.zeros((n_manaCost));
         amout = np.zeros((stacks))
         value = np.zeros((stacks))
-        addPlane = np.ndarray((side,stacks,addDepth),dtype=np.dtype('a8'))
+        addPlane = np.ndarray((side,stacks,addDepth),dtype=np.dtype('a20'))
         for i in range(side):
             for j in range(stacks):
                 for k in range(addDepth):
@@ -158,12 +158,15 @@ if __name__ == "__main__":
     you = origPlane[:, 1, :, 0]
     youV = np.floor(origPlane[:, 1, :, 1])
     youName = addPlane[:,1,:,0]
-    threat = np.sum((me * meV),1)
+    mePower = np.sum((me * meV),1)
     threat1 = np.sum(you * youV,1)
-    threat = threat1 / threat
-    index = np.argsort(-threat)
+    threat = threat1 / mePower
+    casul = np.sum((byc * meV),1)
+    casulPercent = casul/mePower
+    loss = casulPercent / threat
+    index = np.argsort(loss)
     for i in (index):
-        print("plane: ",i,"threat ",threat[i],bx[i][-6:])
+        print("plane: ",i,"threat ",threat[i],'calsu ',casul[i],'casulPercent',casulPercent[i],bx[i][-6:])
         print("Amount: ",me[i],meName[i])
         print("killed: ",byc[i],bym[i])
         print("value： ",meV[i])
