@@ -154,23 +154,27 @@ if __name__ == "__main__":
     bx, bxm, byc, bym, b_amount,b_value,origPlane,addPlane = loadData("./train/")
     me = origPlane[:,0,:,0]
     meV = np.floor(origPlane[:,0,:,1])
+    meSpeed = np.floor(origPlane[:, 0, :, 4])
     meName = addPlane[:,0,:,0]
     you = origPlane[:, 1, :, 0]
     youV = np.floor(origPlane[:, 1, :, 1])
+    youSpeed = np.floor(origPlane[:, 1, :, 4])
     youName = addPlane[:,1,:,0]
     mePower = np.sum((me * meV),1)
     threat1 = np.sum(you * youV,1)
     threat = threat1 / mePower
     casul = np.sum((byc * meV),1)
     casulPercent = casul/mePower
-    loss = casulPercent / threat
+    loss = (casulPercent+0.0001) / threat
     index = np.argsort(loss)
     for i in (index):
-        print("plane: ",i,"threat ",threat[i],'calsu ',casul[i],'casulPercent',casulPercent[i],bx[i][-6:])
+        print("plane: ",i,"threat ",threat[i],'calsu ',casul[i],'casulPercent',casulPercent[i],bx[i][-6:],'hero,')
         print("Amount: ",me[i],meName[i])
         print("killed: ",byc[i],bym[i])
+        print("speed:  ",meSpeed[i])
         print("value： ",meV[i])
         print("ukilled:",you[i],youName[i])
+        print("uspeed: ", youSpeed[i])
         print("uvalue：",youV[i])
         print()
     print()
