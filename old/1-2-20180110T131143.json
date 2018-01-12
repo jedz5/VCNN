@@ -1,0 +1,329 @@
+{
+	"action" : {
+		"actionType" : 8
+	},
+	"activeStack" : {
+		"amount" : 1,
+		"amountBase" : 1,
+		"attack" : 15,
+		"defense" : 18,
+		"firstHPleft" : 70,
+		"health" : 70,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : true,
+		"maxDamage" : 22,
+		"minDamage" : 18,
+		"name" : "Wyvern Monarch",
+		"speed" : 11,
+		"x" : 2,
+		"y" : 6
+	},
+	"hero" : {
+		"attack" : 1,
+		"casted" : true,
+		"defense" : 4,
+		"knowledge" : 2,
+		"mana" : 5,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 23,
+				"level" : 2
+			},
+			{
+				"id" : 6,
+				"level" : 1
+			},
+			{
+				"id" : 22,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 15,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 53,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 3,
+			"y" : 2
+		},
+		{
+			"type" : 0,
+			"x" : 4,
+			"y" : 2
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 8
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 12,
+			"amountBase" : 12,
+			"attack" : 7,
+			"defense" : 15,
+			"firstHPleft" : 15,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 5,
+			"minDamage" : 2,
+			"name" : "Lizard Warrior",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 9,
+			"amountBase" : 9,
+			"attack" : 10,
+			"defense" : 6,
+			"firstHPleft" : 15,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Wood Elf",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 5,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 9,
+			"amountBase" : 9,
+			"attack" : 10,
+			"defense" : 6,
+			"firstHPleft" : 15,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Grand Elf",
+			"speed" : 8,
+			"x" : 15,
+			"y" : 5
+		},
+		{
+			"amount" : 2,
+			"amountBase" : 2,
+			"attack" : 15,
+			"defense" : 18,
+			"firstHPleft" : 70,
+			"health" : 70,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 22,
+			"minDamage" : 18,
+			"name" : "Wyvern Monarch",
+			"speed" : 11,
+			"x" : 2,
+			"y" : 4
+		},
+		{
+			"amount" : 9,
+			"amountBase" : 9,
+			"attack" : 10,
+			"defense" : 6,
+			"firstHPleft" : 15,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 5,
+			"minDamage" : 3,
+			"name" : "Wood Elf",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 8
+		},
+		{
+			"amount" : 2,
+			"amountBase" : 2,
+			"attack" : 5,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 5
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 15,
+			"defense" : 18,
+			"firstHPleft" : 70,
+			"health" : 70,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 22,
+			"minDamage" : 18,
+			"name" : "Wyvern Monarch",
+			"speed" : 11,
+			"x" : 2,
+			"y" : 6
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 15,
+			"defense" : 18,
+			"firstHPleft" : 70,
+			"health" : 70,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 22,
+			"minDamage" : 18,
+			"name" : "Wyvern Monarch",
+			"speed" : 11,
+			"x" : 2,
+			"y" : 8
+		},
+		{
+			"amount" : 58,
+			"amountBase" : 58,
+			"attack" : 5,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 10
+		}
+	]
+}

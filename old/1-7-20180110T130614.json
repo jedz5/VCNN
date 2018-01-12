@@ -1,0 +1,346 @@
+{
+	"action" : {
+		"actionType" : 7,
+		"x" : 14,
+		"y" : 2
+	},
+	"activeStack" : {
+		"amount" : 12,
+		"amountBase" : 12,
+		"attack" : 6,
+		"defense" : 12,
+		"firstHPleft" : 15,
+		"health" : 15,
+		"isCanMove" : true,
+		"isCanShoot" : true,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : true,
+		"isWide" : false,
+		"maxDamage" : 5,
+		"minDamage" : 2,
+		"name" : "Lizard Warrior",
+		"speed" : 5,
+		"x" : 1,
+		"y" : 0
+	},
+	"hero" : {
+		"attack" : 0,
+		"casted" : false,
+		"defense" : 4,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 1,
+		"secSkills" : [
+			{
+				"id" : 23,
+				"level" : 1
+			},
+			{
+				"id" : 6,
+				"level" : 1
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 15,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 27,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 53,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 4,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 7
+		},
+		{
+			"type" : 0,
+			"x" : 12,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 6
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 6
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 12,
+			"amountBase" : 12,
+			"attack" : 6,
+			"defense" : 12,
+			"firstHPleft" : 15,
+			"health" : 15,
+			"isCanMove" : true,
+			"isCanShoot" : true,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 5,
+			"minDamage" : 2,
+			"name" : "Lizard Warrior",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 0
+		},
+		{
+			"amount" : 20,
+			"amountBase" : 20,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Centaur Captain",
+			"speed" : 9,
+			"x" : 14,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 4,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 0
+		},
+		{
+			"amount" : 19,
+			"amountBase" : 19,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Centaur Captain",
+			"speed" : 9,
+			"x" : 14,
+			"y" : 5
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 4,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 1
+		},
+		{
+			"amount" : 19,
+			"amountBase" : 19,
+			"attack" : 7,
+			"defense" : 4,
+			"firstHPleft" : 10,
+			"health" : 10,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Centaur Captain",
+			"speed" : 9,
+			"x" : 14,
+			"y" : 8
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 1,
+			"attack" : 4,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 1,
+			"y" : 1
+		},
+		{
+			"amount" : 4,
+			"amountBase" : 4,
+			"attack" : 14,
+			"defense" : 18,
+			"firstHPleft" : 70,
+			"health" : 70,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : true,
+			"maxDamage" : 22,
+			"minDamage" : 18,
+			"name" : "Wyvern Monarch",
+			"speed" : 11,
+			"x" : 2,
+			"y" : 8
+		},
+		{
+			"amount" : 60,
+			"amountBase" : 60,
+			"attack" : 4,
+			"defense" : 10,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 5,
+			"x" : 2,
+			"y" : 6
+		}
+	]
+}
