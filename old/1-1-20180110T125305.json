@@ -1,0 +1,295 @@
+{
+	"action" : {
+		"actionType" : 8
+	},
+	"activeStack" : {
+		"amount" : 22,
+		"amountBase" : 22,
+		"attack" : 3,
+		"defense" : 4,
+		"firstHPleft" : 3,
+		"health" : 3,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 2,
+		"minDamage" : 1,
+		"name" : "Pixie",
+		"speed" : 8,
+		"x" : 1,
+		"y" : 2
+	},
+	"hero" : {
+		"attack" : 0,
+		"casted" : true,
+		"defense" : 1,
+		"knowledge" : 3,
+		"mana" : 26,
+		"power" : 3,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 17,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 2
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 46,
+				"level" : 2
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 5
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 7,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 8
+		},
+		{
+			"type" : 0,
+			"x" : 13,
+			"y" : 9
+		},
+		{
+			"type" : 0,
+			"x" : 5,
+			"y" : 2
+		},
+		{
+			"type" : 0,
+			"x" : 6,
+			"y" : 2
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 22,
+			"amountBase" : 22,
+			"attack" : 3,
+			"defense" : 4,
+			"firstHPleft" : 3,
+			"health" : 3,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Pixie",
+			"speed" : 8,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 11,
+			"attack" : 4,
+			"defense" : 4,
+			"firstHPleft" : 2,
+			"health" : 4,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Familiar",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 0
+		},
+		{
+			"amount" : 3,
+			"amountBase" : 3,
+			"attack" : 10,
+			"defense" : 11,
+			"firstHPleft" : 25,
+			"health" : 25,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 8,
+			"minDamage" : 2,
+			"name" : "Air Elemental",
+			"speed" : 8,
+			"x" : 1,
+			"y" : 5
+		},
+		{
+			"amount" : 10,
+			"amountBase" : 10,
+			"attack" : 4,
+			"defense" : 4,
+			"firstHPleft" : 4,
+			"health" : 4,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Familiar",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 2
+		},
+		{
+			"amount" : 12,
+			"amountBase" : 12,
+			"attack" : 3,
+			"defense" : 6,
+			"firstHPleft" : 6,
+			"health" : 6,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 3,
+			"minDamage" : 2,
+			"name" : "Gnoll",
+			"speed" : 4,
+			"x" : 1,
+			"y" : 8
+		},
+		{
+			"amount" : 10,
+			"amountBase" : 10,
+			"attack" : 4,
+			"defense" : 4,
+			"firstHPleft" : 4,
+			"health" : 4,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Familiar",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 5
+		},
+		{
+			"amount" : 10,
+			"amountBase" : 10,
+			"attack" : 4,
+			"defense" : 4,
+			"firstHPleft" : 4,
+			"health" : 4,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Familiar",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 8
+		},
+		{
+			"amount" : 10,
+			"amountBase" : 10,
+			"attack" : 4,
+			"defense" : 4,
+			"firstHPleft" : 4,
+			"health" : 4,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Familiar",
+			"speed" : 7,
+			"x" : 15,
+			"y" : 10
+		}
+	]
+}
