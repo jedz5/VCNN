@@ -1,0 +1,223 @@
+{
+	"action" : {
+		"actionType" : 3
+	},
+	"activeStack" : {
+		"amount" : 47,
+		"amountBase" : 47,
+		"attack" : 10,
+		"defense" : 5,
+		"firstHPleft" : 5,
+		"health" : 5,
+		"isCanMove" : true,
+		"isCanShoot" : false,
+		"isHuman" : true,
+		"isMoved" : false,
+		"isRetaliate" : true,
+		"isWaited" : false,
+		"isWide" : false,
+		"maxDamage" : 2,
+		"minDamage" : 1,
+		"name" : "Hobgoblin",
+		"speed" : 7,
+		"x" : 8,
+		"y" : 9
+	},
+	"hero" : {
+		"attack" : 5,
+		"casted" : false,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 22,
+				"level" : 2
+			},
+			{
+				"id" : 16,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : true,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 2
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 43,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"obstacles" : [
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 4
+		},
+		{
+			"type" : 0,
+			"x" : 11,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 10,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 9,
+			"y" : 3
+		},
+		{
+			"type" : 0,
+			"x" : 8,
+			"y" : 3
+		}
+	],
+	"stacks" : [
+		{
+			"amount" : 48,
+			"amountBase" : 48,
+			"attack" : 10,
+			"defense" : 5,
+			"firstHPleft" : 5,
+			"health" : 5,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : true,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Hobgoblin",
+			"speed" : 7,
+			"x" : 1,
+			"y" : 2
+		},
+		{
+			"amount" : 1,
+			"amountBase" : 16,
+			"attack" : 4,
+			"defense" : 2,
+			"firstHPleft" : 3,
+			"health" : 5,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Goblin",
+			"speed" : 5,
+			"x" : 10,
+			"y" : 2
+		},
+		{
+			"amount" : 3,
+			"amountBase" : 3,
+			"attack" : 18,
+			"defense" : 13,
+			"firstHPleft" : 58,
+			"health" : 60,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : true,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : true,
+			"maxDamage" : 15,
+			"minDamage" : 11,
+			"name" : "Roc",
+			"speed" : 7,
+			"x" : 11,
+			"y" : 1
+		},
+		{
+			"amount" : 0,
+			"amountBase" : 16,
+			"attack" : 5,
+			"defense" : 3,
+			"firstHPleft" : 1,
+			"health" : 5,
+			"isCanMove" : false,
+			"isCanShoot" : false,
+			"isHuman" : false,
+			"isMoved" : false,
+			"isRetaliate" : false,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Hobgoblin",
+			"speed" : 7,
+			"x" : 8,
+			"y" : 8
+		},
+		{
+			"amount" : 47,
+			"amountBase" : 47,
+			"attack" : 10,
+			"defense" : 5,
+			"firstHPleft" : 5,
+			"health" : 5,
+			"isCanMove" : true,
+			"isCanShoot" : false,
+			"isHuman" : true,
+			"isMoved" : false,
+			"isRetaliate" : true,
+			"isWaited" : false,
+			"isWide" : false,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Hobgoblin",
+			"speed" : 7,
+			"x" : 8,
+			"y" : 9
+		}
+	]
+}

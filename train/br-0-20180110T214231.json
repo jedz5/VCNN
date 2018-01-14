@@ -1,0 +1,140 @@
+{
+	"hero" : {
+		"attack" : 5,
+		"defense" : 2,
+		"knowledge" : 1,
+		"mana" : 10,
+		"power" : 2,
+		"secSkills" : [
+			{
+				"id" : 7,
+				"level" : 1
+			},
+			{
+				"id" : 22,
+				"level" : 2
+			},
+			{
+				"id" : 16,
+				"level" : 2
+			}
+		],
+		"spells" : [
+			{
+				"canBeCasted" : false,
+				"cost" : 4,
+				"id" : 15,
+				"level" : 2
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 43,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : true,
+				"cost" : 5,
+				"id" : 46,
+				"level" : 0
+			},
+			{
+				"canBeCasted" : false,
+				"cost" : 6,
+				"id" : 54,
+				"level" : 0
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"aiValue" : 78,
+			"attack" : 10,
+			"baseAmount" : 52,
+			"defense" : 6,
+			"fightValue" : 65,
+			"health" : 5,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 4,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Hobgoblin",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"aiValue" : 50,
+			"attack" : 2,
+			"baseAmount" : 49,
+			"defense" : 3,
+			"fightValue" : 50,
+			"health" : 4,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 49,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Imp",
+			"slot" : 0,
+			"speed" : 5
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "Can Fly (ignores obstacles)",
+					"type" : 43
+				}
+			],
+			"aiValue" : 1027,
+			"attack" : 18,
+			"baseAmount" : 3,
+			"defense" : 13,
+			"fightValue" : 790,
+			"health" : 60,
+			"isHuman" : true,
+			"isWide" : true,
+			"killed" : 0,
+			"maxDamage" : 15,
+			"minDamage" : 11,
+			"name" : "Roc",
+			"slot" : 1,
+			"speed" : 7
+		},
+		{
+			"aiValue" : 50,
+			"attack" : 2,
+			"baseAmount" : 48,
+			"defense" : 3,
+			"fightValue" : 50,
+			"health" : 4,
+			"isHuman" : false,
+			"isWide" : false,
+			"killed" : 48,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Imp",
+			"slot" : 1,
+			"speed" : 5
+		},
+		{
+			"aiValue" : 78,
+			"attack" : 10,
+			"baseAmount" : 52,
+			"defense" : 5,
+			"fightValue" : 65,
+			"health" : 5,
+			"isHuman" : true,
+			"isWide" : false,
+			"killed" : 5,
+			"maxDamage" : 2,
+			"minDamage" : 1,
+			"name" : "Hobgoblin",
+			"slot" : 2,
+			"speed" : 7
+		}
+	],
+	"win" : true
+}
