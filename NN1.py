@@ -109,14 +109,14 @@ lossShoot = tf.abs((tf.reduce_sum(calsu * in_shoot, 1) - tf.reduce_sum(y_C * in_
 lossSpeed = tf.abs((tf.reduce_sum(calsu * in_speed, 1) - tf.reduce_sum(y_C * in_speed, 1)))
 lossHealth = tf.abs((tf.reduce_sum(calsu * in_health, 1) - tf.reduce_sum(y_C * in_health, 1)))
 lossM = tf.abs((cm - y_M))
-accuracyC = tf.reduce_mean((lossC))/100
+accuracyC = tf.reduce_mean((lossC))
 accuracyCN = tf.reduce_mean((lossCN))
 accuracyFly = tf.reduce_mean((lossFly))
 accuracyShoot = tf.reduce_mean((lossShoot))
 accuracySpeed = tf.reduce_mean((lossSpeed))
 accuracyHealth = tf.reduce_mean((lossHealth))
 accuracyM = tf.reduce_mean((lossM))
-cost = (accuracyC+accuracyCN+accuracyFly+accuracyShoot+accuracySpeed+accuracyHealth+accuracyM)/7
+cost = (accuracyCN+accuracyFly+accuracyShoot+accuracySpeed+accuracyHealth+accuracyM)/6
 current_epoch = tf.Variable(0)
 learning_rate = tf.train.exponential_decay(0.05,
                                            current_epoch,
@@ -203,6 +203,7 @@ def vcnn(train,path,saveModelPath):
                 print((cas[n]), (mc[n]))
                 print(np.floor(b_value[n]))
             sess.close()
+            return
 if __name__ == '__main__':
     vcnn(True,'./train/', './result/model.ckpt')
     vcnn(False, './train/', './result/model.ckpt')

@@ -20,8 +20,13 @@ def listen():
             sentenceStr = sentence.decode('utf-8')
             root = json.loads(sentenceStr)
             train = bool(root['train'])
-            print(train)
-            mynn.vcnn(train, './train/', './result/model.ckpt')
+            if not train:
+                fo = open("./test/1.json","w")
+                fo.write(sentenceStr)
+                fo.close()
+                mynn.vcnn(train, './test/', './result/model.ckpt')
+            else:
+                mynn.vcnn(train, './train/', './result/model.ckpt')
             tosend = json.dumps(root).encode("utf-8");
             connectionSocket.send(tosend)
             connectionSocket.close()

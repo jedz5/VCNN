@@ -33,12 +33,12 @@ def shootDamage(hero):
     if "secSkills" in hero:
         for ss in hero['secSkills']:
             if ss['id'] == 1:
-                return 1+ ss['level']*0.15
+                return 1+ ss['level']*0.1
     return 1
 def meleeDamage(hero):
     for ss in hero['secSkills']:
         if ss['id'] == 22:
-            return 1+ ss['level']*0.15
+            return 1+ ss['level']*0.6
     return 1
 def load(inFile):
     root = None
