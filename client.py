@@ -5,7 +5,7 @@ if __name__ == '__main__':
     serverPort = 50007
     clientSocket = socket(AF_INET, SOCK_STREAM)
     clientSocket.connect((serverName, serverPort))
-    sentence =  {'train': False}
+    sentence =  {'train': True}
     sentence = json.dumps(sentence)
     clientSocket.send(sentence.encode())
     modifiedSentence = clientSocket.recv(1024)

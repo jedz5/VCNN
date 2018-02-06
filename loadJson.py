@@ -139,51 +139,44 @@ def loadData(path):
     borigPlane = np.asarray(origPlane)
     baddPlane = np.asarray(addPlane)
     return bx,bxm,byc,bym,b_amount,b_value,borigPlane,baddPlane
+def trans(fromF,toF):
+    toRoot = {}
+    with open(fromF) as jsonFile:
+        root = json.load(jsonFile)
+        if "terType" in root:
+            toRoot["terType"] = root["terType"]
+        if "bfieldType" in root:
+            toRoot["bfieldType"] = root["bfieldType"]
+        toRoot["mana"] = root["hero"]["mana"]
+        toRoot["sides"] = []
+        me = {}
+        me["side"] = 0
+        if "heroid" in root["hero"]:
+            me["heroid"] = root["hero"]["heroid"]
+        else:
+            me["heroid"] = 99
+        me["heroPrimSkills"] = [root["hero"]["attack"], root["hero"]["defense"], root["hero"]["knowledge"], root["hero"]["power"]]
+        me["heroSecSkills"] = []
+        me["spells"] = []
+        me["army"] = []
+        for seck in root["hero"]["secSkills"] :
+            me["heroSecSkills"].append(seck["id"])
+        for stacks in root["stacks"] :
+            if stacks["isHuman"]:
+                me["army"].append([stacks["id"],stacks["baseAmount"]])
+        if 'spells' in root['hero']:
+            for sp in root['hero']['spells']:
+                me["spells"].append(sp["id"])
+        toRoot["sides"].append(me)
 
-# def quick(jsonData):
-#     print(jsonData)
-#     matrix1 = tf.constant([[3., 3.]])
-#     matrix2 = tf.constant([[2.], [2.]])
-#     product = tf.matmul(matrix1, matrix2)
-#     sess = tf.Session()
-#     result = sess.run(product)
-#     print(result)
-#     sess.close()
-#     return jsonData
+        you = {}
+        you["side"] = 0
+        you["army"] = []
+        for stacks in root["stacks"]:
+            if not stacks["isHuman"]:
+                you["army"].append([stacks["id"], stacks["baseAmount"]])
+        toRoot["sides"].append(you)
+        with open(toF,'w') as outF:
+            json.dump(toRoot,outF)
 if __name__ == "__main__":
-    bx, bxm, byc, bym, b_amount,b_value,origPlane,addPlane = loadData("./train/")
-    me = origPlane[:,0,:,0]
-    meV = np.floor(origPlane[:,0,:,1])
-    meSpeed = np.floor(origPlane[:, 0, :, 4])
-    meName = addPlane[:,0,:,0]
-    you = origPlane[:, 1, :, 0]
-    youV = np.floor(origPlane[:, 1, :, 1])
-    youSpeed = np.floor(origPlane[:, 1, :, 4])
-    youName = addPlane[:,1,:,0]
-    mePower = np.sum((me * meV),1)
-    threat1 = np.sum(you * youV,1)
-    threat = threat1 / mePower
-    casul = np.sum((byc * meV),1)
-    casulPercent = casul/mePower
-    loss = (casulPercent+0.0001) / threat
-    index = np.argsort(loss)
-    for i in (index):
-        print("plane: ",i,"threat ",threat[i],'calsu ',casul[i],'casulPercent',casulPercent[i],bx[i][-6:],'hero,')
-        print("Amount: ",me[i],meName[i])
-        print("killed: ",byc[i],bym[i])
-        print("speed:  ",meSpeed[i])
-        print("value： ",meV[i])
-        print("ukilled:",you[i],youName[i])
-        print("uspeed: ", youSpeed[i])
-        print("uvalue：",youV[i])
-        print()
-    print()
-
-
-# matrix1 = tf.constant([[3., 3.]])
-    # matrix2 = tf.constant([[2.], [2.]])
-    # product = tf.matmul(matrix1, matrix2)
-    # sess = tf.Session()
-    # result = sess.run(product)
-    # print result
-    # sess.close()
+    trans("./test/br-0-20180115T225212.json","./test/br-0-20180115T225212-trans.json")

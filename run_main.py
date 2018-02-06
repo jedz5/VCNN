@@ -25,11 +25,15 @@ def listen():
                 fo.write(sentenceStr)
                 fo.close()
                 mynn.vcnn(train, './test/', './result/model.ckpt')
+                tosend = json.dumps(root).encode("utf-8");
+                connectionSocket.send(tosend)
+                connectionSocket.close()
             else:
+                tosend = json.dumps(root).encode("utf-8");
+                connectionSocket.send(tosend)
+                connectionSocket.close()
                 mynn.vcnn(train, './train/', './result/model.ckpt')
-            tosend = json.dumps(root).encode("utf-8");
-            connectionSocket.send(tosend)
-            connectionSocket.close()
+
         except:
             connectionSocket.close()
             traceback.print_exc()
