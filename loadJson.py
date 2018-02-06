@@ -160,7 +160,7 @@ def trans(fromF,toF):
         me["spells"] = []
         me["army"] = []
         for seck in root["hero"]["secSkills"] :
-            me["heroSecSkills"].append(seck["id"])
+            me["heroSecSkills"].append([seck["id"],seck["level"]])
         for stacks in root["stacks"] :
             if stacks["isHuman"]:
                 me["army"].append([stacks["id"],stacks["baseAmount"]])
@@ -170,7 +170,7 @@ def trans(fromF,toF):
         toRoot["sides"].append(me)
 
         you = {}
-        you["side"] = 0
+        you["side"] = 1
         you["army"] = []
         for stacks in root["stacks"]:
             if not stacks["isHuman"]:
@@ -179,4 +179,4 @@ def trans(fromF,toF):
         with open(toF,'w') as outF:
             json.dump(toRoot,outF)
 if __name__ == "__main__":
-    trans("./test/br-0-20180115T225212.json","./test/br-0-20180115T225212-trans.json")
+    trans("./train/br-0-20180206T221729.json","./train/br-0-20180206T221729-trans.json")

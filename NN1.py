@@ -42,6 +42,7 @@ in_fly = tf.placeholder(tf.float32, [None, stacks])
 
 keep_prob = tf.placeholder(tf.float32) #dropout (keep probability)
 is_train = tf.placeholder(tf.bool)
+is_not_test = tf.placeholder(tf.bool)
 fcn1 = 20
 #fcn2 = 160
 #fcn3 = 160
@@ -100,8 +101,11 @@ def conv_net(x,dropout):
     return casul,mana
 
 predC,predM = conv_net(x,keep_prob)
-calsu = utils.smart_cond(is_train,lambda :(predC * in_amout),lambda:(tf.floor(predC)*in_amout))#tf.round(predC * in_amout)
-cm = utils.smart_cond(is_train,lambda :(predM * in_M),lambda:(tf.floor(predM * in_M)))
+#calsu = predC * in_amout *1000
+#cm = predM * in_M
+y_C = utils.smart_cond(is_not_test,lambda : y_C * 1000,lambda : y_C)
+calsu = utils.smart_cond(is_not_test,lambda :(predC * in_amout * 1000),lambda:(tf.floor(predC*in_amout)))#tf.round(predC * in_amout)
+cm = utils.smart_cond(is_not_test,lambda :(predM * in_M ),lambda:(tf.floor(predM * in_M)))
 lossC = tf.abs((tf.reduce_sum(calsu *in_value,1) - tf.reduce_sum(y_C*in_value,1)))#每个slot比例*总数取整 再*aiValue
 lossCN = tf.abs(tf.reduce_sum(calsu,1) - tf.reduce_sum(y_C, 1))
 lossFly = tf.abs((tf.reduce_sum(calsu *in_fly,1) - tf.reduce_sum(y_C*in_fly,1)))
@@ -154,7 +158,7 @@ def vcnn(train,path,saveModelPath):
                                                  in_shoot:b_shoot,
                                                  in_speed:b_speed,
                                                  in_health:b_health,
-                                               keep_prob: dropout,is_train:True})
+                                               keep_prob: dropout,is_train:True,is_not_test:True})
                 if step % display_step == 0:
                     # Calculate batch loss and accuracy
                     accC,accCN,accM = sess.run([accuracyC,accuracyCN, accuracyM], feed_dict={x: bx,
@@ -167,7 +171,7 @@ def vcnn(train,path,saveModelPath):
                                                  in_shoot:b_shoot,
                                                  in_speed:b_speed,
                                                  in_health:b_health,
-                                               keep_prob: 1,is_train:False})
+                                               keep_prob: 1,is_train:False,is_not_test:True})
                     if accCN < min_err:
                         min_err = accCN
                         saver.save(sess, saveModelPath,global_step=step)
@@ -194,7 +198,7 @@ def vcnn(train,path,saveModelPath):
                                                  in_shoot:b_shoot,
                                                  in_speed:b_speed,
                                                  in_health:b_health,
-                                                keep_prob: 1, is_train: False})
+                                                keep_prob: 1, is_train: False,is_not_test: True})
 
             index = np.argsort(lsC)
             for n in (index):
@@ -205,6 +209,6 @@ def vcnn(train,path,saveModelPath):
             sess.close()
             return
 if __name__ == '__main__':
-    vcnn(True,'./train/', './result/model.ckpt')
+    #vcnn(True,'./train/', './result/model.ckpt')
     vcnn(False, './train/', './result/model.ckpt')
 
