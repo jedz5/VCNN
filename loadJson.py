@@ -179,4 +179,4 @@ def trans(fromF,toF):
         with open(toF,'w') as outF:
             json.dump(toRoot,outF)
 if __name__ == "__main__":
-    trans("./train/br-0-20180206T221729.json","./train/br-0-20180206T221729-trans.json")
+    trans("./train/br-0-20180207T122334.json","./train/br-0-20180207T122334-trans.json")

@@ -17,7 +17,7 @@ from tensorflow.python.ops import control_flow_ops
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
 #learning_rate = 0.02
-training_iters = 5000
+training_iters = 10000
 #batch_size = 128
 display_step = 50
 
@@ -101,13 +101,15 @@ def conv_net(x,dropout):
     return casul,mana
 
 predC,predM = conv_net(x,keep_prob)
-#calsu = predC * in_amout *1000
+#calsu = predC * in_amout
 #cm = predM * in_M
-y_C = utils.smart_cond(is_not_test,lambda : y_C * 1000,lambda : y_C)
-calsu = utils.smart_cond(is_not_test,lambda :(predC * in_amout * 1000),lambda:(tf.floor(predC*in_amout)))#tf.round(predC * in_amout)
-cm = utils.smart_cond(is_not_test,lambda :(predM * in_M ),lambda:(tf.floor(predM * in_M)))
+N1 = 1
+y_C = utils.smart_cond(is_not_test,lambda : y_C * N1,lambda : y_C)
+y_M = utils.smart_cond(is_not_test,lambda : y_M * N1,lambda : y_M)
+calsu = utils.smart_cond(is_not_test,lambda :(predC * in_amout * N1),lambda:(tf.floor(predC*in_amout)))#tf.round(predC * in_amout)
+cm = utils.smart_cond(is_not_test,lambda :(predM * in_M * N1),lambda:(tf.floor(predM * in_M)))
 lossC = tf.abs((tf.reduce_sum(calsu *in_value,1) - tf.reduce_sum(y_C*in_value,1)))#每个slot比例*总数取整 再*aiValue
-lossCN = tf.abs(tf.reduce_sum(calsu,1) - tf.reduce_sum(y_C, 1))
+lossCN = tf.abs(tf.reduce_sum(calsu ,1) - tf.reduce_sum(y_C, 1))
 lossFly = tf.abs((tf.reduce_sum(calsu *in_fly,1) - tf.reduce_sum(y_C*in_fly,1)))
 lossShoot = tf.abs((tf.reduce_sum(calsu * in_shoot, 1) - tf.reduce_sum(y_C * in_shoot, 1)))
 lossSpeed = tf.abs((tf.reduce_sum(calsu * in_speed, 1) - tf.reduce_sum(y_C * in_speed, 1)))
@@ -188,7 +190,7 @@ def vcnn(train,path,saveModelPath):
         with tf.Session() as sess:
             sess.run(init)
             saver.restore(sess, saveModelPath)
-            cas, mc, lsC = sess.run([calsu, cm, lossC], feed_dict={x: bx,
+            yc,cas, mc, lsC = sess.run([y_C,calsu, cm, lossC], feed_dict={x: bx,
                                                  y_C: byc,
                                                  y_M:bym,
                                                  in_amout:b_amount,
@@ -198,17 +200,17 @@ def vcnn(train,path,saveModelPath):
                                                  in_shoot:b_shoot,
                                                  in_speed:b_speed,
                                                  in_health:b_health,
-                                                keep_prob: 1, is_train: False,is_not_test: True})
+                                                keep_prob: 1, is_train: False,is_not_test: False})
 
-            index = np.argsort(lsC)
-            for n in (index):
+            #index = np.argsort(lsC)
+            for n in range(lsC.size):
                 print("iter: ", n, "lossC: ", lsC[n])
-                print(byc[n], bym[n])
+                print(yc[n], bym[n])
                 print((cas[n]), (mc[n]))
                 print(np.floor(b_value[n]))
             sess.close()
             return
 if __name__ == '__main__':
-    #vcnn(True,'./train/', './result/model.ckpt')
+    vcnn(True,'./train/', './result/model.ckpt')
     vcnn(False, './train/', './result/model.ckpt')
 

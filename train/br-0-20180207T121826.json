@@ -1,0 +1,73 @@
+{
+	"bfieldType" : 1,
+	"hero" : {
+		"attack" : 5,
+		"defense" : 5,
+		"heroid" : 99,
+		"knowledge" : 3,
+		"mana" : 30,
+		"power" : 3,
+		"secSkills" : [
+			{
+				"id" : 22,
+				"level" : 1
+			},
+			{
+				"id" : 3,
+				"level" : 1
+			}
+		]
+	},
+	"manaCost" : 0,
+	"quickBattle" : false,
+	"stacks" : [
+		{
+			"ability" : [
+				{
+					"desc" : "+5% damage per hex travelled",
+					"type" : 49
+				}
+			],
+			"aiValue" : 1946,
+			"attack" : 20,
+			"baseAmount" : 40,
+			"defense" : 20,
+			"fightValue" : 1668,
+			"health" : 100,
+			"id" : 10,
+			"isHuman" : true,
+			"isWide" : true,
+			"killed" : 40,
+			"maxDamage" : 25,
+			"minDamage" : 15,
+			"name" : "Cavalier",
+			"slot" : 0,
+			"speed" : 7
+		},
+		{
+			"ability" : [
+				{
+					"desc" : "+5% damage per hex travelled",
+					"type" : 49
+				}
+			],
+			"aiValue" : 2100,
+			"attack" : 16,
+			"baseAmount" : 41,
+			"defense" : 16,
+			"fightValue" : 1800,
+			"health" : 100,
+			"id" : 11,
+			"isHuman" : false,
+			"isWide" : true,
+			"killed" : 25,
+			"maxDamage" : 25,
+			"minDamage" : 20,
+			"name" : "Champion",
+			"slot" : 0,
+			"speed" : 9
+		}
+	],
+	"terType" : 1,
+	"win" : false
+}
