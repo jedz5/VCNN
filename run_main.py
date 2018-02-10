@@ -21,11 +21,14 @@ def listen():
             root = json.loads(sentenceStr)
             train = bool(root['train'])
             if not train:
-                fo = open("./test/1.json","w")
-                fo.write(sentenceStr)
-                fo.close()
-                mynn.vcnn(train, './test/', './result/model.ckpt')
-                tosend = json.dumps(root).encode("utf-8");
+                #fo = open("./test/1.json","w")
+                #fo.write(sentenceStr)
+                #fo.close()
+                cas,mc = mynn.vcnn(train, root, './result/model.ckpt')
+                toRet = {}
+                toRet["cas"] = cas.tolist()
+                toRet["mc"] = float(mc)
+                tosend = json.dumps(toRet).encode("utf-8");
                 connectionSocket.send(tosend)
                 connectionSocket.close()
             else:

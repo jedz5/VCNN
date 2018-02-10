@@ -12,6 +12,7 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import loadJson as lj
+import json
 from tensorflow.python.ops import control_flow_ops
 # from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
@@ -31,7 +32,7 @@ epsino = 60
 # tf Graph input
 x = tf.placeholder(tf.float32, [None, n_all])
 in_M = tf.placeholder(tf.float32, [None,1])
-y_C = tf.placeholder(tf.float32, [None, stacks])
+y_C = tf.placeholder(tf.float32, [None,stacks])
 y_M = tf.placeholder(tf.float32, [None,1])
 in_amout = tf.placeholder(tf.float32, [None, stacks])
 in_value = tf.placeholder(tf.float32, [None, stacks])
@@ -133,16 +134,19 @@ with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
 
 def vcnn(train,path,saveModelPath):
 
-    bx, bxm, byc, bym, b_amount, b_value, origPlane,add = lj.loadData(path)
-    b_fly = origPlane[:, 0, :, 2]
-    b_shoot = origPlane[:, 0, :, 3]
-    b_speed = origPlane[:, 0, :, 4]
-    b_health = origPlane[:, 0, :, 5]
+
     # Construct model
     init = tf.global_variables_initializer()
     saver = tf.train.Saver()
     # Launch the graph
     if train:
+        bx, bxm, byc, bym, origPlane, add = lj.loadTrainData(path)
+        b_amount = origPlane[:, 0, :, 0]
+        b_value = origPlane[:, 0, :, 1]
+        b_fly = origPlane[:, 0, :, 2]
+        b_shoot = origPlane[:, 0, :, 3]
+        b_speed = origPlane[:, 0, :, 4]
+        b_health = origPlane[:, 0, :, 5]
         with tf.Session() as sess:
             sess.run(init)
             step = 0
@@ -187,12 +191,17 @@ def vcnn(train,path,saveModelPath):
             saver.save(sess, saveModelPath)
             sess.close()
     else:
+        bx, bxm, origPlane= lj.loadTestData(path)
+        b_amount = origPlane[:, 0, :, 0]
+        b_value = origPlane[:, 0, :, 1]
+        b_fly = origPlane[:, 0, :, 2]
+        b_shoot = origPlane[:, 0, :, 3]
+        b_speed = origPlane[:, 0, :, 4]
+        b_health = origPlane[:, 0, :, 5]
         with tf.Session() as sess:
             sess.run(init)
             saver.restore(sess, saveModelPath)
-            yc,cas, mc, lsC = sess.run([y_C,calsu, cm, lossC], feed_dict={x: bx,
-                                                 y_C: byc,
-                                                 y_M:bym,
+            cas, mc = sess.run([calsu, cm], feed_dict={x: bx,
                                                  in_amout:b_amount,
                                                  in_value:b_value,
                                                  in_M:bxm,
@@ -203,14 +212,14 @@ def vcnn(train,path,saveModelPath):
                                                 keep_prob: 1, is_train: False,is_not_test: False})
 
             #index = np.argsort(lsC)
-            for n in range(lsC.size):
-                print("iter: ", n, "lossC: ", lsC[n])
-                print(yc[n], bym[n])
-                print((cas[n]), (mc[n]))
-                print(np.floor(b_value[n]))
+            print("test:")
+            print((cas), (mc))
+            print(np.floor(b_value))
             sess.close()
-            return
+            return cas[0],mc[0][0]
 if __name__ == '__main__':
     vcnn(True,'./train/', './result/model.ckpt')
-    vcnn(False, './train/', './result/model.ckpt')
+    with open("./test/1.json") as inFile:
+        root = json.load(inFile)
+        vcnn(False, root, './result/model.ckpt')
 
