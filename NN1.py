@@ -13,8 +13,6 @@ import tensorflow as tf
 import numpy as np
 import loadJson as lj
 import json
-from tensorflow.python.ops import control_flow_ops
-# from tensorflow.contrib.layers import batch_norm
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters
 #learning_rate = 0.02
@@ -104,11 +102,8 @@ def conv_net(x,dropout):
 predC,predM = conv_net(x,keep_prob)
 #calsu = predC * in_amout
 #cm = predM * in_M
-N1 = 1
-y_C = utils.smart_cond(is_not_test,lambda : y_C * N1,lambda : y_C)
-y_M = utils.smart_cond(is_not_test,lambda : y_M * N1,lambda : y_M)
-calsu = utils.smart_cond(is_not_test,lambda :(predC * in_amout * N1),lambda:(tf.floor(predC*in_amout)))#tf.round(predC * in_amout)
-cm = utils.smart_cond(is_not_test,lambda :(predM * in_M * N1),lambda:(tf.floor(predM * in_M)))
+calsu = utils.smart_cond(is_not_test,lambda :(predC * in_amout),lambda:(tf.floor(predC*in_amout)))#tf.round(predC * in_amout)
+cm = utils.smart_cond(is_not_test,lambda :(predM * in_M),lambda:(tf.floor(predM * in_M)))
 lossC = tf.abs((tf.reduce_sum(calsu *in_value,1) - tf.reduce_sum(y_C*in_value,1)))#每个slot比例*总数取整 再*aiValue
 lossCN = tf.abs(tf.reduce_sum(calsu ,1) - tf.reduce_sum(y_C, 1))
 lossFly = tf.abs((tf.reduce_sum(calsu *in_fly,1) - tf.reduce_sum(y_C*in_fly,1)))
