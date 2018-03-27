@@ -21,6 +21,7 @@ class BStack(object):
         self.id = 0
         self.shots = 10
         #辅助参数
+        self.isDenfenced = False
         self.name = 'unKnown'
         self.x = 0
         self.y = 0
@@ -49,10 +50,16 @@ class BStack(object):
         return killed
     def attack(self,opposite,retaliate):
         killed = self.computeCasualty(opposite)
-        return
+        if(opposite.amount == 0):
+            print("{} perished".format(opposite.name))
+        else:
+            opposite.attacked(self,opposite,retaliate)
     def attacked(self,attacker,retaliate):
-        return
+        if(not retaliate):
+            if(self.isRetaliate):
+                self.attack(attacker,True)
     def canShoot(self,opposite):
+
         return
     def shoot(self,opposite):
         return
@@ -62,13 +69,15 @@ class BStack(object):
         self.isWaited = True
     def defend(self):
         self.defense += 2
+        self.isDenfenced = True
         self.isMoved = True
     def newRound(self):
-        if self.isMoved:
+        if self.isDenfenced:
             self.defense -= 2
         self.isMoved = False
         self.isRetaliate = True
         self.isWaited = False
+        self.isDenfenced = False
         return
 
 class BObstacle(object):
