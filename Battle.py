@@ -32,10 +32,15 @@ class BStack(object):
         self.inBattle = Battle()
 
     def availableDists(self):
-
-        dists = []
-        if(self.isFly):
-            for adj in self.getNeibours():
+        bf = [[-1000 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
+        travellers = []
+        bf[self.y][self.x] = self.speed
+        travellers.append(self)
+        if(not self.isFly):
+            while(len(travellers) > 0):
+                current = travellers[-1]
+                for adj in current:
+                    if(battle.bField[adj.y][adj.x] == 0 and bf[adj.y][adj.x] )
 
     def computeCasualty(self,opposite,shoot=False,half=True):
         if(self.attack >= opposite.attack):
@@ -77,14 +82,16 @@ class BStack(object):
             if(self.inBattle[xy.y][xy.x] != 0 and self.inBattle[xy.y][xy.x].side != self.side):
                 return False
         return True
-    def getNeibours(self):
+    def getNeibours(self,src = 0):
         adj = []
-        self.checkAndPush(self.x - 1, self.y, adj)
-        self.checkAndPush(self.x + 1, self.y, adj)
-        self.checkAndPush(self.x - 1, self.y - 1, adj)
-        self.checkAndPush(self.x, self.y - 1, adj)
-        self.checkAndPush(self.x - 1, self.y + 1, adj)
-        self.checkAndPush(self.x, self.y + 1, adj)
+        if(src == 0):
+            src = self
+        self.checkAndPush(src.x - 1, src.y, adj)
+        self.checkAndPush(src.x + 1, src.y, adj)
+        self.checkAndPush(src.x - 1, src.y - 1, adj)
+        self.checkAndPush(src.x, src.y - 1, adj)
+        self.checkAndPush(src.x - 1, src.y + 1, adj)
+        self.checkAndPush(src.x, src.y + 1, adj)
         return adj
     def checkAndPush(self,x,y,adj):
         if(x>0 and x<Battle.bFieldWidth - 1 and y >= 0 and y < Battle.bFieldHeight):
@@ -146,7 +153,7 @@ class Battle(object):
     bFieldHeight = 11
     bPenaltyDistance = 10
     def __init__(self,player1,player2):
-        self.bField = np.array((17,11),dtype=object)
+        self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stackQueue = []
         self.players = [player1,player2]
         player1.setBattle(self)
