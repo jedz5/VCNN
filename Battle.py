@@ -10,7 +10,7 @@ class BStack(object):
         self.firstHPLeft = 0
         self.health = 0
         self.isMoved = False
-        self.isHuman = True
+        self.side = 0
         self.isRetaliate = True
         self.isWaited = False
         self.maxDamage = 0
@@ -29,7 +29,15 @@ class BStack(object):
         self.isFly = False
         self.isShooter = False
         self.amountBase = 0
-    def computeCasualty(self,opposite):
+        self.inBattle = Battle()
+
+    def availableDists(self):
+
+        dists = []
+        if(self.isFly):
+            for adj in self.getNeibours():
+
+    def computeCasualty(self,opposite,shoot=False,half=True):
         if(self.attack >= opposite.attack):
             damageMin = self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount
             damageMax = self.maxDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount
@@ -37,19 +45,23 @@ class BStack(object):
             damageMin = self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount
             damageMax = self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount
         damage = random.randint(damageMin,damageMax)
+        if(shoot and half):
+            damage /= 2
         hpInAll = opposite.health*(opposite.amount-1) + opposite.firstHPLeft
         if(damage >= hpInAll):
             killed = opposite.amount
-            opposite.amount = 0
+            firstHPLeft = 0
         else:
             rest = int((hpInAll - damage)/opposite.health)+1
-            opposite.firstHPLeft = (hpInAll - damage)%opposite.health
+            firstHPLeft = (hpInAll - damage)%opposite.health
             killed = opposite.amount - rest
-            opposite.amount = rest
-        print("killed {} {}".format(killed,opposite.name))
-        return killed
+        print("killed {} {},firstHPLeft {}".format(killed,opposite.name,firstHPLeft))
+        return killed,firstHPLeft
     def attack(self,opposite,retaliate):
-        killed = self.computeCasualty(opposite)
+        killed,firstHPLeft = self.computeCasualty(opposite)
+        opposite.amount -= killed
+        opposite.firstHPLeft = firstHPLeft
+        self.isMoved = True
         if(opposite.amount == 0):
             print("{} perished".format(opposite.name))
         else:
@@ -58,10 +70,46 @@ class BStack(object):
         if(not retaliate):
             if(self.isRetaliate):
                 self.attack(attacker,True)
+                self.isRetaliate = True
     def canShoot(self,opposite):
-
-        return
+        adj = self.getNeibours()
+        for xy in adj:
+            if(self.inBattle[xy.y][xy.x] != 0 and self.inBattle[xy.y][xy.x].side != self.side):
+                return False
+        return True
+    def getNeibours(self):
+        adj = []
+        self.checkAndPush(self.x - 1, self.y, adj)
+        self.checkAndPush(self.x + 1, self.y, adj)
+        self.checkAndPush(self.x - 1, self.y - 1, adj)
+        self.checkAndPush(self.x, self.y - 1, adj)
+        self.checkAndPush(self.x - 1, self.y + 1, adj)
+        self.checkAndPush(self.x, self.y + 1, adj)
+        return adj
+    def checkAndPush(self,x,y,adj):
+        if(x>0 and x<Battle.bFieldWidth - 1 and y >= 0 and y < Battle.bFieldHeight):
+            adj.append((x,y))
+    def isHalf(self,dist):
+        if(self.getDistance(dist) <= Battle.bPenaltyDistance):
+            return False
+        return True
+    def getDistance(self,dist):
+        x1,y1 = self.x,self.y
+        x2,y2 = dist.x,dist.y
+        x1 = int(x1+y1*0.5)
+        x2 = int(x2+y2*0.5)
+        xDst = x2 - x1
+        yDst = y2 - y1
+        if((xDst >= 0 and yDst >= 0) or (xDst < 0 and yDst < 0)):
+            return max(abs(xDst),abs(yDst))
+        return abs(xDst) + abs(yDst)
     def shoot(self,opposite):
+        killed,firstHPLeft = self.computeCasualty(opposite,True,self.isHalf(opposite))
+        opposite.amount -= killed
+        opposite.firstHPLeft = firstHPLeft
+        if (opposite.amount == 0):
+            print("{} perished".format(opposite.name))
+        self.isMoved = True
         return
     def beShoot(self,attacker):
         return
@@ -94,6 +142,9 @@ class actionType(Enum):
     spell = 4
 
 class Battle(object):
+    bFieldWidth = 17
+    bFieldHeight = 11
+    bPenaltyDistance = 10
     def __init__(self,player1,player2):
         self.bField = np.array((17,11),dtype=object)
         self.stackQueue = []
@@ -101,10 +152,9 @@ class Battle(object):
         player1.setBattle(self)
         player2.setBattle(self)
         self.curStack = BStack()
+
     def canReach(self,bFrom,bTo):
         return True
-    def nextTo(self,bFrom,bTo):
-        return
     def move(self,bFrom,bTo):
         if(self.bField[bFrom.x][bFrom.y] != 0 and self.bField[bFrom.x][bFrom.y].id == bFrom.id):
             if(self.canReach(bFrom,bTo)):
