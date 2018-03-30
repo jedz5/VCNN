@@ -45,6 +45,5 @@ import numpy as np
 bfield = [[0 for col in range(5)] for row in range(6)]
 bfield[3][1] = "asdfsadfs"
 bfield[1][1] = "asdfsadfs"
-
 dis = Dijkstra(G, v0=1)
 print(dis.values())

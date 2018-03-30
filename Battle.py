@@ -42,10 +42,9 @@ class BStack(object):
         self.amountBase = 0
         self.inBattle = Battle()
 
-    def availableDists(self):
-        bf = [[-1000 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
+    def acssessableAndAttackable(self):
+        bf = [[-9 for col in range(self.inBattle.bFieldWidth)] for row in range(self.inBattle.bFieldHeight)]
         travellers = []
-        attackables = []
         bf[self.y][self.x] = self.speed
         travellers.append(self)
         if(not self.isFly):
@@ -54,16 +53,37 @@ class BStack(object):
                 speedLeft = bf[current.y][current.x] - 1
                 for adj in current:
                     if(bf[adj.y][adj.x] < speedLeft):
-                        curBattleHex = battle.bField[adj.y][adj.x]
+                        curBattleHex = self.inBattle.bField[adj.y][adj.x]
                         if(curBattleHex == 0):
                             bf[adj.y][adj.x] = speedLeft
                             if (speedLeft > 0):
                                 travellers.append(adj)
-                        elif(curBattleHex.hexType != hexType.obstacle and curBattleHex.side != self.side):
-                            if (speedLeft > -1): #coast
-                                attackables.append(curBattleHex)
+        else: #fly
+            for ii in bf:
+                for jj in ii:
+                    d = self.getDistance(jj)
+                    if(d <= self.speed):
+                        bf[jj.y][jj.x] = self.speed - d
 
-
+        for ii in bf: #obstacle,enemy and attackable,mine
+            for jj in ii:
+                curBattleHex = self.inBattle.bField[jj.y][jj.x]
+                if(curBattleHex == 0): #  empty
+                    continue
+                elif (curBattleHex.hexType == hexType.obstacle):
+                    bf[curBattleHex.y][curBattleHex.x] = -8  # obstacle
+                elif (curBattleHex.side == self.side):
+                    bf[adj.y][adj.x] = -4  # mine
+                else:
+                    if (self.canShoot()):
+                        bf[curBattleHex.y][curBattleHex.x] = -1  # enemy and attackbale
+                    else:
+                        bf[curBattleHex.y][curBattleHex.x] = -2  # enemy
+                        for neib in self.getNeibours(curBattleHex):
+                            if (bf[neib.y][neib.x] >= 0):
+                                bf[curBattleHex.y][curBattleHex.x] = -1  # attackbale
+                                break
+        return bf
     def computeCasualty(self,opposite,shoot=False,half=True):
         if(self.attack >= opposite.attack):
             damageMin = self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount
@@ -72,8 +92,9 @@ class BStack(object):
             damageMin = self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount
             damageMax = self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount
         damage = random.randint(damageMin,damageMax)
-        if(shoot and half):
-            damage /= 2
+        if(self.isShooter):
+            if(not shoot or half ):
+                damage /= 2
         hpInAll = opposite.health*(opposite.amount-1) + opposite.firstHPLeft
         if(damage >= hpInAll):
             killed = opposite.amount
@@ -98,9 +119,11 @@ class BStack(object):
             if(self.isRetaliate):
                 self.attack(attacker,True)
                 self.isRetaliate = True
-    def canShoot(self,opposite):
-        adj = self.getNeibours()
-        for xy in adj:
+    def canShoot(self,opposite = 0):
+        if(self.shots <= 0):
+            return False
+        adjs = self.getNeibours()
+        for xy in adjs:
             if(self.inBattle[xy.y][xy.x] != 0 and self.inBattle[xy.y][xy.x].side != self.side):
                 return False
         return True
@@ -117,7 +140,7 @@ class BStack(object):
         return adj
     def checkAndPush(self,x,y,adj):
         if(x>0 and x<Battle.bFieldWidth - 1 and y >= 0 and y < Battle.bFieldHeight):
-            adj.append((x,y))
+            adj.append({'x':x,'y':y})
     def isHalf(self,dist):
         if(self.getDistance(dist) <= Battle.bPenaltyDistance):
             return False
@@ -139,6 +162,7 @@ class BStack(object):
         if (opposite.amount == 0):
             print("{} perished".format(opposite.name))
         self.isMoved = True
+        self.shots -= 1
         return
     def beShoot(self,attacker):
         return
@@ -177,14 +201,29 @@ class Battle(object):
         player2.setBattle(self)
         self.curStack = 0
 
-    def canReach(self,bFrom,bTo):
-        return True
+    def canReach(self,bFrom,bTo,bAtt = 0):
+        curSt = self.bField[bFrom.y][bFrom.x]
+        if (curSt != 0 and curSt.id == bFrom.id and self.bField[bTo.y][bTo.x] == 0):
+            bf = curSt.acssessableAndAttackable()
+            if(bAtt != 0):
+                return self.bGetDistance(bTo,bAtt) == 1 and bf[bTo.y][bTo.x] >= 0 and bf[bAtt.y][bAtt.x] == -1
+            else:
+                return bf[bTo.y][bTo.x] >= 0
+        return False
+    def bGetDistance(self,src,dist):
+        x1,y1 = src.x,src.y
+        x2,y2 = dist.x,dist.y
+        x1 = int(x1+y1*0.5)
+        x2 = int(x2+y2*0.5)
+        xDst = x2 - x1
+        yDst = y2 - y1
+        if((xDst >= 0 and yDst >= 0) or (xDst < 0 and yDst < 0)):
+            return max(abs(xDst),abs(yDst))
+        return abs(xDst) + abs(yDst)
     def move(self,bFrom,bTo):
-        if(self.bField[bFrom.x][bFrom.y] != 0 and self.bField[bFrom.x][bFrom.y].id == bFrom.id):
-            if(self.canReach(bFrom,bTo)):
-                self.bField[bTo.x][bTo.y] = self.bField[bFrom.x][bFrom.y]
-                self.bField[bFrom.x][bFrom.y] = 0
-                return
+        self.bField[bTo.y][bTo.x] = self.bField[bFrom.y][bFrom.x]
+        self.bField[bFrom.y][bFrom.x] = 0
+        return
         print("sth wrong from {} to {}".format(bFrom,bTo))
     def sortStack(self):
         cmpfun = operator.attrgetter('isWaited','speed','x')
@@ -221,11 +260,11 @@ class Battle(object):
             if(self.curStack.canShoot(action.attack)):
                 self.curStack.shoot(self.bField[action.attack.x][action.attack.y])
             else:
-                if (self.canReach(self.curStack, actionType.move)):
-                    self.move(self.curStack, actionType.move)
+                if (self.canReach(self.curStack, action.move,action.attack)):
+                    self.move(self.curStack, action.move)
                     self.curStack.attack(self.bField[action.attack.x][action.attack.y])
                 else:
-                    print("you can't reach {}".format(actionType.move))
+                    print("you can't reach {} and attack {}".format(action.move,action.attack))
         elif(action.type == actionType.spell):
             print("spell not implemented yet")
 
