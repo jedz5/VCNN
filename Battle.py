@@ -2,6 +2,16 @@ import numpy as np
 import operator
 import random
 from enum import Enum
+
+class actionType(Enum):
+    wait = 0
+    defend = 1
+    move = 2
+    attack = 3
+    spell = 4
+class hexType(Enum):
+    creature = 0
+    obstacle = 1
 class BStack(object):
     def  __init__(self):
         self.amount = 0
@@ -20,6 +30,7 @@ class BStack(object):
         self.morale = 0
         self.id = 0
         self.shots = 10
+        self.hexType = hexType.creature
         #辅助参数
         self.isDenfenced = False
         self.name = 'unKnown'
@@ -34,13 +45,24 @@ class BStack(object):
     def availableDists(self):
         bf = [[-1000 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         travellers = []
+        attackables = []
         bf[self.y][self.x] = self.speed
         travellers.append(self)
         if(not self.isFly):
             while(len(travellers) > 0):
-                current = travellers[-1]
+                current = travellers.pop()
+                speedLeft = bf[current.y][current.x] - 1
                 for adj in current:
-                    if(battle.bField[adj.y][adj.x] == 0 and bf[adj.y][adj.x] )
+                    if(bf[adj.y][adj.x] < speedLeft):
+                        curBattleHex = battle.bField[adj.y][adj.x]
+                        if(curBattleHex == 0):
+                            bf[adj.y][adj.x] = speedLeft
+                            if (speedLeft > 0):
+                                travellers.append(adj)
+                        elif(curBattleHex.hexType != hexType.obstacle and curBattleHex.side != self.side):
+                            if (speedLeft > -1): #coast
+                                attackables.append(curBattleHex)
+
 
     def computeCasualty(self,opposite,shoot=False,half=True):
         if(self.attack >= opposite.attack):
@@ -140,13 +162,8 @@ class BObstacle(object):
         self.kind = kind
         self.x = 0
         self.y = 0
+        self.hexType = hexType.obstacle
 
-class actionType(Enum):
-    wait = 0
-    defend = 1
-    move = 2
-    attack = 3
-    spell = 4
 
 class Battle(object):
     bFieldWidth = 17
@@ -158,7 +175,7 @@ class Battle(object):
         self.players = [player1,player2]
         player1.setBattle(self)
         player2.setBattle(self)
-        self.curStack = BStack()
+        self.curStack = 0
 
     def canReach(self,bFrom,bTo):
         return True
