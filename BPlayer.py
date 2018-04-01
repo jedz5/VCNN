@@ -42,8 +42,19 @@ def Dijkstra(G, v0, INF=999):
                 minv = v
     return dis
 import numpy as np
+import operator
 bfield = [[0 for col in range(5)] for row in range(6)]
-bfield[3][1] = "asdfsadfs"
-bfield[1][1] = "asdfsadfs"
-dis = Dijkstra(G, v0=1)
-print(dis.values())
+class st(object):
+    def __init__(self,speed,x,y,waited,moved):
+        self.speed = speed
+        self.y = y
+        self.x = x
+        self.waited = waited
+        self.moved = moved
+if __name__ == '__main__':
+    a = lambda x:"a" if x > 0 and x < 3 else 10
+    bf = [[a(col)  for col in range(4)] for row in range(5)]
+    bf[:][3] = 'a'
+    print(bf)
+
+
