@@ -206,6 +206,24 @@ class BStack(object):
         self.isDenfenced = False
         return
 
+    def legalActions(self):
+        if (self.isMoved):
+            print("sth wrong happen! {} is moved!!!".format(self.name))
+            return 0
+        ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
+        aa = self.acssessableAndAttackable()
+        for i in range(0, self.inBattle.bFieldHeight):
+            for j in range(1, self.inBattle.bFieldWidth - 1):
+                if (aa[i][j] >= 0 and aa[i][j] < 50 and aa[i][j] != self.speed):
+                    ret['move'].append(BAction(actionType.move, BHex(i,j)))
+                if (aa[i][j] == -1):
+                    if (self.canShoot()):
+                        ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))
+                    else:
+                        for nb in self.getNeibours():
+                            if(aa[nb.y][nb.x] >= 0 and aa[nb.y][nb.x] < 50):
+                                ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
+        return ret
 class BObstacle(object):
     def __init__(self,kind = 0):
         self.kind = kind
@@ -365,10 +383,13 @@ class Battle(object):
         elif(action.type == actionType.defend):
             self.curStack.defend()
         elif(action.type == actionType.move):
-            if(self.canReach(self.curStack,action.move)):
-                self.move(self.curStack,action.move)
+            if (self.curStack.x == action.move.x and self.curStack.y == action.move.y):
+                print("can't move to where you already are!!")
+                return
+            if (self.canReach(self.curStack, action.move)):
+                self.move(self.curStack, action.move)
             else:
-                print("you can't reach {}".format(action.move))
+                print("you can't reach {},{}".format(action.move.y, action.move.x))
         elif(action.type == actionType.attack):
             dists = self.findStack(action.attack,True)
             if(len(dists) == 0):

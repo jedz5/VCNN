@@ -52,9 +52,9 @@ class st(object):
         self.waited = waited
         self.moved = moved
 if __name__ == '__main__':
-    a = lambda x:"a" if x > 0 and x < 3 else 10
-    bf = [[a(col)  for col in range(4)] for row in range(5)]
-    bf[:][3] = 'a'
-    print(bf)
+    a = 15
+    b = int(a /2)
+    b = b *2
+    print("result is {} from {}".format(b,a))
 
 
