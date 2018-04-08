@@ -210,20 +210,118 @@ class BStack(object):
         if (self.isMoved):
             print("sth wrong happen! {} is moved!!!".format(self.name))
             return 0
-        ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
+        #ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
+        legalMoves = []
+        if(not self.isWaited):
+            legalMoves.append(0) #waite
+        legalMoves.append(1) #defend
         aa = self.acssessableAndAttackable()
         for i in range(0, self.inBattle.bFieldHeight):
             for j in range(1, self.inBattle.bFieldWidth - 1):
                 if (aa[i][j] >= 0 and aa[i][j] < 50 and aa[i][j] != self.speed):
-                    ret['move'].append(BAction(actionType.move, BHex(i,j)))
+                    #ret['move'].append(BAction(actionType.move, BHex(i,j)))
+                    legalMoves.append(1 + i* (self.inBattle.bFieldWidth - 2) + j)
                 if (aa[i][j] == -1):
                     if (self.canShoot()):
-                        ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))
+                        #ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))
+                        legalMoves.append(1 + (7)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)+(i * (self.inBattle.bFieldWidth - 2) + j))
                     else:
                         for nb in self.getNeibours():
                             if(aa[nb.y][nb.x] >= 0 and aa[nb.y][nb.x] < 50):
-                                ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
-        return ret
+                                #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
+                                mp = self.mutualPosition(nb)
+                                if(mp < 0):
+                                    print("critical error, mutualPosition < 0. ({},{})-({},{})".format(self.y,self.x,nb.y,nb.x))
+                                    continue
+                                legalMoves.append(1 + (1+mp)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)+(i * (self.inBattle.bFieldWidth - 2) + j))
+        return legalMoves
+    def toAction(self,move):
+        if(move < 0):
+            print('wrong move {}'.format(move))
+            return 0
+        if(move == 0):
+            return BAction(actionType.wait)
+        elif(move == 1):
+            return BAction(actionType.defend)
+        elif(move < 1 + (1)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)):
+            y = int((move - 1)/(self.inBattle.bFieldWidth - 2))
+            x = (move - 1)%(self.inBattle.bFieldWidth - 2)
+            return BAction(actionType.move,BHex(y,x))
+        elif(move < 1 + (7)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)):
+            direction = int ((move - 1) / ((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)) - 1
+            stand = (move - 1) % ((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)
+            y = int(stand /(self.inBattle.bFieldWidth - 2))
+            x = stand % (self.inBattle.bFieldWidth - 2)
+            att = self.directionToHex(direction)
+            return BAction(actionType.attack, BHex(y, x),att)
+    def directionToHex(self,dirct):
+        if(dirct < 0 or dirct > 5):
+            print('wrong direction {}'.format(dirct))
+            return 0
+        if(dirct == 0):
+            if (self.y % 2 == 0):
+                return BHex(self.y - 1,self.x)
+            else:
+                return BHex(self.y - 1, self.x - 1)
+        if(dirct == 1):
+            if (self.y % 2 == 0):
+                return BHex(self.y - 1,self.x + 1)
+            else:
+                return BHex(self.y - 1, self.x)
+        if(dirct == 2):
+            return BHex(self.y, self.x + 1)
+        if(dirct == 5):
+            return BHex(self.y, self.x - 1)
+        if(dirct == 4):
+            if (self.y % 2 == 0):
+                return BHex(self.y + 1,self.x + 1)
+            else:
+                return BHex(self.y + 1, self.x)
+        if (dirct == 3):
+            if (self.y % 2 == 0):
+                return BHex(self.y + 1, self.x)
+            else:
+                return BHex(self.y + 1, self.x - 1)
+    def hexToDirection(self,hex1):
+        if(hex1.y == self.y - 1):
+            if(self.y % 2 == 0): #top left right
+                if(hex.x == self.x):
+                    return 0
+                elif(hex.x == self.x + 1):
+                    return 1
+                else:
+                    return -1
+            else:
+                if (hex.x == self.x - 1):
+                    return 0
+                elif (hex.x == self.x):
+                    return 1
+                else:
+                    return -1
+        elif(hex1.y == self.y): #left right
+            if (hex.x == self.x - 1):
+                return 5
+            elif(hex.x == self.x + 1):
+                return 2
+            else:
+                return -1
+        elif(hex1.y == self.y + 1): #bottom left right
+            if (self.y % 2 == 0):
+                if (hex.x == self.x):
+                    return 4
+                elif (hex.x == self.x + 1):
+                    return 3
+                else:
+                    return -1
+            else:
+                if (hex.x == self.x - 1):
+                    return 4
+                elif (hex.x == self.x):
+                    return 3
+                else:
+                    return -1
+        else:
+            return -1
 class BObstacle(object):
     def __init__(self,kind = 0):
         self.kind = kind
