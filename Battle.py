@@ -1,7 +1,7 @@
 import random
 import json
 from enum import Enum
-
+diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
 class actionType(Enum):
     wait = 0
     defend = 1
@@ -14,7 +14,7 @@ class hexType(Enum):
     obstacle = 1
 class BHex:
     mapp = {100:'|',-9:'   ',-8:' * ',-4:'M',-2:'E',-1:'A',51:'   '}
-    def __init__(self,x = 0,y = 0):
+    def __init__(self,y = 0,x = 0):
         self.x = x
         self.y = y
 class BStack(object):
@@ -73,7 +73,7 @@ class BStack(object):
         else: #fly
             for ii in range(self.inBattle.bFieldHeight):
                 for jj in range(1,self.inBattle.bFieldWidth-1):
-                    d = self.getDistance(BHex(jj,ii))
+                    d = self.getDistance(BHex(ii,jj))
                     if(d <= self.speed):
                         bf[ii][jj] = self.speed - d
         #accessable  end
@@ -158,7 +158,7 @@ class BStack(object):
         return adj
     def checkAndPush(self,x,y,adj):
         if(self.checkPosition(x,y)):
-            adj.append(BHex(x,y))
+            adj.append(BHex(y,x))
     def checkPosition(self,x,y):
         if (x > 0 and x < Battle.bFieldWidth - 1 and y >= 0 and y < Battle.bFieldHeight):
             return True
@@ -205,7 +205,6 @@ class BStack(object):
         self.isWaited = False
         self.isDenfenced = False
         return
-
     def legalActions(self):
         if (self.isMoved):
             print("sth wrong happen! {} is moved!!!".format(self.name))
@@ -220,108 +219,20 @@ class BStack(object):
             for j in range(1, self.inBattle.bFieldWidth - 1):
                 if (aa[i][j] >= 0 and aa[i][j] < 50 and aa[i][j] != self.speed):
                     #ret['move'].append(BAction(actionType.move, BHex(i,j)))
-                    legalMoves.append(1 + i* (self.inBattle.bFieldWidth - 2) + j)
+                    legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.move, BHex(i,j))))
                 if (aa[i][j] == -1):
                     if (self.canShoot()):
                         #ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))
-                        legalMoves.append(1 + (7)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)+(i * (self.inBattle.bFieldWidth - 2) + j))
+                        legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.shoot,attack=BHex(i,j))))
                     else:
-                        for nb in self.getNeibours():
+                        att = BHex(i,j)
+                        for nb in self.getNeibours(att):
                             if(aa[nb.y][nb.x] >= 0 and aa[nb.y][nb.x] < 50):
                                 #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
-                                mp = self.mutualPosition(nb)
-                                if(mp < 0):
-                                    print("critical error, mutualPosition < 0. ({},{})-({},{})".format(self.y,self.x,nb.y,nb.x))
-                                    continue
-                                legalMoves.append(1 + (1+mp)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)+(i * (self.inBattle.bFieldWidth - 2) + j))
+                                legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
         return legalMoves
-    def toAction(self,move):
-        if(move < 0):
-            print('wrong move {}'.format(move))
-            return 0
-        if(move == 0):
-            return BAction(actionType.wait)
-        elif(move == 1):
-            return BAction(actionType.defend)
-        elif(move < 1 + (1)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)):
-            y = int((move - 1)/(self.inBattle.bFieldWidth - 2))
-            x = (move - 1)%(self.inBattle.bFieldWidth - 2)
-            return BAction(actionType.move,BHex(y,x))
-        elif(move < 1 + (7)*((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)):
-            direction = int ((move - 1) / ((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)) - 1
-            stand = (move - 1) % ((self.inBattle.bFieldWidth - 2)*self.inBattle.bFieldHeight)
-            y = int(stand /(self.inBattle.bFieldWidth - 2))
-            x = stand % (self.inBattle.bFieldWidth - 2)
-            att = self.directionToHex(direction)
-            return BAction(actionType.attack, BHex(y, x),att)
-    def directionToHex(self,dirct):
-        if(dirct < 0 or dirct > 5):
-            print('wrong direction {}'.format(dirct))
-            return 0
-        if(dirct == 0):
-            if (self.y % 2 == 0):
-                return BHex(self.y - 1,self.x)
-            else:
-                return BHex(self.y - 1, self.x - 1)
-        if(dirct == 1):
-            if (self.y % 2 == 0):
-                return BHex(self.y - 1,self.x + 1)
-            else:
-                return BHex(self.y - 1, self.x)
-        if(dirct == 2):
-            return BHex(self.y, self.x + 1)
-        if(dirct == 5):
-            return BHex(self.y, self.x - 1)
-        if(dirct == 4):
-            if (self.y % 2 == 0):
-                return BHex(self.y + 1,self.x + 1)
-            else:
-                return BHex(self.y + 1, self.x)
-        if (dirct == 3):
-            if (self.y % 2 == 0):
-                return BHex(self.y + 1, self.x)
-            else:
-                return BHex(self.y + 1, self.x - 1)
-    def hexToDirection(self,hex1):
-        if(hex1.y == self.y - 1):
-            if(self.y % 2 == 0): #top left right
-                if(hex.x == self.x):
-                    return 0
-                elif(hex.x == self.x + 1):
-                    return 1
-                else:
-                    return -1
-            else:
-                if (hex.x == self.x - 1):
-                    return 0
-                elif (hex.x == self.x):
-                    return 1
-                else:
-                    return -1
-        elif(hex1.y == self.y): #left right
-            if (hex.x == self.x - 1):
-                return 5
-            elif(hex.x == self.x + 1):
-                return 2
-            else:
-                return -1
-        elif(hex1.y == self.y + 1): #bottom left right
-            if (self.y % 2 == 0):
-                if (hex.x == self.x):
-                    return 4
-                elif (hex.x == self.x + 1):
-                    return 3
-                else:
-                    return -1
-            else:
-                if (hex.x == self.x - 1):
-                    return 4
-                elif (hex.x == self.x):
-                    return 3
-                else:
-                    return -1
-        else:
-            return -1
+
+
 class BObstacle(object):
     def __init__(self,kind = 0):
         self.kind = kind
@@ -352,6 +263,7 @@ class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
     bPenaltyDistance = 10
+    bFieldSize = (bFieldWidth - 2)* bFieldHeight
     def __init__(self,player1,player2):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stacks = []
@@ -447,6 +359,122 @@ class Battle(object):
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
         return ret
+    def directionToHex(self,mySelf,dirct):
+        if(dirct < 0 or dirct > 5):
+            print('wrong direction {}'.format(dirct))
+            return 0
+        if(dirct == 0):
+            if (mySelf.y % 2 == 0):
+                return BHex(mySelf.y - 1,mySelf.x)
+            else:
+                return BHex(mySelf.y - 1, mySelf.x - 1)
+        if(dirct == 1):
+            if (mySelf.y % 2 == 0):
+                return BHex(mySelf.y - 1,mySelf.x + 1)
+            else:
+                return BHex(mySelf.y - 1, mySelf.x)
+        if(dirct == 2):
+            return BHex(mySelf.y, mySelf.x + 1)
+        if(dirct == 5):
+            return BHex(mySelf.y, mySelf.x - 1)
+        if(dirct == 4):
+            if (mySelf.y % 2 == 0):
+                return BHex(mySelf.y + 1,mySelf.x + 1)
+            else:
+                return BHex(mySelf.y + 1, mySelf.x)
+        if (dirct == 3):
+            if (mySelf.y % 2 == 0):
+                return BHex(mySelf.y + 1, mySelf.x)
+            else:
+                return BHex(mySelf.y + 1, mySelf.x - 1)
+    def hexToDirection(self,mySelf,hex):
+        if(hex.y == mySelf.y - 1):
+            if(mySelf.y % 2 == 0): #top left right
+                if(hex.x == mySelf.x):
+                    return 0
+                elif(hex.x == mySelf.x + 1):
+                    return 1
+                else:
+                    return -1
+            else:
+                if (hex.x == mySelf.x - 1):
+                    return 0
+                elif (hex.x == mySelf.x):
+                    return 1
+                else:
+                    return -1
+        elif(hex.y == mySelf.y): #left right
+            if (hex.x == mySelf.x - 1):
+                return 5
+            elif(hex.x == mySelf.x + 1):
+                return 2
+            else:
+                return -1
+        elif(hex.y == mySelf.y + 1): #bottom left right
+            if (mySelf.y % 2 == 0):
+                if (hex.x == mySelf.x):
+                    return 4
+                elif (hex.x == mySelf.x + 1):
+                    return 3
+                else:
+                    return -1
+            else:
+                if (hex.x == mySelf.x - 1):
+                    return 4
+                elif (hex.x == mySelf.x):
+                    return 3
+                else:
+                    return -1
+        else:
+            return -1
+    def actionToIndex(self,action):
+        if(actionType.wait == action.type):
+            return 0
+        if (actionType.defend == action.type):
+            return 1
+        if (actionType.move == action.type):
+            i = action.move.y
+            j = action.move.x
+            return 2 + i* (self.bFieldWidth - 2) + j - 1
+        if (actionType.attack == action.type):
+            enemy = action.attack
+            direct = self.hexToDirection(action.attack,action.move)
+            i = enemy.y
+            j = enemy.x
+            return 2 + self.bFieldSize +(i * (self.bFieldWidth - 2) + (j - 1))*6+ direct
+        if (actionType.shoot == action.type):
+            enemy = action.attack
+            i = enemy.y
+            j = enemy.x
+            return 2 + (7)*self.bFieldSize+(i * (self.bFieldWidth - 2) + j - 1)
+        print('actionToIndex wrong action {}'.format(action))
+    def indexToAction(self,move):
+        if(move < 0):
+            print('wrong move {}'.format(move))
+            return 0
+        if(move == 0):
+            return BAction(actionType.wait)
+        elif(move == 1):
+            return BAction(actionType.defend)
+        elif((move - 2) >= 0 and (move - 2) < self.bFieldSize):
+            y = int((move - 2)/(self.bFieldWidth - 2))
+            x = (move - 2)%(self.bFieldWidth - 2)
+            return BAction(actionType.move,BHex(y,x + 1))
+        elif((move - 2 -self.bFieldSize) >= 0 and (move - 2 -self.bFieldSize) < 6 * self.bFieldSize):
+            direction = (move - 2 -self.bFieldSize) % 6
+            enemy = int((move - 2 -self.bFieldSize) / 6)
+            y = int(enemy /(self.bFieldWidth - 2))
+            x = enemy % (self.bFieldWidth - 2)
+            enemy = BHex(y,x + 1)
+            stand = self.directionToHex(enemy,direction)
+            return BAction(actionType.attack, stand,enemy)
+        elif((move - 2 - 7*self.bFieldSize) >= 0 and (move - 2 - 7*self.bFieldSize) < self.bFieldSize):
+            enemy = (move - 2 - 7*self.bFieldSize)
+            y = int(enemy / (self.bFieldWidth - 2))
+            x = enemy % (self.bFieldWidth - 2)
+            return BAction(actionType.shoot,attack=BHex(y,x+1))
+        else:
+            print("wrong move {}".format(move))
     def end(self):
         live = {0:False,1:False}
         for st in self.stacks:
@@ -530,12 +558,12 @@ class  BPlayer(object):
                 if(action.type == actionType.wait or action.type == actionType.defend):
                     return action
                 elif(action.type == actionType.move):
-                    action.move = BHex(acts[2],acts[1])
+                    action.move = BHex(acts[1],acts[2])
                 elif(action.type == actionType.attack):
-                    action.move = BHex(acts[2],acts[1])
-                    action.attack = BHex(acts[4],acts[3])
+                    action.move = BHex(acts[1],acts[2])
+                    action.attack = BHex(acts[3],acts[4])
                 elif((action.type == actionType.shoot)):
-                    action.attack = BHex(acts[2],acts[1])
+                    action.attack = BHex(acts[1],acts[2])
                 else:
                     print("action not implementedd yet")
         except Exception as e:
@@ -595,6 +623,10 @@ if __name__ == '__main__':
         act = cplayer.getAction()
         if(act == 0):
             continue
+        legals = battle.curStack.legalActions()
+        myMove = battle.actionToIndex(act)
+        if(myMove not in legals):
+            print('...sth  wrong.....')
         battle.doAction(act)
 
 
