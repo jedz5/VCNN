@@ -29,8 +29,9 @@ def softmax(x):
     return probs
 
 class StateNode(object):
-    def __init__(self,parent):
+    def __init__(self,parent,side):
         self.parent = parent
+        self.side = side
         self._actions = {}  # a map from action to TreeNode
         self._n_visits = 0
         self._Q = 0
@@ -41,7 +42,7 @@ class StateNode(object):
         """
         for action, prob in action_priors:
             if action not in self._actions:
-                self._actions[action] = ActionNode(self, prob)
+                self._actions[action] = ActionNode(self, prob,self.side)
 
     def select(self, c_puct):
         """Select action among children that gives maximum action value Q
@@ -64,7 +65,10 @@ class StateNode(object):
         """
         # If it is not root, this node's parent should be updated first.
         if self._parent:
-            self._parent.update_recursive(leaf_value)
+            if(self.parent.side == self.side):
+                self._parent.update_recursive(leaf_value)
+            else:
+                self._parent.update_recursive(-leaf_value)
         self.update(leaf_value)
 
     def is_leaf(self):
@@ -79,8 +83,9 @@ class ActionNode(object):
     its visit-count-adjusted prior score u.
     """
 
-    def __init__(self, parent, prior_p):
+    def __init__(self, parent, prior_p,side):
         self._parent = parent
+        self.side = side
         self._states = {}  # states hash
         self.curState = 0
         self._n_visits = 0
@@ -91,7 +96,7 @@ class ActionNode(object):
     def setCurentState(self,gameState):
         stateHash = hash(gameState)
         if stateHash not in self._states.keys():
-            self._states[stateHash] = StateNode(self)
+            self._states[stateHash] = StateNode(self,gameState.currentPlayer())
         self.curState = self._states[stateHash]
     def update(self, leaf_value):
         """Update node values from leaf evaluation.
@@ -108,7 +113,7 @@ class ActionNode(object):
         """
         # If it is not root, this node's parent should be updated first.
         if self._parent:
-            self._parent.update_recursive(-leaf_value)
+            self._parent.update_recursive(leaf_value)
         self.update(leaf_value)
 
     def get_value(self, c_puct):
@@ -171,11 +176,11 @@ class MCTS(object):
                 leaf_value = 0.0
             else:
                 leaf_value = (
-                    1.0 if winner == state.get_current_player() else -1.0
+                    1.0 if winner == state.currentPlayer() else -1.0
                 )
 
         # Update value and visit count of nodes in this traversal.
-        stateNode.update_recursive(-leaf_value)
+        stateNode.update_recursive(leaf_value)
 
     def get_move_probs(self, state, temp=1e-3):
         """Run all playouts sequentially and return the available actions and
@@ -196,7 +201,7 @@ class MCTS(object):
 
         return acts, act_probs
 
-    def update_with_move(self, last_move):
+    def update_with_move(self, last_move,side):
         """Step forward in the tree, keeping everything we already know
         about the subtree.
         """
@@ -204,7 +209,7 @@ class MCTS(object):
             self._root = self._root._actions[last_move]
             self._root._parent = None
         else:
-            self._root = StateNode(None)
+            self._root = StateNode(None,side)
 
     def __str__(self):
         return "MCTS"
@@ -224,8 +229,8 @@ class MCTSPlayer(object):
     def reset_player(self):
         self.mcts.update_with_move(-1)
 
-    def get_action(self, board, temp=1e-3, return_prob=0):
-        sensible_moves = board.availables
+    def getAction(self, battle, temp=1e-3, return_prob=0):
+        sensible_moves = battle.curStack.legalMoves()
         # the pi vector returned by MCTS as in the alphaGo Zero paper
         move_probs = np.zeros(board.width*board.height)
         if len(sensible_moves) > 0:

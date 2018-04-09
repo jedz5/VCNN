@@ -1,7 +1,44 @@
 import random
 import json
+import numpy as np
+import mcts_alpha
+from mcts_alpha import MCTSPlayer
 from enum import Enum
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
+
+def printF(bh,stacks,curSt):
+    def f(n):
+        if n >= 0 and n < 50:
+            if(n == 0 or n == curSt.speed - 1 or n%3 == 0):
+                return n
+            else:
+                return BHex.mapp[51]
+        else:
+            return BHex.mapp[n]
+    bf = [[f(n) for n in line] for line in bh]
+    def ff(l):
+        for n in l:
+            if(not isinstance(n,str)):
+                print('%3d'%n, end=".")
+            else:
+                print(n, end=".")
+        print()
+
+    bf[curSt.y][curSt.x] = 'M'
+    for st in stacks:
+        if(st.isAlive()):
+            bf[st.y][st.x] = bf[st.y][st.x]+str(st.amount)
+    print("      ",end="")
+    [print("%3d "%i,end="") for i in range(1,len(bf[0]) - 1)]
+    print()
+    i = 0
+    for line in bf:
+        if(i % 2 == 0):
+            print("%3d  "%i,end="")
+        else:
+            print("%3d"%i,end="")
+        i += 1
+        ff(line)
 class actionType(Enum):
     wait = 0
     defend = 1
@@ -205,7 +242,7 @@ class BStack(object):
         self.isWaited = False
         self.isDenfenced = False
         return
-    def legalActions(self):
+    def legalMoves(self):
         if (self.isMoved):
             print("sth wrong happen! {} is moved!!!".format(self.name))
             return 0
@@ -264,7 +301,7 @@ class Battle(object):
     bFieldHeight = 11
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
-    def __init__(self,player1,player2):
+    def __init__(self):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stacks = []
         self.round = 0
@@ -273,9 +310,6 @@ class Battle(object):
         self.waited = []
         self.moved = []
         self.stackQueue = []
-        self.players = [player1,player2]
-        player1.setBattle(self)
-        player2.setBattle(self)
         self.curStack = 0
 
     def loadFile(self,file):
@@ -354,8 +388,8 @@ class Battle(object):
         self.waited.sort(key=lambda elem: (elem.speed, elem.y, elem.x))
         self.moved.sort(key=lambda elem: (-elem.speed, elem.y, elem.x))
         self.stackQueue = self.toMove + self.waited + self.moved
-    def getCurrentPlayer(self):
-        return self.players[0] if self.stackQueue[0].side else self.players[1]
+    def currentPlayer(self):
+        return 1 if self.stackQueue[0].side else 0
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
         return ret
@@ -542,6 +576,8 @@ class Battle(object):
 
 
 
+
+
 class  BPlayer(object):
     def __init__(self,side):
         self.side = side
@@ -570,60 +606,78 @@ class  BPlayer(object):
             action = 0
             print("Exception:  ",e)
         return action
+    def collect_selfplay_data(self, n_games=1):
+        """collect self-play data for training"""
+        for i in range(n_games):
+            winner, play_data = self.start_self_play(temp=1.0)
+            play_data = list(play_data)[:]
+            self.episode_len = len(play_data)
+            self.data_buffer.extend(play_data)
+    def start_self_play(self,is_shown=0, temp=1e-3):
+        """ start a self-play game using a MCTS player, reuse the search tree,
+        and store the self-play data: (state, mcts_probs, z) for training
+        """
+        battle = Battle()
+        trainer = MCTSPlayer(mcts_alpha.policy_value_fn,c_puct=5,n_playout=5,is_selfplay=1)
+        battle.loadFile("D:/project/VCNN/train/selfplay.json")
+        battle.newRound()
+        states, mcts_probs, current_players = [], [], []
+        while (not battle.end()):
+            battle.checkGameEndOrNewRound()
+            if(is_shown):
+                printF(battle.curStack.acssessableAndAttackable(), battle.stacks, battle.curStack)
+            act,move_probs = trainer.getAction(self,temp=temp,return_prob=1)
+            if (act == 0):
+                continue
+            legals = battle.curStack.legalMoves()
+            myMove = battle.actionToIndex(act)
+            if (myMove not in legals):
+                print('...sth  wrong.....')
+            else:
+                # store the data
+                states.append(self.current_state())
+                mcts_probs.append(move_probs)
+                current_players.append(self.currentPlayer())
+            battle.doAction(act)
+        winner = self.currentPlayer()
+        # winner from the perspective of the current player of each state
+        winners_z = np.zeros(len(current_players))
+        if winner != -1:
+            winners_z[np.array(current_players) == winner] = 1.0
+            winners_z[np.array(current_players) != winner] = -1.0
+        # reset MCTS root node
+        trainer.reset_player()
+        if is_shown:
+            if winner != -1:
+                print("Game end. Winner is player:", winner)
+            else:
+                print("Game end. Tie")
+        return winner, zip(states, mcts_probs, winners_z)
 class BAction:
     def __init__(self,type = 0,move = 0,attack = 0,spell=0):
         self.type = type
         self.move = move
         self.attack = attack
         self.spell = spell
-def printF(bh,stacks,curSt):
-    def f(n):
-        if n >= 0 and n < 50:
-            if(n == 0 or n == curSt.speed - 1 or n%3 == 0):
-                return n
-            else:
-                return BHex.mapp[51]
-        else:
-            return BHex.mapp[n]
-    bf = [[f(n) for n in line] for line in bh]
-    def ff(l):
-        for n in l:
-            if(not isinstance(n,str)):
-                print('%3d'%n, end=".")
-            else:
-                print(n, end=".")
-        print()
 
-    bf[curSt.y][curSt.x] = 'M'
-    for st in stacks:
-        if(st.isAlive()):
-            bf[st.y][st.x] = bf[st.y][st.x]+str(st.amount)
-    print("      ",end="")
-    [print("%3d "%i,end="") for i in range(1,len(bf[0]) - 1)]
-    print()
-    i = 0
-    for line in bf:
-        if(i % 2 == 0):
-            print("%3d  "%i,end="")
-        else:
-            print("%3d"%i,end="")
-        i += 1
-        ff(line)
 
 if __name__ == '__main__':
     pl1 = BPlayer(0)
     pl2 = BPlayer(1)
-    battle = Battle(pl1,pl2)
+    players = [pl1, pl2]
+    battle = Battle()
+    pl1.setBattle(battle)
+    pl2.setBattle(battle)
     battle.loadFile("D:/project/VCNN/train/selfplay.json")
     battle.newRound()
     while(not battle.end()):
         battle.checkGameEndOrNewRound()
-        cplayer = battle.getCurrentPlayer()
+        cplayer = battle.currentPlayer()
         printF(battle.curStack.acssessableAndAttackable(),battle.stacks,battle.curStack)
-        act = cplayer.getAction()
+        act = players[cplayer].getAction()
         if(act == 0):
             continue
-        legals = battle.curStack.legalActions()
+        legals = battle.curStack.legalMoves()
         myMove = battle.actionToIndex(act)
         if(myMove not in legals):
             print('...sth  wrong.....')
