@@ -16,10 +16,11 @@ import copy
 #     return zip(board.availables, action_probs)
 
 
-def policy_value_fn(legals):
+def policy_value_fn(battle):
     """a function that takes in a state and outputs a list of (action, probability)
     tuples and a score for the state"""
     # return uniform probabilities and 0 score for pure MCTS
+    legals = battle.curStack.legalMoves()
     action_probs = np.ones(len(legals))/len(legals)
     return zip(legals, action_probs), 0
 
@@ -30,7 +31,7 @@ def softmax(x):
 
 class StateNode(object):
     def __init__(self,parent,side):
-        self.parent = parent
+        self._parent = parent
         self.side = side
         self._actions = {}  # a map from action to TreeNode
         self._n_visits = 0
@@ -65,7 +66,7 @@ class StateNode(object):
         """
         # If it is not root, this node's parent should be updated first.
         if self._parent:
-            if(self.parent.side == self.side):
+            if(self._parent.side == self.side):
                 self._parent.update_recursive(leaf_value)
             else:
                 self._parent.update_recursive(-leaf_value)
@@ -94,7 +95,7 @@ class ActionNode(object):
         self._P = prior_p
 
     def setCurentState(self,gameState):
-        stateHash = hash(gameState)
+        stateHash = hash(gameState.stacks + gameState.obstacles)
         if stateHash not in self._states.keys():
             self._states[stateHash] = StateNode(self,gameState.currentPlayer())
         self.curState = self._states[stateHash]
@@ -133,7 +134,7 @@ class ActionNode(object):
 class MCTS(object):
     """An implementation of Monte Carlo Tree Search."""
 
-    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000):
+    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000,side = 0):
         """
         policy_value_fn: a function that takes in a board state and outputs
             a list of (action, probability) tuples and also a score in [-1, 1]
@@ -143,10 +144,11 @@ class MCTS(object):
             converges to the maximum-value policy. A higher value means
             relying on the prior more.
         """
-        self._root = StateNode(None)
+        self._root = StateNode(None,side)
         self._policy = policy_value_fn
         self._c_puct = c_puct
         self._n_playout = n_playout
+        self.side = side
 
     def _playout(self, state):
         """Run a single playout from the root to the leaf, getting a value at
@@ -159,7 +161,9 @@ class MCTS(object):
                 break
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
-            state.do_move(action_id)
+            act = state.indexToAction(action_id)
+            print("playout {} action {}".format(state.curStack.name,action_id))
+            state.doAction(act)
             actionNode.setCurentState(state)
             stateNode = actionNode.curState
         # Evaluate the leaf using a network which outputs a list of
@@ -167,7 +171,8 @@ class MCTS(object):
         # for the current player.
         action_probs, leaf_value = self._policy(state)
         # Check for end of game.
-        end, winner = state.game_end()
+        end = state.end()
+        winner = state.currentPlayer()
         if not end:
             stateNode.expand(action_probs)
         else:
@@ -176,20 +181,20 @@ class MCTS(object):
                 leaf_value = 0.0
             else:
                 leaf_value = (
-                    1.0 if winner == state.currentPlayer() else -1.0
+                    1.0 if winner == self.side else -1.0
                 )
 
         # Update value and visit count of nodes in this traversal.
         stateNode.update_recursive(leaf_value)
 
-    def get_move_probs(self, state, temp=1e-3):
+    def get_move_probs(self, battle, temp=1e-3):
         """Run all playouts sequentially and return the available actions and
         their corresponding probabilities.
         state: the current game state
         temp: temperature parameter in (0, 1] controls the level of exploration
         """
         for n in range(self._n_playout):
-            state_copy = copy.deepcopy(state)
+            state_copy = battle.getCopy()
             self._playout(state_copy)
             #print(state_copy.path)
 
@@ -219,9 +224,10 @@ class MCTSPlayer(object):
     """AI player based on MCTS"""
 
     def __init__(self, policy_value_function,
-                 c_puct=5, n_playout=2000, is_selfplay=0):
-        self.mcts = MCTS(policy_value_function, c_puct, n_playout)
+                 c_puct=5, n_playout=2000, is_selfplay=0,side=0):
+        self.mcts = MCTS(policy_value_function, c_puct, n_playout,side)
         self._is_selfplay = is_selfplay
+        self.player = side
 
     def set_player_ind(self, p):
         self.player = p
@@ -232,9 +238,9 @@ class MCTSPlayer(object):
     def getAction(self, battle, temp=1e-3, return_prob=0):
         sensible_moves = battle.curStack.legalMoves()
         # the pi vector returned by MCTS as in the alphaGo Zero paper
-        move_probs = np.zeros(board.width*board.height)
+        move_probs = np.zeros(battle.bTotalFieldSize)
         if len(sensible_moves) > 0:
-            acts, probs = self.mcts.get_move_probs(board, temp)
+            acts, probs = self.mcts.get_move_probs(battle, temp)
             move_probs[list(acts)] = probs
             if self._is_selfplay:
                 # add Dirichlet Noise for exploration (needed for

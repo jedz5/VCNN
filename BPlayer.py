@@ -42,19 +42,13 @@ def Dijkstra(G, v0, INF=999):
                 minv = v
     return dis
 import numpy as np
-import operator
-bfield = [[0 for col in range(5)] for row in range(6)]
-class st(object):
-    def __init__(self,speed,x,y,waited,moved):
-        self.speed = speed
-        self.y = y
-        self.x = x
-        self.waited = waited
-        self.moved = moved
+
 if __name__ == '__main__':
-    a = 15
-    b = int(a /2)
-    b = b *2
-    print("result is {} from {}".format(b,a))
+    bfield = np.zeros((3),dtype=int)
+    bfield[0] = 5
+    a = ''
+
+    print(a)
+    print(hash(a))
 
 
