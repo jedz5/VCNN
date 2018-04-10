@@ -95,7 +95,7 @@ class ActionNode(object):
         self._P = prior_p
 
     def setCurentState(self,gameState):
-        stateHash = hash(gameState.stacks + gameState.obstacles)
+        stateHash = gameState.getHash()
         if stateHash not in self._states.keys():
             self._states[stateHash] = StateNode(self,gameState.currentPlayer())
         self.curState = self._states[stateHash]

@@ -42,13 +42,22 @@ def Dijkstra(G, v0, INF=999):
                 minv = v
     return dis
 import numpy as np
-
+class A:
+    def __init__(self):
+        self.a = 1
+        self.b = 2
+        self.c = 3
+        self.d = 4
 if __name__ == '__main__':
-    bfield = np.zeros((3),dtype=int)
-    bfield[0] = 5
-    a = ''
+    #bfield = np.zeros((3,4,5),dtype=int)
+    bfield = [[[0 for k in range(5)]for j in range(4)] for i in range(3)]
 
-    print(a)
-    print(hash(a))
+    l = [[x for x in range(2,5)],0]
+    a =A()
+    idList = [0, 0, 0, 0, 0]
+    bfield[0][0][l[0]] = [a.a,a.b,a.c]
+    x = range(1,5)
+    print(x)
+    #print([x for x in range(1,5)])
 
 

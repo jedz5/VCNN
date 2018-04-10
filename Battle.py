@@ -60,14 +60,14 @@ class BStack(object):
         self.amount = 0
         self.attack = 0
         self.defense = 0
+        self.maxDamage = 0
+        self.minDamage = 0
         self.firstHPLeft = 0
         self.health = 0
         self.isMoved = False
         self.side = 0
         self.isRetaliated = False
         self.isWaited = False
-        self.maxDamage = 0
-        self.minDamage = 0
         self.speed = 0
         self.luck = 0
         self.morale = 0
@@ -300,7 +300,8 @@ def blockRetaliate(x):
 class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
-    bFieldStackProps = 15
+    bFieldStackProps = 19
+    bFieldStackPlanes = 50
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
     bTotalFieldSize = 2 + 8*bFieldSize
@@ -407,9 +408,39 @@ class Battle(object):
         return 1 if self.stackQueue[0].side else 0
 
     def currentState(self):
-        state = [[[ 0 for k in self.bFieldStackProps] for j in self.bFieldWidth] for i in self.bFieldHeight]
+        #state = [[[0 for k in range(self.bFieldStackProps)] for j in range(self.bFieldWidth - 2)] for i in range(self.bFieldHeight)]
+        state = np.zeros((self.bFieldHeight, self.bFieldWidth - 2, self.bFieldStackProps), dtype=int)
+        planeStruct = [[x for x in range(1,19)],0]
+        def fillStack(stack):
+            #stack = BStack()
+            state[stack.y][stack.x - 1][planeStruct[0]] = [stack.side,stack.id,stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.health,int(stack.isMoved),int(stack.isRetaliated),int(stack.isWaited),stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter,stack.firstHPLeft]
+        def fillObs(ob):
+            state[ob.y][ob.x - 1][planeStruct[1]] = 1
+        [fillStack(st) for st in self.stacks]
+        [fillObs(ob) for ob in self.obstacles]
+        return state
+    def currentStateFeature(self):
+        state = [[[0 for k in range(self.bFieldStackPlanes)] for j in range(self.bFieldWidth - 2)] for i in
+                 range(self.bFieldHeight)]
+        planeStruct = [[], []]
+        def fillStack(stack):
+            #stack = BStack()
+            idList = [0, 0, 0, 0, 0]
+            idList[stack.id] = 1
+            state[stack.y][stack.x - 1][planeStruct[stack.side]] = [stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.firstHPLeft,
+                stack.health,stack.isMoved,stack.isRetaliated,stack.isWaited,stack.speed,stack.luck,stack.morale,stack.shots,
+                                          stack.isFly,stack.isShooter] +idList
+        def fillObs(ob):
+            state[ob.y][ob.x - 1][planeStruct[2]] = 1
+        def fillMe(me):
+            state[me.y][me.x - 1][planeStruct[3]] = 1
+        def fillReachable(r):
+            state[r.y][r.x - 1][planeStruct[4]] = 1
+        def fillAttackable(r):
+            state[r.y][r.x - 1][planeStruct[5]] = 1
+        [fillStack(st) for st in self.stacks]
 
-
+        return state
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
         return ret
@@ -537,10 +568,11 @@ class Battle(object):
     def getHash(self):
         state = self.currentState()
         a = ''
-        for i in self.bFieldHeight:
-            for j in self.bFieldWidth:
-                for k in self.bFieldStackProps:
-                    a += str()
+        for i in range(self.bFieldHeight):
+            for j in range(self.bFieldWidth - 2):
+                for k in range(self.bFieldStackProps):
+                    a += str(state[i][j][k])
+        return hash(a)
     def checkGameEndOrNewRound(self):
         if(self.end()):
             print("game over")
