@@ -162,8 +162,9 @@ class MCTS(object):
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
-            print("playout {} action {}".format(state.curStack.name,action_id))
+            print("{} playout {} action {}".format(state.batId,state.curStack.name,action_id))
             state.doAction(act)
+            state.checkNewRound()
             actionNode.setCurentState(state)
             stateNode = actionNode.curState
         # Evaluate the leaf using a network which outputs a list of
@@ -172,11 +173,12 @@ class MCTS(object):
         action_probs, leaf_value = self._policy(state)
         # Check for end of game.
         end = state.end()
-        winner = state.currentPlayer()
+
         if not end:
             stateNode.expand(action_probs)
         else:
             # for end state，return the "true" leaf_value
+            winner = state.currentPlayer()
             if winner == -1:  # tie
                 leaf_value = 0.0
             else:
@@ -206,15 +208,18 @@ class MCTS(object):
 
         return acts, act_probs
 
-    def update_with_move(self, last_move,side):
+    def update_with_move(self, last_move,battle):
         """Step forward in the tree, keeping everything we already know
         about the subtree.
         """
         if last_move in self._root._actions:
-            self._root = self._root._actions[last_move]
+            actionNode= self._root._actions[last_move]
+            actionNode.setCurentState(battle)
+            stateNode = actionNode.curState
+            self._root = stateNode
             self._root._parent = None
         else:
-            self._root = StateNode(None,side)
+            self._root = StateNode(None,battle.currentPlayer())
 
     def __str__(self):
         return "MCTS"
@@ -232,12 +237,11 @@ class MCTSPlayer(object):
     def set_player_ind(self, p):
         self.player = p
 
-    def reset_player(self):
-        self.mcts.update_with_move(-1)
+    def reset_player(self,battle):
+        self.mcts.update_with_move(-1,battle)
 
     def getAction(self, battle, temp=1e-3, return_prob=0):
         sensible_moves = battle.curStack.legalMoves()
-        # the pi vector returned by MCTS as in the alphaGo Zero paper
         move_probs = np.zeros(battle.bTotalFieldSize)
         if len(sensible_moves) > 0:
             acts, probs = self.mcts.get_move_probs(battle, temp)
@@ -249,8 +253,6 @@ class MCTSPlayer(object):
                     acts,
                     p=0.75*probs + 0.25*np.random.dirichlet(0.3*np.ones(len(probs)))
                 )
-                # update the root node and reuse the search tree
-                self.mcts.update_with_move(move)
             else:
                 # with the default temp=1e-3, it is almost equivalent
                 # to choosing the move with the highest prob

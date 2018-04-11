@@ -297,6 +297,7 @@ def blockRetaliate(x):
             if y['type'] == 68:
                 return 1
     return 0
+batId = 0
 class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
@@ -315,9 +316,12 @@ class Battle(object):
         self.moved = []
         self.stackQueue = []
         self.curStack = 0
-
+        self.batId = 0
     def getCopy(self):
+        global batId
+        batId += 1
         cp = Battle()
+        cp.batId = batId
         cp.round = self.round
         cp.obstacles = copy.deepcopy(self.obstacles)
         def copyStack(st,newBat):
@@ -573,10 +577,7 @@ class Battle(object):
                 for k in range(self.bFieldStackProps):
                     a += str(state[i][j][k])
         return hash(a)
-    def checkGameEndOrNewRound(self):
-        if(self.end()):
-            print("game over")
-            exit(0)
+    def checkNewRound(self):
         self.sortStack()
         if(self.stackQueue[0].isMoved):
             self.newRound()
@@ -678,25 +679,27 @@ class  BPlayer(object):
         """
         battle = Battle()
         battle.loadFile("D:/project/VCNN/train/selfplay.json")
-        battle.checkGameEndOrNewRound()
+        battle.checkNewRound()
         trainer = MCTSPlayer(mcts_alpha.policy_value_fn,c_puct=5,n_playout=5,is_selfplay=1,side=battle.currentPlayer())
         states, mcts_probs, current_players = [], [], []
         while (not battle.end()):
-            battle.checkGameEndOrNewRound()
             if(is_shown):
                 printF(battle.curStack.acssessableAndAttackable(), battle.stacks, battle.curStack)
-            act,move_probs = trainer.getAction(battle,temp=temp,return_prob=1)
-            print("action: ",act)
+            actInd,move_probs = trainer.getAction(battle,temp=temp,return_prob=1)
+            print("action: ",actInd)
             legals = battle.curStack.legalMoves()
-            myMove = battle.actionToIndex(act)
-            if (myMove not in legals):
+            if (actInd not in legals):
                 print('...sth  wrong.....')
             else:
                 # store the data
                 states.append(battle.currentState())
                 mcts_probs.append(move_probs)
                 current_players.append(battle.currentPlayer())
+            act = battle.indexToAction(actInd)
             battle.doAction(act)
+            battle.checkNewRound()
+            # update the root node and reuse the search tree
+            trainer.mcts.update_with_move(actInd, battle)
         winner = battle.currentPlayer()
         # winner from the perspective of the current player of each state
         winners_z = np.zeros(len(current_players))
@@ -704,7 +707,7 @@ class  BPlayer(object):
             winners_z[np.array(current_players) == winner] = 1.0
             winners_z[np.array(current_players) != winner] = -1.0
         # reset MCTS root node
-        trainer.reset_player()
+        trainer.reset_player(battle)
         if is_shown:
             if winner != -1:
                 print("Game end. Winner is player:", winner)
