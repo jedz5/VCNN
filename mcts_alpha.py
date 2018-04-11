@@ -20,6 +20,7 @@ def policy_value_fn(battle):
     """a function that takes in a state and outputs a list of (action, probability)
     tuples and a score for the state"""
     # return uniform probabilities and 0 score for pure MCTS
+    planes = battle.currentStateFeature()
     legals = battle.curStack.legalMoves()
     action_probs = np.ones(len(legals))/len(legals)
     return zip(legals, action_probs), 0
@@ -98,6 +99,8 @@ class ActionNode(object):
         stateHash = gameState.getHash()
         if stateHash not in self._states.keys():
             self._states[stateHash] = StateNode(self,gameState.currentPlayer())
+        else:
+            print('found same hash ')
         self.curState = self._states[stateHash]
     def update(self, leaf_value):
         """Update node values from leaf evaluation.
@@ -156,15 +159,19 @@ class MCTS(object):
         State is modified in-place, so a copy must be provided.
         """
         stateNode = self._root
+        level= 0
         while(1):
             if stateNode.is_leaf():
                 break
+            if(level > 0):
+                print('level: ', level)
+            level += 1
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
-            print("{} playout {} action {}".format(state.batId,state.curStack.name,action_id))
+            print("{} playout {} action {}".format(state.batId,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
-            state.checkNewRound()
+            state.checkNewRound(1)
             actionNode.setCurentState(state)
             stateNode = actionNode.curState
         # Evaluate the leaf using a network which outputs a list of

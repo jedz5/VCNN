@@ -302,7 +302,7 @@ class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
     bFieldStackProps = 19
-    bFieldStackPlanes = 50
+    bFieldStackPlanes = 46
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
     bTotalFieldSize = 2 + 8*bFieldSize
@@ -424,16 +424,13 @@ class Battle(object):
         [fillObs(ob) for ob in self.obstacles]
         return state
     def currentStateFeature(self):
-        state = [[[0 for k in range(self.bFieldStackPlanes)] for j in range(self.bFieldWidth - 2)] for i in
-                 range(self.bFieldHeight)]
-        planeStruct = [[], []]
+        state = np.zeros((self.bFieldHeight, self.bFieldWidth - 2, self.bFieldStackPlanes), dtype=int)
+        planeStruct = [[x for x in range(21)], [x for x in range(21,42)],42,43,44,45]
         def fillStack(stack):
             #stack = BStack()
             idList = [0, 0, 0, 0, 0]
             idList[stack.id] = 1
-            state[stack.y][stack.x - 1][planeStruct[stack.side]] = [stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.firstHPLeft,
-                stack.health,stack.isMoved,stack.isRetaliated,stack.isWaited,stack.speed,stack.luck,stack.morale,stack.shots,
-                                          stack.isFly,stack.isShooter] +idList
+            state[stack.y][stack.x - 1][planeStruct[stack.side]] = [stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.firstHPLeft,stack.health,stack.isMoved,stack.isRetaliated,stack.isWaited,stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] +idList
         def fillObs(ob):
             state[ob.y][ob.x - 1][planeStruct[2]] = 1
         def fillMe(me):
@@ -443,7 +440,15 @@ class Battle(object):
         def fillAttackable(r):
             state[r.y][r.x - 1][planeStruct[5]] = 1
         [fillStack(st) for st in self.stacks]
-
+        [fillObs(st) for st in self.obstacles]
+        fillMe(self.curStack)
+        aa = self.curStack.acssessableAndAttackable()
+        for i in range(self.bFieldHeight):
+            for j in range(self.bFieldWidth):
+                if(aa[i][j] == -1):
+                    fillAttackable(BHex(i,j))
+                elif(aa[i][j]>=0 and aa[i][j] < 50):
+                    fillReachable(BHex(i,j))
         return state
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
@@ -564,6 +569,18 @@ class Battle(object):
             return BAction(actionType.shoot,attack=BHex(y,x+1))
         else:
             print("wrong move {}".format(move))
+    def action2Str(self,act):
+        act = self.indexToAction(act)
+        if(act.type == actionType.wait):
+            return "wait"
+        if (act.type == actionType.defend):
+            return "defend"
+        if (act.type == actionType.move):
+            return "move to ({},{})".format(act.move.y,act.move.x)
+        if (act.type == actionType.attack):
+            return "melee ({},{}),({},{})".format(act.move.y,act.move.x,act.attack.y,act.attack.x)
+        if (act.type == actionType.shoot):
+            return "shoot ({},{})".format(act.attack.y,act.attack.x)
     def end(self):
         live = {0:False,1:False}
         for st in self.stacks:
@@ -577,13 +594,13 @@ class Battle(object):
                 for k in range(self.bFieldStackProps):
                     a += str(state[i][j][k])
         return hash(a)
-    def checkNewRound(self):
+    def checkNewRound(self,is_self_play = 0):
         self.sortStack()
         if(self.stackQueue[0].isMoved):
             self.newRound()
             self.sortStack()
-
-        print("now it's {} turn".format(self.curStack.name))
+        if(not is_self_play):
+            print("now it's {} turn".format(self.curStack.name))
 
     def newRound(self):
         self.round += 1
@@ -680,13 +697,13 @@ class  BPlayer(object):
         battle = Battle()
         battle.loadFile("D:/project/VCNN/train/selfplay.json")
         battle.checkNewRound()
-        trainer = MCTSPlayer(mcts_alpha.policy_value_fn,c_puct=5,n_playout=5,is_selfplay=1,side=battle.currentPlayer())
+        trainer = MCTSPlayer(mcts_alpha.policy_value_fn,c_puct=5,n_playout=50,is_selfplay=1,side=battle.currentPlayer())
         states, mcts_probs, current_players = [], [], []
         while (not battle.end()):
             if(is_shown):
                 printF(battle.curStack.acssessableAndAttackable(), battle.stacks, battle.curStack)
             actInd,move_probs = trainer.getAction(battle,temp=temp,return_prob=1)
-            print("action: ",actInd)
+            print("-------final action: ",battle.action2Str(actInd))
             legals = battle.curStack.legalMoves()
             if (actInd not in legals):
                 print('...sth  wrong.....')
