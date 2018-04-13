@@ -8,21 +8,22 @@ Tested in Tensorflow 1.4 and 1.5
 
 import numpy as np
 import tensorflow as tf
+import Battle
 
-
+#bFieldWidth = 17
+#bFieldHeight = 11
 class PolicyValueNet():
-    def __init__(self, board_width, board_height, model_file=None):
+    def __init__(self, board_width, board_height,planes,num_actions,model_file=None):
         self.board_width = board_width
         self.board_height = board_height
-
+        self.planes = planes
+        self.num_actions = num_actions
         # Define the tensorflow neural network
         # 1. Input:
         self.input_states = tf.placeholder(
-                tf.float32, shape=[None, 4, board_height, board_width])
-        self.input_states_reshaped = tf.reshape(
-                self.input_states, [-1, board_height, board_width, 4])
+                tf.float32, shape=[None, self.board_height, self.board_width, self.planes])
         # 2. Common Networks Layers
-        self.conv1 = tf.layers.conv2d(inputs=self.input_states_reshaped,
+        self.conv1 = tf.layers.conv2d(inputs=self.input_states,
                                       filters=32, kernel_size=[3, 3],
                                       padding="same", activation=tf.nn.relu)
         self.conv2 = tf.layers.conv2d(inputs=self.conv1, filters=64,
@@ -41,7 +42,7 @@ class PolicyValueNet():
         # 3-2 Full connected layer, the output is the log probability of moves
         # on each slot on the board
         self.action_fc = tf.layers.dense(inputs=self.action_conv_flat,
-                                         units=board_height * board_width,
+                                         units=self.num_actions,
                                          activation=tf.nn.log_softmax)
         # 4 Evaluation Networks
         self.evaluation_conv = tf.layers.conv2d(inputs=self.conv3, filters=2,
@@ -76,15 +77,16 @@ class PolicyValueNet():
         self.labels_2 = tf.placeholder(tf.float32, shape=[None, 7])
         self.labels_1_0 = tf.placeholder(tf.float32, shape=[None, 7])
         self.labels_2_0 = tf.placeholder(tf.float32, shape=[None, 7])
+        self.labelsValue = tf.placeholder(tf.float32, shape=[None])
         # 2. Predictions: the array containing the evaluation score of each state
         # which is self.evaluation_fc2
         # 3-1. Value Loss function
         self.fValueLoss2 = tf.reduce_sum(self.fValue_fc2_2 * self.labels_2,1) / tf.reduce_sum(self.fValue_fc2_2 * self.labels_2_0,1)
         self.fValueLoss1 = tf.reduce_sum(self.fValue_fc2_1 * self.labels_1,1) / tf.reduce_sum(self.fValue_fc2_1 * self.labels_1_0,1)
-        self.value_loss = tf.losses.mean_squared_error(self.labels,self.fValueLoss2 - self.fValueLoss1)
+        self.value_loss = tf.losses.mean_squared_error(self.labelsValue,self.fValueLoss2 - self.fValueLoss1)
         # 3-2. Policy Loss function
         self.mcts_probs = tf.placeholder(
-                tf.float32, shape=[None, board_height * board_width])
+                tf.float32, shape=[None, self.num_actions])
         self.policy_loss = tf.negative(tf.reduce_mean(
                 tf.reduce_sum(tf.multiply(self.mcts_probs, self.action_fc), 1)))
         # 3-3. L2 penalty (regularization)
@@ -121,25 +123,24 @@ class PolicyValueNet():
         input: a batch of states
         output: a batch of action probabilities and state values
         """
-        log_act_probs, value = self.session.run(
+        log_act_probs, value,fvalue1,fvalue2 = self.session.run(
                 [self.action_fc, self.evaluation_fc2,self.fValue_fc2_1,self.fValue_fc2_2],
                 feed_dict={self.input_states: state_batch}
                 )
         act_probs = np.exp(log_act_probs)
-        return act_probs, value
+        return act_probs, value,fvalue1,fvalue2
 
-    def policy_value_fn(self, board):
+    def policy_value_fn(self, battle):
         """
         input: board
         output: a list of (action, probability) tuples for each available
         action and the score of the board state
         """
-        legal_positions = board.availables
-        current_state = np.ascontiguousarray(board.current_state().reshape(
-                -1, 4, self.board_width, self.board_height))
-        act_probs, value = self.policy_value(current_state)
+        legal_positions = battle.curStack.legalMoves()
+        current_state = battle.currentStateFeature()
+        act_probs, value,fvalue1,fvalue2 = self.policy_value([current_state])
         act_probs = zip(legal_positions, act_probs[0][legal_positions])
-        return act_probs, value
+        return act_probs, value,fvalue1[0],fvalue2[0]
 
     def train_step(self, state_batch, mcts_probs, winner_batch, lr):
         """perform a training step"""

@@ -8,6 +8,7 @@ network to guide the tree search and evaluate the leaf nodes
 
 import numpy as np
 import copy
+import policy_value_net_tensorflow
 
 # def rollout_policy_fn(board):
 #     """a coarse, fast version of policy_fn used in the rollout phase."""
@@ -16,14 +17,13 @@ import copy
 #     return zip(board.availables, action_probs)
 
 
-def policy_value_fn(battle):
-    """a function that takes in a state and outputs a list of (action, probability)
-    tuples and a score for the state"""
-    # return uniform probabilities and 0 score for pure MCTS
-    planes = battle.currentStateFeature()
-    legals = battle.curStack.legalMoves()
-    action_probs = np.ones(len(legals))/len(legals)
-    return zip(legals, action_probs), 0
+# def policy_value_fn(battle):
+#     """a function that takes in a state and outputs a list of (action, probability)
+#     tuples and a score for the state"""
+#     # return uniform probabilities and 0 score for pure MCTS
+#     legals = battle.curStack.legalMoves()
+#     action_probs = np.ones(len(legals))/len(legals)
+#     return zip(legals, action_probs), 0
 
 def softmax(x):
     probs = np.exp(x - np.max(x))
@@ -177,7 +177,7 @@ class MCTS(object):
         # Evaluate the leaf using a network which outputs a list of
         # (action, probability) tuples p and also a score v in [-1, 1]
         # for the current player.
-        action_probs, leaf_value = self._policy(state)
+        action_probs, leaf_value,fvalue_me,fvalue_op = self._policy(state)
         # Check for end of game.
         end = state.end()
 
@@ -189,8 +189,9 @@ class MCTS(object):
             if winner == -1:  # tie
                 leaf_value = 0.0
             else:
+                mineBase, mine, oppoBase, oppo = state.getStackBySlots()
                 leaf_value = (
-                    1.0 if winner == self.side else -1.0
+                    (mine*fvalue_me)/(mineBase*fvalue_me) if winner == self.side else -(oppo*fvalue_op)/(oppoBase*fvalue_op)
                 )
 
         # Update value and visit count of nodes in this traversal.

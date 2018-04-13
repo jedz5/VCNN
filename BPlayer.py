@@ -50,13 +50,8 @@ class A:
         self.d = 4
 if __name__ == '__main__':
     #bfield = np.zeros((3,4,5),dtype=int)
-    bfield = [[[0 for k in range(5)]for j in range(4)] for i in range(3)]
 
-    l = [[x for x in range(2,5)],0]
-    a =A()
-    idList = [0, 0, 0, 0, 0]
-    bfield[0][0][l[0]] = [a.a,a.b,a.c]
-    x = range(1,5)
+    x =  [0]*7
     print(x)
     #print([x for x in range(1,5)])
 

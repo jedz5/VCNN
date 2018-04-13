@@ -2,7 +2,8 @@ import random
 import json
 import copy
 import numpy as np
-import mcts_alpha
+import policy_value_net_tensorflow
+#from policy_value_net_tensorflow import PolicyValueNet
 from mcts_alpha import MCTSPlayer
 from enum import Enum
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
@@ -77,6 +78,7 @@ class BStack(object):
         #辅助参数
         self.isDenfenced = False
         self.name = 'unKnown'
+        self.slotId = 0
         self.x = 0
         self.y = 0
         self.isWide = False
@@ -354,6 +356,7 @@ class Battle(object):
                 st.isShooter = isShoot(x)
                 st.blockRetaliate = blockRetaliate(x)
                 st.speed = x['speed']
+                st.slotId = x['slot']
                 st.x = x['x']
                 st.y = x['y']
                 st.inBattle = self
@@ -450,6 +453,20 @@ class Battle(object):
                 elif(aa[i][j]>=0 and aa[i][j] < 50):
                     fillReachable(BHex(i,j))
         return state
+    def getStackBySlots(self):
+        mineBase = [0]*7
+        oppoBase = [0]*7
+        mine = [0]*7
+        oppo = [0]*7
+        for st in self.stacks:
+            if(st.side == 0):
+                mineBase[st.slotId] = st.amountBase
+                mine[st.slotId] = st.amount
+            else:
+                oppoBase[st.slotId] = st.amountBase
+                oppo[st.slotId] = st.amount
+        return mineBase,mine,oppoBase,oppo
+
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
         return ret
@@ -697,7 +714,8 @@ class  BPlayer(object):
         battle = Battle()
         battle.loadFile("D:/project/VCNN/train/selfplay.json")
         battle.checkNewRound()
-        trainer = MCTSPlayer(mcts_alpha.policy_value_fn,c_puct=5,n_playout=50,is_selfplay=1,side=battle.currentPlayer())
+        best_policy = policy_value_net_tensorflow.PolicyValueNet(battle.bFieldWidth - 2,battle.bFieldHeight,battle.bFieldStackPlanes,battle.bTotalFieldSize)
+        trainer = MCTSPlayer(best_policy.policy_value_fn,c_puct=5,n_playout=50,is_selfplay=1,side=battle.currentPlayer())
         states, mcts_probs, current_players = [], [], []
         while (not battle.end()):
             if(is_shown):
