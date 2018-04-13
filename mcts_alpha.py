@@ -189,10 +189,11 @@ class MCTS(object):
             if winner == -1:  # tie
                 leaf_value = 0.0
             else:
-                mineBase, mine, oppoBase, oppo = state.getStackBySlots()
+                leftBase, left, rightBase, right = state.getStackHPBySlots()
                 leaf_value = (
-                    (mine*fvalue_me)/(mineBase*fvalue_me) if winner == self.side else -(oppo*fvalue_op)/(oppoBase*fvalue_op)
+                    (left*fvalue_me)/(leftBase*fvalue_me) - (right*fvalue_op)/(rightBase*fvalue_op)
                 )
+                leaf_value = leaf_value if winner == 0 else -leaf_value
 
         # Update value and visit count of nodes in this traversal.
         stateNode.update_recursive(leaf_value)

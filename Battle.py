@@ -118,7 +118,7 @@ class BStack(object):
                         bf[ii][jj] = self.speed - d
         #accessable  end
         #attackable begin
-        for obs in self.inBattle.obstacles:  #obstacle,enemy and attackable,mine
+        for obs in self.inBattle.obstacles:  #obstacle,enemy and attackable,left
             bf[obs.y][obs.x] = -8
         for sts in self.inBattle.stacks:
             if(not sts.isAlive()):
@@ -453,19 +453,19 @@ class Battle(object):
                 elif(aa[i][j]>=0 and aa[i][j] < 50):
                     fillReachable(BHex(i,j))
         return state
-    def getStackBySlots(self):
-        mineBase = [0]*7
-        oppoBase = [0]*7
-        mine = [0]*7
-        oppo = [0]*7
+    def getStackHPBySlots(self):
+        leftBase = [0]*7
+        rightBase = [0]*7
+        left = [0]*7
+        right = [0]*7
         for st in self.stacks:
             if(st.side == 0):
-                mineBase[st.slotId] = st.amountBase
-                mine[st.slotId] = st.amount
+                leftBase[st.slotId] = st.amountBase * st.health
+                left[st.slotId] = ((st.amount - 1) * st.health + st.firstHPLeft) if st.amount > 0 else 0
             else:
-                oppoBase[st.slotId] = st.amountBase
-                oppo[st.slotId] = st.amount
-        return mineBase,mine,oppoBase,oppo
+                rightBase[st.slotId] = st.amountBase * st.health
+                right[st.slotId] = ((st.amount - 1) * st.health + st.firstHPLeft) if st.amount > 0 else 0
+        return leftBase,left,rightBase,right
 
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
@@ -680,7 +680,7 @@ class  BPlayer(object):
     def getAction(self):
         action = BAction()
         try:
-            act = input("action: ")
+            act = input("请输入: ")
             if isinstance(act,str):
                 ii = act.split(',')
                 acts = [int(a) for a in ii]
@@ -712,7 +712,7 @@ class  BPlayer(object):
         and store the self-play data: (state, mcts_probs, z) for training
         """
         battle = Battle()
-        battle.loadFile("D:/project/VCNN/train/selfplay.json")
+        battle.loadFile("D:/project/VCNN/train/selfplay1.json")
         battle.checkNewRound()
         best_policy = policy_value_net_tensorflow.PolicyValueNet(battle.bFieldWidth - 2,battle.bFieldHeight,battle.bFieldStackPlanes,battle.bTotalFieldSize)
         trainer = MCTSPlayer(best_policy.policy_value_fn,c_puct=5,n_playout=50,is_selfplay=1,side=battle.currentPlayer())

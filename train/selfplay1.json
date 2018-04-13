@@ -46,7 +46,7 @@
 			],
 			"aiValue" : 95,
 			"attack" : 10,
-			"baseAmount" : 5,
+			"baseAmount" : 3,
 			"defense" : 10,
 			"fightValue" : 70,
 			"health" : 3,

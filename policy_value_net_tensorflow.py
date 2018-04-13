@@ -8,20 +8,21 @@ Tested in Tensorflow 1.4 and 1.5
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.contrib.layers.python.layers import utils
 import Battle
 
 #bFieldWidth = 17
 #bFieldHeight = 11
 class PolicyValueNet():
-    def __init__(self, board_width, board_height,planes,num_actions,model_file=None):
-        self.board_width = board_width
-        self.board_height = board_height
+    def __init__(self, bfield_width, bfield_height,planes,num_actions,model_file=None):
+        self.bfield_width = bfield_width
+        self.bfield_height = bfield_height
         self.planes = planes
         self.num_actions = num_actions
         # Define the tensorflow neural network
         # 1. Input:
         self.input_states = tf.placeholder(
-                tf.float32, shape=[None, self.board_height, self.board_width, self.planes])
+                tf.float32, shape=[None, self.bfield_height, self.bfield_width, self.planes])
         # 2. Common Networks Layers
         self.conv1 = tf.layers.conv2d(inputs=self.input_states,
                                       filters=32, kernel_size=[3, 3],
@@ -38,7 +39,7 @@ class PolicyValueNet():
                                             activation=tf.nn.relu)
         # Flatten the tensor
         self.action_conv_flat = tf.reshape(
-                self.action_conv, [-1, 4 * board_height * board_width])
+                self.action_conv, [-1, 4 * bfield_height * bfield_width])
         # 3-2 Full connected layer, the output is the log probability of moves
         # on each slot on the board
         self.action_fc = tf.layers.dense(inputs=self.action_conv_flat,
@@ -50,11 +51,11 @@ class PolicyValueNet():
                                                 padding="same",
                                                 activation=tf.nn.relu)
         self.evaluation_conv_flat = tf.reshape(
-                self.evaluation_conv, [-1, 2 * board_height * board_width])
+                self.evaluation_conv, [-1, 2 * bfield_height * bfield_width])
         self.evaluation_fc1 = tf.layers.dense(inputs=self.evaluation_conv_flat,
                                               units=64, activation=tf.nn.relu)
         # output the score of evaluation on current state
-        self.evaluation_fc2 = tf.layers.dense(inputs=self.evaluation_fc1,
+        self.evaluation_value = tf.layers.dense(inputs=self.evaluation_fc1,
                                               units=1, activation=tf.nn.tanh)
 
         # 5 Evaluation Networks
@@ -63,27 +64,28 @@ class PolicyValueNet():
                                                 padding="same",
                                                 activation=tf.nn.relu)
         self.fValue_conv_flat = tf.reshape(
-            self.fValue_conv, [-1, 2 * board_height * board_width])
+            self.fValue_conv, [-1, 2 * bfield_height * bfield_width])
         self.fValue_fc1 = tf.layers.dense(inputs=self.fValue_conv_flat,
                                               units=64, activation=tf.nn.relu)
         # output the score of evaluation on current state
-        self.fValue_fc2_1 = tf.layers.dense(inputs=self.fValue_fc1,
+        self.fValue_fc_left = tf.layers.dense(inputs=self.fValue_fc1,
                                               units=7, activation=tf.nn.sigmoid)
-        self.fValue_fc2_2 = tf.layers.dense(inputs=self.fValue_fc1,
+        self.fValue_fc_right = tf.layers.dense(inputs=self.fValue_fc1,
                                             units=7, activation=tf.nn.sigmoid)
         # Define the Loss function
         # 1. Label: the array containing if the game wins or not for each state
-        self.labels_1 = tf.placeholder(tf.float32, shape=[None, 7])
-        self.labels_2 = tf.placeholder(tf.float32, shape=[None, 7])
-        self.labels_1_0 = tf.placeholder(tf.float32, shape=[None, 7])
-        self.labels_2_0 = tf.placeholder(tf.float32, shape=[None, 7])
-        self.labelsValue = tf.placeholder(tf.float32, shape=[None])
+        self.labels_left_hp = tf.placeholder(tf.float32, shape=[None, 7])
+        self.labels_right_hp = tf.placeholder(tf.float32, shape=[None, 7])
+        self.labels_left_hp_0 = tf.placeholder(tf.float32, shape=[None, 7])
+        self.labels_right_hp_0 = tf.placeholder(tf.float32, shape=[None, 7])
+        self.labels_side = tf.placeholder(tf.float32, shape=[None,1])
         # 2. Predictions: the array containing the evaluation score of each state
-        # which is self.evaluation_fc2
+        # which is self.evaluation_value
         # 3-1. Value Loss function
-        self.fValueLoss2 = tf.reduce_sum(self.fValue_fc2_2 * self.labels_2,1) / tf.reduce_sum(self.fValue_fc2_2 * self.labels_2_0,1)
-        self.fValueLoss1 = tf.reduce_sum(self.fValue_fc2_1 * self.labels_1,1) / tf.reduce_sum(self.fValue_fc2_1 * self.labels_1_0,1)
-        self.value_loss = tf.losses.mean_squared_error(self.labelsValue,self.fValueLoss2 - self.fValueLoss1)
+        self.fValueLoss2 = tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp,1,keep_dims=True) / tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp_0,1,keep_dims=True)
+        self.fValueLoss1 = tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp,1,keep_dims=True) / tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp_0,1,keep_dims=True)
+        self.fValueLoss1_2 = self.labels_side * (self.fValueLoss1 - self.fValueLoss2)
+        self.value_loss = tf.losses.mean_squared_error(self.evaluation_value,self.fValueLoss1_2)
         # 3-2. Policy Loss function
         self.mcts_probs = tf.placeholder(
                 tf.float32, shape=[None, self.num_actions])
@@ -124,7 +126,7 @@ class PolicyValueNet():
         output: a batch of action probabilities and state values
         """
         log_act_probs, value,fvalue1,fvalue2 = self.session.run(
-                [self.action_fc, self.evaluation_fc2,self.fValue_fc2_1,self.fValue_fc2_2],
+                [self.action_fc, self.evaluation_value,self.fValue_fc_left,self.fValue_fc_right],
                 feed_dict={self.input_states: state_batch}
                 )
         act_probs = np.exp(log_act_probs)

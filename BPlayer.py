@@ -48,11 +48,38 @@ class A:
         self.b = 2
         self.c = 3
         self.d = 4
-if __name__ == '__main__':
-    #bfield = np.zeros((3,4,5),dtype=int)
 
-    x =  [0]*7
-    print(x)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def fib(x):
+    if(x == 1):
+        return 2
+    else:
+        return fib(x - 1)*2
+
+def sum(x):
+    j = 0
+    for y in range(1,x+1):
+        j = j+fib(y)
+    return j
+print(sum(5))
     #print([x for x in range(1,5)])
 
 
