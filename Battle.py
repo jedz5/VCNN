@@ -303,12 +303,12 @@ batId = 0
 class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
-    bFieldStackProps = 19
+    bFieldStackProps = 18
     bFieldStackPlanes = 46
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
     bTotalFieldSize = 2 + 8*bFieldSize
-    def __init__(self):
+    def __init__(self,load_file = 0):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stacks = []
         self.round = 0
@@ -319,6 +319,9 @@ class Battle(object):
         self.stackQueue = []
         self.curStack = 0
         self.batId = 0
+        if(load_file):
+            self.loadFile(load_file)
+            self.checkNewRound()
     def getCopy(self):
         global batId
         batId += 1
@@ -417,10 +420,10 @@ class Battle(object):
     def currentState(self):
         #state = [[[0 for k in range(self.bFieldStackProps)] for j in range(self.bFieldWidth - 2)] for i in range(self.bFieldHeight)]
         state = np.zeros((self.bFieldHeight, self.bFieldWidth - 2, self.bFieldStackProps), dtype=int)
-        planeStruct = [[x for x in range(1,19)],0]
+        planeStruct = [[x for x in range(1,self.bFieldStackProps)],0]
         def fillStack(stack):
             #stack = BStack()
-            state[stack.y][stack.x - 1][planeStruct[0]] = [stack.side,stack.id,stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.health,int(stack.isMoved),int(stack.isRetaliated),int(stack.isWaited),stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter,stack.firstHPLeft]
+            state[stack.y][stack.x - 1][planeStruct[0]] = [stack.side,stack.id,stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.health,int(stack.isMoved),int(stack.isRetaliated),int(stack.isWaited),stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] #,stack.firstHPLeft
         def fillObs(ob):
             state[ob.y][ob.x - 1][planeStruct[1]] = 1
         [fillStack(st) for st in self.stacks]
@@ -465,7 +468,7 @@ class Battle(object):
             else:
                 rightBase[st.slotId] = st.amountBase * st.health
                 right[st.slotId] = ((st.amount - 1) * st.health + st.firstHPLeft) if st.amount > 0 else 0
-        return leftBase,left,rightBase,right
+        return left,leftBase,right,rightBase
 
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
@@ -490,14 +493,14 @@ class Battle(object):
             return BHex(mySelf.y, mySelf.x - 1)
         if(dirct == 4):
             if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y + 1,mySelf.x + 1)
-            else:
-                return BHex(mySelf.y + 1, mySelf.x)
-        if (dirct == 3):
-            if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y + 1, mySelf.x)
+                return BHex(mySelf.y + 1,mySelf.x)
             else:
                 return BHex(mySelf.y + 1, mySelf.x - 1)
+        if (dirct == 3):
+            if (mySelf.y % 2 == 0):
+                return BHex(mySelf.y + 1, mySelf.x + 1)
+            else:
+                return BHex(mySelf.y + 1, mySelf.x)
     def hexToDirection(self,mySelf,hex):
         if(hex.y == mySelf.y - 1):
             if(mySelf.y % 2 == 0): #top left right
@@ -668,16 +671,60 @@ class Battle(object):
         elif (action.type == actionType.spell):
             print("spell not implemented yet")
 
+    def start_self_play(self,player,take_control=0,is_shown=0, temp=1e-3):
+        """ start a self-play game using a MCTS player, reuse the search tree,
+        and store the self-play data: (state, mcts_probs, z) for training
+        """
+        #best_policy = policy_value_net_tensorflow.PolicyValueNet(self.bFieldWidth - 2,self.bFieldHeight,self.bFieldStackPlanes,self.bTotalFieldSize)
+        # if take_control:
+        #     trainer = BPlayer()
+        # else:
+        #     trainer = MCTSPlayer(best_policy.policy_value_fn,c_puct=5,n_playout=100,is_selfplay=1,side=self.currentPlayer())
+
+        states, mcts_probs, current_players,left_bases,right_bases,lefts,rights = [], [], [],[],[],[],[]
+        while (not self.end()):
+            if take_control:
+                printF(self.curStack.acssessableAndAttackable(), self.stacks, self.curStack)
+            actInd,move_probs = player.getAction(self)  #temp=temp,return_prob=1
+            if not take_control:
+                printF(self.curStack.acssessableAndAttackable(), self.stacks, self.curStack)
+            print("-------final action: ",self.action2Str(actInd))
+            legals = self.curStack.legalMoves()
+            if (actInd not in legals):
+                print('...sth  wrong.....')
+            else:
+                # store the data
+                states.append(self.currentStateFeature())
+                mcts_probs.append(move_probs)
+                current_players.append(-1.0 if self.currentPlayer() else 1.0)
+                left, leftBase, right, rightBase = self.getStackHPBySlots()
+                left_bases.append(left)
+                right_bases.append(right)
+            act = self.indexToAction(actInd)
+            self.doAction(act)
+            self.checkNewRound()
+            # update the root node and reuse the search tree
+            if not take_control:
+                player.mcts.update_with_move(actInd, self)
+        winner = self.currentPlayer()
+        if winner != -1:
+            left, leftBase, right, rightBase = self.getStackHPBySlots()
+            [lefts.append(left) for x in range(len(left_bases))]
+            [rights.append(right) for x in range(len(right_bases))]
+        # reset MCTS root node
+        if not take_control:
+            player.reset_player()
+        if winner != -1:
+            print("Game end. Winner is player:", winner)
+        else:
+            print("Game end. Tie")
+        return zip(states, mcts_probs, current_players,lefts,left_bases,rights,right_bases)
 
 
 
 
 class  BPlayer(object):
-    def __init__(self,side):
-        self.side = side
-    def setBattle(self,battle):
-        self.battle = battle
-    def getAction(self):
+    def getAction(self,battle):
         action = BAction()
         try:
             act = input("请输入: ")
@@ -699,68 +746,22 @@ class  BPlayer(object):
         except Exception as e:
             action = 0
             print("Exception:  ",e)
-        return action
-    def collect_selfplay_data(self, n_games=1):
-        """collect self-play data for training"""
-        for i in range(n_games):
-            winner, play_data = self.start_self_play(temp=1.0)
-            play_data = list(play_data)[:]
-            self.episode_len = len(play_data)
-            self.data_buffer.extend(play_data)
-    def start_self_play(self,is_shown=0, temp=1e-3):
-        """ start a self-play game using a MCTS player, reuse the search tree,
-        and store the self-play data: (state, mcts_probs, z) for training
-        """
-        battle = Battle()
-        battle.loadFile("D:/project/VCNN/train/selfplay1.json")
-        battle.checkNewRound()
-        best_policy = policy_value_net_tensorflow.PolicyValueNet(battle.bFieldWidth - 2,battle.bFieldHeight,battle.bFieldStackPlanes,battle.bTotalFieldSize)
-        trainer = MCTSPlayer(best_policy.policy_value_fn,c_puct=5,n_playout=50,is_selfplay=1,side=battle.currentPlayer())
-        states, mcts_probs, current_players = [], [], []
-        while (not battle.end()):
-            if(is_shown):
-                printF(battle.curStack.acssessableAndAttackable(), battle.stacks, battle.curStack)
-            actInd,move_probs = trainer.getAction(battle,temp=temp,return_prob=1)
-            print("-------final action: ",battle.action2Str(actInd))
-            legals = battle.curStack.legalMoves()
-            if (actInd not in legals):
-                print('...sth  wrong.....')
-            else:
-                # store the data
-                states.append(battle.currentState())
-                mcts_probs.append(move_probs)
-                current_players.append(battle.currentPlayer())
-            act = battle.indexToAction(actInd)
-            battle.doAction(act)
-            battle.checkNewRound()
-            # update the root node and reuse the search tree
-            trainer.mcts.update_with_move(actInd, battle)
-        winner = battle.currentPlayer()
-        # winner from the perspective of the current player of each state
-        winners_z = np.zeros(len(current_players))
-        if winner != -1:
-            winners_z[np.array(current_players) == winner] = 1.0
-            winners_z[np.array(current_players) != winner] = -1.0
-        # reset MCTS root node
-        trainer.reset_player(battle)
-        if is_shown:
-            if winner != -1:
-                print("Game end. Winner is player:", winner)
-            else:
-                print("Game end. Tie")
-        return winner, zip(states, mcts_probs, winners_z)
+        actIndex = battle.actionToIndex(action)
+        legals = battle.curStack.acssessableAndAttackable()
+        all_moves = np.zeros((battle.bTotalFieldSize),dtype=float)
+        for i in range(battle.bTotalFieldSize):
+            if i == actIndex:
+                all_moves[i] = 0.6
+            elif i in legals:
+                all_moves[i] = 0.4/len(legals) - 1
+        return actIndex,all_moves
+
 class BAction:
     def __init__(self,type = 0,move = 0,attack = 0,spell=0):
         self.type = type
         self.move = move
         self.attack = attack
         self.spell = spell
-
-
-if __name__ == '__main__':
-    p = BPlayer(0)
-    p.start_self_play()
-
 
     # pl1 = BPlayer(0)
     # pl2 = BPlayer(1)

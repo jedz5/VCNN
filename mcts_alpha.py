@@ -191,7 +191,7 @@ class MCTS(object):
             else:
                 leftBase, left, rightBase, right = state.getStackHPBySlots()
                 leaf_value = (
-                    (left*fvalue_me)/(leftBase*fvalue_me) - (right*fvalue_op)/(rightBase*fvalue_op)
+                    sum(left*fvalue_me)/sum(leftBase*fvalue_me) - sum(right*fvalue_op)/sum(rightBase*fvalue_op)
                 )
                 leaf_value = leaf_value if winner == 0 else -leaf_value
 
@@ -249,7 +249,7 @@ class MCTSPlayer(object):
     def reset_player(self,battle):
         self.mcts.update_with_move(-1,battle)
 
-    def getAction(self, battle, temp=1e-3, return_prob=0):
+    def getAction(self, battle, temp=1e-3, return_prob=1):
         sensible_moves = battle.curStack.legalMoves()
         move_probs = np.zeros(battle.bTotalFieldSize)
         if len(sensible_moves) > 0:

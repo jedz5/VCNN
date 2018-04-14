@@ -144,14 +144,17 @@ class PolicyValueNet():
         act_probs = zip(legal_positions, act_probs[0][legal_positions])
         return act_probs, value,fvalue1[0],fvalue2[0]
 
-    def train_step(self, state_batch, mcts_probs, winner_batch, lr):
+    def train_step(self, state_batch, mcts_probs, side_batch,labels_left_hp,labels_left_hp_0,labels_right_hp,labels_right_hp_0, lr):
         """perform a training step"""
-        winner_batch = np.reshape(winner_batch, (-1, 1))
         loss, entropy, _ = self.session.run(
                 [self.loss, self.entropy, self.optimizer],
                 feed_dict={self.input_states: state_batch,
                            self.mcts_probs: mcts_probs,
-                           self.labels: winner_batch,
+                           self.labels_side: side_batch,
+                           self.labels_left_hp : labels_left_hp,
+                           self.labels_left_hp_0:labels_left_hp_0,
+                           self.labels_right_hp:labels_right_hp,
+                           self.labels_right_hp_0:labels_right_hp_0,
                            self.learning_rate: lr})
         return loss, entropy
 

@@ -49,37 +49,19 @@ class A:
         self.c = 3
         self.d = 4
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def fib(x):
-    if(x == 1):
-        return 2
-    else:
-        return fib(x - 1)*2
-
-def sum(x):
-    j = 0
-    for y in range(1,x+1):
-        j = j+fib(y)
-    return j
-print(sum(5))
-    #print([x for x in range(1,5)])
-
+if __name__ == '__main__':
+    state = np.ones((11,15,46),dtype=float)
+    #np.save('state',state)
+    props = np.ones((1000),dtype=float)
+    #np.save('props', props)
+    l = [3 for y in range(7) for x in range(4)]
+    a = np.zeros((5,7),dtype=float)
+    a[0] = 2
+    a[1:][:] = l
+    np.savez('input_label',state,props,a)
+    b = np.load('input_label.npz')
+    st = b['arr_0']
+    pr = b['arr_1']
+    a = b['arr_2']
+    print(b)
 
