@@ -32,7 +32,7 @@ class TrainPipeline():
         self.batch_size = 512  # mini-batch size for training
         self.data_buffer = deque(maxlen=self.buffer_size)
         self.play_batch_size = 1
-        self.epochs = 5  # num of train_steps for each update
+        self.epochs = 1000  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
         self.game_batch_num = 1500
@@ -40,28 +40,30 @@ class TrainPipeline():
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = 1000
+        self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
+        if init_model:
+            # start training from an initial policy-value net
+            self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
+                                                   bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize,
+                                                   model_file=init_model)
+        else:
+            # start training from a new policy-value net
+            self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
+                                                   bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize)
 
+        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=100, is_selfplay=1,side=self.tmp_battle.currentPlayer())
 
     def collect_selfplay_data(self, n_games=1,take_control=0,init_model = 0):
         """collect self-play data for training"""
+        if take_control:
+            self.mcts_player = bat.BPlayer()
         for i in range(n_games):
-            tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
-            if init_model:
-                # start training from an initial policy-value net
-                self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
-                                                       bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize,
-                                                       model_file=init_model)
+            self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
+            if take_control:
+                play_data = np.load('play_data.npy')
             else:
-                # start training from a new policy-value net
-                self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
-                                                       bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize)
-            if not take_control:
-                self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=100, is_selfplay=1,
-                                          side=tmp_battle.currentPlayer())
-            else:
-                self.mcts_player = bat.BPlayer()
-            play_data = tmp_battle.start_self_play(self.mcts_player,take_control,temp=1.0)
-            play_data = list(play_data)[:]
+                play_data = self.tmp_battle.start_self_play(self.mcts_player,take_control,temp=1.0)
+                play_data = list(play_data)[:]
             self.episode_len = len(play_data)
             self.data_buffer.extend(play_data)
 
@@ -76,20 +78,22 @@ class TrainPipeline():
         left_base_batch = [data[4] for data in mini_batch]
         right_batch = [data[5] for data in mini_batch]
         right_base_batch = [data[6] for data in mini_batch]
-        old_probs, old_v = self.policy_value_net.policy_value(state_batch)
+        old_probs, old_value, fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
         for i in range(self.epochs):
             loss, entropy = self.policy_value_net.train_step(
                     state_batch,
                     mcts_probs_batch,
                     side_batch,left_batch,left_base_batch,right_batch,right_base_batch,
                     self.learn_rate*self.lr_multiplier)
-            new_probs, new_v = self.policy_value_net.policy_value(state_batch)
+            new_probs, new_v,fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
+            side_batch_tmp = [x[0] for x in side_batch]
+            computedVaue = side_batch_tmp*((fvalue_left*left_batch).sum(axis=1)/(fvalue_left*left_base_batch).sum(axis=1) - (fvalue_right*right_batch).sum(axis=1)/(fvalue_right*right_base_batch).sum(axis=1))
             kl = np.mean(np.sum(old_probs * (
                     np.log(old_probs + 1e-10) - np.log(new_probs + 1e-10)),
                     axis=1)
             )
-            if kl > self.kl_targ * 4:  # early stopping if D_KL diverges badly
-                break
+            # if kl > self.kl_targ * 4:  # early stopping if D_KL diverges badly
+            #     break
         # adaptively adjust the learning rate
         if kl > self.kl_targ * 2 and self.lr_multiplier > 0.1:
             self.lr_multiplier /= 1.5
@@ -137,42 +141,36 @@ class TrainPipeline():
                 self.pure_mcts_playout_num,
                 win_cnt[1], win_cnt[2], win_cnt[-1]))
         return win_ratio
-    def saveInputData(self,dat,file):
-        state = dat[0]
-        props = dat[1]
-        labels = np.zeros((5, 7), dtype=float)
-        labels[0] = dat[3]
-
-        np.savez('input_label', state, props, a)
 
     def run(self):
         """run the training pipeline"""
         try:
             for i in range(self.game_batch_num):
-                self.collect_selfplay_data(self.play_batch_size,1)
+                self.collect_selfplay_data(self.play_batch_size,0)
                 print("batch i:{}, episode_len:{}".format(
                         i+1, self.episode_len))
                 #if len(self.data_buffer) > self.batch_size:
                 loss, entropy = self.policy_update()
                 # check the performance of the current model,
                 # and save the model params
-                if (i+1) % self.check_freq == 0:
-                    print("current self-play batch: {}".format(i+1))
-                    win_ratio = self.policy_evaluate()
-                    self.policy_value_net.save_model('./current_policy.model')
-                    if win_ratio > self.best_win_ratio:
-                        print("New best policy!!!!!!!!")
-                        self.best_win_ratio = win_ratio
-                        # update the best_policy
-                        self.policy_value_net.save_model('./best_policy.model')
-                        if (self.best_win_ratio == 1.0 and
-                                self.pure_mcts_playout_num < 5000):
-                            self.pure_mcts_playout_num += 1000
-                            self.best_win_ratio = 0.0
+                self.policy_value_net.save_model('./model/current_policy.model')
+                # if (i+1) % self.check_freq == 0:
+                #     print("current self-play batch: {}".format(i+1))
+                #     win_ratio = self.policy_evaluate()
+                #     self.policy_value_net.save_model('./current_policy.model')
+                #     if win_ratio > self.best_win_ratio:
+                #         print("New best policy!!!!!!!!")
+                #         self.best_win_ratio = win_ratio
+                #         # update the best_policy
+                #         self.policy_value_net.save_model('./best_policy.model')
+                #         if (self.best_win_ratio == 1.0 and
+                #                 self.pure_mcts_playout_num < 5000):
+                #             self.pure_mcts_playout_num += 1000
+                #             self.best_win_ratio = 0.0
         except KeyboardInterrupt:
             print('\n\rquit')
 
 
 if __name__ == '__main__':
-    training_pipeline = TrainPipeline()
+    training_pipeline = TrainPipeline('./model/current_policy.model')
     training_pipeline.run()

@@ -50,18 +50,20 @@ class A:
         self.d = 4
 
 if __name__ == '__main__':
-    state = np.ones((11,15,46),dtype=float)
+    state = [np.ones((11,15,46),dtype=float)for x in range(5)]
     #np.save('state',state)
-    props = np.ones((1000),dtype=float)
+    props = [np.ones((1000),dtype=float)for x in range(5)]
     #np.save('props', props)
-    l = [3 for y in range(7) for x in range(4)]
-    a = np.zeros((5,7),dtype=float)
-    a[0] = 2
-    a[1:][:] = l
-    np.savez('input_label',state,props,a)
-    b = np.load('input_label.npz')
-    st = b['arr_0']
-    pr = b['arr_1']
-    a = b['arr_2']
+    side = [10 for x in range(5)]
+    zp = zip(state,props,side,[ [3 for y in range(7)]for x in range(5)],[ [2 for y in range(7)]for x in range(5)])
+    play_data = list(zp)[:]
+    # l = [ [3 for y in range(7)]for x in range(5)]
+    # a = np.zeros((5,7),dtype=float)
+    # a[0] = 2
+    # a[1:][:] = l
+    #np.save('input_label',play_data)
+    b = [[-1.0], [1.0], [-1.0], [1.0], [-1.0], [1.0], [-1.0], [1.0]]
+    b = [x[0] for x in b]
+    b = [[x] for x in b]
     print(b)
 

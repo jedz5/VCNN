@@ -189,7 +189,7 @@ class MCTS(object):
             if winner == -1:  # tie
                 leaf_value = 0.0
             else:
-                leftBase, left, rightBase, right = state.getStackHPBySlots()
+                left, leftBase, right, rightBase = state.getStackHPBySlots()
                 leaf_value = (
                     sum(left*fvalue_me)/sum(leftBase*fvalue_me) - sum(right*fvalue_op)/sum(rightBase*fvalue_op)
                 )

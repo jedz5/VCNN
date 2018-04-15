@@ -125,12 +125,12 @@ class PolicyValueNet():
         input: a batch of states
         output: a batch of action probabilities and state values
         """
-        log_act_probs, value,fvalue1,fvalue2 = self.session.run(
+        log_act_probs, value,fvalue_left,fvalue_right = self.session.run(
                 [self.action_fc, self.evaluation_value,self.fValue_fc_left,self.fValue_fc_right],
                 feed_dict={self.input_states: state_batch}
                 )
         act_probs = np.exp(log_act_probs)
-        return act_probs, value,fvalue1,fvalue2
+        return act_probs, value,fvalue_left,fvalue_right
 
     def policy_value_fn(self, battle):
         """
@@ -140,9 +140,9 @@ class PolicyValueNet():
         """
         legal_positions = battle.curStack.legalMoves()
         current_state = battle.currentStateFeature()
-        act_probs, value,fvalue1,fvalue2 = self.policy_value([current_state])
+        act_probs, value, fvalue_left, fvalue_right = self.policy_value([current_state])
         act_probs = zip(legal_positions, act_probs[0][legal_positions])
-        return act_probs, value,fvalue1[0],fvalue2[0]
+        return act_probs, value,fvalue_left[0],fvalue_right[0]
 
     def train_step(self, state_batch, mcts_probs, side_batch,labels_left_hp,labels_left_hp_0,labels_right_hp,labels_right_hp_0, lr):
         """perform a training step"""

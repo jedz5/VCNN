@@ -147,15 +147,14 @@ class BStack(object):
         if(self.isShooter):
             if(not shoot or half ):
                 damage = int(damage/2)
+        print('make {} damage'.format(damage))
         hpInAll = opposite.health*(opposite.amount-1) + opposite.firstHPLeft
         if(damage >= hpInAll):
             killed = opposite.amount
             firstHPLeft = 0
         else:
-            rest = int((hpInAll - damage)/opposite.health)+1
-            firstHPLeft = (hpInAll - damage)%opposite.health
-            if(firstHPLeft == 0):
-                firstHPLeft = opposite.health
+            rest = int((hpInAll - damage - 1)/opposite.health) + 1
+            firstHPLeft = (hpInAll - damage - 1)%opposite.health + 1
             killed = opposite.amount - rest
         print("killed {} {},firstHPLeft {}".format(killed,opposite.name,firstHPLeft))
         return killed,firstHPLeft
@@ -696,7 +695,7 @@ class Battle(object):
                 # store the data
                 states.append(self.currentStateFeature())
                 mcts_probs.append(move_probs)
-                current_players.append(-1.0 if self.currentPlayer() else 1.0)
+                current_players.append([-1.0] if self.currentPlayer() else [1.0])
                 left, leftBase, right, rightBase = self.getStackHPBySlots()
                 left_bases.append(left)
                 right_bases.append(right)
