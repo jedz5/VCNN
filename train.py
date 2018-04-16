@@ -58,7 +58,7 @@ class TrainPipeline():
         if take_control:
             self.mcts_player = bat.BPlayer()
         for i in range(n_games):
-            self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay.json")
+            self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
             if take_control:
                 play_data = np.load('play_data.npy')
             else:

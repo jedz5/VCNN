@@ -31,7 +31,7 @@ def softmax(x):
     return probs
 
 class StateNode(object):
-    def __init__(self,parent,side,left_base,right_base):
+    def __init__(self,parent,side,left_base,right_base,name=0):
         self._parent = parent
         self.side = side
         self._actions = {}  # a map from action to TreeNode
@@ -39,6 +39,7 @@ class StateNode(object):
         self._Q = 0
         self.left_base = left_base
         self.right_base = right_base
+        self.name = name
     def expand(self, action_priors,left_value,right_value):
         """Expand tree by creating new children.
         action_priors: a list of tuples of actions and their prior probability
@@ -95,7 +96,7 @@ class ActionNode(object):
     its visit-count-adjusted prior score u.
     """
 
-    def __init__(self, parent, prior_p,side):
+    def __init__(self, parent, prior_p,side,name=0):
         self._parent = parent
         self.side = side
         self._states = {}  # states hash
@@ -104,12 +105,12 @@ class ActionNode(object):
         self._Q = 0
         self._u = 0
         self._P = prior_p
-
+        self.name = name
     def setCurentState(self,gameState):
         stateHash = gameState.getHash()
         if stateHash not in self._states.keys():
             left, leftBase, right, rightBase = gameState.getStackHPBySlots()
-            self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right)
+            self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right,gameState.curStack.name)
         else:
             print('found same hash ')
         self.curState = self._states[stateHash]
@@ -166,7 +167,7 @@ class MCTS(object):
         """
         side = battle.currentPlayer()
         left, leftBase, right, rightBase = battle.getStackHPBySlots()
-        self._root = StateNode(None,side,left,right)
+        self._root = StateNode(None,side,left,right,battle.curStack.name)
         self._policy = policy_value_fn
         self._c_puct = c_puct
         self._n_playout = n_playout
@@ -201,8 +202,6 @@ class MCTS(object):
         end = state.end()
         if not end:
             stateNode.expand(action_probs,fvalue_left,fvalue_right)
-            if stateNode._parent and stateNode.side != stateNode._parent.side:
-                leaf_value = -leaf_value
             stateNode.update_recursive(0,0,leaf_value)
         else:
             # for end state，return the "true" leaf_value
@@ -248,7 +247,7 @@ class MCTS(object):
             self._root._parent = None
         else:
             left, leftBase, right, rightBase = battle.getStackHPBySlots()
-            self._root = StateNode(None,battle.currentPlayer(),left,right)
+            self._root = StateNode(None,battle.currentPlayer(),left,right,battle.curStack.name)
 
     def __str__(self):
         return "MCTS"
