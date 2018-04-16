@@ -2,9 +2,6 @@ import random
 import json
 import copy
 import numpy as np
-import policy_value_net_tensorflow
-#from policy_value_net_tensorflow import PolicyValueNet
-from mcts_alpha import MCTSPlayer
 from enum import Enum
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
 
@@ -361,6 +358,8 @@ class Battle(object):
                 st.slotId = x['slot']
                 st.x = x['x']
                 st.y = x['y']
+                if('shots' in x):
+                    st.shots = x['shots']
                 st.inBattle = self
                 self.stacks.append(st)
 
@@ -726,13 +725,13 @@ class  BPlayer(object):
     def getAction(self,battle):
         action = BAction()
         try:
-            act = input("请输入: ")
+            act = input("input: ")
             if isinstance(act,str):
                 ii = act.split(',')
                 acts = [int(a) for a in ii]
                 action.type = actionType(acts[0])
                 if(action.type == actionType.wait or action.type == actionType.defend):
-                    return action
+                    pass
                 elif(action.type == actionType.move):
                     action.move = BHex(acts[1],acts[2])
                 elif(action.type == actionType.attack):

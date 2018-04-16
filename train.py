@@ -51,19 +51,20 @@ class TrainPipeline():
             self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
                                                    bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize)
 
-        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=100, is_selfplay=1,side=self.tmp_battle.currentPlayer())
+        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=100, is_selfplay=1,battle=self.tmp_battle)
 
     def collect_selfplay_data(self, n_games=1,take_control=0,init_model = 0):
         """collect self-play data for training"""
         if take_control:
             self.mcts_player = bat.BPlayer()
         for i in range(n_games):
-            self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
+            self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay.json")
             if take_control:
                 play_data = np.load('play_data.npy')
             else:
                 play_data = self.tmp_battle.start_self_play(self.mcts_player,take_control,temp=1.0)
                 play_data = list(play_data)[:]
+                #np.save('play_data.npy',play_data)
             self.episode_len = len(play_data)
             self.data_buffer.extend(play_data)
 
@@ -120,33 +121,33 @@ class TrainPipeline():
                         # explained_var_new))
         return loss, entropy
 
-    def policy_evaluate(self, n_games=10):
-        """
-        Evaluate the trained policy by playing against the pure MCTS player
-        Note: this is only for monitoring the progress of training
-        """
-        current_mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
-                                         c_puct=self.c_puct,
-                                         n_playout=self.n_playout)
-        pure_mcts_player = bat.Battle.BPlayer()
-        win_cnt = defaultdict(int)
-        for i in range(n_games):
-            winner = self.game.start_play(current_mcts_player,
-                                          pure_mcts_player,
-                                          start_player=i % 2,
-                                          is_shown=0)
-            win_cnt[winner] += 1
-        win_ratio = 1.0*(win_cnt[1] + 0.5*win_cnt[-1]) / n_games
-        print("num_playouts:{}, win: {}, lose: {}, tie:{}".format(
-                self.pure_mcts_playout_num,
-                win_cnt[1], win_cnt[2], win_cnt[-1]))
-        return win_ratio
+    # def policy_evaluate(self, n_games=10):
+    #     """
+    #     Evaluate the trained policy by playing against the pure MCTS player
+    #     Note: this is only for monitoring the progress of training
+    #     """
+    #     current_mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
+    #                                      c_puct=self.c_puct,
+    #                                      n_playout=self.n_playout)
+    #     pure_mcts_player = bat.Battle.BPlayer()
+    #     win_cnt = defaultdict(int)
+    #     for i in range(n_games):
+    #         winner = self.game.start_play(current_mcts_player,
+    #                                       pure_mcts_player,
+    #                                       start_player=i % 2,
+    #                                       is_shown=0)
+    #         win_cnt[winner] += 1
+    #     win_ratio = 1.0*(win_cnt[1] + 0.5*win_cnt[-1]) / n_games
+    #     print("num_playouts:{}, win: {}, lose: {}, tie:{}".format(
+    #             self.pure_mcts_playout_num,
+    #             win_cnt[1], win_cnt[2], win_cnt[-1]))
+    #     return win_ratio
 
     def run(self):
         """run the training pipeline"""
         try:
             for i in range(self.game_batch_num):
-                self.collect_selfplay_data(self.play_batch_size,0)
+                self.collect_selfplay_data(self.play_batch_size,0,'./model/current_policy.model')
                 print("batch i:{}, episode_len:{}".format(
                         i+1, self.episode_len))
                 #if len(self.data_buffer) > self.batch_size:

@@ -31,17 +31,21 @@ def softmax(x):
     return probs
 
 class StateNode(object):
-    def __init__(self,parent,side):
+    def __init__(self,parent,side,left_base,right_base):
         self._parent = parent
         self.side = side
         self._actions = {}  # a map from action to TreeNode
         self._n_visits = 0
         self._Q = 0
-    def expand(self, action_priors):
+        self.left_base = left_base
+        self.right_base = right_base
+    def expand(self, action_priors,left_value,right_value):
         """Expand tree by creating new children.
         action_priors: a list of tuples of actions and their prior probability
             according to the policy function.
         """
+        self.left_value = left_value
+        self.right_value = right_value
         for action, prob in action_priors:
             if action not in self._actions:
                 self._actions[action] = ActionNode(self, prob,self.side)
@@ -53,25 +57,31 @@ class StateNode(object):
         """
         return max(self._actions.items(),
                    key=lambda act_node: act_node[1].get_value(c_puct))
-    def update(self, leaf_value):
+    def update(self, left,right,value = -2):
         """Update node values from leaf evaluation.
         leaf_value: the value of subtree evaluation from the current player's
             perspective.
         """
         # Count visit.
         self._n_visits += 1
+        if value != -2:
+            leaf_value = value
+        else:
+            leaf_value = (left*self.left_value).sum()/(self.left_base*self.left_value).sum() - (right*self.right_value).sum()/(self.right_base*self.right_value).sum()
+            if self.side == 1:
+                leaf_value = -leaf_value
         # Update Q, a running average of values for all visits.
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
-    def update_recursive(self, leaf_value):
+    def update_recursive(self, left,right,value = -2):
         """Like a call to update(), but applied recursively for all ancestors.
         """
         # If it is not root, this node's parent should be updated first.
+
+        self.update(left,right,value)
         if self._parent:
-            if(self._parent.side == self.side):
-                self._parent.update_recursive(leaf_value)
-            else:
-                self._parent.update_recursive(-leaf_value)
-        self.update(leaf_value)
+            if value != -2 and self.side != self._parent.side:
+                value = -value
+            self._parent.update_recursive(left,right,value)
 
     def is_leaf(self):
         """Check if leaf node (i.e. no nodes below this have been expanded)."""
@@ -98,27 +108,34 @@ class ActionNode(object):
     def setCurentState(self,gameState):
         stateHash = gameState.getHash()
         if stateHash not in self._states.keys():
-            self._states[stateHash] = StateNode(self,gameState.currentPlayer())
+            left, leftBase, right, rightBase = gameState.getStackHPBySlots()
+            self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right)
         else:
             print('found same hash ')
         self.curState = self._states[stateHash]
-    def update(self, leaf_value):
+    def update(self, left,right,value = -2):
         """Update node values from leaf evaluation.
         leaf_value: the value of subtree evaluation from the current player's
             perspective.
         """
         # Count visit.
         self._n_visits += 1
-        # Update Q, a running average of values for all visits.
+        if value != -2:
+            leaf_value = value
+        else:
+            leaf_value = (left * self._parent.left_value).sum() / (self._parent.left_base * self._parent.left_value).sum() - (right * self._parent.right_value).sum() / (self._parent.right_base * self._parent.right_value).sum()
+            # Update Q, a running average of values for all visits.
+            if self.side == 1:
+                leaf_value = -leaf_value
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
 
-    def update_recursive(self, leaf_value):
+    def update_recursive(self, left,right,value = -2):
         """Like a call to update(), but applied recursively for all ancestors.
         """
         # If it is not root, this node's parent should be updated first.
+        self.update(left,right,value)
         if self._parent:
-            self._parent.update_recursive(leaf_value)
-        self.update(leaf_value)
+            self._parent.update_recursive(left,right,value)
 
     def get_value(self, c_puct):
         """Calculate and return the value for this node.
@@ -137,7 +154,7 @@ class ActionNode(object):
 class MCTS(object):
     """An implementation of Monte Carlo Tree Search."""
 
-    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000,side = 0):
+    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000,battle = 0):
         """
         policy_value_fn: a function that takes in a board state and outputs
             a list of (action, probability) tuples and also a score in [-1, 1]
@@ -147,7 +164,9 @@ class MCTS(object):
             converges to the maximum-value policy. A higher value means
             relying on the prior more.
         """
-        self._root = StateNode(None,side)
+        side = battle.currentPlayer()
+        left, leftBase, right, rightBase = battle.getStackHPBySlots()
+        self._root = StateNode(None,side,left,right)
         self._policy = policy_value_fn
         self._c_puct = c_puct
         self._n_playout = n_playout
@@ -177,26 +196,26 @@ class MCTS(object):
         # Evaluate the leaf using a network which outputs a list of
         # (action, probability) tuples p and also a score v in [-1, 1]
         # for the current player.
-        action_probs, leaf_value,fvalue_me,fvalue_op = self._policy(state)
+        action_probs, leaf_value,fvalue_left,fvalue_right = self._policy(state)
         # Check for end of game.
         end = state.end()
-
         if not end:
-            stateNode.expand(action_probs)
+            stateNode.expand(action_probs,fvalue_left,fvalue_right)
+            if stateNode._parent and stateNode.side != stateNode._parent.side:
+                leaf_value = -leaf_value
+            stateNode.update_recursive(0,0,leaf_value)
         else:
             # for end state，return the "true" leaf_value
             winner = state.currentPlayer()
             if winner == -1:  # tie
                 leaf_value = 0.0
+                stateNode.update_recursive(0,0,leaf_value)
             else:
                 left, leftBase, right, rightBase = state.getStackHPBySlots()
-                leaf_value = (
-                    sum(left*fvalue_me)/sum(leftBase*fvalue_me) - sum(right*fvalue_op)/sum(rightBase*fvalue_op)
-                )
-                leaf_value = leaf_value if winner == 0 else -leaf_value
+                stateNode.update_recursive(left,right)
 
         # Update value and visit count of nodes in this traversal.
-        stateNode.update_recursive(leaf_value)
+
 
     def get_move_probs(self, battle, temp=1e-3):
         """Run all playouts sequentially and return the available actions and
@@ -228,7 +247,8 @@ class MCTS(object):
             self._root = stateNode
             self._root._parent = None
         else:
-            self._root = StateNode(None,battle.currentPlayer())
+            left, leftBase, right, rightBase = battle.getStackHPBySlots()
+            self._root = StateNode(None,battle.currentPlayer(),left,right)
 
     def __str__(self):
         return "MCTS"
@@ -238,8 +258,9 @@ class MCTSPlayer(object):
     """AI player based on MCTS"""
 
     def __init__(self, policy_value_function,
-                 c_puct=5, n_playout=2000, is_selfplay=0,side=0):
-        self.mcts = MCTS(policy_value_function, c_puct, n_playout,side)
+                 c_puct=5, n_playout=2000, is_selfplay=0,battle = 0):
+        side = battle.currentPlayer()
+        self.mcts = MCTS(policy_value_function, c_puct, n_playout,battle)
         self._is_selfplay = is_selfplay
         self.player = side
 
