@@ -40,7 +40,7 @@ class TrainPipeline():
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = 1000
-        self.tmp_battle = bat.Battle("D:/project/VCNN/train/selfplay1.json")
+        self.tmp_battle = bat.Battle("./train/selfplay1.json")
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
