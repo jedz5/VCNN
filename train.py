@@ -172,8 +172,8 @@ class TrainPipeline():
                 #                 self.pure_mcts_playout_num < 5000):
                 #             self.pure_mcts_playout_num += 1000
                 #             self.best_win_ratio = 0.0
-        except KeyboardInterrupt:
-            logger.info('\n\rquit')
+        except Exception as e:
+            logger.error(e)
 
 
 if __name__ == '__main__':
