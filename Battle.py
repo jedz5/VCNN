@@ -4,7 +4,8 @@ import copy
 import numpy as np
 from enum import Enum
 import logging
-logging.basicConfig(level=logging.INFO)
+
+logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log')
 handler.setLevel(logging.INFO)

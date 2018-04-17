@@ -206,6 +206,8 @@ class MCTS(object):
             stateNode.update_recursive(0,0,leaf_value)
         else:
             # for end state，return the "true" leaf_value
+            stateNode.left_value = fvalue_left
+            stateNode.right_value = fvalue_right
             winner = state.currentPlayer()
             if winner == -1:  # tie
                 leaf_value = 0.0
