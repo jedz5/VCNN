@@ -68,10 +68,12 @@ class StateNode(object):
         self._n_visits += 1
         if value != -2:
             leaf_value = value
+            logger.info('{} side {} update leaf_value = {}'.format(self.name, self.side, leaf_value))
         else:
-            leaf_value = (left*self.left_value).sum()/(self.left_base*self.left_value).sum() - (right*self.right_value).sum()/(self.right_base*self.right_value).sum()
+            leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
             if self.side == 1:
                 leaf_value = -leaf_value
+            logger.info('{} side {} update from simulate leaf_value = {}'.format(self.name,self.side,leaf_value))
         # Update Q, a running average of values for all visits.
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
     def update_recursive(self, left,right,value = -2):
@@ -125,7 +127,7 @@ class ActionNode(object):
         if value != -2:
             leaf_value = value
         else:
-            leaf_value = (left * self._parent.left_value).sum() / (self._parent.left_base * self._parent.left_value).sum() - (right * self._parent.right_value).sum() / (self._parent.right_base * self._parent.right_value).sum()
+            leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
             # Update Q, a running average of values for all visits.
             if self.side == 1:
                 leaf_value = -leaf_value
@@ -288,7 +290,7 @@ class MCTSPlayer(object):
                 # to choosing the move with the highest prob
                 move = np.random.choice(acts, p=probs)
                 # reset the root node
-                self.mcts.update_with_move(-1)
+                self.mcts.update_with_move(-1,battle)
 #                location = board.move_to_location(move)
 #                logger.info("AI move: %d,%d\n" % (location[0], location[1]))
 

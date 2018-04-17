@@ -11,7 +11,7 @@ import numpy as np
 from collections import defaultdict, deque
 import Battle as bat
 from mcts_alpha import MCTSPlayer
-
+import traceback
 #from policy_value_net import PolicyValueNet  # Theano and Lasagne
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
@@ -174,6 +174,7 @@ class TrainPipeline():
                 #             self.best_win_ratio = 0.0
         except Exception as e:
             logger.error(e)
+            traceback.print_exc()
 
 
 if __name__ == '__main__':

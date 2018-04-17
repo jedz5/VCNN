@@ -83,8 +83,8 @@ class PolicyValueNet():
         # 2. Predictions: the array containing the evaluation score of each state
         # which is self.evaluation_value
         # 3-1. Value Loss function
-        self.fValueLoss2 = tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp,1,keep_dims=True) / tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp_0,1,keep_dims=True)
-        self.fValueLoss1 = tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp,1,keep_dims=True) / tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp_0,1,keep_dims=True)
+        self.fValueLoss2 = tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp,1,keep_dims=True) / (tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp_0,1,keep_dims=True)+1e-10)
+        self.fValueLoss1 = tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp,1,keep_dims=True) / (tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp_0,1,keep_dims=True)+1e-10)
         self.fValueLoss1_2 = self.labels_side * (self.fValueLoss1 - self.fValueLoss2)
         self.value_loss = tf.losses.mean_squared_error(self.evaluation_value,self.fValueLoss1_2)
         # 3-2. Policy Loss function
