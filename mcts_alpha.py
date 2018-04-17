@@ -113,7 +113,7 @@ class ActionNode(object):
             left, leftBase, right, rightBase = gameState.getStackHPBySlots()
             self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right,gameState.curStack.name)
         else:
-            logger.info('found same hash ')
+            logger.debug('found same hash ')
         self.curState = self._states[stateHash]
     def update(self, left,right,value = -2):
         """Update node values from leaf evaluation.
@@ -184,13 +184,11 @@ class MCTS(object):
         while(1):
             if stateNode.is_leaf():
                 break
-            if(level > 0):
-                logger.info('level: {}'.format(level) )
             level += 1
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
-            logger.info("{} playout {} action {}".format(state.batId,state.curStack.name,state.action2Str(action_id)))
+            logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
             actionNode.setCurentState(state)
