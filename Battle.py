@@ -9,6 +9,8 @@ logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(le
 logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log')
 handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
 
