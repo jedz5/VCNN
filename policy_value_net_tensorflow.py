@@ -10,7 +10,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import utils
 import Battle
-
+import logging
+from Battle import logger
 #bFieldWidth = 17
 #bFieldHeight = 11
 class PolicyValueNet():

@@ -9,7 +9,8 @@ network to guide the tree search and evaluate the leaf nodes
 import numpy as np
 import copy
 import policy_value_net_tensorflow
-
+import logging
+from Battle import logger
 # def rollout_policy_fn(board):
 #     """a coarse, fast version of policy_fn used in the rollout phase."""
 #     # rollout randomly
@@ -112,7 +113,7 @@ class ActionNode(object):
             left, leftBase, right, rightBase = gameState.getStackHPBySlots()
             self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right,gameState.curStack.name)
         else:
-            print('found same hash ')
+            logger.info('found same hash ')
         self.curState = self._states[stateHash]
     def update(self, left,right,value = -2):
         """Update node values from leaf evaluation.
@@ -184,12 +185,12 @@ class MCTS(object):
             if stateNode.is_leaf():
                 break
             if(level > 0):
-                print('level: ', level)
+                logger.info('level: {}'.format(level) )
             level += 1
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
-            print("{} playout {} action {}".format(state.batId,state.curStack.name,state.action2Str(action_id)))
+            logger.info("{} playout {} action {}".format(state.batId,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
             actionNode.setCurentState(state)
@@ -225,7 +226,7 @@ class MCTS(object):
         for n in range(self._n_playout):
             state_copy = battle.getCopy()
             self._playout(state_copy)
-            #print(state_copy.path)
+            #logger.info(state_copy.path)
 
         # calc the move probabilities based on visit counts at the root node
         act_visits = [(act, node._n_visits)
@@ -289,14 +290,14 @@ class MCTSPlayer(object):
                 # reset the root node
                 self.mcts.update_with_move(-1)
 #                location = board.move_to_location(move)
-#                print("AI move: %d,%d\n" % (location[0], location[1]))
+#                logger.info("AI move: %d,%d\n" % (location[0], location[1]))
 
             if return_prob:
                 return move, move_probs
             else:
                 return move
         else:
-            print("WARNING: the board is full")
+            logger.info("WARNING: the board is full")
 
     def __str__(self):
         return "MCTS {}".format(self.player)

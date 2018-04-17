@@ -11,11 +11,12 @@ import numpy as np
 from collections import defaultdict, deque
 import Battle as bat
 from mcts_alpha import MCTSPlayer
+
 #from policy_value_net import PolicyValueNet  # Theano and Lasagne
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
-
-
+import logging
+from Battle import logger
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game
@@ -80,6 +81,7 @@ class TrainPipeline():
         right_batch = [data[5] for data in mini_batch]
         right_base_batch = [data[6] for data in mini_batch]
         old_probs, old_value, fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
+        logger.info("old_value = {}".format(old_value))
         for i in range(self.epochs):
             loss, entropy = self.policy_value_net.train_step(
                     state_batch,
@@ -96,6 +98,7 @@ class TrainPipeline():
             # if kl > self.kl_targ * 4:  # early stopping if D_KL diverges badly
             #     break
         # adaptively adjust the learning rate
+        logger.info("new_value = {}".format(new_v))
         if kl > self.kl_targ * 2 and self.lr_multiplier > 0.1:
             self.lr_multiplier /= 1.5
         elif kl < self.kl_targ / 2 and self.lr_multiplier < 10:
@@ -107,7 +110,7 @@ class TrainPipeline():
         # explained_var_new = (1 -
         #                      np.var(np.array(winner_batch) - new_v.flatten()) /
         #                      np.var(np.array(winner_batch)))
-        print(("kl:{:.5f},"
+        logger.info(("kl:{:.5f},"
                "lr_multiplier:{:.3f},"
                "loss:{},"
                "entropy:{},"
@@ -138,7 +141,7 @@ class TrainPipeline():
     #                                       is_shown=0)
     #         win_cnt[winner] += 1
     #     win_ratio = 1.0*(win_cnt[1] + 0.5*win_cnt[-1]) / n_games
-    #     print("num_playouts:{}, win: {}, lose: {}, tie:{}".format(
+    #     log("num_playouts:{}, win: {}, lose: {}, tie:{}".format(
     #             self.pure_mcts_playout_num,
     #             win_cnt[1], win_cnt[2], win_cnt[-1]))
     #     return win_ratio
@@ -147,20 +150,21 @@ class TrainPipeline():
         """run the training pipeline"""
         try:
             for i in range(self.game_batch_num):
-                self.collect_selfplay_data(self.play_batch_size,0,'./model/current_policy.model')
-                print("batch i:{}, episode_len:{}".format(
+                self.collect_selfplay_data(self.play_batch_size,0)
+                logger.info("batch i:{}, episode_len:{}".format(
                         i+1, self.episode_len))
                 #if len(self.data_buffer) > self.batch_size:
                 loss, entropy = self.policy_update()
+                logger.info("selfplay epoch= {} loss = {},entropy ={}".format(i,loss,entropy))
                 # check the performance of the current model,
                 # and save the model params
                 self.policy_value_net.save_model('./model/current_policy.model')
                 # if (i+1) % self.check_freq == 0:
-                #     print("current self-play batch: {}".format(i+1))
+                #     logger.info("current self-play batch: {}".format(i+1))
                 #     win_ratio = self.policy_evaluate()
                 #     self.policy_value_net.save_model('./current_policy.model')
                 #     if win_ratio > self.best_win_ratio:
-                #         print("New best policy!!!!!!!!")
+                #         logger.info("New best policy!!!!!!!!")
                 #         self.best_win_ratio = win_ratio
                 #         # update the best_policy
                 #         self.policy_value_net.save_model('./best_policy.model')
@@ -169,7 +173,7 @@ class TrainPipeline():
                 #             self.pure_mcts_playout_num += 1000
                 #             self.best_win_ratio = 0.0
         except KeyboardInterrupt:
-            print('\n\rquit')
+            logger.info('\n\rquit')
 
 
 if __name__ == '__main__':
