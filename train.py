@@ -30,13 +30,13 @@ class TrainPipeline():
         self.n_playout = 400  # num of simulations for each move
         self.c_puct = 5
         self.buffer_size = 10000
-        self.batch_size = 512  # mini-batch size for training
+        self.batch_size = 256  # mini-batch size for training
         self.data_buffer = deque(maxlen=self.buffer_size)
         self.play_batch_size = 1
-        self.epochs = 1000  # num of train_steps for each update
+        self.epochs = 2000  # num of train_steps for each update
         self.kl_targ = 0.02
         self.check_freq = 50
-        self.game_batch_num = 1500
+        self.game_batch_num = 512
         self.best_win_ratio = 0.0
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
@@ -52,7 +52,7 @@ class TrainPipeline():
             self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
                                                    bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize)
 
-        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=100, is_selfplay=1,battle=self.tmp_battle)
+        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=200, is_selfplay=1,battle=self.tmp_battle)
 
     def collect_selfplay_data(self, n_games=1,take_control=0,init_model = 0):
         """collect self-play data for training"""
@@ -72,7 +72,7 @@ class TrainPipeline():
 
     def policy_update(self):
         """update the policy-value net"""
-        mini_batch = self.data_buffer #random.sample(self.data_buffer, self.batch_size)
+        mini_batch = random.sample(self.data_buffer, self.batch_size)
         state_batch = [data[0] for data in mini_batch]
         mcts_probs_batch = [data[1] for data in mini_batch]
         side_batch = [data[2] for data in mini_batch]
@@ -89,8 +89,8 @@ class TrainPipeline():
                     side_batch,left_batch,left_base_batch,right_batch,right_base_batch,
                     self.learn_rate*self.lr_multiplier)
             new_probs, new_v,fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
-            side_batch_tmp = [x[0] for x in side_batch]
-            computedVaue = side_batch_tmp*((fvalue_left*left_batch).sum(axis=1)/(fvalue_left*left_base_batch).sum(axis=1) - (fvalue_right*right_batch).sum(axis=1)/(fvalue_right*right_base_batch).sum(axis=1))
+            #side_batch_tmp = [x[0] for x in side_batch]
+            #computedVaue = side_batch_tmp*((fvalue_left*left_batch).sum(axis=1)/(fvalue_left*left_base_batch).sum(axis=1) - (fvalue_right*right_batch).sum(axis=1)/(fvalue_right*right_base_batch).sum(axis=1))
             kl = np.mean(np.sum(old_probs * (
                     np.log(old_probs + 1e-10) - np.log(new_probs + 1e-10)),
                     axis=1)
@@ -153,12 +153,12 @@ class TrainPipeline():
                 self.collect_selfplay_data(self.play_batch_size,0)
                 logger.info("batch i:{}, episode_len:{}".format(
                         i+1, self.episode_len))
-                #if len(self.data_buffer) > self.batch_size:
-                loss, entropy = self.policy_update()
-                logger.info("selfplay epoch= {} loss = {},entropy ={}".format(i,loss,entropy))
+                if len(self.data_buffer) > self.batch_size:
+                    loss, entropy = self.policy_update()
+                    logger.info("selfplay epoch= {} loss = {},entropy ={}".format(i,loss,entropy))
                 # check the performance of the current model,
                 # and save the model params
-                self.policy_value_net.save_model('./model/current_policy.model')
+                    self.policy_value_net.save_model('./model/current_policy.model')
                 # if (i+1) % self.check_freq == 0:
                 #     logger.info("current self-play batch: {}".format(i+1))
                 #     win_ratio = self.policy_evaluate()
