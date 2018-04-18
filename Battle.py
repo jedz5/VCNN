@@ -609,7 +609,7 @@ class Battle(object):
         if (act.type == actionType.shoot):
             return "shoot ({},{})".format(act.attack.y,act.attack.x)
     def end(self):
-        live = {0:False,1:True}
+        live = {0:False,1:False}
         for st in self.stacks:
             live[st.side] = live[st.side] or st.isAlive()
         if self.round > 50:
