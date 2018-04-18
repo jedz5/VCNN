@@ -609,10 +609,13 @@ class Battle(object):
         if (act.type == actionType.shoot):
             return "shoot ({},{})".format(act.attack.y,act.attack.x)
     def end(self):
-        live = {0:False,1:False}
+        live = {0:False,1:True}
         for st in self.stacks:
             live[st.side] = live[st.side] or st.isAlive()
-        return not (live[0] and live[1])
+        if self.round > 50:
+            return True,-1
+        return not (live[0] and live[1]),self.currentPlayer()
+
     def getHash(self):
         state = self.currentState()
         a = ''
@@ -689,7 +692,7 @@ class Battle(object):
         #     trainer = MCTSPlayer(best_policy.policy_value_fn,c_puct=5,n_playout=100,is_selfplay=1,side=self.currentPlayer())
 
         states, mcts_probs, current_players,left_bases,right_bases,lefts,rights = [], [], [],[],[],[],[]
-        while (not self.end()):
+        while (not self.end()[0]):
             if take_control:
                 printF(self.curStack.acssessableAndAttackable(), self.stacks, self.curStack)
             actInd,move_probs = player.getAction(self)  #temp=temp,return_prob=1

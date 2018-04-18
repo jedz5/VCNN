@@ -200,7 +200,7 @@ class MCTS(object):
         # for the current player.
         action_probs, leaf_value,fvalue_left,fvalue_right = self._policy(state)
         # Check for end of game.
-        end = state.end()
+        end,winner = state.end()
         if not end:
             stateNode.expand(action_probs,fvalue_left,fvalue_right)
             stateNode.update_recursive(0,0,leaf_value)
@@ -208,7 +208,6 @@ class MCTS(object):
             # for end state，return the "true" leaf_value
             stateNode.left_value = fvalue_left
             stateNode.right_value = fvalue_right
-            winner = state.currentPlayer()
             if winner == -1:  # tie
                 leaf_value = 0.0
                 stateNode.update_recursive(0,0,leaf_value)
