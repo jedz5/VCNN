@@ -70,22 +70,24 @@ class StateNode(object):
             leaf_value = value
             logger.info('{} side {} update leaf_value = {}'.format(self.name, self.side, leaf_value))
         else:
-            leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
             if self.side == 1:
-                leaf_value = -leaf_value
+                leaf_value = 1.0 - (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10)
+            else:
+                leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
+
             logger.info('{} side {} update from simulate leaf_value = {}'.format(self.name,self.side,leaf_value))
         # Update Q, a running average of values for all visits.
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
-    def update_recursive(self, left,right,value = -2):
+    def update_recursive(self, left,right,valueL = -2,valueR = -2):
         """Like a call to update(), but applied recursively for all ancestors.
         """
         # If it is not root, this node's parent should be updated first.
-
-        self.update(left,right,value)
+        if(self.side == 1):
+            self.update(left,right,valueR)
+        else:
+            self.update(left, right, valueL)
         if self._parent:
-            if value != -2 and self.side != self._parent.side:
-                value = -value
-            self._parent.update_recursive(left,right,value)
+            self._parent.update_recursive(left,right,valueL,valueR)
 
     def is_leaf(self):
         """Check if leaf node (i.e. no nodes below this have been expanded)."""
@@ -127,19 +129,23 @@ class ActionNode(object):
         if value != -2:
             leaf_value = value
         else:
-            leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
-            # Update Q, a running average of values for all visits.
             if self.side == 1:
-                leaf_value = -leaf_value
+                leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
+            else:
+                leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
+
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
 
-    def update_recursive(self, left,right,value = -2):
+    def update_recursive(self, left,right,valueL = -2,valueR = -2):
         """Like a call to update(), but applied recursively for all ancestors.
         """
         # If it is not root, this node's parent should be updated first.
-        self.update(left,right,value)
+        if(self.side == 1):
+            self.update(left,right,valueR)
+        else:
+            self.update(left, right, valueL)
         if self._parent:
-            self._parent.update_recursive(left,right,value)
+            self._parent.update_recursive(left,right,valueL,valueR)
 
     def get_value(self, c_puct):
         """Calculate and return the value for this node.
@@ -182,7 +188,7 @@ class MCTS(object):
         State is modified in-place, so a copy must be provided.
         """
         stateNode = self._root
-        level= 0
+        level = 0
         while(1):
             if stateNode.is_leaf():
                 break
@@ -198,22 +204,24 @@ class MCTS(object):
         # Evaluate the leaf using a network which outputs a list of
         # (action, probability) tuples p and also a score v in [-1, 1]
         # for the current player.
-        action_probs, leaf_value,fvalue_left,fvalue_right = self._policy(state)
+        action_probs, leaf_valueL,leaf_valueR,fvalue_left,fvalue_right = self._policy(state)
         # Check for end of game.
         end,winner = state.end()
         if not end:
+            logger.info("playout not end, update")
             stateNode.expand(action_probs,fvalue_left,fvalue_right)
-            stateNode.update_recursive(0,0,leaf_value)
+            stateNode.update_recursive(0,0,leaf_valueL,leaf_valueR)
         else:
+            logger.info("playout end, winner {}".format(winner))
             # for end state，return the "true" leaf_value
             stateNode.left_value = fvalue_left
             stateNode.right_value = fvalue_right
-            if winner == -1:  # tie
-                leaf_value = 0.0
-                stateNode.update_recursive(0,0,leaf_value)
-            else:
-                left, leftBase, right, rightBase = state.getStackHPBySlots()
-                stateNode.update_recursive(left,right)
+            # if winner == -1:  # tie
+            #     leaf_value = 0.0
+            #     stateNode.update_recursive(0,0,leaf_valueL,leaf_valueR)
+            # else:
+            left, leftBase, right, rightBase = state.getStackHPBySlots()
+            stateNode.update_recursive(left,right)
 
         # Update value and visit count of nodes in this traversal.
 

@@ -27,7 +27,7 @@ class TrainPipeline():
         self.learn_rate = 2e-3
         self.lr_multiplier = 1.0  # adaptively adjust the learning rate based on KL
         self.temp = 1.0  # the temperature param
-        self.n_playout = 400  # num of simulations for each move
+        self.n_playout = 100  # num of simulations for each move
         self.c_puct = 5
         self.buffer_size = 10000
         self.batch_size = 256  # mini-batch size for training
@@ -80,15 +80,16 @@ class TrainPipeline():
         left_base_batch = [data[4] for data in mini_batch]
         right_batch = [data[5] for data in mini_batch]
         right_base_batch = [data[6] for data in mini_batch]
-        old_probs, old_value, fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
-        logger.info("old_value = {}".format(old_value))
+        old_probs, valueL,valueR, fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
+        logger.info("old_valueL = {}".format(valueL))
+        logger.info("old_valueR = {}".format(valueR))
         for i in range(self.epochs):
             loss, entropy = self.policy_value_net.train_step(
                     state_batch,
                     mcts_probs_batch,
                     side_batch,left_batch,left_base_batch,right_batch,right_base_batch,
                     self.learn_rate*self.lr_multiplier)
-            new_probs, new_v,fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
+            new_probs, new_vL,new_vR,fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
             #side_batch_tmp = [x[0] for x in side_batch]
             #computedVaue = side_batch_tmp*((fvalue_left*left_batch).sum(axis=1)/(fvalue_left*left_base_batch).sum(axis=1) - (fvalue_right*right_batch).sum(axis=1)/(fvalue_right*right_base_batch).sum(axis=1))
             kl = np.mean(np.sum(old_probs * (
@@ -98,7 +99,8 @@ class TrainPipeline():
             # if kl > self.kl_targ * 4:  # early stopping if D_KL diverges badly
             #     break
         # adaptively adjust the learning rate
-        logger.info("new_value = {}".format(new_v))
+        logger.info("new_valueL = {}".format(new_vL))
+        logger.info("new_valueR = {}".format(new_vR))
         if kl > self.kl_targ * 2 and self.lr_multiplier > 0.1:
             self.lr_multiplier /= 1.5
         elif kl < self.kl_targ / 2 and self.lr_multiplier < 10:

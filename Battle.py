@@ -612,7 +612,7 @@ class Battle(object):
         live = {0:False,1:False}
         for st in self.stacks:
             live[st.side] = live[st.side] or st.isAlive()
-        if self.round > 50:
+        if self.round > 20:
             return True,-1
         return not (live[0] and live[1]),self.currentPlayer()
 

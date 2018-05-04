@@ -56,9 +56,10 @@ class PolicyValueNet():
         self.evaluation_fc1 = tf.layers.dense(inputs=self.evaluation_conv_flat,
                                               units=64, activation=tf.nn.relu)
         # output the score of evaluation on current state
-        self.evaluation_value = tf.layers.dense(inputs=self.evaluation_fc1,
+        self.evaluation_valueL = tf.layers.dense(inputs=self.evaluation_fc1,
                                               units=1, activation=tf.nn.tanh)
-
+        self.evaluation_valueR = tf.layers.dense(inputs=self.evaluation_fc1,
+                                                units=1, activation=tf.nn.sigmoid)
         # 5 Evaluation Networks
         self.fValue_conv = tf.layers.conv2d(inputs=self.conv3, filters=2,
                                                 kernel_size=[1, 1],
@@ -85,8 +86,10 @@ class PolicyValueNet():
         # 3-1. Value Loss function
         self.fValueLoss2 = tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp,1,keep_dims=True) / (tf.reduce_sum(self.fValue_fc_right * self.labels_right_hp_0,1,keep_dims=True)+1e-10)
         self.fValueLoss1 = tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp,1,keep_dims=True) / (tf.reduce_sum(self.fValue_fc_left * self.labels_left_hp_0,1,keep_dims=True)+1e-10)
-        self.fValueLoss1_2 = self.labels_side * (self.fValueLoss1 - self.fValueLoss2)
-        self.value_loss = tf.losses.mean_squared_error(self.evaluation_value,self.fValueLoss1_2)
+        self.fValueLossLeft = self.fValueLoss1 - self.fValueLoss2
+        self.fValueLossRight = 1.0 - self.fValueLoss1
+        self.value_lossL = tf.losses.mean_squared_error(self.evaluation_valueL,self.fValueLossLeft)
+        self.value_lossR = tf.losses.mean_squared_error(self.evaluation_valueR, self.fValueLossRight)
         # 3-2. Policy Loss function
         self.mcts_probs = tf.placeholder(
                 tf.float32, shape=[None, self.num_actions])
@@ -98,7 +101,7 @@ class PolicyValueNet():
         l2_penalty = l2_penalty_beta * tf.add_n(
             [tf.nn.l2_loss(v) for v in vars if 'bias' not in v.name.lower()])
         # 3-4 Add up to be the Loss function
-        self.loss = self.value_loss + self.policy_loss + l2_penalty
+        self.loss = self.value_lossL + self.value_lossR + self.policy_loss + l2_penalty
 
         # Define the optimizer we use for training
         self.learning_rate = tf.placeholder(tf.float32)
@@ -126,12 +129,12 @@ class PolicyValueNet():
         input: a batch of states
         output: a batch of action probabilities and state values
         """
-        log_act_probs, value,fvalue_left,fvalue_right = self.session.run(
-                [self.action_fc, self.evaluation_value,self.fValue_fc_left,self.fValue_fc_right],
+        log_act_probs, valueL,valueR,fvalue_left,fvalue_right = self.session.run(
+                [self.action_fc, self.evaluation_valueL,self.evaluation_valueR,self.fValue_fc_left,self.fValue_fc_right],
                 feed_dict={self.input_states: state_batch}
                 )
         act_probs = np.exp(log_act_probs)
-        return act_probs, value,fvalue_left,fvalue_right
+        return act_probs, valueL,valueR,fvalue_left,fvalue_right
 
     def policy_value_fn(self, battle):
         """
@@ -141,9 +144,9 @@ class PolicyValueNet():
         """
         legal_positions = battle.curStack.legalMoves()
         current_state = battle.currentStateFeature()
-        act_probs, value, fvalue_left, fvalue_right = self.policy_value([current_state])
+        act_probs, valueL,valueR, fvalue_left, fvalue_right = self.policy_value([current_state])
         act_probs = zip(legal_positions, act_probs[0][legal_positions])
-        return act_probs, value,fvalue_left[0],fvalue_right[0]
+        return act_probs, valueL,valueR,fvalue_left[0],fvalue_right[0]
 
     def train_step(self, state_batch, mcts_probs, side_batch,labels_left_hp,labels_left_hp_0,labels_right_hp,labels_right_hp_0, lr):
         """perform a training step"""
