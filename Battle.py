@@ -7,7 +7,7 @@ import logging
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('train')
-handler = logging.FileHandler('train.log')
+handler = logging.FileHandler('train.log','w')
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -698,7 +698,7 @@ class Battle(object):
             actInd,move_probs = player.getAction(self)  #temp=temp,return_prob=1
             if not take_control:
                 printF(self.curStack.acssessableAndAttackable(), self.stacks, self.curStack)
-            logger.info("-------final action: {}".format(self.action2Str(actInd)))
+            logger.info("-------final action: {} by {}".format(self.action2Str(actInd),self.curStack.name))
             legals = self.curStack.legalMoves()
             if (actInd not in legals):
                 logger.info('...sth  wrong.....actInd not in legals')

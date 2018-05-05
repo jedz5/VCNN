@@ -52,7 +52,7 @@ class TrainPipeline():
             self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
                                                    bat.Battle.bFieldStackPlanes, bat.Battle.bTotalFieldSize)
 
-        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=5, n_playout=200, is_selfplay=1,battle=self.tmp_battle)
+        self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn, c_puct=self.c_puct, n_playout=self.n_playout, is_selfplay=1,battle=self.tmp_battle)
 
     def collect_selfplay_data(self, n_games=1,take_control=0,init_model = 0):
         """collect self-play data for training"""

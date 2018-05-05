@@ -111,12 +111,15 @@ class ActionNode(object):
         self._u = 0
         self._P = prior_p
         self.name = name
+        self._aplayout = 0
     def setCurentState(self,gameState):
         stateHash = gameState.getHash()
+        left, leftBase, right, rightBase = gameState.getStackHPBySlots()
         if stateHash not in self._states.keys():
-            left, leftBase, right, rightBase = gameState.getStackHPBySlots()
             self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right,gameState.curStack.name)
         else:
+            self._states[stateHash].left_base = left
+            self._states[stateHash].right_base = right
             logger.debug('found same hash ')
         self.curState = self._states[stateHash]
     def update(self, left,right,value = -2):
@@ -199,6 +202,9 @@ class MCTS(object):
             logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
+            #actionNode._aplayout = "{}.{}".format(state.batId,level)
+            #actionNode._aL = actionNode._parent.left_base
+            #actionNode._aR = actionNode._parent.right_base
             actionNode.setCurentState(state)
             stateNode = actionNode.curState
         # Evaluate the leaf using a network which outputs a list of
