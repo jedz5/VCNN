@@ -59,7 +59,7 @@ class PolicyValueNet():
         self.evaluation_valueL = tf.layers.dense(inputs=self.evaluation_fc1,
                                               units=1, activation=tf.nn.tanh)
         self.evaluation_valueR = tf.layers.dense(inputs=self.evaluation_fc1,
-                                                units=1, activation=tf.nn.sigmoid)
+                                                units=1, activation=tf.nn.tanh)
         # 5 Evaluation Networks
         self.fValue_conv = tf.layers.conv2d(inputs=self.conv3, filters=2,
                                                 kernel_size=[1, 1],
