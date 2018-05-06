@@ -724,10 +724,7 @@ class Battle(object):
         # reset MCTS root node
         if not take_control:
             player.reset_player(self)
-        if winner != -1:
-            logger.info("Game end. Winner is player: {}".format(winner))
-        else:
-            logger.info("Game end. Tie")
+        logger.info("final Game end. Winner is player: {}".format(winner))
         return zip(states, mcts_probs, current_players,lefts,left_bases,rights,right_bases)
 
 

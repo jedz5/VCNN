@@ -72,7 +72,10 @@ class TrainPipeline():
 
     def policy_update(self):
         """update the policy-value net"""
-        mini_batch = random.sample(self.data_buffer, self.batch_size)
+        if len(self.data_buffer) < self.batch_size:
+            mini_batch = random.sample(self.data_buffer, len(self.data_buffer))
+        else:
+            mini_batch = random.sample(self.data_buffer, self.batch_size)
         state_batch = [data[0] for data in mini_batch]
         mcts_probs_batch = [data[1] for data in mini_batch]
         side_batch = [data[2] for data in mini_batch]
@@ -112,13 +115,14 @@ class TrainPipeline():
         # explained_var_new = (1 -
         #                      np.var(np.array(winner_batch) - new_v.flatten()) /
         #                      np.var(np.array(winner_batch)))
-        logger.info(("kl:{:.5f},"
+            if i%100 == 0:
+                logger.info(("i:{}, kl:{:.5f},"
                "lr_multiplier:{:.3f},"
                "loss:{},"
                "entropy:{},"
                #"explained_var_old:{:.3f},"
                #"explained_var_new:{:.3f}"
-               ).format(kl,
+               ).format(i,kl,
                         self.lr_multiplier,
                         loss,
                         entropy))
@@ -155,7 +159,7 @@ class TrainPipeline():
                 self.collect_selfplay_data(self.play_batch_size,0)
                 logger.info("batch i:{}, episode_len:{}".format(
                         i+1, self.episode_len))
-                if len(self.data_buffer) > self.batch_size:
+                if 1: #len(self.data_buffer) > self.batch_size
                     loss, entropy = self.policy_update()
                     logger.info("selfplay epoch= {} loss = {},entropy ={}".format(i,loss,entropy))
                 # check the performance of the current model,
