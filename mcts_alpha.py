@@ -50,7 +50,7 @@ class StateNode(object):
         self.right_value = right_value
         for action, prob in action_priors:
             if action not in self._actions:
-                self._actions[action] = ActionNode(self, prob,self.side)
+                self._actions[action] = ActionNode(self, prob,self.side,self.name)
 
     def select(self, c_puct):
         """Select action among children that gives maximum action value Q
@@ -68,15 +68,13 @@ class StateNode(object):
         self._n_visits += 1
         if value != -2:
             leaf_value = value
-            logger.info('{} side {} update leaf_value = {}'.format(self.name, self.side, leaf_value))
         else:
             if self.side == 1:
                 leaf_value = 1.0 - (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10)
             else:
                 leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
 
-            logger.info('{} side {} update from simulate leaf_value = {}'.format(self.name,self.side,leaf_value))
-        # Update Q, a running average of values for all visits.
+            # Update Q, a running average of values for all visits.
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
     def update_recursive(self, left,right,valueL = -2,valueR = -2):
         """Like a call to update(), but applied recursively for all ancestors.
@@ -131,11 +129,15 @@ class ActionNode(object):
         self._n_visits += 1
         if value != -2:
             leaf_value = value
+            logger.info('{} side {}, q={}, n={},p={},update leaf_value = {}'.format(self.name, self.side,self._Q,self._n_visits,self._P,leaf_value))
         else:
             if self.side == 1:
                 leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
             else:
                 leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
+            logger.info('{} side {}, q={}, n={},p={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
+                                                                                    self._n_visits, self._P,
+                                                                                    leaf_value))
 
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
 

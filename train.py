@@ -92,6 +92,17 @@ class TrainPipeline():
                     mcts_probs_batch,
                     side_batch,left_batch,left_base_batch,right_batch,right_base_batch,
                     self.learn_rate*self.lr_multiplier)
+            if i%100 == 0:
+                logger.info(("i:{},"
+               "lr_multiplier:{:.3f},"
+               "loss:{},"
+               "entropy:{},"
+               #"explained_var_old:{:.3f},"
+               #"explained_var_new:{:.3f}"
+               ).format(i,
+                        self.lr_multiplier,
+                        loss,
+                        entropy))
             new_probs, new_vL,new_vR,fvalue_left, fvalue_right = self.policy_value_net.policy_value(state_batch)
             #side_batch_tmp = [x[0] for x in side_batch]
             #computedVaue = side_batch_tmp*((fvalue_left*left_batch).sum(axis=1)/(fvalue_left*left_base_batch).sum(axis=1) - (fvalue_right*right_batch).sum(axis=1)/(fvalue_right*right_base_batch).sum(axis=1))
@@ -108,24 +119,23 @@ class TrainPipeline():
             self.lr_multiplier /= 1.5
         elif kl < self.kl_targ / 2 and self.lr_multiplier < 10:
             self.lr_multiplier *= 1.5
-
+        logger.info(("i:{}, kl:{:.5f},"
+                         "lr_multiplier:{:.3f},"
+                         "loss:{},"
+                         "entropy:{},"
+                         # "explained_var_old:{:.3f},"
+                         # "explained_var_new:{:.3f}"
+                         ).format(i, kl,
+                                  self.lr_multiplier,
+                                  loss,
+                                  entropy))
         # explained_var_old = (1 -
         #                      np.var(np.array(winner_batch) - old_v.flatten()) /
         #                      np.var(np.array(winner_batch)))
         # explained_var_new = (1 -
         #                      np.var(np.array(winner_batch) - new_v.flatten()) /
         #                      np.var(np.array(winner_batch)))
-            if i%100 == 0:
-                logger.info(("i:{}, kl:{:.5f},"
-               "lr_multiplier:{:.3f},"
-               "loss:{},"
-               "entropy:{},"
-               #"explained_var_old:{:.3f},"
-               #"explained_var_new:{:.3f}"
-               ).format(i,kl,
-                        self.lr_multiplier,
-                        loss,
-                        entropy))
+
                         # explained_var_old,
                         # explained_var_new))
         return loss, entropy
