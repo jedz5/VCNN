@@ -129,14 +129,14 @@ class ActionNode(object):
         self._n_visits += 1
         if value != -2:
             leaf_value = value
-            logger.info('{} side {}, q={}, n={},p={},update leaf_value = {}'.format(self.name, self.side,self._Q,self._n_visits,self._P,leaf_value))
+            logger.info('{} side {}, q={}, n={},p_n={},p={},update leaf_value = {}'.format(self.name, self.side,self._Q,self._n_visits,self._parent._n_visits,self._P,leaf_value))
         else:
             if self.side == 1:
                 leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
             else:
                 leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
-            logger.info('{} side {}, q={}, n={},p={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
-                                                                                    self._n_visits, self._P,
+            logger.info('{} side {}, q={}, n={},p={},p_n={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
+                                                                                    self._n_visits,self._parent._n_visits, self._P,
                                                                                     leaf_value))
 
         self._Q += 1.0*(leaf_value - self._Q) / self._n_visits

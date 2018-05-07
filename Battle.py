@@ -698,7 +698,7 @@ class Battle(object):
             actInd,move_probs = player.getAction(self)  #temp=temp,return_prob=1
             if not take_control:
                 printF(self.curStack.acssessableAndAttackable(), self.stacks, self.curStack)
-            logger.info("-------final action: {} {} by {}".format(self.action2Str(actInd),move_probs[actInd],self.curStack.name))
+            logger.info("-------final action: {}, move_p={} by {}".format(self.action2Str(actInd),move_probs[actInd],self.curStack.name))
             legals = self.curStack.legalMoves()
             if (actInd not in legals):
                 logger.info('...sth  wrong.....actInd not in legals')
