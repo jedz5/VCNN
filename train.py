@@ -31,6 +31,7 @@ class TrainPipeline():
         self.c_puct = 5
         self.buffer_size = 10000
         self.batch_size = 256  # mini-batch size for training
+        self.recent_sample_size = 512
         self.data_buffer = deque(maxlen=self.buffer_size)
         self.play_batch_size = 1
         self.epochs = 5000  # num of train_steps for each update
@@ -73,9 +74,9 @@ class TrainPipeline():
     def policy_update(self):
         """update the policy-value net"""
         if len(self.data_buffer) < self.batch_size:
-            mini_batch = random.sample(self.data_buffer, len(self.data_buffer))
+            mini_batch = (self.data_buffer, len(self.data_buffer))
         else:
-            mini_batch = random.sample(self.data_buffer, self.batch_size)
+            mini_batch = random.sample(self.data_buffer[-self.recent_sample_size:], self.batch_size)
         state_batch = [data[0] for data in mini_batch]
         mcts_probs_batch = [data[1] for data in mini_batch]
         side_batch = [data[2] for data in mini_batch]
