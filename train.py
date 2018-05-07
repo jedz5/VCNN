@@ -76,7 +76,7 @@ class TrainPipeline():
         if len(self.data_buffer) < self.batch_size:
             mini_batch = self.data_buffer
         else:
-            mini_batch = random.sample(self.data_buffer[-self.recent_sample_size:], self.batch_size)
+            mini_batch = random.sample(list(self.data_buffer)[-self.recent_sample_size:], self.batch_size)
         state_batch = [data[0] for data in mini_batch]
         mcts_probs_batch = [data[1] for data in mini_batch]
         side_batch = [data[2] for data in mini_batch]
@@ -111,6 +111,8 @@ class TrainPipeline():
                     np.log(old_probs + 1e-10) - np.log(new_probs + 1e-10)),
                     axis=1)
             )
+            if loss < 0.01:
+                break
             # if kl > self.kl_targ * 4:  # early stopping if D_KL diverges badly
             #     break
         # adaptively adjust the learning rate
