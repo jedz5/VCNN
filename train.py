@@ -74,7 +74,7 @@ class TrainPipeline():
     def policy_update(self):
         """update the policy-value net"""
         if len(self.data_buffer) < self.batch_size:
-            mini_batch = (self.data_buffer, len(self.data_buffer))
+            mini_batch = self.data_buffer
         else:
             mini_batch = random.sample(self.data_buffer[-self.recent_sample_size:], self.batch_size)
         state_batch = [data[0] for data in mini_batch]
