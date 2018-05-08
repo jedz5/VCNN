@@ -204,7 +204,8 @@ class MCTS(object):
             if level == 1:
                 logger.info("{}.{} playout_start {} action {}".format(state.batId, level, state.curStack.name,
                                                                 state.action2Str(action_id)))
-            logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
+            else:
+                logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
             #actionNode._aplayout = "{}.{}".format(state.batId,level)
