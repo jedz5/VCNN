@@ -202,7 +202,7 @@ class MCTS(object):
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
             if level == 1:
-                logger.info("{}.{} playout_start {} action {}".format(state.batId, level, state.curStack.name,
+                logger.info("{}.{} playout {} action {}_start".format(state.batId, level, state.curStack.name,
                                                                 state.action2Str(action_id)))
             else:
                 logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
