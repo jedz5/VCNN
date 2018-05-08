@@ -135,7 +135,7 @@ class ActionNode(object):
                 leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
             else:
                 leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
-            logger.info('{} side {}, q={}, n={},p={},p_n={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
+            logger.info('{} side {}, q={}, n={},p_n={},p={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
                                                                                     self._n_visits,self._parent._n_visits, self._P,
                                                                                     leaf_value))
 
@@ -201,6 +201,9 @@ class MCTS(object):
             # Greedily select next move.
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
+            if level == 1:
+                logger.info("{}.{} playout_start {} action {}".format(state.batId, level, state.curStack.name,
+                                                                state.action2Str(action_id)))
             logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
