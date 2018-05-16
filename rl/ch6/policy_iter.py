@@ -1,5 +1,5 @@
 import numpy as np
-from snake import SnakeEnv, TableAgent, eval_game
+from ch6.snake import SnakeEnv, TableAgent, eval_game
 
 policy_ref = [1] * 97 + [0] * 3
 policy_0 = [0] * 100
@@ -94,7 +94,6 @@ def policy_iteration_demo2():
     print(agent.pi)
 
 if __name__ == '__main__':
-    # test_easy()
     policy_iteration_demo1()
     policy_iteration_demo2()
 

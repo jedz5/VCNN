@@ -19,6 +19,7 @@ class SnakeEnv(gym.Env):
             # print self.ladders
             # print 'dice ranges:'
             # print self.dices
+        self.ladders = tmpladders
         self.pos = 1
         print('ladders info:')
         print(self.ladders)
