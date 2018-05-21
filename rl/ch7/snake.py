@@ -11,13 +11,15 @@ class SnakeEnv(gym.Env):
         self.ladders = dict(np.random.randint(1, self.SIZE, size=(self.ladder_num, 2)))
         self.observation_space=Discrete(self.SIZE+1)
         self.action_space=Discrete(len(dices))
-
+        tmpLadder = {}
         for k,v in self.ladders.items():
-            self.ladders[v] = k
+            tmpLadder[v] = k
+            tmpLadder[k] = v
             # print 'ladders info:'
             # print self.ladders
             # print 'dice ranges:'
             # print self.dices
+        self.ladders = tmpLadder
         self.pos = 1
 
     def reset(self):
@@ -99,7 +101,7 @@ def eval_game(env, policy):
         elif isinstance(policy, list):
             act = policy[state]
         else:
-            raise Error('Illegal policy')
+            raise Exception('Illegal policy')
         state, reward, terminate, _ = env.step(act)
         # print state
         return_val += reward
@@ -112,7 +114,7 @@ if __name__ == '__main__':
     env.reset()
     while True:
         state, reward, terminate, _ = env.step(0)
-        print reward, state
+        print(reward, state)
         if terminate == 1:
             break
 

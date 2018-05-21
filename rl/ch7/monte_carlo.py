@@ -2,16 +2,16 @@ import numpy as np
 from contextlib import contextmanager
 import time
 
-from snake import SnakeEnv, ModelFreeAgent, TableAgent, eval_game
+from ch7.snake import SnakeEnv, ModelFreeAgent, TableAgent, eval_game
 import gym
-from policy_iter import PolicyIteration
+from ch7.policy_iter import PolicyIteration
 
 @contextmanager
 def timer(name):
     start = time.time()
     yield
     end = time.time()
-    print '{} COST:{}'.format(name, end - start)
+    print('{} COST:{}'.format(name, end - start))
 
 class MonteCarlo(object):
     def __init__(self, epsilon=0.0):
@@ -66,16 +66,16 @@ def monte_carlo_demo():
     mc = MonteCarlo()
     with timer('Timer Monte Carlo Iter'):
         mc.monte_carlo_opt(agent, env)
-    print 'return_pi={}'.format(eval_game(env,agent))
-    print agent.pi
+    print('return_pi={}'.format(eval_game(env,agent)))
+    print(agent.pi)
 
     np.random.seed(101)
     agent2 = TableAgent(env)
     pi_algo = PolicyIteration()
     with timer('Timer PolicyIter'):
         pi_algo.policy_iteration(agent2)
-    print 'return_pi={}'.format(eval_game(env,agent2))
-    print agent2.pi
+    print('return_pi={}'.format(eval_game(env,agent2)))
+    print(agent2.pi)
 
 def monte_carlo_demo2():
     np.random.seed(101)
@@ -84,8 +84,8 @@ def monte_carlo_demo2():
     mc = MonteCarlo(0.5)
     with timer('Timer Monte Carlo Iter'):
         mc.monte_carlo_opt(agent, env)
-    print 'return_pi={}'.format(eval_game(env,agent))
-    print agent.pi
+    print('return_pi={}'.format(eval_game(env,agent)))
+    print(agent.pi)
 
 if __name__ == '__main__':
     monte_carlo_demo()

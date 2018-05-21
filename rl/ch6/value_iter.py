@@ -3,15 +3,15 @@ import numpy as np
 from contextlib import contextmanager
 import time
 
-from snake import SnakeEnv, TableAgent, eval_game
-from policy_iter import PolicyIteration
+from ch6.snake import SnakeEnv, TableAgent, eval_game
+from ch6.policy_iter import PolicyIteration
 
 @contextmanager
 def timer(name):
     start = time.time()
     yield
     end = time.time()
-    print '{} COST:{}'.format(name, end - start)
+    print('{} COST:{}'.format(name, end - start))
 
 class PolicyIterationWithTimer(PolicyIteration):
     def policy_iteration(self, agent, max_iter=-1):
@@ -31,8 +31,8 @@ def policy_iteration_demo():
     agent = TableAgent(env)
     pi_algo = PolicyIterationWithTimer()
     pi_algo.policy_iteration(agent)
-    print 'return_pi={}'.format(eval_game(env,agent))
-    print agent.pi
+    print('return_pi={}'.format(eval_game(env,agent)))
+    print(agent.pi)
 
 def value_iteration_demo():
     np.random.seed(0)
@@ -40,8 +40,8 @@ def value_iteration_demo():
     agent = TableAgent(env)
     vi_algo = ValueIteration()
     vi_algo.value_iteration(agent)
-    print 'return_pi={}'.format(eval_game(env,agent))
-    print agent.pi
+    print('return_pi={}'.format(eval_game(env,agent)))
+    print(agent.pi)
 
 
 class ValueIteration(object):
@@ -63,7 +63,7 @@ class ValueIteration(object):
                 agent.value_pi = new_value_pi
             if iteration == max_iter:
                 break
-        print 'Iter {} rounds converge'.format(iteration)
+        print('Iter {} rounds converge'.format(iteration))
         for i in range(1, agent.s_len):
             for j in range(0, agent.a_len):
                 agent.value_q[i,j] = np.dot(agent.p[j,i,:], agent.r + agent.gamma * agent.value_pi)

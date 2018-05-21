@@ -80,7 +80,7 @@ def policy_iteration_demo1():
     print(agent.pi)
 
 def policy_iteration_demo2():
-    env = SnakeEnv(10, [3,6])
+    env = SnakeEnv(0, [3,6])
     agent = TableAgent(env)
     agent.pi[:]=0
     print('return3={}'.format(eval_game(env,agent)))
@@ -94,7 +94,7 @@ def policy_iteration_demo2():
     print(agent.pi)
 
 if __name__ == '__main__':
-    policy_iteration_demo1()
+    # policy_iteration_demo1()
     policy_iteration_demo2()
 
 
