@@ -102,7 +102,7 @@ def xxx():
     # print(a)
     # b = np.matrix('1 0 0 0 0 0').T
     # print(np.floor(a*b))
-    cs = cp = 0.1
+    cs = cp = 0.0025
     def close(mon,t,new_v):
         m = mon[t]
         m[1] = m[0]
@@ -142,9 +142,9 @@ def xxx():
     money[0,0,3] = [1,1,1,1,1] #比
 
     value = [[1,2,0.5,1,1],[1, 1, 1, 2, 1],[1,1,3,1,1]]
-    to_sell = [(0,0),(1.0,2), (1.0,1)]
+    to_sell = [(0,0),(0.3,2), (1.0,1)]
     to_buy = [(0,0),(1.0,3), (0.5,3)]
-    np.set_printoptions(precision=2)
+    np.set_printoptions(precision=4)
     np.set_printoptions(suppress=True)
     pp = 1
     for x in range(Day):
@@ -153,6 +153,8 @@ def xxx():
         if x > 0:
             print('---------after sell {}'.format(to_sell[x]))
             sell(money[x], to_sell[x][0], to_sell[x][1])
+            if x == 1:
+                sell(money[x], 0.3, 4)
             print(money[x, 0])
             print('----after buy {}'.format(to_buy[x]))
             buy(money[x], to_buy[x][0], to_buy[x][1])
@@ -164,6 +166,8 @@ def xxx():
             print('Pt: %2f = %2f / %2f' % (pt, v0, v1))
             miu = pt/pp
             print('μ:{} = {} / {}'.format(miu,pt,pp))
+            sold = (1 - cs) *pp *np.sum(np.maximum(money[x - 1,1,2,1:] - miu*money[x,0,2,1:],0))
+            print('sold = {}'.format(sold))
         print('day {} close:'.format(x))
         close(money,x,value[x])
         print(money[x, 1])
