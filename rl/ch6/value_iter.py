@@ -27,7 +27,7 @@ class PolicyIterationWithTimer(PolicyIteration):
 
 def policy_iteration_demo():
     np.random.seed(0)
-    env = SnakeEnv(10, [3,6])
+    env = SnakeEnv(0, [3,6])
     agent = TableAgent(env)
     pi_algo = PolicyIterationWithTimer()
     pi_algo.policy_iteration(agent)
@@ -36,7 +36,7 @@ def policy_iteration_demo():
 
 def value_iteration_demo():
     np.random.seed(0)
-    env = SnakeEnv(10, [3,6])
+    env = SnakeEnv(0, [3,6])
     agent = TableAgent(env)
     vi_algo = ValueIteration()
     vi_algo.value_iteration(agent)
@@ -72,4 +72,4 @@ class ValueIteration(object):
 
 if __name__ == '__main__':
     policy_iteration_demo()
-    value_iteration_demo()
+    # value_iteration_demo()

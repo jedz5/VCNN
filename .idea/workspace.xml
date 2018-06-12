@@ -2,14 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/VCNN.iml" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RL/.idea/RL.iml" afterPath="$PROJECT_DIR$/RL/.idea/RL.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RL/.idea/misc.xml" afterPath="$PROJECT_DIR$/RL/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch6/policy_iter.py" afterPath="$PROJECT_DIR$/rl/ch6/policy_iter.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch6/value_iter.py" afterPath="$PROJECT_DIR$/rl/ch6/value_iter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch7/monte_carlo.py" afterPath="$PROJECT_DIR$/rl/ch7/monte_carlo.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch7/policy_iter.py" afterPath="$PROJECT_DIR$/rl/ch7/policy_iter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch7/snake.py" afterPath="$PROJECT_DIR$/rl/ch7/snake.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/xx.py" afterPath="$PROJECT_DIR$/xx.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -50,8 +49,8 @@
       <file leaf-file-name="Battle.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20850">
-              <caret line="700" column="0" lean-forward="false" selection-start-line="700" selection-start-column="0" selection-end-line="700" selection-end-column="0" />
+            <state relative-caret-position="6630">
+              <caret line="226" column="16" lean-forward="false" selection-start-line="226" selection-start-column="16" selection-end-line="226" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -60,8 +59,8 @@
       <file leaf-file-name="train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-390">
-              <caret line="20" column="40" lean-forward="true" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+            <state relative-caret-position="720">
+              <caret line="35" column="32" lean-forward="true" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
               <folding>
                 <element signature="e#123#160#0" expanded="true" />
               </folding>
@@ -74,9 +73,7 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="810">
               <caret line="32" column="60" lean-forward="false" selection-start-line="32" selection-start-column="60" selection-end-line="32" selection-end-column="60" />
-              <folding>
-                <marker date="1525491276799" expanded="true" signature="446:2865" ph="..." />
-              </folding>
+              <folding />
             </state>
           </provider>
         </entry>
@@ -88,7 +85,6 @@
               <caret line="90" column="56" lean-forward="false" selection-start-line="90" selection-start-column="56" selection-end-line="90" selection-end-column="56" />
               <folding>
                 <element signature="e#557#594#0" expanded="true" />
-                <marker date="1525443760517" expanded="true" signature="6587:7005" ph="..." />
               </folding>
             </state>
           </provider>
@@ -97,8 +93,8 @@
       <file leaf-file-name="xx.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/xx.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="43" column="15" lean-forward="false" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
+            <state relative-caret-position="989">
+              <caret line="49" column="0" lean-forward="true" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -155,10 +151,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
+    <option name="x" value="-1928" />
+    <option name="y" value="-82" />
     <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="height" value="1096" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -169,13 +165,14 @@
       <hideEmptyPackages />
       <abbreviatePackageNames />
       <autoscrollToSource />
-      <autoscrollFromSource />
+      <autoscrollFromSource ProjectPane="true" />
       <sortByType />
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -190,12 +187,11 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Font" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -209,7 +205,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.train">
+  <component name="RunManager" selected="Python.xx">
     <configuration default="false" name="NN1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -373,8 +369,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.train" />
-        <item index="1" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="0" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="1" class="java.lang.String" itemvalue="Python.train" />
         <item index="2" class="java.lang.String" itemvalue="Python.Battle" />
         <item index="3" class="java.lang.String" itemvalue="Python.BPlayer" />
         <item index="4" class="java.lang.String" itemvalue="Python.NN1" />
@@ -404,16 +400,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-1928" y="-82" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22068231" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22228146" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3638393" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2739726" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30490404" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26399395" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3236607" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -469,14 +465,14 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/python35/Lib/json/decoder.py">
+    <entry file="file://D:/Python35/Lib/json/decoder.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="309">
           <caret line="356" column="0" lean-forward="false" selection-start-line="356" selection-start-column="0" selection-end-line="356" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/traceback.py">
+    <entry file="file://D:/Python35/Lib/traceback.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="50">
           <caret line="2" column="12" lean-forward="true" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
@@ -491,7 +487,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
+    <entry file="file://D:/Python35/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
     <entry file="file://$PROJECT_DIR$/client.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="250">
@@ -512,7 +508,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/codecs.py">
+    <entry file="file://D:/Python35/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7700">
           <caret line="308" column="0" lean-forward="false" selection-start-line="308" selection-start-column="0" selection-end-line="308" selection-end-column="0" />
@@ -603,21 +599,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/json/decoder.py">
+    <entry file="file://D:/Python35/Lib/json/decoder.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="309">
           <caret line="356" column="0" lean-forward="false" selection-start-line="356" selection-start-column="0" selection-end-line="356" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/traceback.py">
+    <entry file="file://D:/Python35/Lib/traceback.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="50">
           <caret line="2" column="12" lean-forward="true" selection-start-line="2" selection-start-column="12" selection-end-line="2" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
+    <entry file="file://D:/Python35/Lib/site-packages/tensorflow/python/ops/nn_ops.py" />
     <entry file="file://$PROJECT_DIR$/br-1-20171223T205014.json" />
     <entry file="file://$PROJECT_DIR$/br-1-20171223T172035.json" />
     <entry file="file://$PROJECT_DIR$/br-1-20171223T171316.json" />
@@ -631,14 +627,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/site-packages/tensorflow/contrib/layers/python/layers/utils.py" />
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/_socket.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="557" column="24" lean-forward="true" selection-start-line="557" selection-start-column="24" selection-end-line="557" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Python35/Lib/site-packages/tensorflow/contrib/layers/python/layers/utils.py" />
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/_socket.py" />
     <entry file="file://$PROJECT_DIR$/../DNN/TensorFlow-BatchNorm-Visualization/BatchNorm-TF-TensorBoard.py" />
     <entry file="file://$PROJECT_DIR$/loadJson.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -647,7 +637,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/site-packages/tensorflow/python/training/learning_rate_decay.py" />
+    <entry file="file://D:/Python35/Lib/site-packages/tensorflow/python/training/learning_rate_decay.py" />
     <entry file="file://$PROJECT_DIR$/CNNNV.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4290">
@@ -672,7 +662,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/python35/Lib/codecs.py">
+    <entry file="file://D:/Python35/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="308" column="0" lean-forward="false" selection-start-line="308" selection-start-column="0" selection-end-line="308" selection-end-column="0" />
@@ -685,33 +675,16 @@
           <caret line="90" column="56" lean-forward="false" selection-start-line="90" selection-start-column="56" selection-end-line="90" selection-end-column="56" />
           <folding>
             <element signature="e#557#594#0" expanded="true" />
-            <marker date="1525443760517" expanded="true" signature="6587:7005" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20850">
-          <caret line="700" column="0" lean-forward="false" selection-start-line="700" selection-start-column="0" selection-end-line="700" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/_collections.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="194" column="8" lean-forward="false" selection-start-line="194" selection-start-column="8" selection-end-line="194" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/_collections.py" />
     <entry file="file://$PROJECT_DIR$/policy_value_net_tensorflow.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="810">
           <caret line="32" column="60" lean-forward="false" selection-start-line="32" selection-start-column="60" selection-end-line="32" selection-end-column="60" />
-          <folding>
-            <marker date="1525491276799" expanded="true" signature="446:2865" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -731,18 +704,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6630">
+          <caret line="226" column="16" lean-forward="false" selection-start-line="226" selection-start-column="16" selection-end-line="226" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/xx.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="43" column="15" lean-forward="false" selection-start-line="43" selection-start-column="15" selection-end-line="43" selection-end-column="15" />
+        <state relative-caret-position="989">
+          <caret line="49" column="0" lean-forward="true" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-390">
-          <caret line="20" column="40" lean-forward="true" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+        <state relative-caret-position="720">
+          <caret line="35" column="32" lean-forward="true" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
           <folding>
             <element signature="e#123#160#0" expanded="true" />
           </folding>

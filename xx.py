@@ -59,7 +59,7 @@ def produce(consumer):
 
 if __name__ == '__main__':
     consumer = consume()
-    consumer.send(None)
+    # consumer.send(None)
     producer = produce(consumer)
 
     for _ in range(10):
