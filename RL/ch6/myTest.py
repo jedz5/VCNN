@@ -1,8 +1,8 @@
 import numpy as np
-N = 7
 import gym
 from gym.spaces import Discrete
 
+N = 10
 class myEnv(gym.Env):
     SIZE = N
 
@@ -16,9 +16,12 @@ class myEnv(gym.Env):
         for k, v in self.ladders.items():
             tmpladders[v] = k
             tmpladders[k] = v
+            # print 'ladders info:'
+            # print self.ladders
+            # print 'dice ranges:'
+            # print self.dices
         self.ladders = tmpladders
         self.pos = 1
-        self.R = N+3
         print('ladders info:')
         print(self.ladders)
         print('dice ranges:')
@@ -78,11 +81,53 @@ class TableAgent(object):
 
     def play(self, state):
         return self.pi[state]
+
+
+class ModelFreeAgent(object):
+    def __init__(self, env):
+        self.s_len = env.observation_space.n
+        self.a_len = env.action_space.n
+
+        self.pi = np.array([0 for s in range(0, self.s_len)])
+        self.value_q = np.zeros((self.s_len, self.a_len))
+        self.value_n = np.zeros((self.s_len, self.a_len))
+        self.gamma = 0.8
+
+    def play(self, state, epsilon=0):
+        if np.random.rand() < epsilon:
+            return np.random.randint(self.a_len)
+        else:
+            return self.pi[state]
+
+
+def eval_game(env, policy):
+    state = env.reset()
+    return_val = 0
+    while True:
+        if isinstance(policy, TableAgent) or isinstance(policy, ModelFreeAgent):
+            act = policy.play(state)
+        elif isinstance(policy, list):
+            act = policy[state]
+        else:
+            raise Exception('Illegal policy')
+        state, reward, terminate, _ = env.step(act)
+        # print state
+        return_val += reward
+        if terminate:
+            break
+    return return_val
+
+
 if __name__ == '__main__':
-    env = myEnv(0, [3,4])
+    env = myEnv(10, [3, 6])
     env.reset()
     while True:
-        state, reward, terminate, _ = env.step(1)
+        state, reward, terminate, _ = env.step(0)
         print(reward, state)
         if terminate == 1:
             break
+
+
+
+
+
