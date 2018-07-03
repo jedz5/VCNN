@@ -27,8 +27,8 @@ class PolicyIterationWithTimer(PolicyIteration):
 
 def policy_iteration_demo():
     np.random.seed(0)
-    env = myEnv(0, [3,6])
-    agent = TableAgent(env)
+    env = myEnv(0, [2,1])
+    agent = TableAgent(env,0)
     pi_algo = PolicyIterationWithTimer()
     pi_algo.policy_iteration(agent)
     print('return_pi={}'.format(eval_game(env,agent)))
