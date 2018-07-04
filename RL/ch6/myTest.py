@@ -54,12 +54,12 @@ class myEnv(gym.Env):
 
 
 class TableAgent(object):
-    def __init__(self, env):
+    def __init__(self, env,init_p):
         self.s_len = env.observation_space.n
         self.a_len = env.action_space.n
 
         self.r = [env.reward(s) for s in range(0, self.s_len)]
-        self.pi = np.array([0 for s in range(0, self.s_len)])
+        self.pi = np.array([init_p for s in range(0, self.s_len)])
         self.p = np.zeros([self.a_len, self.s_len, self.s_len], dtype=np.float)
 
         ladder_move = np.vectorize(lambda x: env.ladders[x] if x in env.ladders else x)
@@ -67,7 +67,7 @@ class TableAgent(object):
         for i, dice in enumerate(env.dices):
             prob = 1.0 / dice
             for src in range(1, N):
-                step = np.arange(dice)
+                step = np.arange(1,dice+1)
                 step += src
                 step = np.piecewise(step, [step > N, step <= N],
                                     [lambda x: N * 2 - x, lambda x: x])
