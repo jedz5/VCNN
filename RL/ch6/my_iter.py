@@ -51,6 +51,7 @@ class PolicyIteration(object):
         for i in range(1, agent.s_len):
             for j in range(0, agent.a_len):
                 agent.value_q[i,j] = np.dot(agent.p[j,i,:], agent.r + agent.gamma * agent.value_pi)
+                pass
                 # update policy
             max_act = np.argmax(agent.value_q[i,:])
             if new_policy[i] != max_act:
