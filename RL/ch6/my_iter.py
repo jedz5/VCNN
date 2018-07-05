@@ -34,7 +34,9 @@ class PolicyIteration(object):
                 # for j in range(0, agent.act_num): # for each act
                 # print ac
                 transition = agent.p[ac, i, :]
-                value_sa = np.dot(transition, agent.r + agent.gamma * agent.value_pi)
+                R = agent.r + agent.gamma * agent.value_pi
+                R[-1] = agent.r[-1]
+                value_sa = np.dot(transition, R)
                     # value_sas.append(value_sa)
                 new_value_pi[i] = value_sa# value_sas[agent.policy[i]]
             diff = np.sqrt(np.sum(np.power(agent.value_pi - new_value_pi, 2)))
@@ -78,7 +80,7 @@ class PolicyIteration(object):
 
 def policy_iteration_demo1():
     env = myEnv(0, [2,1])
-    agent = TableAgent(env,1)
+    agent = TableAgent(env,0)
     # agent.pi = np.array([1 for s in range(0, agent.s_len)])
     pi_algo = PolicyIteration()
     pi_algo.policy_iteration(agent)
