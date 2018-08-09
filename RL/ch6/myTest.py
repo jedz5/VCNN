@@ -77,7 +77,7 @@ class TableAgent(object):
         self.p[:, N, N] = 1
         self.value_pi = np.zeros((self.s_len))
         self.value_q = np.zeros((self.s_len, self.a_len))
-        self.gamma = 0.8
+        self.gamma = [0.8] * (N) +[0]
 
     def play(self, state):
         return self.pi[state]
@@ -119,7 +119,7 @@ def eval_game(env, policy):
 
 
 if __name__ == '__main__':
-    env = myEnv(10, [3, 6])
+    env = myEnv(0, [3, 6])
     env.reset()
     while True:
         state, reward, terminate, _ = env.step(0)

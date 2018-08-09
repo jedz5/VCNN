@@ -28,19 +28,14 @@ class PolicyIteration(object):
             # one iteration
             iteration += 1
             new_value_pi = agent.value_pi.copy()
+            R = agent.r + agent.gamma * agent.value_pi
             for i in range(1, agent.s_len): # for each state
                 value_sas = []
                 ac = agent.pi[i]
-                # for j in range(0, agent.act_num): # for each act
-                # print ac
                 transition = agent.p[ac, i, :]
-                R = agent.r + agent.gamma * agent.value_pi
-                R[-1] = agent.r[-1]
                 value_sa = np.dot(transition, R)
-                    # value_sas.append(value_sa)
                 new_value_pi[i] = value_sa# value_sas[agent.policy[i]]
             diff = np.sqrt(np.sum(np.power(agent.value_pi - new_value_pi, 2)))
-            # print 'diff={}'.format(diff)
             if diff < 1e-6:
                 break
             else:
@@ -81,7 +76,6 @@ class PolicyIteration(object):
 def policy_iteration_demo1():
     env = myEnv(0, [2,1])
     agent = TableAgent(env,0)
-    # agent.pi = np.array([1 for s in range(0, agent.s_len)])
     pi_algo = PolicyIteration()
     pi_algo.policy_iteration(agent)
     print('return_pi={}'.format(eval_game(env, agent)))
