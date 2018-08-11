@@ -74,7 +74,7 @@ class PolicyIteration(object):
 
 
 def policy_iteration_demo1():
-    env = myEnv(0, [2,1])
+    env = myEnv(0, [3,4])
     agent = TableAgent(env,0)
     pi_algo = PolicyIteration()
     pi_algo.policy_iteration(agent)

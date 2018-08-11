@@ -77,7 +77,7 @@ class TableAgent(object):
         self.p[:, N, N] = 1
         self.value_pi = np.zeros((self.s_len))
         self.value_q = np.zeros((self.s_len, self.a_len))
-        self.gamma = [0.8] * (N) +[0]
+        self.gamma = [1.0] * (N) +[0]
 
     def play(self, state):
         return self.pi[state]
@@ -91,7 +91,7 @@ class ModelFreeAgent(object):
         self.pi = np.array([0 for s in range(0, self.s_len)])
         self.value_q = np.zeros((self.s_len, self.a_len))
         self.value_n = np.zeros((self.s_len, self.a_len))
-        self.gamma = 0.8
+        self.gamma = [1.0] * (N) +[0]
 
     def play(self, state, epsilon=0):
         if np.random.rand() < epsilon:

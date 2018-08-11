@@ -2,9 +2,9 @@ import numpy as np
 from contextlib import contextmanager
 import time
 
-from ch7.snake import SnakeEnv, ModelFreeAgent, TableAgent, eval_game
+from ch6.myTestEnv import myEnv, ModelFreeAgent, TableAgent, eval_game
 import gym
-from ch7.policy_iter import PolicyIteration
+from ch6.my_iter import PolicyIteration
 
 @contextmanager
 def timer(name):
@@ -61,7 +61,7 @@ class MonteCarlo(object):
 
 def monte_carlo_demo():
     np.random.seed(101)
-    env = SnakeEnv(10, [3,6])
+    env = myEnv(0, [3,6])
     agent = ModelFreeAgent(env)
     mc = MonteCarlo()
     with timer('Timer Monte Carlo Iter'):
@@ -79,7 +79,7 @@ def monte_carlo_demo():
 
 def monte_carlo_demo2():
     np.random.seed(101)
-    env = SnakeEnv(10, [3,6])
+    env = myEnv(0, [3,6])
     agent = ModelFreeAgent(env)
     mc = MonteCarlo(0.5)
     with timer('Timer Monte Carlo Iter'):
