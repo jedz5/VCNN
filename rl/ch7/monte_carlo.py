@@ -16,6 +16,7 @@ def timer(name):
 class MonteCarlo(object):
     def __init__(self, epsilon=0.0):
         self.epsilon = epsilon
+        self.i = 0
 
     def monte_carlo_eval(self, agent, env):
         state = env.reset()
@@ -31,7 +32,7 @@ class MonteCarlo(object):
         value = []
         return_val = 0
         for item in reversed(episode):
-            return_val = return_val * agent.gamma + item[2]
+            return_val = return_val + item[2]
             value.append((item[0], item[1], return_val))
         # every visit
         for item in reversed(value):
@@ -44,23 +45,26 @@ class MonteCarlo(object):
 
     def policy_improve(self, agent):
         new_policy = np.zeros_like(agent.pi)
-        for i in range(1, agent.s_len):
-            new_policy[i] = np.argmax(agent.value_q[i,:])
+        new_policy = np.argmax(agent.value_q,axis=1)
         if np.all(np.equal(new_policy, agent.pi)):
             return False
         else:
+            self.i += 1
+            diff = agent.pi - new_policy
+            print("i = {}".format(self.i))
+            print(diff)
             agent.pi = new_policy
             return True
 
     # monte carlo
     def monte_carlo_opt(self, agent, env):
-        for i in range(10):
-            for j in range(100):
+        for i in range(100):
+            for j in range(1):
                 self.monte_carlo_eval(agent, env)
             self.policy_improve(agent)
 
 def monte_carlo_demo():
-    np.random.seed(101)
+    # np.random.seed(101)
     env = myEnv(0, [3,6])
     agent = ModelFreeAgent(env)
     mc = MonteCarlo()
@@ -69,8 +73,8 @@ def monte_carlo_demo():
     print('return_pi={}'.format(eval_game(env,agent)))
     print(agent.pi)
 
-    np.random.seed(101)
-    agent2 = TableAgent(env)
+    # np.random.seed(101)
+    agent2 = TableAgent(env,0)
     pi_algo = PolicyIteration()
     with timer('Timer PolicyIter'):
         pi_algo.policy_iteration(agent2)
@@ -78,7 +82,7 @@ def monte_carlo_demo():
     print(agent2.pi)
 
 def monte_carlo_demo2():
-    np.random.seed(101)
+    # np.random.seed(101)
     env = myEnv(0, [3,6])
     agent = ModelFreeAgent(env)
     mc = MonteCarlo(0.5)
@@ -88,7 +92,7 @@ def monte_carlo_demo2():
     print(agent.pi)
 
 if __name__ == '__main__':
-    monte_carlo_demo()
+    # monte_carlo_demo()
     monte_carlo_demo2()
 
 

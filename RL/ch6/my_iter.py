@@ -1,23 +1,23 @@
 import numpy as np
-from ch6.myTest import myEnv, TableAgent, eval_game
+from ch6.myTestEnv import myEnv, TableAgent, eval_game
 
-policy_ref = [1] * 97 + [0] * 3
-policy_0 = [0] * 100
-policy_1 = [1] * 100
-
-def test_easy():
-    np.random.seed(0)
-    sum_opt = 0
-    sum_0 = 0
-    sum_1 = 0
-    env = myEnv(0, [3, 6])
-    for i in range(10000):
-        sum_opt += eval_game(env, policy_ref)
-        sum_0 += eval_game(env, policy_0)
-        sum_1 += eval_game(env, policy_1)
-    print('opt avg={}'.format(sum_opt / 10000.0))
-    print('0 avg={}'.format(sum_0 / 10000.0))
-    print('1 avg={}'.format(sum_1 / 10000.0))
+# policy_ref = [1] * 97 + [0] * 3
+# policy_0 = [0] * 100
+# policy_1 = [1] * 100
+#
+# def test_easy():
+#     np.random.seed(0)
+#     sum_opt = 0
+#     sum_0 = 0
+#     sum_1 = 0
+#     env = myEnv(0, [3, 6])
+#     for i in range(10000):
+#         sum_opt += eval_game(env, policy_ref)
+#         sum_0 += eval_game(env, policy_0)
+#         sum_1 += eval_game(env, policy_1)
+#     print('opt avg={}'.format(sum_opt / 10000.0))
+#     print('0 avg={}'.format(sum_0 / 10000.0))
+#     print('1 avg={}'.format(sum_1 / 10000.0))
 
 class PolicyIteration(object):
 
@@ -45,9 +45,10 @@ class PolicyIteration(object):
 
     def policy_improvement(self, agent):
         new_policy = np.zeros_like(agent.pi)
+        R = agent.r + agent.gamma * agent.value_pi
         for i in range(1, agent.s_len):
             for j in range(0, agent.a_len):
-                agent.value_q[i,j] = np.dot(agent.p[j,i,:], agent.r + agent.gamma * agent.value_pi)
+                agent.value_q[i,j] = np.dot(agent.p[j,i,:], R)
                 pass
                 # update policy
             max_act = np.argmax(agent.value_q[i,:])
