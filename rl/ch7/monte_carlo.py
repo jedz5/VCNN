@@ -17,6 +17,7 @@ class MonteCarlo(object):
     def __init__(self, epsilon=0.0):
         self.epsilon = epsilon
         self.i = 0
+        self.n = 0
 
     def monte_carlo_eval(self, agent, env):
         state = env.reset()
@@ -50,8 +51,10 @@ class MonteCarlo(object):
         if np.all(np.equal(new_policy, agent.pi)):
             return False
         else:
+            self.n += 1
             diff = agent.pi - new_policy
-            print("i = {}".format(self.i))
+            print("----i = {}".format(self.i))
+            print("n = {}".format(self.n))
             print(diff)
             agent.pi = new_policy
             return True
@@ -59,7 +62,7 @@ class MonteCarlo(object):
     # monte carlo
     def monte_carlo_opt(self, agent, env):
         for i in range(100):
-            for j in range(1):
+            for j in range(100):
                 self.monte_carlo_eval(agent, env)
             self.policy_improve(agent)
 

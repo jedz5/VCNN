@@ -1,9 +1,9 @@
 import numpy as np
 
-from snake import SnakeEnv, ModelFreeAgent, TableAgent, eval_game
+from ch6.myTestEnv import myEnv, ModelFreeAgent, TableAgent, eval_game
 import gym
-from policy_iter import PolicyIteration
-from monte_carlo import MonteCarlo,timer
+from ch6.my_iter import PolicyIteration
+from ch7.monte_carlo import MonteCarlo,timer
 
 class SARSA(object):
     def __init__(self, epsilon=0.0):
@@ -50,7 +50,7 @@ class SARSA(object):
 
 def monte_carlo_demo():
     np.random.seed(101)
-    env = SnakeEnv(10, [3,6])
+    env = myEnv(0, [3,6])
     agent = ModelFreeAgent(env)
     mc = MonteCarlo(0.5)
     with timer('Timer Monte Carlo Iter'):
