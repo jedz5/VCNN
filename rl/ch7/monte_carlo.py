@@ -46,10 +46,10 @@ class MonteCarlo(object):
     def policy_improve(self, agent):
         new_policy = np.zeros_like(agent.pi)
         new_policy = np.argmax(agent.value_q,axis=1)
+        self.i += 1
         if np.all(np.equal(new_policy, agent.pi)):
             return False
         else:
-            self.i += 1
             diff = agent.pi - new_policy
             print("i = {}".format(self.i))
             print(diff)
