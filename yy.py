@@ -1,28 +1,26 @@
-import tensorflow as tf
 import numpy as np
-a = np.arange(1*36*1).reshape(1,36,1)
-#a = np.arange(3*2*4).reshape(3,2,4)
-#a = tf.convert_to_tensor(a)
-# axis=0
-sum1 = tf.cumsum(a,axis=0)
-#sum1 = tf.reduce_sum(a,axis=0)
-# axis=1
-sum2 = tf.cumsum(a, axis=1)
-#sum2 = tf.reduce_sum(a, axis=1)
-# exclusive=False
-sum3 = tf.cumsum(a, exclusive=False)
+def xx():
+    abc = np.array([0,0,0],dtype=float)
+    step = 0.1
+    Q = np.array([3,2,1])
+    pa = np.array([1,0,0])
+    pb = np.array([0, 1, 0])
+    pc = np.array([0, 0, 1])
+    for i in range(10):
+        esp = np.exp(abc)
+        pi = esp / np.sum(esp)
+        print("pi")
+        print(pi)
+        action = np.argmax(pi)
+        one_hot = np.zeros(3)
+        one_hot[action] = 1
+        a = (pi*Q*(pa-pi[0])).sum()
+        b = (pi * Q * (pb - pi[1])).sum()
+        c = (pi * Q * (pc - pi[2])).sum()
+        D = step*np.array([a,b,c])
+        abc += D
+        print("----after delta")
+        print(abc)
 
-# exclusive=True
-sum4 = tf.cumsum(a, exclusive=True)
-
-# reverse=True
-sum5 = tf.cumsum(a, reverse=True)
-
-# exclusive=True, reverse=True
-sum6 = tf.cumsum(a, exclusive=True, reverse=True)
-init = tf.global_variables_initializer()
-with tf.Session() as session:
-    session.run(init)
-    b = session.run(sum1)
-    bb = session.run(sum2)
-    pass
+if __name__ == '__main__':
+    xx()
