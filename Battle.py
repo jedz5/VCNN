@@ -32,10 +32,10 @@ def printF(bh,stacks,curSt):
                 print(n, end=".")
         print()
 
-    bf[curSt.y][curSt.x] = 'M'
+    bf[curSt.x][curSt.y] = 'M'
     for st in stacks:
         if(st.isAlive()):
-            bf[st.y][st.x] = bf[st.y][st.x]+str(st.amount)
+            bf[st.x][st.y] = bf[st.x][st.y]+str(st.amount)
     print("      ",end="")
     [print("%3d "%i,end="") for i in range(1,len(bf[0]) - 1)]
     print()
@@ -59,9 +59,9 @@ class hexType(Enum):
     obstacle = 1
 class BHex:
     mapp = {100:'|',-9:'   ',-8:' * ',-4:'M',-2:'E',-1:'A',51:'   '}
-    def __init__(self,y = 0,x = 0):
-        self.x = x
+    def __init__(self,x = 0,y = 0):
         self.y = y
+        self.x = x
 class BStack(object):
     def  __init__(self):
         self.amount = 0
@@ -85,8 +85,8 @@ class BStack(object):
         self.isDenfenced = False
         self.name = 'unKnown'
         self.slotId = 0
-        self.x = 0
         self.y = 0
+        self.x = 0
         self.isWide = False
         self.isFly = False
         self.isShooter = False
@@ -99,21 +99,21 @@ class BStack(object):
         bf = [[ini(col) for col in range(self.inBattle.bFieldWidth)] for row in range(self.inBattle.bFieldHeight)]
         for sts in self.inBattle.stacks:
             if(sts.isAlive()):
-                bf[sts.y][sts.x] = 400 if sts.side == self.side else 200
+                bf[sts.x][sts.y] = 400 if sts.side == self.side else 200
         for obs in self.inBattle.obstacles:
-            bf[obs.y][obs.x] = 800
+            bf[obs.x][obs.y] = 800
         #init battleField end
         # accessable  begin
         travellers = []
-        bf[self.y][self.x] = self.speed
+        bf[self.x][self.y] = self.speed
         travellers.append(self)
         if(not self.isFly):
             while(len(travellers) > 0):
                 current = travellers.pop()
-                speedLeft = bf[current.y][current.x] - 1
+                speedLeft = bf[current.x][current.y] - 1
                 for adj in self.getNeibours(current):
-                    if(bf[adj.y][adj.x] < speedLeft):
-                        bf[adj.y][adj.x] = speedLeft
+                    if(bf[adj.x][adj.y] < speedLeft):
+                        bf[adj.x][adj.y] = speedLeft
                         if (speedLeft > 0):
                             travellers.append(adj)
         else: #fly
@@ -125,22 +125,22 @@ class BStack(object):
         #accessable  end
         #attackable begin
         for obs in self.inBattle.obstacles:  #obstacle,enemy and attackable,left
-            bf[obs.y][obs.x] = -8
+            bf[obs.x][obs.y] = -8
         for sts in self.inBattle.stacks:
             if(not sts.isAlive()):
                 continue
             if sts.side == self.side:
-                bf[sts.y][sts.x] = -4
+                bf[sts.x][sts.y] = -4
             else:
                 if (self.canShoot()):
-                    bf[sts.y][sts.x] = -1  # enemy and attackbale
+                    bf[sts.x][sts.y] = -1  # enemy and attackbale
                 else:
-                    bf[sts.y][sts.x] = -2  # enemy
+                    bf[sts.x][sts.y] = -2  # enemy
                     for neib in self.getNeibours(sts):
-                        if (bf[neib.y][neib.x] >= 0 and bf[neib.y][neib.x] < 50):
-                            bf[sts.y][sts.x] = -1  # attackbale
+                        if (bf[neib.x][neib.y] >= 0 and bf[neib.x][neib.y] < 50):
+                            bf[sts.x][sts.y] = -1  # attackbale
                             break
-        bf[self.y][self.x] = self.speed
+        bf[self.x][self.y] = self.speed
         return bf
     def computeCasualty(self,opposite,shoot=False,half=True):
         if(self.attack >= opposite.attack):
@@ -194,18 +194,18 @@ class BStack(object):
         adj = []
         if(src == 0):
             src = self
-        self.checkAndPush(src.x - 1, src.y, adj)
-        self.checkAndPush(src.x + 1, src.y, adj)
-        self.checkAndPush((src.x - 1) if src.y%2 != 0 else (src.x + 1) , src.y - 1, adj)
-        self.checkAndPush(src.x, src.y - 1, adj)
-        self.checkAndPush((src.x - 1) if src.y%2 != 0 else (src.x + 1), src.y + 1, adj)
-        self.checkAndPush(src.x, src.y + 1, adj)
+        self.checkAndPush(src.x,src.y - 1,  adj)
+        self.checkAndPush(src.x,src.y + 1,  adj)
+        self.checkAndPush(src.x - 1,(src.y - 1) if src.x%2 != 0 else (src.y + 1) ,  adj)
+        self.checkAndPush(src.x - 1,src.y,  adj)
+        self.checkAndPush(src.x + 1,(src.y - 1) if src.x%2 != 0 else (src.y + 1),  adj)
+        self.checkAndPush(src.x + 1,src.y,  adj)
         return adj
     def checkAndPush(self,x,y,adj):
         if(self.checkPosition(x,y)):
-            adj.append(BHex(y,x))
+            adj.append(BHex(x,y))
     def checkPosition(self,x,y):
-        if (x > 0 and x < Battle.bFieldWidth - 1 and y >= 0 and y < Battle.bFieldHeight):
+        if (y > 0 and y < Battle.bFieldWidth - 1 and x >= 0 and x < Battle.bFieldHeight):
             return True
         return False
     def isHalf(self,dist):
@@ -213,15 +213,15 @@ class BStack(object):
             return False
         return True
     def getDistance(self,dist):
-        x1,y1 = self.x,self.y
-        x2,y2 = dist.x,dist.y
-        x1 = int(x1+y1*0.5)
-        x2 = int(x2+y2*0.5)
-        xDst = x2 - x1
+        y1,x1 = self.y,self.x
+        y2,x2 = dist.y,dist.x
+        y1 = int(y1+x1*0.5)
+        y2 = int(y2+x2*0.5)
         yDst = y2 - y1
-        if((xDst >= 0 and yDst >= 0) or (xDst < 0 and yDst < 0)):
-            return max(abs(xDst),abs(yDst))
-        return abs(xDst) + abs(yDst)
+        xDst = x2 - x1
+        if((yDst >= 0 and xDst >= 0) or (yDst < 0 and xDst < 0)):
+            return max(abs(yDst),abs(xDst))
+        return abs(yDst) + abs(xDst)
     def shoot(self,opposite):
         logger.info('{} shooting {}'.format(self.name,opposite.name))
         killed,firstHPLeft = self.computeCasualty(opposite,True,self.isHalf(opposite))
@@ -272,7 +272,7 @@ class BStack(object):
                     else:
                         att = BHex(i,j)
                         for nb in self.getNeibours(att):
-                            if(aa[nb.y][nb.x] >= 0 and aa[nb.y][nb.x] < 50):
+                            if(aa[nb.x][nb.y] >= 0 and aa[nb.x][nb.y] < 50):
                                 #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
                                 legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
         return legalMoves
@@ -281,8 +281,8 @@ class BStack(object):
 class BObstacle(object):
     def __init__(self,kind = 0):
         self.kind = kind
-        self.x = 0
         self.y = 0
+        self.x = 0
         self.hexType = hexType.obstacle
 
 def isFly(x):
@@ -365,8 +365,8 @@ class Battle(object):
                 st.blockRetaliate = blockRetaliate(x)
                 st.speed = x['speed']
                 st.slotId = x['slot']
-                st.x = x['x']
-                st.y = x['y']
+                st.y = x['x']
+                st.x = x['y']
                 if('shots' in x):
                     st.shots = x['shots']
                 st.inBattle = self
@@ -375,40 +375,40 @@ class Battle(object):
             for x in root['obstacles']:
                 obs = BObstacle()
                 obs.kind = x['type']
-                obs.x = x['x']
-                obs.y = x['y']
+                obs.y = x['x']
+                obs.x = x['y']
                 self.obstacles.append(obs)
     def canReach(self,bFrom,bTo,bAtt = 0):
         curSt = bFrom
         if (curSt != 0):
-            if(not curSt.checkPosition(bTo.x,bTo.y)):
-                logger.info('dist {},{} not valid'.format(bTo.y,bTo.x))
+            if(not curSt.checkPosition(bTo.y,bTo.x)):
+                logger.info('dist {},{} not valid'.format(bTo.x,bTo.y))
                 return False
             bf = curSt.acssessableAndAttackable()
             if(bAtt != 0):
-                return self.bGetDistance(bTo,bAtt) == 1 and bf[bTo.y][bTo.x] >= 0 and bf[bAtt.y][bAtt.x] == -1
+                return self.bGetDistance(bTo,bAtt) == 1 and bf[bTo.x][bTo.y] >= 0 and bf[bAtt.x][bAtt.y] == -1
             else:
-                return bf[bTo.y][bTo.x] >= 0
-        logger.info('src {},{} not valid'.format(bFrom.y, bFrom.x))
+                return bf[bTo.x][bTo.y] >= 0
+        logger.info('src {},{} not valid'.format(bFrom.x, bFrom.y))
         return False
     def bGetDistance(self,src,dist):
-        x1,y1 = src.x,src.y
-        x2,y2 = dist.x,dist.y
-        x1 = int(x1+y1*0.5)
-        x2 = int(x2+y2*0.5)
-        xDst = x2 - x1
+        y1,x1 = src.y,src.x
+        y2,x2 = dist.y,dist.x
+        y1 = int(y1+x1*0.5)
+        y2 = int(y2+x2*0.5)
         yDst = y2 - y1
-        if((xDst >= 0 and yDst >= 0) or (xDst < 0 and yDst < 0)):
-            return max(abs(xDst),abs(yDst))
-        return abs(xDst) + abs(yDst)
+        xDst = x2 - x1
+        if((yDst >= 0 and xDst >= 0) or (yDst < 0 and xDst < 0)):
+            return max(abs(yDst),abs(xDst))
+        return abs(yDst) + abs(xDst)
     def move(self,bFrom,bTo):
         srcs = self.findStack(bFrom)
         if(len(srcs) == 0):
             logger.info("sth wrong move from {},not exist".format(bFrom))
             return
         src = srcs[0]
-        src.x = bTo.x
         src.y = bTo.y
+        src.x = bTo.x
         src.isMoved = True
 
     def sortStack(self):
@@ -416,9 +416,9 @@ class Battle(object):
         self.waited = list(filter(lambda elem:elem.isAlive() and not elem.isMoved and elem.isWaited,self.stacks))
         self.moved = list(filter(lambda elem:elem.isAlive() and elem.isMoved,self.stacks))
 
-        self.toMove.sort(key=lambda elem:(-elem.speed,elem.y,elem.x))
-        self.waited.sort(key=lambda elem: (elem.speed, elem.y, elem.x))
-        self.moved.sort(key=lambda elem: (-elem.speed, elem.y, elem.x))
+        self.toMove.sort(key=lambda elem:(-elem.speed,elem.x,elem.y))
+        self.waited.sort(key=lambda elem: (elem.speed, elem.x, elem.y))
+        self.moved.sort(key=lambda elem: (-elem.speed, elem.x, elem.y))
         self.stackQueue = self.toMove + self.waited + self.moved
         self.curStack = self.stackQueue[0]
     def currentPlayer(self):
@@ -430,9 +430,9 @@ class Battle(object):
         planeStruct = [[x for x in range(1,self.bFieldStackProps)],0]
         def fillStack(stack):
             #stack = BStack()
-            state[stack.y][stack.x - 1][planeStruct[0]] = [stack.side,stack.id,stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.health,int(stack.isMoved),int(stack.isRetaliated),int(stack.isWaited),stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] #,stack.firstHPLeft
+            state[stack.x][stack.y - 1][planeStruct[0]] = [stack.side,stack.id,stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.health,int(stack.isMoved),int(stack.isRetaliated),int(stack.isWaited),stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] #,stack.firstHPLeft
         def fillObs(ob):
-            state[ob.y][ob.x - 1][planeStruct[1]] = 1
+            state[ob.x][ob.y - 1][planeStruct[1]] = 1
         [fillStack(st) for st in self.stacks]
         [fillObs(ob) for ob in self.obstacles]
         return state
@@ -443,15 +443,15 @@ class Battle(object):
             #stack = BStack()
             idList = [0, 0, 0, 0, 0]
             idList[stack.id] = 1
-            state[stack.y][stack.x - 1][planeStruct[stack.side]] = [stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.firstHPLeft,stack.health,stack.isMoved,stack.isRetaliated,stack.isWaited,stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] +idList
+            state[stack.x][stack.y - 1][planeStruct[stack.side]] = [stack.amount,stack.attack,stack.defense,stack.maxDamage,stack.minDamage,stack.firstHPLeft,stack.health,stack.isMoved,stack.isRetaliated,stack.isWaited,stack.speed,stack.luck,stack.morale,stack.shots,stack.isFly,stack.isShooter] +idList
         def fillObs(ob):
-            state[ob.y][ob.x - 1][planeStruct[2]] = 1
+            state[ob.x][ob.y - 1][planeStruct[2]] = 1
         def fillMe(me):
-            state[me.y][me.x - 1][planeStruct[3]] = 1
+            state[me.x][me.y - 1][planeStruct[3]] = 1
         def fillReachable(r):
-            state[r.y][r.x - 1][planeStruct[4]] = 1
+            state[r.x][r.y - 1][planeStruct[4]] = 1
         def fillAttackable(r):
-            state[r.y][r.x - 1][planeStruct[5]] = 1
+            state[r.x][r.y - 1][planeStruct[5]] = 1
         [fillStack(st) for st in self.stacks]
         [fillObs(st) for st in self.obstacles]
         fillMe(self.curStack)
@@ -478,71 +478,71 @@ class Battle(object):
         return left,leftBase,right,rightBase
 
     def findStack(self,dist,alive=True):
-        ret = list(filter(lambda elem:elem.x == dist.x and elem.y == dist.y and elem.isAlive() == alive,self.stacks))
+        ret = list(filter(lambda elem:elem.y == dist.y and elem.x == dist.x and elem.isAlive() == alive,self.stacks))
         return ret
     def directionToHex(self,mySelf,dirct):
         if(dirct < 0 or dirct > 5):
             logger.info('wrong direction {}'.format(dirct))
             return 0
         if(dirct == 0):
-            if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y - 1,mySelf.x)
+            if (mySelf.x % 2 == 0):
+                return BHex(mySelf.x - 1,mySelf.y)
             else:
-                return BHex(mySelf.y - 1, mySelf.x - 1)
+                return BHex(mySelf.x - 1, mySelf.y - 1)
         if(dirct == 1):
-            if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y - 1,mySelf.x + 1)
+            if (mySelf.x % 2 == 0):
+                return BHex(mySelf.x - 1,mySelf.y + 1)
             else:
-                return BHex(mySelf.y - 1, mySelf.x)
+                return BHex(mySelf.x - 1, mySelf.y)
         if(dirct == 2):
-            return BHex(mySelf.y, mySelf.x + 1)
+            return BHex(mySelf.x, mySelf.y + 1)
         if(dirct == 5):
-            return BHex(mySelf.y, mySelf.x - 1)
+            return BHex(mySelf.x, mySelf.y - 1)
         if(dirct == 4):
-            if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y + 1,mySelf.x)
+            if (mySelf.x % 2 == 0):
+                return BHex(mySelf.x + 1,mySelf.y)
             else:
-                return BHex(mySelf.y + 1, mySelf.x - 1)
+                return BHex(mySelf.x + 1, mySelf.y - 1)
         if (dirct == 3):
-            if (mySelf.y % 2 == 0):
-                return BHex(mySelf.y + 1, mySelf.x + 1)
+            if (mySelf.x % 2 == 0):
+                return BHex(mySelf.x + 1, mySelf.y + 1)
             else:
-                return BHex(mySelf.y + 1, mySelf.x)
+                return BHex(mySelf.x + 1, mySelf.y)
     def hexToDirection(self,mySelf,hex):
-        if(hex.y == mySelf.y - 1):
-            if(mySelf.y % 2 == 0): #top left right
-                if(hex.x == mySelf.x):
+        if(hex.x == mySelf.x - 1):
+            if(mySelf.x % 2 == 0): #top left right
+                if(hex.y == mySelf.y):
                     return 0
-                elif(hex.x == mySelf.x + 1):
+                elif(hex.y == mySelf.y + 1):
                     return 1
                 else:
                     return -1
             else:
-                if (hex.x == mySelf.x - 1):
+                if (hex.y == mySelf.y - 1):
                     return 0
-                elif (hex.x == mySelf.x):
+                elif (hex.y == mySelf.y):
                     return 1
                 else:
                     return -1
-        elif(hex.y == mySelf.y): #left right
-            if (hex.x == mySelf.x - 1):
+        elif(hex.x == mySelf.x): #left right
+            if (hex.y == mySelf.y - 1):
                 return 5
-            elif(hex.x == mySelf.x + 1):
+            elif(hex.y == mySelf.y + 1):
                 return 2
             else:
                 return -1
-        elif(hex.y == mySelf.y + 1): #bottom left right
-            if (mySelf.y % 2 == 0):
-                if (hex.x == mySelf.x):
+        elif(hex.x == mySelf.x + 1): #bottom left right
+            if (mySelf.x % 2 == 0):
+                if (hex.y == mySelf.y):
                     return 4
-                elif (hex.x == mySelf.x + 1):
+                elif (hex.y == mySelf.y + 1):
                     return 3
                 else:
                     return -1
             else:
-                if (hex.x == mySelf.x - 1):
+                if (hex.y == mySelf.y - 1):
                     return 4
-                elif (hex.x == mySelf.x):
+                elif (hex.y == mySelf.y):
                     return 3
                 else:
                     return -1
@@ -554,19 +554,19 @@ class Battle(object):
         if (actionType.defend == action.type):
             return 1
         if (actionType.move == action.type):
-            i = action.move.y
-            j = action.move.x
+            i = action.move.x
+            j = action.move.y
             return 2 + i* (self.bFieldWidth - 2) + j - 1
         if (actionType.attack == action.type):
             enemy = action.attack
             direct = self.hexToDirection(action.attack,action.move)
-            i = enemy.y
-            j = enemy.x
+            i = enemy.x
+            j = enemy.y
             return 2 + self.bFieldSize +(i * (self.bFieldWidth - 2) + (j - 1))*6+ direct
         if (actionType.shoot == action.type):
             enemy = action.attack
-            i = enemy.y
-            j = enemy.x
+            i = enemy.x
+            j = enemy.y
             return 2 + (7)*self.bFieldSize+(i * (self.bFieldWidth - 2) + j - 1)
         logger.info('actionToIndex wrong action {}'.format(action))
     def indexToAction(self,move):
@@ -603,11 +603,11 @@ class Battle(object):
         if (act.type == actionType.defend):
             return "defend"
         if (act.type == actionType.move):
-            return "move to ({},{})".format(act.move.y,act.move.x)
+            return "move to ({},{})".format(act.move.x,act.move.y)
         if (act.type == actionType.attack):
-            return "melee ({},{}),({},{})".format(act.move.y,act.move.x,act.attack.y,act.attack.x)
+            return "melee ({},{}),({},{})".format(act.move.x,act.move.y,act.attack.x,act.attack.y)
         if (act.type == actionType.shoot):
-            return "shoot ({},{})".format(act.attack.y,act.attack.x)
+            return "shoot ({},{})".format(act.attack.x,act.attack.y)
     def end(self):
         live = {0:False,1:False}
         for st in self.stacks:
@@ -650,17 +650,17 @@ class Battle(object):
         elif(action.type == actionType.defend):
             self.curStack.defend()
         elif(action.type == actionType.move):
-            if (self.curStack.x == action.move.x and self.curStack.y == action.move.y):
+            if (self.curStack.y == action.move.y and self.curStack.x == action.move.x):
                 logger.info("can't move to where you already are!!")
                 return
             if (self.canReach(self.curStack, action.move)):
                 self.move(self.curStack, action.move)
             else:
-                logger.info("you can't reach {},{}".format(action.move.y, action.move.x))
+                logger.info("you can't reach {},{}".format(action.move.x, action.move.y))
         elif(action.type == actionType.attack):
             dists = self.findStack(action.attack,True)
             if(len(dists) == 0):
-                logger.info("wrong attack dist {} {}".format(action.attack.y,action.attack.x))
+                logger.info("wrong attack dist {} {}".format(action.attack.x,action.attack.y))
                 return
             dist = dists[0]
             if (self.canReach(self.curStack, action.move,action.attack)):
@@ -671,7 +671,7 @@ class Battle(object):
         elif(action.type == actionType.shoot):
             dists = self.findStack(action.attack, True)
             if (len(dists) == 0):
-                logger.info("wrong shoot dist {} {}".format(action.attack.y, action.attack.x))
+                logger.info("wrong shoot dist {} {}".format(action.attack.x, action.attack.y))
                 return
             dist = dists[0]
             if (self.curStack.canShoot(action.attack)):
@@ -771,25 +771,27 @@ class BAction:
         self.move = move
         self.attack = attack
         self.spell = spell
-
-# pl1 = BPlayer()
-# pl2 = BPlayer()
-# players = [pl1, pl2]
-# battle = Battle()
-# battle.loadFile("D:/project/VCNN/train/selfplay.json")
-# battle.checkNewRound()
-# while(not battle.end()[0]):
-#     battle.checkNewRound()
-#     cplayer = battle.currentPlayer()
-#     printF(battle.curStack.acssessableAndAttackable(),battle.stacks,battle.curStack)
-#     act = players[cplayer].getAction(battle)
-#     if(act == 0):
-#         continue
-#     legals = battle.curStack.legalMoves()
-#     myMove = battle.actionToIndex(act)
-#     if(myMove not in legals):
-#         logger.info('...sth  wrong.....')
-#     battle.doAction(act)
+def main():
+    pl1 = BPlayer()
+    pl2 = BPlayer()
+    players = [pl1, pl2]
+    battle = Battle()
+    battle.loadFile("D:/project/VCNN/train/selfplay.json")
+    battle.checkNewRound()
+    while(not battle.end()[0]):
+        battle.checkNewRound()
+        cplayer = battle.currentPlayer()
+        printF(battle.curStack.acssessableAndAttackable(),battle.stacks,battle.curStack)
+        act = players[cplayer].getAction(battle)
+        if(act == 0):
+            continue
+        legals = battle.curStack.legalMoves()
+        myMove = battle.actionToIndex(act)
+        if(myMove not in legals):
+            logger.info('...sth  wrong.....')
+        battle.doAction(act)
+if __name__ == '__main__':
+    main()
 
 
 
