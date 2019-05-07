@@ -762,7 +762,9 @@ class  BPlayer(object):
             elif i in legals:
                 all_moves[i] = 0.4/len(legals) - 1
         return actIndex,all_moves
-
+class SimpleAI(BPlayer):
+    def getAction(self,battle):
+        pass
 class BAction:
     def __init__(self,type = 0,move = 0,attack = 0,spell=0):
         self.type = type
@@ -770,26 +772,24 @@ class BAction:
         self.attack = attack
         self.spell = spell
 
-    # pl1 = BPlayer(0)
-    # pl2 = BPlayer(1)
-    # players = [pl1, pl2]
-    # battle = Battle()
-    # pl1.setBattle(battle)
-    # pl2.setBattle(battle)
-    # battle.loadFile("D:/project/VCNN/train/selfplay.json")
-    # battle.newRound()
-    # while(not battle.end()):
-    #     battle.checkGameEndOrNewRound()
-    #     cplayer = battle.currentPlayer()
-    #     printF(battle.curStack.acssessableAndAttackable(),battle.stacks,battle.curStack)
-    #     act = players[cplayer].getAction()
-    #     if(act == 0):
-    #         continue
-    #     legals = battle.curStack.legalMoves()
-    #     myMove = battle.actionToIndex(act)
-    #     if(myMove not in legals):
-    #         logger.info('...sth  wrong.....')
-    #     battle.doAction(act)
+# pl1 = BPlayer()
+# pl2 = BPlayer()
+# players = [pl1, pl2]
+# battle = Battle()
+# battle.loadFile("D:/project/VCNN/train/selfplay.json")
+# battle.checkNewRound()
+# while(not battle.end()[0]):
+#     battle.checkNewRound()
+#     cplayer = battle.currentPlayer()
+#     printF(battle.curStack.acssessableAndAttackable(),battle.stacks,battle.curStack)
+#     act = players[cplayer].getAction(battle)
+#     if(act == 0):
+#         continue
+#     legals = battle.curStack.legalMoves()
+#     myMove = battle.actionToIndex(act)
+#     if(myMove not in legals):
+#         logger.info('...sth  wrong.....')
+#     battle.doAction(act)
 
 
 
