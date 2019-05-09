@@ -115,7 +115,7 @@
 			"maxDamage" : 8,
 			"minDamage" : 6,
 			"morale" : 1,
-			"name" : "Marksman2",
+			"name" : "Marksman",
 			"shots": 3,
 			"slot" : 1,
 			"speed" : 9,

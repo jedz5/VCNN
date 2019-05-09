@@ -2,6 +2,10 @@ import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 from sys import exit  # 导入sys库中的exit函数
 from Battle import *
+class BPoint:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
 
 class CClickableHex:
     def __init__(self, hex_i=0, hex_j=0, pixels_x=0, pixels_y=0):
@@ -18,6 +22,25 @@ class CClickableHex:
         x = hex_j*44 + (14 + (22 if hex_i % 2 == 0 else 0))
         y = hex_i*42 + 86
         return x,y
+
+    @classmethod
+    def XYtoIJ(self,mouse_x,mouse_y):
+        i = (int)((mouse_y - 86) / 42)
+        j = (int)((mouse_x - (14 + (22 if i % 2 == 0 else 0))) / 44)
+        return i,j
+    @classmethod
+    def getXYUnitAnim(self,hex,stack):
+        ret = BPoint(-500,-500)
+        basePos = BPoint(-190,-139) # position of creature in topleft corner
+        imageShiftX = 30 # X offset to base pos for facing right stacks, negative for facing left
+        ret.x = basePos.x + 22 * ((hex.x + 1) % 2) + 44 * hex.y;
+        ret.y = basePos.y + 42 * hex.x;
+        if not stack.side:
+            ret.x += imageShiftX
+        else:
+            ret.x -= imageShiftX
+        return ret
+        # if stack.isWide:
 class BattleInterface:
     def __init__(self, battleEngine):
         # 定义窗口的分辨率
@@ -28,16 +51,29 @@ class BattleInterface:
         self.battleEngine = battleEngine
         self.current_hex = CClickableHex()
         self.transColor = pygame.Color(255, 0, 255)
-        self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
-
-        self.background = pygame.image.load("D:/project/vcmi/imgs/bgrd.bmp")
-        self.creIMG = {1:pygame.transform.scale(pygame.image.load("D:/project/vcmi/imgs/CBONG1A2.bmp"),(40,40))}
-        shader = pygame.image.load("D:/project/vcmi/imgs/CCellShd.bmp").convert_alpha()
-        self.hex_shader = pygame.Surface(shader.get_size())
-        self.hex_shader.blit(shader, (0, 0))
-        self.hex_shader.set_colorkey(self.transColor)
-        self.hex_shader.set_alpha(100)
+        self.stimgs = {}
         self.clock = pygame.time.Clock()
+        self.loadIMGs()
+        self.hex_shader = self.stimgs["hex_shader"]
+        self.background = self.stimgs["background"]
+    def loadIMGs(self):
+        self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
+        stacks = self.battleEngine.stacks
+        background = pygame.image.load("D:/project/vcnn/imgs/bgrd.bmp")
+        self.stimgs["background"] = background
+        shader = pygame.image.load("D:/project/vcnn/imgs/CCellShd.bmp").convert_alpha()
+        hex_shader = pygame.Surface(shader.get_size())
+        hex_shader.blit(shader, (0, 0))
+        hex_shader.set_colorkey(self.transColor)
+        hex_shader.set_alpha(100)
+        self.stimgs["hex_shader"] = hex_shader
+        for st in stacks:
+            if st.name not in self.stimgs:
+                img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
+                imgback = pygame.Surface(img.get_size())
+                imgback.blit(img, (0, 0))
+                imgback.set_colorkey((16,16,16))
+                self.stimgs[st.name] = imgback
 
     def renderFrame(self):
         self.clock.tick(60)
@@ -72,9 +108,18 @@ class BattleInterface:
                 for j in range(self.battleEngine.bFieldWidth):
                     if hoveredRange[i][j] >= 0 and hoveredRange[i][j] < 50:
                         self.screen.blit(self.hex_shader, CClickableHex.IJtoXY(i, j))
+
         # show stacks
-        # cre = self.creIMG[1]
-        # self.screen.blit(cre, CClickableHex.IJtoXY(3, 5))
+        # img = pygame.image.load("D:/project/vcnn/imgs/tmp/Pikeman.bmp")
+        # hex_shader = pygame.Surface(img.get_size())
+        # hex_shader.blit(img, (0, 0))
+        # hex_shader.set_colorkey((16,16,16))
+        # self.screen.blit(hex_shader, (100, 100))
+        for stack in stacks:
+            coord = CClickableHex.getXYUnitAnim(BHex(stack.x,stack.y),stack)
+            img = self.stimgs[stack.name]
+            self.screen.blit(img,(coord.x,coord.y))
+
     def update(self):
         self.showBackground()
         self.showBattlefieldObjects()
@@ -93,18 +138,22 @@ class BattleInterface:
                 mouse_x, mouse_y = event.pos
                 move_x, move_y = event.rel
                 self.handleMouseMotion(mouse_x, mouse_y)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                mouse_x, mouse_y = event.pos
+                i,j = CClickableHex.XYtoIJ(mouse_x, mouse_y)
+                #if
+
 
     def handleMouseMotion(self, mouse_x, mouse_y):
         #hover on hex
         if mouse_x < 58 or mouse_y <86:
             return
-        i = (int)((mouse_y - 86) / 42)
-        j = (int)((mouse_x - (14 + (22 if i % 2 == 0 else 0))) / 44)
+        i,j = CClickableHex.XYtoIJ(mouse_x,mouse_y)
         self.current_hex.hex_i = i
         self.current_hex.hex_j = j
         self.current_hex.pixels_x = mouse_x - (mouse_x - (14 + (22 if i % 2 == 0 else 0))) % 44
         self.current_hex.pixels_y = mouse_y - (mouse_y - 86) % 42
-        print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
+        # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
     def handleBattle(self,act):
         if not act:
