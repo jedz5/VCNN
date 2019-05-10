@@ -18,12 +18,6 @@ class CClickableHex:
     def mouseMoved(self):
         self.hovered = True
     @classmethod
-    def IJtoXY(self,hex_i,hex_j):
-        x = hex_j*44 + (14 + (22 if hex_i % 2 == 0 else 0))
-        y = hex_i*42 + 86
-        return x,y
-
-    @classmethod
     def XYtoIJ(self,mouse_x,mouse_y):
         i = (int)((mouse_y - 86) / 42)
         j = (int)((mouse_x - (14 + (22 if i % 2 == 0 else 0))) / 44)
@@ -41,6 +35,11 @@ class CClickableHex:
             ret.x -= imageShiftX
         return ret
         # if stack.isWide:
+    def getHexXY(self):
+        if not self.pixels_x :
+            self.pixels_x = 14 + (22 if self.hex_i % 2 == 0 else 0) + 44 * self.hex_j
+            self.pixels_y = 86 + 42 * self.hex_i
+        return self.pixels_x,self.pixels_y
 class BattleInterface:
     def __init__(self, battleEngine):
         # 定义窗口的分辨率
@@ -74,7 +73,16 @@ class BattleInterface:
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16,16,16))
                 self.stimgs[st.name] = imgback
-
+        for oi in self.battleEngine.obsinfo:
+            if oi.imname not in self.stimgs:
+                img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
+                imgback = pygame.Surface(img.get_size())
+                imgback.blit(img, (0, 0))
+                if oi.isabs:
+                    imgback.set_colorkey((0, 255, 255))
+                else:
+                    imgback.set_colorkey((0, 0, 0))
+                self.stimgs[oi.imname] = imgback
     def renderFrame(self):
         self.clock.tick(60)
         self.update()
@@ -90,13 +98,12 @@ class BattleInterface:
         # Battle.curStack
         ##########
         stacks = self.battleEngine.stacks
-
         #show active stack
         curStackRange = self.battleEngine.curStack.acssessableAndAttackable()
         for i in range(self.battleEngine.bFieldHeight):
             for j in range(self.battleEngine.bFieldWidth):
                 if curStackRange[i][j] >=0 and curStackRange[i][j] < 50:
-                    self.screen.blit(self.hex_shader, CClickableHex.IJtoXY(i,j))
+                    self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
         # hover on stack
         hoveredStack = 0
         for stack in stacks:
@@ -107,19 +114,20 @@ class BattleInterface:
             for i in range(self.battleEngine.bFieldHeight):
                 for j in range(self.battleEngine.bFieldWidth):
                     if hoveredRange[i][j] >= 0 and hoveredRange[i][j] < 50:
-                        self.screen.blit(self.hex_shader, CClickableHex.IJtoXY(i, j))
+                        self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
 
         # show stacks
-        # img = pygame.image.load("D:/project/vcnn/imgs/tmp/Pikeman.bmp")
-        # hex_shader = pygame.Surface(img.get_size())
-        # hex_shader.blit(img, (0, 0))
-        # hex_shader.set_colorkey((16,16,16))
-        # self.screen.blit(hex_shader, (100, 100))
         for stack in stacks:
             coord = CClickableHex.getXYUnitAnim(BHex(stack.x,stack.y),stack)
             img = self.stimgs[stack.name]
+            img = pygame.transform.flip(img, True, False) if stack.side else img
             self.screen.blit(img,(coord.x,coord.y))
 
+        #show obstacles
+        for oi in self.battleEngine.obsinfo:
+            img = self.stimgs[oi.imname]
+            x,y = self.getObstaclePosition(img,oi)
+            self.screen.blit(img, (x, y))
     def update(self):
         self.showBackground()
         self.showBattlefieldObjects()
@@ -168,6 +176,17 @@ class BattleInterface:
         if (myMove not in legals):
             logger.info('...sth  wrong.....')
         battle.doAction(act)
+
+    def getObstaclePosition(self,img, obinfo):
+        if obinfo.isabs:
+            return obinfo.width,obinfo.height
+        offset = img.get_height() % 42
+        if offset > 37:
+            offset -=42
+        bh = CClickableHex(obinfo.x,obinfo.y)
+        x,y = bh.getHexXY()
+        y += 42 - img.get_height() + offset
+        return x,y
 def start_game():
     # 初始化游戏
     pygame.init()  # 初始化pygame

@@ -62,6 +62,7 @@ class BHex:
     def __init__(self,x = 0,y = 0):
         self.y = y
         self.x = x
+
 class BStack(object):
     def  __init__(self):
         self.amount = 0
@@ -284,7 +285,14 @@ class BObstacle(object):
         self.y = 0
         self.x = 0
         self.hexType = hexType.obstacle
-
+class BObstacleInfo:
+    def __init__(self,pos,w,h,isabs,imname):
+        self.x = int(pos/Battle.bFieldWidth)
+        self.y = pos%Battle.bFieldWidth
+        self.width = w
+        self.height = h
+        self.isabs = isabs
+        self.imname = imname
 def isFly(x):
     if "ability" in x:
         for y in x['ability']:
@@ -318,6 +326,7 @@ class Battle(object):
         self.stacks = []
         self.round = 0
         self.obstacles = []
+        self.obsinfo = []
         self.toMove = []
         self.waited = []
         self.moved = []
@@ -378,6 +387,10 @@ class Battle(object):
                 obs.y = x['x']
                 obs.x = x['y']
                 self.obstacles.append(obs)
+            for x in root['obs']:
+                oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
+                self.obsinfo.append(oi)
+
     def canReach(self,bFrom,bTo,bAtt = 0):
         curSt = bFrom
         if (curSt != 0):
