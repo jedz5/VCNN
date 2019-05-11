@@ -2,6 +2,16 @@ import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 from sys import exit  # 导入sys库中的exit函数
 from Battle import *
+# Enum EBattleCursors { COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,
+# 						COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER,
+# 						//various attack frames
+# 						COMBAT_SHOOT_PENALTY = 15, COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,
+# 						COMBAT_SACRIFICE, COMBAT_TELEPORT}
+from enum import Enum
+COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
+COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
+
+
 class BPoint:
     def __init__(self,x,y):
         self.x = x
@@ -51,6 +61,7 @@ class BattleInterface:
         self.current_hex = CClickableHex()
         self.transColor = pygame.Color(255, 0, 255)
         self.stimgs = {}
+        self.cursor = [0] * 20
         self.clock = pygame.time.Clock()
         self.loadIMGs()
         self.hex_shader = self.stimgs["hex_shader"]
@@ -83,6 +94,12 @@ class BattleInterface:
                 else:
                     imgback.set_colorkey((0, 0, 0))
                 self.stimgs[oi.imname] = imgback
+        for idx in range(20):
+            img = pygame.image.load("imgs/cursor/" + str(idx) + ".bmp").convert_alpha()
+            imgback = pygame.Surface(img.get_size())
+            imgback.blit(img, (0, 0))
+            imgback.set_colorkey((0, 255, 255))
+            self.cursor[idx] = imgback
     def renderFrame(self):
         self.clock.tick(60)
         self.update()
@@ -128,6 +145,10 @@ class BattleInterface:
             img = self.stimgs[oi.imname]
             x,y = self.getObstaclePosition(img,oi)
             self.screen.blit(img, (x, y))
+
+        #show cursor
+        # cursorMap = curStackRange.deepcopy()
+        # if cursorMap[self.current_hex.hex_i,self.current_hex.hex_j] < 0
     def update(self):
         self.showBackground()
         self.showBattlefieldObjects()
