@@ -44,17 +44,19 @@ def genJsons(num_samples):
     return samples
 def startBattles():
     os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
+    if not os.path.exists("train"):
+        os.mkdir("train")
     numCore = os.cpu_count()
     print(numCore)
     port = 30000
     e1 = time.time()
-    N = 4
+    N = 6
     for j in range(1):
         client_pool = multiprocessing.Pool(processes=N)
         server_pool = multiprocessing.Pool(processes=N)
         client_result = []
         server_result = []
-        for i in range(2000):
+        for i in range(20000):
             client_result.append(client_pool.apply_async(runClient, (port + i, "random",)))
             server_result.append(server_pool.apply_async(runServer, (port + i,)))
         client_pool.close()
