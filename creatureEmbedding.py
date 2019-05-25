@@ -43,20 +43,24 @@ def genJsons(num_samples):
         samples.append(filename)
     return samples
 def startBattles():
-    os.chdir("/home/enigma/work/enigma/vcmi/RD/install")
+    os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
     numCore = os.cpu_count()
     print(numCore)
-    port = 3000
+    port = 30000
     e1 = time.time()
-    for j in range(400):
-        pool = multiprocessing.Pool(processes=8)
+    N = 4
+    for j in range(1):
+        client_pool = multiprocessing.Pool(processes=N)
+        server_pool = multiprocessing.Pool(processes=N)
         client_result = []
         server_result = []
-        for i in range(40):
-            client_result.append(pool.apply_async(runClient, (port + i, "random",)))
-            server_result.append(pool.apply_async(runServer, (port + i,)))
-        pool.close()
-        pool.join()
+        for i in range(2000):
+            client_result.append(client_pool.apply_async(runClient, (port + i, "random",)))
+            server_result.append(server_pool.apply_async(runServer, (port + i,)))
+        client_pool.close()
+        server_pool.close()
+        client_pool.join()
+        server_pool.join()
         err1 = sum([x.get() for x in client_result])
         err2 = sum([x.get() for x in server_result])
         if err1 or err2:
