@@ -4,11 +4,11 @@ import random
 import json
 import time
 def runClient(port,jsonFile):
-    clientpath = "vcmi_client --donotstartserver --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+    clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
     rc = os.system(clientpath)
     return rc
 def runServer(port):
-    serverpath = "vcmi_server --port {}".format(port)
+    serverpath = "./bin/vcmiserver -d --port {}".format(port)
     rs = os.system(serverpath)
     return rs
 def load_json(file):
@@ -43,16 +43,16 @@ def genJsons(num_samples):
         samples.append(filename)
     return samples
 def startBattles():
-    os.chdir(r"D:\project\VCNN\ENV\RD")
+    os.chdir("/home/enigma/work/enigma/vcmi/RD/install")
     numCore = os.cpu_count()
     print(numCore)
-    port = 30000
+    port = 3000
     e1 = time.time()
-    for j in range(5):
+    for j in range(400):
         pool = multiprocessing.Pool(processes=8)
         client_result = []
         server_result = []
-        for i in range(12):
+        for i in range(40):
             client_result.append(pool.apply_async(runClient, (port + i, "random",)))
             server_result.append(pool.apply_async(runServer, (port + i,)))
         pool.close()
@@ -60,9 +60,11 @@ def startBattles():
         err1 = sum([x.get() for x in client_result])
         err2 = sum([x.get() for x in server_result])
         if err1 or err2:
-            print("phase1 some wrong and quit")
+            print("phase1 some wrong")
         print("{} end".format(j))
     e2 = time.time()
+    print("开始执行时间：", time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(e1)))
+    print("结束执行时间：", time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(e2)))
     print("并行执行时间：", int(e2 - e1))
 if __name__ == '__main__':
     # genJsons(5000)
