@@ -48,15 +48,15 @@ def startBattles():
         os.mkdir("train")
     numCore = os.cpu_count()
     print(numCore)
-    port = 30000
+    port = 7000
     e1 = time.time()
-    N = 6
+    N = 8
     for j in range(1):
         client_pool = multiprocessing.Pool(processes=N)
         server_pool = multiprocessing.Pool(processes=N)
         client_result = []
         server_result = []
-        for i in range(20000):
+        for i in range(5000):
             client_result.append(client_pool.apply_async(runClient, (port + i, "random",)))
             server_result.append(server_pool.apply_async(runServer, (port + i,)))
         client_pool.close()
