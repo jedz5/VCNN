@@ -229,5 +229,29 @@ def trans(fromF,toF):
         toRoot["sides"].append(you)
         with open(toF,'w') as outF:
             json.dump(toRoot,outF)
+def storeTrainSimple(jsonsPath):
+    os.chdir(jsonsPath)
+    fils = os.listdir()
+    NSamples = 30000
+    data = np.zeros([min(len(fils), NSamples), 10 * 14], dtype=int)
+    i = -1
+    for a in fils:
+        i += 1
+        if i >= NSamples:
+            break
+        with open(a) as s:
+            root = json.load(s)
+            for st in root["stacks"]:
+                slot = 10 * (st["slot"] + 0 if st["isHuman"] else 7)
+                data[i, slot] = st["id"]
+                data[i, slot + 1] = st["attack"]
+                data[i, slot + 2] = st["baseAmount"]
+                data[i, slot + 3] = st["defense"]
+                data[i, slot + 4] = st["health"]
+                data[i, slot + 5] = st["luck"]
+                data[i, slot + 6] = st["maxDamage"]
+                data[i, slot + 7] = st["minDamage"]
+                data[i, slot + 8] = st["morale"]
+                data[i, slot + 9] = st["speed"]
 if __name__ == "__main__":
-    trans("./train/br-0-20180207T122334.json","./train/br-0-20180207T122334-trans.json")
+    storeTrainSimple()
