@@ -56,7 +56,7 @@ def startBattles():
         server_pool = multiprocessing.Pool(processes=N)
         client_result = []
         server_result = []
-        for i in range(5000):
+        for i in range(15000):
             client_result.append(client_pool.apply_async(runClient, (port + i, "random",)))
             server_result.append(server_pool.apply_async(runServer, (port + i,)))
         client_pool.close()

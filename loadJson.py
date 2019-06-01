@@ -230,28 +230,35 @@ def trans(fromF,toF):
         with open(toF,'w') as outF:
             json.dump(toRoot,outF)
 def storeTrainSimple(jsonsPath):
-    os.chdir(jsonsPath)
-    fils = os.listdir()
-    NSamples = 30000
+    fils = os.listdir(jsonsPath)
+    NSamples = 60000
     data = np.zeros([min(len(fils), NSamples), 10 * 14], dtype=int)
+    label = np.zeros([min(len(fils), NSamples), 7], dtype=int)
+
     i = -1
     for a in fils:
         i += 1
         if i >= NSamples:
             break
-        with open(a) as s:
+        with open(jsonsPath+a) as s:
+            stackLocation = {}
             root = json.load(s)
             for st in root["stacks"]:
-                slot = 10 * (st["slot"] + 0 if st["isHuman"] else 7)
-                data[i, slot] = st["id"]
-                data[i, slot + 1] = st["attack"]
-                data[i, slot + 2] = st["baseAmount"]
-                data[i, slot + 3] = st["defense"]
-                data[i, slot + 4] = st["health"]
-                data[i, slot + 5] = st["luck"]
+                slot = 10 * (st["slot"] + (0 if st["isHuman"] else 7))
+                data[i, slot] = st["id"] + 1
+                data[i, slot + 1] = st["baseAmount"]
+                data[i, slot + 2] = st["speed"]
+                data[i, slot + 3] = st["luck"]
+                data[i, slot + 4] = st["morale"]
+                data[i, slot + 5] = st["attack"]
                 data[i, slot + 6] = st["maxDamage"]
                 data[i, slot + 7] = st["minDamage"]
-                data[i, slot + 8] = st["morale"]
-                data[i, slot + 9] = st["speed"]
+                data[i, slot + 8] = st["health"]
+                data[i, slot + 9] = st["defense"]
+                if st["isHuman"]:
+                    if st["id"] not in stackLocation:
+                        stackLocation[st["id"]] = st["slot"]
+                    label[i,[stackLocation[st["id"]]]] += st["killed"]
+    np.save("./dataset/samples56.npy",data,label)
 if __name__ == "__main__":
-    storeTrainSimple()
+    data = storeTrainSimple("./samples56/train/")
