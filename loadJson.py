@@ -234,15 +234,16 @@ def storeTrainSimple(jsonsPath):
     NSamples = 60000
     data = np.zeros([min(len(fils), NSamples), 10 * 14], dtype=int)
     label = np.zeros([min(len(fils), NSamples), 7], dtype=int)
-
-    i = -1
-    for a in fils:
-        i += 1
+    others = [[0,0] for x in range(min(len(fils), NSamples))]
+    data[:,4:-1:10] = 5
+    for i,a in enumerate(fils):
         if i >= NSamples:
             break
         with open(jsonsPath+a) as s:
             stackLocation = {}
             root = json.load(s)
+            oa = False
+            ob = False
             for st in root["stacks"]:
                 slot = 10 * (st["slot"] + (0 if st["isHuman"] else 7))
                 data[i, slot] = st["id"] + 1
@@ -259,6 +260,21 @@ def storeTrainSimple(jsonsPath):
                     if st["id"] not in stackLocation:
                         stackLocation[st["id"]] = st["slot"]
                     label[i,[stackLocation[st["id"]]]] += st["killed"]
-    np.save("./dataset/samples56.npy",data,label)
+                if not oa and st["isHuman"]:
+                    others[i][0] = st["name"]
+                    oa = True
+                if not ob and not st["isHuman"]:
+                    others[i][1] = st["name"]
+                    ob = True
+    def isDead(z):
+        for y in z:
+            if y > 56 and y<72:
+                return 0
+        return 1
+    # f = open('test.txt', 'r')
+    # print len([word for line in f for word in line.split()])
+    z = [isDead(x) for x in data[list(set(np.where(data[:, 4:-1:10] == 0)[0].tolist()))][:, 0:-1:10]]
+    print(sum(z))
+    # np.save("./dataset/samples56.npy",data,label)
 if __name__ == "__main__":
-    data = storeTrainSimple("./samples56/train/")
+    data = storeTrainSimple("/home/enigma/work/enigma/project/vcmi/RD/install/train0/")
