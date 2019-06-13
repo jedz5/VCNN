@@ -3,12 +3,19 @@ import multiprocessing
 import random
 import json
 import time
+Linux = True
 def runClient(port,jsonFile):
-    clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+    if Linux:
+        clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+    else:
+        clientpath = "vcmi_client -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
     rc = os.system(clientpath)
     return rc
 def runServer(port):
-    serverpath = "./bin/vcmiserver -d --port {}".format(port)
+    if Linux:
+        serverpath = "./bin/vcmiserver -d --port {}".format(port)
+    else:
+        serverpath = "vcmi_server -d --port {}".format(port)
     rs = os.system(serverpath)
     return rs
 def load_json(file):
@@ -43,7 +50,10 @@ def genJsons(num_samples):
         samples.append(filename)
     return samples
 def startBattles():
-    os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
+    if Linux:
+        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
+    else:
+        os.chdir(r"D:\project\vcmi\RD")
     if not os.path.exists("train"):
         os.mkdir("train")
     numCore = os.cpu_count()
@@ -56,7 +66,7 @@ def startBattles():
         server_pool = multiprocessing.Pool(processes=N)
         client_result = []
         server_result = []
-        for i in range(15000):
+        for i in range(400):
             client_result.append(client_pool.apply_async(runClient, (port + i, "random",)))
             server_result.append(server_pool.apply_async(runServer, (port + i,)))
         client_pool.close()
