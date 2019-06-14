@@ -27,7 +27,7 @@ class DeepFM_vcmi(nn.Module):
     """
 
     def __init__(self, feature_sizes=[140, 24, 8, 8, 2, 2, 2, 2, 2, 2], embedding_size=[10,4,4,4,4,4,4,4,4,4],slot_emb_size = 16,
-                 hidden_dims=[256, 256], num_slots=7, dropout=[0.5, 0.5,0.5],
+                 hidden_dims=[1024, 1024], num_slots=7, dropout=[0.5, 0.5,0.5],
                  use_cuda=True, verbose=False):
         """
         Initialize a new network
@@ -152,7 +152,7 @@ class DeepFM_vcmi(nn.Module):
         best = best_start
         for ep in range(ep_start,epochs):
             print("epoch {}".format(ep))
-            for t, (xi, xv, y_ka,y_a,y_k,y_v) in enumerate(loader_train):
+            for t, (xi, xv, y_ka,y_a,y_k,y_v,y_k_all) in enumerate(loader_train):
                 xi = xi.to(device=self.device, dtype=self.dtype)
                 xv = xv.to(device=self.device, dtype=torch.float)
                 y_k = y_k.to(device=self.device, dtype=torch.float)
@@ -187,7 +187,7 @@ class DeepFM_vcmi(nn.Module):
         num_samples = 0
         model.eval()  # set model to evaluation mode
         with torch.no_grad():
-            for xi, xv, y_ka,y_a,y_k,y_v in loader:
+            for xi, xv, y_ka,y_a,y_k,y_v,y_k_all in loader:
                 xi = xi.to(device=self.device, dtype=self.dtype)  # move to device, e.g. GPU
                 xv = xv.to(device=self.device, dtype=torch.float)
                 y_ka = y_ka.to(device=self.device, dtype=torch.float)

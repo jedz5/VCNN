@@ -59,6 +59,7 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
     labelV = np.zeros([min(all_len, NSamples)], dtype=int)
     label_k_all = np.zeros([min(all_len, NSamples),6], dtype=int)
     i = -1
+    errCount = 0
     for dir in dirs:
         if i >= NSamples - 1:
             break
@@ -121,24 +122,17 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
                         # label[i, slot, 3] = 1 / label[i, slot, 1]
 
             except:
+                errCount += 1
                 traceback.print_exc()
-                print("file[{}] = {}".format(i,fd))
+                print("err {} file[{}] = {}".format(errCount, i, fd))
+                # print("err {} rm file[{}] = {}".format(errCount,i,fd))
+                # s.close()
+                # os.remove(fd)
                 continue
-                    #dataFrame
-                    # if st["isHuman"]:
-                    #     df.loc[i,"Me"]["name"] = st["name"]
-                    #     df.loc[i, "Me"]["baseAmount"] += st["baseAmount"]
-                    #     df.loc[i, "Me"]["killed"] += st["killed"]
-                    #     df.loc[i, "Me"]["id"] = st["id"]
-                    # else:
-                    #     df.loc[i, "Enemy"]["name"] = st["name"]
-                    #     df.loc[i, "Enemy"]["baseAmount"] += st["baseAmount"]
-                    #     df.loc[i, "Enemy"]["killed"] += st["killed"]
-                    #     df.loc[i, "Enemy"]["id"] = st["id"]
     # print len([word for line in f for word in line.split()])
-    # np.save(outpath,[dataI,dataV,label,labelV,label_k_all,np.zeros([1,2])])
+    np.save(outpath,[dataI,dataV,label,labelV,label_k_all,np.zeros([1,2])])
     # np.save(outpath,label_k_all)
-    print("alllen = {}, {} samples completed".format(all_len,i+1))
+    print("alllen = {}, {} samples completed erros {}".format(all_len,i+1,errCount))
     return label_k_all
 def test(inXi,inXv):
     Xi = torch.tensor(inXi)
@@ -175,13 +169,13 @@ def test(inXi,inXv):
     print(slots)
     # print(fm_sum_second_order_emb)
 if __name__ == "__main__":
-    # label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/install/tmp","../dataset/samples63_train-df-hp.npy",300000)
-    label_k_all = storeTrainSimple(r"D:\project\vcmi\RD\1","../dataset/samples63_train-df-hp.npy",300000)
-    # label_k_all = np.load("../dataset/samples63_train-df-hp.npy")
+    label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/install/samples/te","../dataset/samples63_test.npy",500000)
+    # label_k_all = storeTrainSimple(r"D:\project\vcmi\RD\1","../dataset/samples63_train-df-hp.npy",300000)
+    # label_k_all = np.load("../dataset/samples63_train.npy")
     # label_k_all = all[4]
     filt = label_k_all[(label_k_all[:, 2] == 1) & (label_k_all[:, 5] == 15)]
-    x = Counter(filt[:,1])
-    print(x)
+    # x = Counter(filt[:,1])
+    print(filt)
 
 
 
