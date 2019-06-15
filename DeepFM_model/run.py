@@ -15,8 +15,8 @@ import time
 Num_train = 300000
 
 def run_train():
-    batch = 1000
-    train_data = vcmi_Dataset('/home/enigma/work/enigma/project/VCNN/dataset/samples63_train.npy')
+    batch = 2000
+    train_data = vcmi_Dataset('/home/enigma/work/enigma/project/VCNN/dataset/samples63_train_2.npy')
     loader_train = DataLoader(train_data, batch_size=batch, shuffle=True)
     val_data = vcmi_Dataset('/home/enigma/work/enigma/project/VCNN/dataset/samples63_test.npy')
     loader_val = DataLoader(val_data, batch_size=batch, shuffle=True)
@@ -97,28 +97,31 @@ def get_counter(in_list):
     xx = list((x.keys()))
     yy = list((x.values()))
     return xx,yy
-def show_list(lists,colors):
+def show_list(lists):
     plt.figure()  # 定义一个图像窗口
-    for l,c in zip(lists,colors):
+    for l in lists:
         a = get_counter(l)
-        plt.scatter(a[0], a[1], color=c)
+        plt.scatter(a[0], a[1])
     plt.show()
-if __name__ == '__main__':
+def run_infer():
     model = DeepFM_vcmi(use_cuda=True)
     model = model.cuda()
     checkpoint = torch.load('net_pram.pkl')
     model.load_state_dict(checkpoint['net'])
-    y_k_all, pred_wrong = run_infer_inner(model, 10000,'/home/enigma/work/enigma/project/VCNN/dataset/samples63_test.npy')
+    y_k_all, pred_wrong = run_infer_inner(model, 10000,
+                                          '/home/enigma/work/enigma/project/VCNN/dataset/samples63_test.npy')
     y_filt = y_k_all[(y_k_all[:, 2] == 1) & (y_k_all[:, 5] == 11)]
     l = len(y_filt)
     since = time.time()
-    lose_wrong = pred_wrong[pred_wrong.iloc[:, 1] > pred_wrong.iloc[:, 2]].sort_values(by=[("Me", "id"), ("Enemy", "id")])
+    lose_wrong = pred_wrong[pred_wrong.iloc[:, 1] > pred_wrong.iloc[:, 2]].sort_values(
+        by=[("Me", "id"), ("Enemy", "id")])
     time_elapsed = time.time() - since
     print('sort complete in {}s'.format(time_elapsed))
     lose_filt = lose_wrong.loc[(lose_wrong.iloc[:, 3] == 1) & (lose_wrong.iloc[:, 7] == 11)]
     l2 = len(lose_filt)
     #
-    s_y_k_all, s_pred_wrong = run_infer_inner(model, 100000,                                              '/home/enigma/work/enigma/project/VCNN/dataset/samples63_train.npy')
+    s_y_k_all, s_pred_wrong = run_infer_inner(model, 100000,
+                                              '/home/enigma/work/enigma/project/VCNN/dataset/samples63_train.npy')
     s_y_filt = s_y_k_all[(s_y_k_all[:, 2] == 1) & (s_y_k_all[:, 5] == 11)]
     s_l = len(s_y_filt)
     since = time.time()
@@ -128,7 +131,28 @@ if __name__ == '__main__':
     print('sort complete in {}s'.format(time_elapsed))
     s_lose_filt = s_lose_wrong.loc[(s_lose_wrong.iloc[:, 3] == 1) & (s_lose_wrong.iloc[:, 7] == 11)]
     s_l2 = len(s_lose_filt)
-    to_show = [s_y_filt[:, 1],s_lose_filt.iloc[:, 1],y_filt[:, 1],lose_filt.iloc[:, 1]] #
-    colors = ["black","red","#5F9EA0","#00BFFF"] #
-    show_list(to_show,colors)
-    print(l2)
+    # to_show = [s_y_filt[:, 1], s_pred_wrong.iloc[:, 1], s_lose_filt.iloc[:, 1], y_filt[:, 1], pred_wrong.iloc[:, 1],
+    #            lose_filt.iloc[:, 1]]  #
+    # colors = ["black","red","#5F9EA0","#00BFFF"] #
+    # show_list(to_show)
+    # print(l2)
+    h5 = pd.HDFStore("../dataset/pred.h5",'w')
+    h5["pred_valid"] = pred_wrong
+    h5["pred_source"] = s_pred_wrong
+    print(len(pred_wrong))
+    print(len(s_pred_wrong))
+    h5.close()
+if __name__ == '__main__':
+    # run_infer()
+    ly = np.load("../dataset/samples63_test.npy")
+    lsy = np.load("../dataset/samples63_train_2.npy")
+    h5 = pd.HDFStore("../dataset/pred.h5", 'r')
+    pred_wrong  = h5["pred_valid"]
+    s_pred_wrong = h5["pred_source"]
+    y = ly[4]
+    sy = lsy[4]
+    print(pred_wrong.head())
+    print(len(s_pred_wrong))
+    print(len(y))
+    print(len(sy))
+    h5.close()

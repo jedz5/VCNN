@@ -124,10 +124,10 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
             except:
                 errCount += 1
                 traceback.print_exc()
-                print("err {} file[{}] = {}".format(errCount, i, fd))
-                # print("err {} rm file[{}] = {}".format(errCount,i,fd))
-                # s.close()
-                # os.remove(fd)
+                # print("err {} file[{}] = {}".format(errCount, i, fd))
+                print("err {} rm file[{}] = {}".format(errCount,i,fd))
+                s.close()
+                os.remove(fd)
                 continue
     # print len([word for line in f for word in line.split()])
     np.save(outpath,[dataI,dataV,label,labelV,label_k_all,np.zeros([1,2])])
@@ -169,13 +169,13 @@ def test(inXi,inXv):
     print(slots)
     # print(fm_sum_second_order_emb)
 if __name__ == "__main__":
-    label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/install/samples/te","../dataset/samples63_test.npy",500000)
+    label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/install/samples/tr","../dataset/samples63_train_2.npy",1000000)
     # label_k_all = storeTrainSimple(r"D:\project\vcmi\RD\1","../dataset/samples63_train-df-hp.npy",300000)
     # label_k_all = np.load("../dataset/samples63_train.npy")
     # label_k_all = all[4]
-    filt = label_k_all[(label_k_all[:, 2] == 1) & (label_k_all[:, 5] == 15)]
+    # filt = label_k_all[(label_k_all[:, 2] == 1) & (label_k_all[:, 5] == 15)]
     # x = Counter(filt[:,1])
-    print(filt)
+    # print(filt)
 
 
 
