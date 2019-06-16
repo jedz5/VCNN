@@ -97,11 +97,20 @@ def get_counter(in_list):
     xx = list((x.keys()))
     yy = list((x.values()))
     return xx,yy
-def show_list(lists):
-    plt.figure()  # 定义一个图像窗口
-    for l in lists:
-        a = get_counter(l)
-        plt.scatter(a[0], a[1])
+def show_list(lists,markers,type = None):
+    plt.figure(figsize=(16, 10))  # 定义一个图像窗口
+    if type == "set":
+        for l,m in zip(lists,markers):
+            s = list(set(l))
+            y = [1] * len(s)
+            plt.scatter(s, y,marker= m)
+    elif type == "points":
+        for l,m in zip(lists,markers):
+            plt.scatter(l[0],l[1],marker= m)
+    else:
+        for l,m in zip(lists,markers):
+            a = get_counter(l)
+            plt.scatter(a[0], a[1],marker= m)
     plt.show()
 def run_infer():
     model = DeepFM_vcmi(use_cuda=True)
@@ -144,15 +153,14 @@ def run_infer():
     h5.close()
 if __name__ == '__main__':
     # run_infer()
-    ly = np.load("../dataset/samples63_test.npy")
-    lsy = np.load("../dataset/samples63_train_2.npy")
+    y = np.load("../dataset/samples63_test_only_y.npy")
+    sy = np.load("../dataset/samples63_train_only_y.npy")
     h5 = pd.HDFStore("../dataset/pred.h5", 'r')
     pred_wrong  = h5["pred_valid"]
     s_pred_wrong = h5["pred_source"]
-    y = ly[4]
-    sy = lsy[4]
-    print(pred_wrong.head())
-    print(len(s_pred_wrong))
-    print(len(y))
-    print(len(sy))
+    b = y[(y[:, 2] == 121) & (y[:, 5] == 1)]
+    sb = sy[(sy[:, 2] == 121) & (sy[:, 5] == 1)]
+    a = pred_wrong.loc[(pred_wrong.iloc[:,3] == 121) & (pred_wrong.iloc[:,7] == 1)]
+
+    show_list([(b[:,1],b[:,3]),(sb[:,1],sb[:,3]),(a.iloc[:,1].values,a.iloc[:,5].values)],markers=['_','x','o'],type = "points")
     h5.close()
