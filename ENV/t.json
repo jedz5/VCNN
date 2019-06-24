@@ -11,6 +11,8 @@
 			[25, 1],
 			[27, 1]
 		],
+		"heroId" : 0,
+		"heroPrimSkills": [1,1,1,1],
 		"side": 0
 	}, {
 		"army": [

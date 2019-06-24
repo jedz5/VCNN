@@ -32,7 +32,8 @@ class vcmi_Dataset(Dataset):
         self.dataV = torch.tensor(data[1]).float().unsqueeze(-1)
         self.y = torch.tensor(data[2])
         self.v = torch.tensor(data[3]).unsqueeze(-1)
-        self.k_all = torch.tensor(data[4])
+        self.k_all = torch.tensor(data[4][:,:6].astype(np.int32))
+        self.k_path = data[4][:,6]
     def __getitem__(self, idx):
         xI = self.dataI[idx]
         xv = self.dataV[idx]
@@ -41,7 +42,8 @@ class vcmi_Dataset(Dataset):
         label_k = self.y[idx, :, 2]
         label_v = self.v[idx]
         label_k_all = self.k_all[idx]
-        return xI,xv,label_ka,label_a,label_k,label_v,label_k_all
+        k_path = self.k_path[idx]
+        return xI,xv,label_ka,label_a,label_k,label_v,label_k_all,k_path
     def __len__(self):
         return len(self.dataI)
 def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
@@ -57,7 +59,7 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
     dataV = np.zeros([min(all_len, NSamples), 14,10 ], dtype=int)
     label = np.zeros([min(all_len, NSamples),7,3], dtype=float)
     labelV = np.zeros([min(all_len, NSamples)], dtype=int)
-    label_k_all = np.zeros([min(all_len, NSamples),6], dtype=int)
+    label_k_all = np.zeros([min(all_len, NSamples),7], dtype=np.object)
     i = -1
     errCount = 0
     for dir in dirs:
@@ -113,6 +115,7 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
                                 stackLocation[st["id"]] = st["slot"]
                             label[i,[stackLocation[st["id"]]],0] += st["killed"]
                             label[i, [stackLocation[st["id"]]], 1] += st["baseAmount"]
+                    label_k_all[i,6] = fd
                 for slot in range(7):
                     if label[i, slot, 1] == 0:
                         label[i, slot, 2] = 0
@@ -124,10 +127,10 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
             except:
                 errCount += 1
                 traceback.print_exc()
-                # print("err {} file[{}] = {}".format(errCount, i, fd))
-                print("err {} rm file[{}] = {}".format(errCount,i,fd))
+                print("err {} file[{}] = {}".format(errCount, i, fd))
+                # print("err {} rm file[{}] = {}".format(errCount,i,fd))
                 s.close()
-                os.remove(fd)
+                # os.remove(fd)
                 continue
     # print len([word for line in f for word in line.split()])
     np.save(outpath,[dataI,dataV,label,labelV,label_k_all,np.zeros([1,2])])
@@ -169,13 +172,12 @@ def test(inXi,inXv):
     print(slots)
     # print(fm_sum_second_order_emb)
 if __name__ == "__main__":
-    label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/install/samples/tr","../dataset/samples63_train_2.npy",1000000)
-    # label_k_all = storeTrainSimple(r"D:\project\vcmi\RD\1","../dataset/samples63_train-df-hp.npy",300000)
-    # label_k_all = np.load("../dataset/samples63_train.npy")
+    label_k_all = storeTrainSimple(r"/home/enigma/rd/samples/te","../dataset/samples63_test.npy",2000000)
+    # all = np.load("../dataset/samples63_valid.npy")
     # label_k_all = all[4]
     # filt = label_k_all[(label_k_all[:, 2] == 1) & (label_k_all[:, 5] == 15)]
     # x = Counter(filt[:,1])
-    # print(filt)
+    # print(label_k_all)
 
 
 
