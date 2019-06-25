@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/VCNN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepFM_model/run.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepFM_model/run.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/creatureData.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/creatureData.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/t.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/t.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/creatureEmbedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/creatureEmbedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learning/xx.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/xx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/train/br-0-20180207T121624.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/train/br-0-20180207T121826.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122134.json" beforeDir="false" />
@@ -48,7 +40,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1561175448589" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
-    <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1561340893298" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1561366673971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1561300582616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1561027843195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$model_vcmi.coverage" NAME="model_vcmi Coverage Results" MODIFIED="1560043972069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
@@ -75,7 +67,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3186">
+            <state relative-caret-position="792">
               <caret line="127" column="20" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -87,11 +79,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="346">
-              <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+            <state relative-caret-position="205">
+              <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <marker date="1561346678135" expanded="true" signature="5380:5870" ph="..." />
+                <marker date="1561452535957" expanded="true" signature="5400:5890" ph="..." />
               </folding>
             </state>
           </provider>
@@ -137,7 +129,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>board</find>
       <find>bfield[0][0][l[0]]</find>
       <find>actions_placeholder</find>
       <find>n_mb</find>
@@ -167,6 +158,7 @@
       <find>sav</find>
       <find>creIDs</find>
       <find>platf</find>
+      <find>randint(0,1)</find>
     </findStrings>
     <replaceStrings>
       <replace>isHuman</replace>
@@ -176,6 +168,7 @@
       <replace>self.</replace>
       <replace>,</replace>
       <replace>], [</replace>
+      <replace>randint(0,2)</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -255,7 +248,25 @@
       <autoscrollFromSource ProjectPane="true" />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
+              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
+              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
+              <item name="ENV" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="true" />
@@ -501,7 +512,8 @@
       <workItem from="1561082422326" duration="47578000" />
       <workItem from="1561255226927" duration="5997000" />
       <workItem from="1561294093023" duration="6008000" />
-      <workItem from="1561339514554" duration="9966000" />
+      <workItem from="1561339514554" duration="12070000" />
+      <workItem from="1561368464393" duration="4462000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -594,11 +606,18 @@
       <option name="project" value="LOCAL" />
       <updated>1560694304943</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="one batllte">
+      <created>1561366212027</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1561366212027</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="416647000" />
+    <option name="totallyTimeSpent" value="423213000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -611,9 +630,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15351813" />
-      <window_info id="Structure" order="1" weight="0.15778251" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.15511727" />
+      <window_info active="true" id="Structure" order="1" visible="true" weight="0.15778251" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -625,7 +645,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.32925472" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" visible="true" weight="0.32035595" />
+      <window_info anchor="bottom" id="Python Console" order="10" visible="true" weight="0.40711904" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="12" />
       <window_info anchor="bottom" id="File Transfer" order="13" weight="0.32925472" />
@@ -633,8 +653,8 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Data View" order="3" />
-      <window_info anchor="right" id="Remote Host" order="4" sideWeight="0.4811784" visible="true" weight="0.20095949" />
-      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="5" sideWeight="0.5188216" side_tool="true" visible="true" weight="0.20095949" />
+      <window_info anchor="right" id="Remote Host" order="4" sideWeight="0.48166665" visible="true" weight="0.20095949" />
+      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="5" sideWeight="0.5183333" side_tool="true" weight="0.20095949" />
       <window_info anchor="right" id="Database" order="6" sideWeight="0.47580644" weight="0.32995737" />
       <window_info anchor="right" auto_hide="true" x="272" y="30" width="1093" height="1002" id="SciView" order="7" sideWeight="0.49395162" type="WINDOWED" weight="0.32995737" />
     </layout>
@@ -651,7 +671,8 @@
     <MESSAGE value="obstacle imgs" />
     <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
-    <option name="LAST_COMMIT_MESSAGE" value="matplot" />
+    <MESSAGE value="one batllte" />
+    <option name="LAST_COMMIT_MESSAGE" value="one batllte" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -743,8 +764,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/creatureEmbedding.py</url>
-          <line>61</line>
-          <option name="timeStamp" value="240" />
+          <line>9</line>
+          <option name="timeStamp" value="242" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/creatureEmbedding.py</url>
+          <line>159</line>
+          <option name="timeStamp" value="243" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -758,12 +784,22 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
       <expression>
-        <expression-string>bat[&quot;sides&quot;][0][&quot;army&quot;]</expression-string>
+        <expression-string>Linux = &quot;Linux&quot; == platform.system()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>&quot;Linux&quot; == platform.system()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
         <expression-string>platform.system()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>bat[&quot;sides&quot;][0][&quot;army&quot;]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
@@ -797,12 +833,6 @@ show_list(cc)</expression-string>
       <expression>
         <expression-string>total_kill = y_v.float()*(total_kill.sum(1,keepdim=True))
 total_kill[win_wrong] = torch.tensor(1)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>total_kill = y_v.float()*(total_kill.sum(1,keepdim=True))
-total_kill[win_wrong] = 1</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
@@ -861,6 +891,31 @@ total_kill[win_wrong] = 1</expression-string>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
+        <expression-string>Popen('/home/enigma/work/enigma/project/vcmi/RD/install/bin/vcmiserver -d --port 7000')</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>os.getcwd()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Popen('./bin/vcmiserver -d --port 7000')</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Popen('bin/vcmiserver -d --port 7000')</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>os.curdir</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
         <expression-string>s_y_filt[:,1]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
@@ -885,41 +940,9 @@ total_kill[win_wrong] = 1</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>a = pd.concat(results[2])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>a = pd.concat(results[0])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>len(results[0])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>len(results[1])</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>x</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://D:/python35/Lib/site-packages/pygame/surfarray.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="130" column="12" selection-start-line="130" selection-start-column="4" selection-end-line="130" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/pygame/display.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="588">
@@ -1241,13 +1264,10 @@ total_kill[win_wrong] = 1</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/1688937958/subprocess.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3186">
-          <caret line="127" column="20" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="182">
+          <caret line="655" column="8" selection-start-line="655" selection-start-column="8" selection-end-line="655" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -1274,13 +1294,23 @@ total_kill[win_wrong] = 1</expression-string>
     <entry file="file://$PROJECT_DIR$/ENV/creatures/0-castle.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
+    <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="346">
-          <caret line="18" column="20" lean-forward="true" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+        <state relative-caret-position="792">
+          <caret line="127" column="20" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <marker date="1561346678135" expanded="true" signature="5380:5870" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+            <marker date="1561452535957" expanded="true" signature="5400:5890" ph="..." />
           </folding>
         </state>
       </provider>

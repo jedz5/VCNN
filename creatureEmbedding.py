@@ -12,7 +12,7 @@ def runClient(port,jsonFile):
         clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
         rc = Popen(clientpath)
     else:
-        clientpath = "vcmi_client -d --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+        clientpath = "vcmi_client -d --serverip 127.0.0.1 --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
         rc = os.system(clientpath)
     #
     return rc
@@ -123,7 +123,7 @@ def genJsons(num_samples):
     return samples
 def startBattles():
     if Linux:
-        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
+        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
     else:
         os.chdir(r"D:\project\vcmi\RD")
     if not os.path.exists("train"):
@@ -157,8 +157,8 @@ def startBattles():
 
 def start_one_battle():
     battle = genJsons(1)[0]
-    if "Linux" == platform.system():
-        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/install")
+    if Linux:
+        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
     else:
         os.chdir(r"D:\project\vcmi\RD")
     if not os.path.exists("train"):
@@ -171,4 +171,4 @@ def start_one_battle():
     runClient(port, battle)
 if __name__ == '__main__':
     # genJsons(20)
-    start_one_battle()
+    startBattles()
