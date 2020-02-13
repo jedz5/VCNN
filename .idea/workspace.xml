@@ -2,48 +2,68 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/creatureEmbedding.py" beforeDir="false" afterPath="$PROJECT_DIR$/creatureEmbedding.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T121624.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T121826.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122134.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122238.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122334.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122559.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T122715.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T152550.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T152729.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T155754.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T155806.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T155820.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T155831.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T212038.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T212411.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T212747.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180207T213043.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180211T142150.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180211T210855.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180212T231250.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180212T231347.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180218T225803.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180222T215540.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/br-0-20180222T220646.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/selfplay.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/selfplay1.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train/train.rar" beforeDir="false" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/DeepFM_model/simple_analy.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learning/Elo.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learning/maxlikelihood.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learning/pyGm.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learning/pytorch_borad.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/learning/pyGm" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T121624.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T121826.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T122134.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T122238.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T122334.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T122559.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T122715.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T152550.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T152729.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T155754.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T155806.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T155820.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T155831.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T212038.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T212411.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T212747.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180207T213043.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180211T142150.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180211T210855.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180212T231250.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180212T231347.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180218T225803.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180222T215540.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/br-0-20180222T220646.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/selfplay.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/selfplay1.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/train/train.rar" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/VCNN.iml" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" afterPath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" afterPath="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DeepFM_model/run.py" afterPath="$PROJECT_DIR$/DeepFM_model/run.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RL/.idea/RL.iml" afterPath="$PROJECT_DIR$/RL/.idea/RL.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/RL/.idea/misc.xml" afterPath="$PROJECT_DIR$/RL/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client.py" afterPath="$PROJECT_DIR$/client.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/creatureEmbedding.py" afterPath="$PROJECT_DIR$/creatureEmbedding.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/learning/xx.py" afterPath="$PROJECT_DIR$/learning/xx.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/rl/ch6/policy_iter.py" afterPath="$PROJECT_DIR$/rl/ch6/policy_iter.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/run_main.py" afterPath="$PROJECT_DIR$/run_main.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1561175448589" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
-    <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1561366673971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1561300582616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
-    <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1561027843195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
+    <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1563026840030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
+    <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1562061578514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1562381867407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
+    <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1562298099688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
+    <SUITE FILE_PATH="coverage/VCNN$run_main.coverage" NAME="run_main Coverage Results" MODIFIED="1562379234281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$model_vcmi.coverage" NAME="model_vcmi Coverage Results" MODIFIED="1560043972069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
+    <SUITE FILE_PATH="coverage/VCNN$xx.coverage" NAME="xx Coverage Results" MODIFIED="1567502500540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -59,41 +79,54 @@
     <expand />
     <select />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="VCNN" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
+      <file leaf-file-name="run.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DeepFM_model/run.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="792">
-              <caret line="127" column="20" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
+            <state relative-caret-position="586">
+              <caret line="200" column="16" lean-forward="true" selection-start-line="200" selection-start-column="16" selection-end-line="200" selection-end-column="16" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#633#2106#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file leaf-file-name="creatureEmbedding.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="205">
-              <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
+            <state relative-caret-position="740">
+              <caret line="59" column="8" lean-forward="false" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="8" />
               <folding>
-                <element signature="e#0#9#0" expanded="true" />
-                <marker date="1561452535957" expanded="true" signature="5400:5890" ph="..." />
+                <element signature="e#2611#3363#0" expanded="false" />
+                <element signature="e#3447#4175#0" expanded="false" />
+                <element signature="e#4215#5942#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file leaf-file-name="simple_analy.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/DeepFM_model/simple_analy.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="86">
+              <caret line="21" column="9" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="9" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="xx.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/learning/xx.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
+            <state relative-caret-position="414">
+              <caret line="18" column="12" lean-forward="false" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -101,11 +134,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DeepFM_model/run.py">
+      <file leaf-file-name="kalman_filter.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/learning/kalman_filter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4941">
-              <caret line="197" column="21" selection-start-line="197" selection-start-column="21" selection-end-line="197" selection-end-column="21" />
+            <state relative-caret-position="138">
+              <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+              <folding>
+                <element signature="e#150#4907#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Elo.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/learning/Elo.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="115">
+              <caret line="5" column="7" lean-forward="true" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -113,9 +158,46 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ENV/creatures/0-castle.json">
-          <provider selected="true" editor-type-id="text-editor" />
+      <file leaf-file-name="process_vcmi_data.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="237" column="4" lean-forward="false" selection-start-line="237" selection-start-column="4" selection-end-line="237" selection-end-column="4" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_multiarray_umath.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-294079134/numpy/core/_multiarray_umath.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="63250">
+              <caret line="2750" column="21" lean-forward="false" selection-start-line="2750" selection-start-column="21" selection-end-line="2750" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="maxlikelihood.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/learning/maxlikelihood.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1380">
+              <caret line="62" column="36" lean-forward="false" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pyGm.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/learning/pyGm.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1265">
+              <caret line="58" column="16" lean-forward="false" selection-start-line="58" selection-start-column="16" selection-end-line="58" selection-end-column="16" />
+              <folding />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
@@ -129,21 +211,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>bfield[0][0][l[0]]</find>
-      <find>actions_placeholder</find>
-      <find>n_mb</find>
-      <find>n_features</find>
-      <find>Plotted enough examples</find>
-      <find>np.set</find>
-      <find>checkGameEndOrNewRound</find>
-      <find>y1</find>
-      <find>x2</find>
-      <find>y2</find>
-      <find>BHex(</find>
-      <find>(y,x)</find>
-      <find>x,y</find>
-      <find>checkAndPush</find>
-      <find>*</find>
       <find>mapp</find>
       <find>IJtoXY</find>
       <find>58</find>
@@ -155,10 +222,25 @@
       <find>&quot;Me</find>
       <find>s_</find>
       <find>pix</find>
-      <find>sav</find>
       <find>creIDs</find>
       <find>platf</find>
       <find>randint(0,1)</find>
+      <find>192</find>
+      <find>vcmi/Data</find>
+      <find>elif</find>
+      <find>i,</find>
+      <find>file[</find>
+      <find>reducing learning rate</find>
+      <find>sav</find>
+      <find>LR is set</find>
+      <find>LR</find>
+      <find>save</find>
+      <find>Iteration</find>
+      <find>log_writer</find>
+      <find>self.log_writer</find>
+      <find>epoch</find>
+      <find>precision</find>
+      <find>.1f</find>
     </findStrings>
     <replaceStrings>
       <replace>isHuman</replace>
@@ -169,6 +251,9 @@
       <replace>,</replace>
       <replace>], [</replace>
       <replace>randint(0,2)</replace>
+      <replace>elif terType ==</replace>
+      <replace>log_writer</replace>
+      <replace>.5f</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -178,12 +263,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/CNNNV.py" />
-        <option value="$PROJECT_DIR$/client.py" />
         <option value="$PROJECT_DIR$/loadJson.py" />
-        <option value="$PROJECT_DIR$/run_main.py" />
         <option value="$PROJECT_DIR$/NN1.py" />
         <option value="$PROJECT_DIR$/BPlayer.py" />
-        <option value="$PROJECT_DIR$/mcts_alpha.py" />
         <option value="D:/doc/attention_keras.py" />
         <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/xx.py" />
@@ -191,23 +273,33 @@
         <option value="$PROJECT_DIR$/learning/PID.py" />
         <option value="$PROJECT_DIR$/learning/gaussian-processes-1.ipynb" />
         <option value="$PROJECT_DIR$/learning/gp.py" />
-        <option value="$PROJECT_DIR$/learning/pyGm" />
         <option value="$PROJECT_DIR$/Battle.py" />
         <option value="$PROJECT_DIR$/BattleInterface.py" />
         <option value="$PROJECT_DIR$/ENV/creatures/8-conflux.json" />
+        <option value="&lt;30e5189f-89ec-4969-8402-70e98e863dd1&gt;/run_main.py" />
+        <option value="$PROJECT_DIR$/client.py" />
+        <option value="$PROJECT_DIR$/run_main.py" />
+        <option value="&lt;30e5189f-89ec-4969-8402-70e98e863dd1&gt;/learning/all_scalars.json" />
+        <option value="$PROJECT_DIR$/learning/pytorch_borad.py" />
         <option value="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" />
         <option value="$PROJECT_DIR$/DeepFM_model/run.py" />
+        <option value="$PROJECT_DIR$/mcts_alpha.py" />
+        <option value="D:/Program Files/python37/Lib/site-packages/numpy/lib/format.py" />
         <option value="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" />
-        <option value="$PROJECT_DIR$/learning/xx.py" />
+        <option value="$PROJECT_DIR$/DeepFM_model/simple_analy.py" />
         <option value="$PROJECT_DIR$/creatureEmbedding.py" />
+        <option value="$PROJECT_DIR$/learning/pyGm" />
+        <option value="$PROJECT_DIR$/learning/pyGm.py" />
+        <option value="$PROJECT_DIR$/learning/xx.py" />
+        <option value="$PROJECT_DIR$/learning/maxlikelihood.py" />
+        <option value="$PROJECT_DIR$/learning/Elo.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="816" />
-    <option name="height" value="576" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-9" />
+    <option name="width" value="1924" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -243,29 +335,40 @@
       </profile-state>
     </entry>
   </component>
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
       <autoscrollFromSource ProjectPane="true" />
+      <sortByType />
+      <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
       <pane id="ProjectPane">
         <subPane>
-          <expand>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="ENV" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VCNN" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VCNN" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -275,8 +378,16 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../DeepFM_with_PyTorch" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.General" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="VCNN" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="VCNN" />
+      </console-settings>
+    </option>
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -298,116 +409,46 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.creatureEmbedding">
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="VCNN" />
+  <component name="RunManager" selected="Python.simple_analy">
+    <configuration default="false" name="simple_analy" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DeepFM_model" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DeepFM_model/simple_analy.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="xx" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="D:\Program Files\python37\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="creatureEmbedding" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="VCNN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/creatureEmbedding.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="model_vcmi" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCNN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DeepFM_model" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="process_vcmi_data" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCNN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DeepFM_model" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/xx.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
+      <method />
     </configuration>
-    <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCNN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DeepFM_model" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DeepFM_model/run.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="xx (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCNN" />
+    <configuration default="false" name="pyGm" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
@@ -418,47 +459,142 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/xx.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
       <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/pyGm.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="maxlikelihood" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/maxlikelihood.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Elo" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/Elo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;.&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
+      <method />
     </configuration>
-    <list>
-      <item itemvalue="Python.creatureEmbedding" />
-      <item itemvalue="Python.model_vcmi" />
-      <item itemvalue="Python.process_vcmi_data" />
-      <item itemvalue="Python.run" />
-      <item itemvalue="Python.xx (1)" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Python.simple_analy" />
+      <item index="1" class="java.lang.String" itemvalue="Python.xx" />
+      <item index="2" class="java.lang.String" itemvalue="Python.pyGm" />
+      <item index="3" class="java.lang.String" itemvalue="Python.maxlikelihood" />
+      <item index="4" class="java.lang.String" itemvalue="Python.Elo" />
     </list>
     <recent_temporary>
-      <list>
-        <item itemvalue="Python.creatureEmbedding" />
-        <item itemvalue="Python.xx (1)" />
-        <item itemvalue="Python.run" />
-        <item itemvalue="Python.model_vcmi" />
-        <item itemvalue="Python.process_vcmi_data" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Python.simple_analy" />
+        <item index="1" class="java.lang.String" itemvalue="Python.Elo" />
+        <item index="2" class="java.lang.String" itemvalue="Python.maxlikelihood" />
+        <item index="3" class="java.lang.String" itemvalue="Python.pyGm" />
+        <item index="4" class="java.lang.String" itemvalue="Python.xx" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="StructureViewFactory">
+    <option name="AUTOSCROLL_MODE" value="false" />
+    <option name="AUTOSCROLL_FROM_SOURCE" value="true" />
+    <option name="ACTIVE_ACTIONS" value=",SHOW_INHERITED" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -513,7 +649,33 @@
       <workItem from="1561255226927" duration="5997000" />
       <workItem from="1561294093023" duration="6008000" />
       <workItem from="1561339514554" duration="12070000" />
-      <workItem from="1561368464393" duration="4462000" />
+      <workItem from="1561368464393" duration="8982000" />
+      <workItem from="1561513416905" duration="1175000" />
+      <workItem from="1561515167622" duration="366000" />
+      <workItem from="1561521272440" duration="7639000" />
+      <workItem from="1561640973918" duration="1696000" />
+      <workItem from="1562060564135" duration="8342000" />
+      <workItem from="1562120667570" duration="11041000" />
+      <workItem from="1562203687898" duration="17300000" />
+      <workItem from="1562291458778" duration="4156000" />
+      <workItem from="1562298052235" duration="5799000" />
+      <workItem from="1562378643094" duration="23827000" />
+      <workItem from="1562468553813" duration="13880000" />
+      <workItem from="1562550670321" duration="13537000" />
+      <workItem from="1562592794777" duration="1787000" />
+      <workItem from="1562637441219" duration="2337000" />
+      <workItem from="1562723318427" duration="1878000" />
+      <workItem from="1562987210600" duration="2575000" />
+      <workItem from="1562989944639" duration="13983000" />
+      <workItem from="1563023484422" duration="5356000" />
+      <workItem from="1563156391263" duration="3591000" />
+      <workItem from="1563334652113" duration="599000" />
+      <workItem from="1563933765729" duration="13805000" />
+      <workItem from="1564230439087" duration="93000" />
+      <workItem from="1564740277731" duration="1735000" />
+      <workItem from="1564824719597" duration="515000" />
+      <workItem from="1567501188303" duration="5139000" />
+      <workItem from="1567514634552" duration="58000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -613,11 +775,18 @@
       <option name="project" value="LOCAL" />
       <updated>1561366212027</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="install -&gt; builds">
+      <created>1561452612116</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1561452612116</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="423213000" />
+    <option name="totallyTimeSpent" value="589942000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -629,38 +798,33 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <frame x="-9" y="0" width="1924" height="1050" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.15511727" />
-      <window_info active="true" id="Structure" order="1" visible="true" weight="0.15778251" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.29477197" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.33259177" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32925472" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" visible="true" weight="0.40711904" />
-      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" order="12" />
-      <window_info anchor="bottom" id="File Transfer" order="13" weight="0.32925472" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Data View" order="3" />
-      <window_info anchor="right" id="Remote Host" order="4" sideWeight="0.48166665" visible="true" weight="0.20095949" />
-      <window_info anchor="right" x="0" y="0" width="434" height="856" id="Documentation" order="5" sideWeight="0.5183333" side_tool="true" weight="0.20095949" />
-      <window_info anchor="right" id="Database" order="6" sideWeight="0.47580644" weight="0.32995737" />
-      <window_info anchor="right" auto_hide="true" x="272" y="30" width="1093" height="1002" id="SciView" order="7" sideWeight="0.49395162" type="WINDOWED" weight="0.32995737" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20378378" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5415205" sideWeight="0.4481081" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2128655" sideWeight="0.43351352" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22756757" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.5415205" sideWeight="0.55189186" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32972974" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32982457" sideWeight="0.48918918" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="robot" />
@@ -672,7 +836,8 @@
     <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
     <MESSAGE value="one batllte" />
-    <option name="LAST_COMMIT_MESSAGE" value="one batllte" />
+    <MESSAGE value="install -&gt; builds" />
+    <option name="LAST_COMMIT_MESSAGE" value="install -&gt; builds" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -684,7 +849,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/run_main.py</url>
-          <line>20</line>
+          <line>37</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -724,120 +889,143 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py</url>
-          <line>135</line>
+          <line>233</line>
           <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py</url>
-          <line>179</line>
+          <line>277</line>
           <option name="timeStamp" value="198" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>15</line>
-          <option name="timeStamp" value="206" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DeepFM_model/run.py</url>
-          <line>224</line>
+          <line>286</line>
           <option name="timeStamp" value="218" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/creatureEmbedding.py</url>
+          <line>215</line>
+          <option name="timeStamp" value="239" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DeepFM_model/run.py</url>
-          <line>96</line>
-          <option name="timeStamp" value="228" />
+          <line>47</line>
+          <option name="timeStamp" value="241" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DeepFM_model/run.py</url>
+          <line>131</line>
+          <option name="timeStamp" value="246" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/DeepFM_model/model_vcmi.py</url>
-          <line>207</line>
-          <option name="timeStamp" value="230" />
+          <line>250</line>
+          <option name="timeStamp" value="248" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/DeepFM_model/run.py</url>
-          <line>135</line>
-          <option name="timeStamp" value="232" />
+          <url>file://$PROJECT_DIR$/DeepFM_model/model_vcmi.py</url>
+          <line>195</line>
+          <option name="timeStamp" value="250" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DeepFM_model/simple_analy.py</url>
+          <line>22</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>12</line>
-          <option name="timeStamp" value="238" />
+          <line>59</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/creatureEmbedding.py</url>
-          <line>9</line>
-          <option name="timeStamp" value="242" />
+          <url>file://$PROJECT_DIR$/learning/pyGm.py</url>
+          <line>145</line>
+          <option name="timeStamp" value="19" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/creatureEmbedding.py</url>
-          <line>159</line>
-          <option name="timeStamp" value="243" />
+          <url>file://$PROJECT_DIR$/learning/Elo.py</url>
+          <line>24</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
       </breakpoints>
+      <option name="time" value="35" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="y_k_all_sort_pd" language="Python" />
-        <watch expression="statis" />
+        <watch expression="__py_debug_temp_var_1213784236" />
+        <watch expression="sig0" />
+        <watch expression="sig1" />
+        <watch expression="mu0" />
+        <watch expression="mu1" />
+        <watch expression="z" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
       <expression>
-        <expression-string>Linux = &quot;Linux&quot; == platform.system()</expression-string>
+        <expression-string>a = mask.sum(1, keepdim=True).cpu().numpy()
+idd = np.where(a == 0)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>&quot;Linux&quot; == platform.system()</expression-string>
+        <expression-string>statis.iloc[idx]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>platform.system()</expression-string>
+        <expression-string>crList[y_k_all[:,5]]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>bat[&quot;sides&quot;][0][&quot;army&quot;]</expression-string>
+        <expression-string>y_k_all[:,5]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cc = Counter(y_k_all[((win_sort &gt; 0.5) != y_v_sort),2])
-show_list([cc],[&quot;x&quot;])</expression-string>
+        <expression-string>idx = np.argsort(total_k.squeeze())
+names = y_k_all[idx][:,5]
+names = crList[names].tolist()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>cc = Counter(y_k_all[((win_sort &gt; 0.5) != y_v_sort),2])
-show_list(cc)</expression-string>
+        <expression-string>idx = np.argsort(total_k.squeeze())
+names = y_k_all[idx][:,5]
+names = crList[names]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Counter(y_k_all[((win_sort &gt; 0.5) != y_v_sort),2])</expression-string>
+        <expression-string>total_k.squeeze()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>y_k_all[((win_sort &gt; 0.5) != y_v_sort),2]</expression-string>
+        <expression-string>total_k.view()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>y_k_all[((win_sort &gt; 0.5) != y_v_sort)]</expression-string>
+        <expression-string>idx = np.argsort(total_k)
+total_k_sort = total_k[idx]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>total_kill = y_v.float()*(total_kill.sum(1,keepdim=True))
-total_kill[win_wrong] = torch.tensor(1)</expression-string>
+        <expression-string>model.batchNorm_kill.weight.requires_grad</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
       </expression>
     </expressions>
     <expressions id="watch">
+      <expression>
+        <expression-string>ya</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>y_k_all_sort_pd</expression-string>
         <language-id>Python</language-id>
@@ -883,435 +1071,327 @@ total_kill[win_wrong] = torch.tensor(1)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>crList[[y_k_all[0,2]+1,y_k_all[0,5]+1]]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>Popen('/home/enigma/work/enigma/project/vcmi/RD/install/bin/vcmiserver -d --port 7000')</expression-string>
+        <expression-string>len(loader_train)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>os.getcwd()</expression-string>
+        <expression-string>len(train_data)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Popen('./bin/vcmiserver -d --port 7000')</expression-string>
+        <expression-string>y_a[1826]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Popen('bin/vcmiserver -d --port 7000')</expression-string>
+        <expression-string>y_a[797].byte()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>os.curdir</expression-string>
+        <expression-string>y_a[797]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>s_y_filt[:,1]</expression-string>
+        <expression-string>ya[797]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>np.concatenate(results[0])</expression-string>
+        <expression-string>mask[797]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>results[1]</expression-string>
+        <expression-string>mask.sum(1, keepdim=True).cpu().numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>results[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>a = pd.concat(results[1])</expression-string>
+        <expression-string>mask.sum(1, keepdim=True)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/pygame/display.py">
+    <entry file="file://D:/python35/Lib/site-packages/pandas/io/pytables.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/modules/sparse.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/functional.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/numpy/lib/function_base.py" />
+    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="149" column="4" selection-start-line="149" selection-start-column="4" selection-end-line="149" selection-end-column="4" />
+        <state relative-caret-position="218">
+          <caret line="66" column="10" lean-forward="false" selection-start-line="66" selection-start-column="10" selection-end-line="66" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/learning/PID.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="633">
-          <caret line="466" selection-start-line="466" selection-end-line="466" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/python35/Lib/site-packages/numpy/core/numeric.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="202" selection-start-line="202" selection-end-line="202" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/numpy/core/multiarray.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="5807" column="4" selection-start-line="5807" selection-start-column="4" selection-end-line="5807" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/kalman_filter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="10" column="13" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/pyGm">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="69" column="26" lean-forward="true" selection-start-line="69" selection-start-column="26" selection-end-line="69" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BPlayer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="12" column="30" selection-start-line="12" selection-start-column="30" selection-end-line="12" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CNNNV.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-630">
-          <caret line="149" column="32" selection-start-line="149" selection-start-column="32" selection-end-line="149" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SqueezeNet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="10" column="8" selection-start-line="10" selection-start-column="8" selection-end-line="10" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-310128296/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="215" column="4" selection-start-line="215" selection-start-column="4" selection-end-line="215" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train/selfplay.json" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/1688937958/subprocess.py" />
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2and3/socket.pyi" />
     <entry file="file://$PROJECT_DIR$/BattleInterface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-8">
-          <caret line="23" column="32" selection-start-line="23" selection-start-column="32" selection-end-line="23" selection-end-column="32" />
+        <state relative-caret-position="210">
+          <caret line="201" column="20" lean-forward="false" selection-start-line="201" selection-start-column="20" selection-end-line="201" selection-end-column="20" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatures/8-conflux.json">
+    <entry file="file://$PROJECT_DIR$/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="504" column="4" selection-start-line="504" selection-start-column="4" selection-end-line="504" selection-end-column="4" />
+        <state relative-caret-position="216">
+          <caret line="9" column="9" lean-forward="false" selection-start-line="9" selection-start-column="9" selection-end-line="9" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatures/7-fortress.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="140" column="9" selection-start-line="140" selection-start-column="9" selection-end-line="140" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="1014" selection-start-line="1014" selection-end-line="1014" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/pandas/core/series.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="151" column="8" selection-start-line="151" selection-start-column="8" selection-end-line="151" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/pandas/core/frame.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="377" column="46" selection-start-line="377" selection-start-column="46" selection-end-line="377" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7614">
-          <caret line="287" column="20" selection-start-line="287" selection-start-column="20" selection-end-line="287" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <marker date="1557500613311" expanded="true" signature="538:32481" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/modules/distance.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/policy_value_net_tensorflow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="24" column="43" selection-start-line="24" selection-start-column="43" selection-end-line="24" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts_alpha.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="36" column="24" selection-start-line="36" selection-start-column="24" selection-end-line="36" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/loadJson.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1458">
-          <caret line="80" column="15" selection-start-line="80" selection-start-column="15" selection-end-line="80" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/python35/Lib/random.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-640370634/numpy/core/_multiarray_umath.py" />
+    <entry file="file://D:/python35/Lib/site-packages/numpy/lib/npyio.py" />
     <entry file="file://$PROJECT_DIR$/run_main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="24" column="38" selection-start-line="24" selection-start-column="38" selection-end-line="24" selection-end-column="38" />
+        <state relative-caret-position="438">
+          <caret line="60" column="24" lean-forward="true" selection-start-line="60" selection-start-column="24" selection-end-line="60" selection-end-column="24" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/modules/module.py">
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/optim/lr_scheduler.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/modules/module.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/utils/data/sampler.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-310128296/builtins.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/pandas/core/internals/construction.py" />
+    <entry file="file://D:/python35/Lib/site-packages/torch/utils/data/dataloader.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-310128296/numpy/random/mtrand.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/pandas/core/indexing.py" />
+    <entry file="file://$PROJECT_DIR$/learning/gp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12987">
-          <caret line="488" selection-start-line="488" selection-end-line="488" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/utils/data/dataloader.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20277">
-          <caret line="767" column="8" selection-start-line="767" selection-start-column="8" selection-end-line="767" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1512">
-          <caret line="67" column="38" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/NN1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3132">
-          <caret line="122" column="34" selection-start-line="122" selection-start-column="34" selection-end-line="122" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-640370634/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="3718" column="8" selection-start-line="3718" selection-start-column="8" selection-end-line="3718" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/pandas/core/arrays/categorical.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="70929">
-          <caret line="2666" selection-start-line="2666" selection-end-line="2666" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/utils/data/sampler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-205">
-          <caret line="79" column="29" lean-forward="true" selection-start-line="79" selection-start-column="29" selection-end-line="79" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/numpy/core/numeric.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="537" selection-start-line="537" selection-end-line="537" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/matplotlib/pyplot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="2807" column="4" selection-start-line="2807" selection-start-column="4" selection-end-line="2807" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/python35/Lib/site-packages/pandas/io/pytables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="471" selection-start-line="471" selection-end-line="471" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-310128296/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1208">
-          <caret line="4402" column="8" selection-start-line="4402" selection-start-column="8" selection-end-line="4402" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/python35/Lib/site-packages/numpy/lib/npyio.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11853">
-          <caret line="467" column="4" selection-start-line="467" selection-start-column="4" selection-end-line="467" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/modules/sparse.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="35">
-          <caret line="95" column="32" lean-forward="true" selection-start-line="95" selection-start-column="32" selection-end-line="95" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/nn/functional.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38799">
-          <caret line="1453" selection-start-line="1453" selection-end-line="1453" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/tensor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DeepFM_model/model_vcmi.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="175" column="35" lean-forward="true" selection-start-line="175" selection-start-column="35" selection-end-line="175" selection-end-column="35" />
-          <folding>
-            <element signature="e#99#111#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/numpy/lib/function_base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="4595" selection-start-line="4595" selection-end-line="4595" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/train/creatureData.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="27">
-          <caret line="1" column="19" lean-forward="true" selection-start-line="1" selection-start-column="19" selection-end-line="1" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
-          <caret line="66" column="10" selection-start-line="66" selection-start-column="10" selection-end-line="66" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-310128296/numpy/random/mtrand.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="503" column="26" lean-forward="true" selection-start-line="503" selection-start-column="26" selection-end-line="503" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/1688937958/subprocess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="182">
-          <caret line="655" column="8" selection-start-line="655" selection-start-column="8" selection-end-line="655" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/xx.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DeepFM_model/run.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4941">
-          <caret line="197" column="21" selection-start-line="197" selection-start-column="21" selection-end-line="197" selection-end-column="21" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatures/0-castle.json">
-      <provider selected="true" editor-type-id="text-editor" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/tensorboardX/writer.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/1688937958/os.py" />
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-640370634/-1464068022/torch/utils/data/dataloader.py" />
+    <entry file="file://$PROJECT_DIR$/mcts_alpha.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7061">
+          <caret line="311" column="30" lean-forward="false" selection-start-line="311" selection-start-column="30" selection-end-line="311" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16008">
+          <caret line="696" column="15" lean-forward="false" selection-start-line="696" selection-start-column="15" selection-end-line="696" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+            <marker date="1557500613311" expanded="true" signature="538:32519" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1334">
+          <caret line="69" column="12" lean-forward="false" selection-start-line="69" selection-start-column="12" selection-end-line="69" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/numpy/lib/format.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="183">
+          <caret line="688" column="48" lean-forward="false" selection-start-line="688" selection-start-column="48" selection-end-line="688" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-294079134/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="12374">
+          <caret line="538" column="4" lean-forward="false" selection-start-line="538" selection-start-column="4" selection-end-line="538" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/train/creatureData.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5382">
+          <caret line="234" column="21" lean-forward="false" selection-start-line="234" selection-start-column="19" selection-end-line="234" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/numpy/lib/npyio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="523">
+          <caret line="414" column="0" lean-forward="false" selection-start-line="414" selection-start-column="0" selection-end-line="414" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-294079134/math.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="228" column="4" lean-forward="false" selection-start-line="228" selection-start-column="4" selection-end-line="228" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/matplotlib/pyplot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/loadJson.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1833">
+          <caret line="86" column="4" lean-forward="false" selection-start-line="86" selection-start-column="4" selection-end-line="86" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/numpy/core/shape_base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="436">
+          <caret line="418" column="0" lean-forward="false" selection-start-line="418" selection-start-column="0" selection-end-line="418" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DeepFM_model/model_vcmi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4002">
+          <caret line="186" column="21" lean-forward="false" selection-start-line="186" selection-start-column="21" selection-end-line="186" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/torch/optim/optimizer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3519">
+          <caret line="158" column="8" lean-forward="false" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydevd_bundle/pydevd_breakpoints.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="109">
+          <caret line="102" column="0" lean-forward="false" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="309" column="0" lean-forward="false" selection-start-line="309" selection-start-column="0" selection-end-line="309" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/pyGm.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1265">
+          <caret line="58" column="16" lean-forward="false" selection-start-line="58" selection-start-column="16" selection-end-line="58" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/xx.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="18" column="12" lean-forward="false" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/pytorch_borad.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/kalman_filter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
+          <folding>
+            <element signature="e#150#4907#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.1/system/python_stubs/-294079134/numpy/core/_multiarray_umath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="63250">
+          <caret line="2750" column="21" lean-forward="false" selection-start-line="2750" selection-start-column="21" selection-end-line="2750" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/maxlikelihood.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="62" column="36" lean-forward="false" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/Elo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="5" column="7" lean-forward="true" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/DeepFM_model/process_vcmi_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="792">
-          <caret line="127" column="20" selection-start-line="127" selection-start-column="20" selection-end-line="127" selection-end-column="20" />
+        <state relative-caret-position="435">
+          <caret line="237" column="4" lean-forward="false" selection-start-line="237" selection-start-column="4" selection-end-line="237" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DeepFM_model/run.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="586">
+          <caret line="200" column="16" lean-forward="true" selection-start-line="200" selection-start-column="16" selection-end-line="200" selection-end-column="16" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#633#2106#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="125" column="65" selection-start-line="125" selection-start-column="65" selection-end-line="125" selection-end-column="65" />
+        <state relative-caret-position="740">
+          <caret line="59" column="8" lean-forward="false" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="8" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
-            <marker date="1561452535957" expanded="true" signature="5400:5890" ph="..." />
+            <element signature="e#2611#3363#0" expanded="false" />
+            <element signature="e#3447#4175#0" expanded="false" />
+            <element signature="e#4215#5942#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DeepFM_model/simple_analy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="86">
+          <caret line="21" column="9" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>

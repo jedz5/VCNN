@@ -5,18 +5,31 @@ import json
 import time
 import numpy as np
 import platform
+from enum import IntEnum
 from subprocess import Popen
+from client import run_remote_server
 Linux = "Linux" == platform.system()
-def runClient(port,jsonFile):
+def runClient(ip,port,jsonFile):
+    if Linux:
+        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
+    else:
+        os.chdir(r"D:\project\vcmi\RD")
     if Linux:
         clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
         rc = Popen(clientpath)
     else:
-        clientpath = "vcmi_client -d --serverip 127.0.0.1 --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+        # clientpath = "vcmi_client -d --serverip 192.168.3.200 --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+        clientpath = "vcmi_client -d --serverip {} --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(ip,port,jsonFile)
         rc = os.system(clientpath)
     #
     return rc
 def runServer(port):
+    if Linux:
+        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
+    else:
+        os.chdir(r"D:\project\vcmi\RD")
+    if not os.path.exists("train"):
+        os.mkdir("train")
     if Linux:
         serverpath = "./bin/vcmiserver -d --port {}".format(port)
     else:
@@ -36,7 +49,7 @@ def genJsons(num_samples):
         os.chdir(r"D:\project\vcmi\RD\Data")
         crList = load_json(r"D:\project\VCNN\ENV\creatureData.json")["creatures"]
     aa = np.array([1,3,5])
-    bb = np.array([aa,aa+14,aa+28,aa+42,aa+56,aa+70,aa+84,aa+98])
+    bb = np.array([aa,aa+14,aa+28,aa+42,aa+56,aa+70,aa+84,aa+98,[119,127,123]])
     creIDs = bb.reshape(-1,)
     samples = []
     for i in range(num_samples):
@@ -44,19 +57,18 @@ def genJsons(num_samples):
         cr11_id = 19
         cr12_id = 15
         cr13_id = 23
-        num11 = int(np.random.gamma(2, 2)) + 10
-        num12 = int(10*np.random.randn()) + 20
-        num12 = max(1,num12)
+        num = 40
+        num11 = int(0.7*num)#np.random.randint(15,30)
+        num12 = int(1.5*num)#np.random.randint(1,50)
         num13 = 0
-        if random.randint(0,2):
-            num13 = int(np.random.gamma(2, 2))+1
-        cr2_id = random.choice(creIDs)
+        # if random.randint(0,2):
+        #     num13 = int(np.random.gamma(2, 2))+1
+        cr2_id = 15#random.choice(creIDs)
         cr11 = crList[cr11_id]
         cr12 = crList[cr12_id]
         cr13 = crList[cr13_id]
         cr2 = crList[cr2_id]
-        num2 = int(10*np.random.randn()) + 50
-        num2 = max(1,num2)
+        num2 = int(2.5*num)#np.random.randint(20,100)
         def get_enemy_slot_count():
             ai_value1 = cr11["aiValue"] * num11 + cr12["aiValue"] * num12 + cr13["aiValue"] * num13
             ai_value2 = cr2["aiValue"] * num2
@@ -98,27 +110,64 @@ def genJsons(num_samples):
                 side1[looseFormat[split - 1, i], 0] = cr2_id
                 side1[looseFormat[split - 1, i], 1] = m
             return side1.tolist()
+        def gen_terType():
+            BFieldType = IntEnum('BFieldType', 'SAND_SHORE, SAND_MESAS, DIRT_BIRCHES, DIRT_HILLS, DIRT_PINES, GRASS_HILLS,\
+            		GRASS_PINES, LAVA, MAGIC_PLAINS, SNOW_MOUNTAINS, SNOW_TREES, SUBTERRANEAN, SWAMP_TREES, FIERY_FIELDS,\
+            		ROCKLANDS, MAGIC_CLOUDS, LUCID_POOLS, HOLY_GROUND, CLOVER_FIELD, EVIL_FOG, FAVORABLE_WINDS, CURSED_GROUND,\
+            		ROUGH, SHIP_TO_SHIP, SHIP')
+            ETerrainType = IntEnum('ETerrainType', 'DIRT, SAND, GRASS, SNOW, SWAMP,\
+            		ROUGH, SUBTERRANEAN, LAVA, WATER, ROCK')
+            terType = ETerrainType(1 + random.randint(0, 9))
+            if terType == ETerrainType.DIRT:
+                bfieldType = BFieldType(random.randint(3, 5))
+            elif terType == ETerrainType.SAND:
+                bfieldType = BFieldType.SAND_MESAS
+            elif terType == ETerrainType.GRASS:
+                bfieldType = BFieldType(random.randint(6, 7))
+            elif terType == ETerrainType.SNOW:
+                bfieldType = BFieldType(random.randint(10, 11))
+            elif terType == ETerrainType.SWAMP:
+                bfieldType = BFieldType.SWAMP_TREES
+            elif terType == ETerrainType.ROUGH:
+                bfieldType = BFieldType.ROUGH
+            elif terType == ETerrainType.SUBTERRANEAN:
+                bfieldType = BFieldType.SUBTERRANEAN
+            elif terType == ETerrainType.LAVA:
+                bfieldType = BFieldType.LAVA
+            elif terType == ETerrainType.WATER:
+                bfieldType = BFieldType.SHIP
+            elif terType == ETerrainType.ROCK:
+                bfieldType = BFieldType.ROCKLANDS
+            else:
+                bfieldType = BFieldType.GRASS_PINES
+            return terType.value - 1,bfieldType.value
+        terType,bfieldType = gen_terType()
         bat = {}
-        bat["bfieldType"] = 2
-        bat["terType"] = 2
+        bat["bfieldType"] = bfieldType
+        bat["terType"] = terType
         bat["sides"] = [{},{}]
         bat["sides"][0]["heroid"] = 24
-        bat["sides"][0]["heroPrimSkills"] = [np.random.randint(0,4),np.random.randint(0,4),1,1]
+        # bat["sides"][0]["heroPrimSkills"] = [np.random.randint(0,4),np.random.randint(0,4),1,1]
         bat["sides"][0]["side"] = 0
-        if num13:
-            bat["sides"][0]["army"] = [[cr11_id,num11],[cr13_id,num13],[cr12_id,num12],[15,1],[15,1],[15,1],[15,1]]
-        else:
-            if (cr2["shoot"] or np.random.randint(0,2)):
-                bat["sides"][0]["army"] = [[cr11_id, num11], [cr12_id, num12], [15, 1], [15, 1], [15, 1], [15, 1],
-                                       [15, 1]]
+        if cr2["shoot"] or (np.random.randint(0,3) == 0):
+            if num13:
+                bat["sides"][0]["army"] = [[cr11_id,num11],[cr13_id,num13],[cr12_id,num12],[15,1],[15,1],[15,1],[15,1]]
             else:
-                bat["sides"][0]["army"] = [[cr11_id, num11], [cr12_id, num12], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)],
+                bat["sides"][0]["army"] = [[cr11_id, num11], [cr12_id,num12],[15,1],[15,1],[15,1],[15,1],[15,1]]
+        else:
+            if num13:
+                bat["sides"][0]["army"] = [[cr11_id,num11],[cr13_id,num13],[cr12_id,num12],[15, np.random.randint(0,2)], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)],
                                            [15, np.random.randint(0,2)]]
+            else:
+                bat["sides"][0]["army"] = [[cr11_id, num11], [cr12_id, num12], [15, 1], [15, 1], [15, 1], [15, 1],[15, 1]]
+                                            #[[cr11_id, num11], [cr12_id, num12], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)], [15, np.random.randint(0,2)],
+                                           #[15, np.random.randint(0,2)]]
         bat["sides"][1]["side"] = 1
         bat["sides"][1]["army"] = get_enemy_stacks()
-        filename = '{}-{}-{}-{}-{}.json'.format("grandElf",25,cr2["name"].replace(' ',''),num2,i)
+        filename = 'debug.json'.format(cr11["name"].replace(' ',''),num11,cr2["name"].replace(' ',''),num2,i)
         file = open(filename, 'w', encoding='utf-8')
         json.dump(bat,file)
+        file.close()
         samples.append(filename)
     return samples
 def startBattles():
@@ -155,20 +204,18 @@ def startBattles():
     print("结束执行时间：", time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(e2)))
     print("并行执行时间：", int(e2 - e1))
 
-def start_one_battle():
+def start_one_battle(ip,port,remote=False):
     battle = genJsons(1)[0]
-    if Linux:
-        os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
-    else:
-        os.chdir(r"D:\project\vcmi\RD")
-    if not os.path.exists("train"):
-        os.mkdir("train")
     numCore = os.cpu_count()
     print(numCore)
-    port = 7000
     N = 2
-    runServer(port)
-    runClient(port, battle)
+    if remote:
+        run_remote_server(ip,battle)
+        pass
+    else:
+        runServer(port)
+    runClient(ip,port, battle)
+    # runClient(port, "random")
 if __name__ == '__main__':
-    # genJsons(20)
-    startBattles()
+    # genJsons(1)
+    start_one_battle("192.168.3.13",3030,False)

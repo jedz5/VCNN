@@ -1,14 +1,16 @@
 from socket import *
 import json
-if __name__ == '__main__':
-    serverName = '127.0.0.1'
-    serverPort = 50007
+
+def run_remote_server(serverIP,battle_file):
+    serverPort = 50003
     clientSocket = socket(AF_INET, SOCK_STREAM)
-    clientSocket.connect((serverName, serverPort))
-    with open("./test/1.json") as inFile:
+    clientSocket.connect((serverIP, serverPort))
+    with open(battle_file) as inFile:
         root = json.load(inFile)
+        root["fileName"] = battle_file
         sentence = json.dumps(root)
-        clientSocket.send(sentence.encode())
+        clientSocket.send(sentence.encode(encoding='utf-8'))
         modifiedSentence = clientSocket.recv(1024)
         print('From Server:', modifiedSentence.decode())
     clientSocket.close()
+# if __name__ == '__main__':

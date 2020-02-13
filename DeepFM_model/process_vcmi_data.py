@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from torch import nn
 from collections import  Counter
 import torch.nn.functional as F
+import glob
 """
     [<class 'numpy.generic'>, [	
 	[<class 'numpy.number'>, [
@@ -23,6 +24,24 @@ import torch.nn.functional as F
 	<class 'numpy.bool_'>, 
 	<class 'numpy.datetime64'>,
 	<class 'numpy.object_'>]]
+	
+	torch.long() 将tensor投射为long类型
+
+newtensor = tensor.long()
+torch.half()将tensor投射为半精度浮点类型
+newtensor = tensor.half()
+torch.int()将该tensor投射为int类型
+newtensor = tensor.int()
+torch.double()将该tensor投射为double类型
+newtensor = tensor.double()
+torch.float()将该tensor投射为float类型
+newtensor = tensor.float()
+torch.char()将该tensor投射为char类型
+newtensor = tensor.char()
+torch.byte()将该tensor投射为byte类型
+newtensor = tensor.byte()
+torch.short()将该tensor投射为short类型
+newtensor = tensor.short()
 """
 
 class vcmi_Dataset(Dataset):
@@ -46,6 +65,85 @@ class vcmi_Dataset(Dataset):
         return xI,xv,label_ka,label_a,label_k,label_v,label_k_all,k_path
     def __len__(self):
         return len(self.dataI)
+
+class fineTune_Dataset(Dataset):
+    def __init__(self,datapath):
+        self.files = sorted(glob.glob(datapath),reverse=True)
+        self.path = datapath
+    def __getitem__(self, idx):
+        dataI = np.zeros((14,10))
+        dataV = np.zeros((14, 10,1))
+        label = np.zeros((7, 3))
+        labelV = np.zeros((1))
+        label_k_all = np.zeros([6])
+        # try:
+        fd = self.files[idx]
+        with open(fd) as s:
+            stackLocation = {}
+            root = json.load(s)
+            labelV[0] = root["win"]
+            for st in root["stacks"]:
+                slot = st["slot"] + (0 if st["isHuman"] else 7)
+                dataI[slot, 0] = st["id"] + 1
+                dataI[slot, 1] = st["speed"] - 2
+                dataI[slot, 2] = st["luck"] + 4
+                dataI[slot, 3] = st["morale"] + 4
+                dataI[slot, 4] = 1
+                dataI[slot, 5] = 1
+                dataI[slot, 6] = 1
+                dataI[slot, 7] = 1
+                dataI[slot, 8] = 1
+                dataI[slot, 9] = 1
+                #
+                dataV[slot, 0,0] = 1
+                dataV[slot, 1,0] = 1
+                dataV[slot, 2,0] = 1
+                dataV[slot, 3,0] = 1
+                dataV[slot, 4,0] = st["baseAmount"]
+                dataV[slot, 5,0] = st["attack"]
+                dataV[slot, 6,0] = st["maxDamage"]
+                dataV[slot, 7,0] = st["minDamage"]
+                dataV[slot, 8,0] = st["health"]
+                dataV[slot, 9,0] = st["defense"]
+                # 1 kill
+                if st["isHuman"]:
+                    label_k_all[0] += st["killed"]
+                    label_k_all[1] += st["baseAmount"]
+                    label_k_all[2] = st["id"]
+                else:
+                    label_k_all[3] += st["killed"]
+                    label_k_all[4] += st["baseAmount"]
+                    label_k_all[5] = st["id"]
+                # 7 kills
+                if st["isHuman"]:
+                    if st["id"] not in stackLocation:
+                        stackLocation[st["id"]] = st["slot"]
+                    label[[stackLocation[st["id"]]], 0] += st["killed"]
+                    label[[stackLocation[st["id"]]], 1] += st["baseAmount"]
+            k_path = fd
+        for slot in range(7):
+            if label[slot, 1] == 0:
+                label[slot, 2] = 0
+                # label[slot, 3] = 0
+            else:
+                label[slot, 2] = label[slot, 0] / label[slot, 1]
+                # label[slot, 3] = 1 / label[slot, 1]
+
+        # except:
+        #     traceback.print_exc()
+        #     print("wrong file[{}] = {}".format(fd))
+        #     # print("err {} rm file[{}] = {}".format(errCount,i,fd))
+        #     s.close()
+        #     return
+            # os.remove(fd)
+        dataI = torch.tensor(dataI,dtype=torch.int64)
+        dataV = torch.tensor(dataV)
+        label = torch.tensor(label)
+        labelV = torch.tensor(labelV,dtype=torch.uint8)
+        label_k_all = torch.tensor(label_k_all)
+        return dataI,dataV,label[:,0],label[:,1],label[:,2],labelV,label_k_all,k_path
+    def __len__(self):
+        return len(self.files)
 def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
     dirs = os.listdir(jsonsPath)
     all_len = 0
@@ -127,10 +225,10 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
             except:
                 errCount += 1
                 traceback.print_exc()
-                print("err {} file[{}] = {}".format(errCount, i, fd))
-                # print("err {} rm file[{}] = {}".format(errCount,i,fd))
                 s.close()
-                # os.remove(fd)
+                # print("err {} file[{}] = {}".format(errCount, i, fd))
+                print("err {} rm file[{}] = {}".format(errCount,i,fd))
+                os.remove(fd)
                 continue
     # print len([word for line in f for word in line.split()])
     np.save(outpath,[dataI,dataV,label,labelV,label_k_all,np.zeros([1,2])])
@@ -172,12 +270,12 @@ def test(inXi,inXv):
     print(slots)
     # print(fm_sum_second_order_emb)
 if __name__ == "__main__":
-    label_k_all = storeTrainSimple(r"/home/enigma/rd/samples/te","../dataset/samples63_test.npy",2000000)
-    # all = np.load("../dataset/samples63_valid.npy")
-    # label_k_all = all[4]
-    # filt = label_k_all[(label_k_all[:, 2] == 1) & (label_k_all[:, 5] == 15)]
-    # x = Counter(filt[:,1])
-    # print(label_k_all)
+    pass
+    label_k_all = storeTrainSimple(r"/home/enigma/work/enigma/project/vcmi/RD/builds/samples_hand/te","../dataset/samples63_byhand_test.npy",2000000)
+    # all = np.load("../dataset/samples63_byhand.npy")
+    # label = all[4]
+    # label2 = all[1]
+    # print(label)
 
 
 
