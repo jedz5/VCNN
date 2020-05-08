@@ -63,12 +63,32 @@ def entrop(p):
     x = -np.log2(p) #[log2(1 / i) for i in p]
     h = - p * np.log2(p) #[-i * log2(i) for i in p]
     return x,h
-hh()
+if __name__ == '__main__':
+    import openpyxl
 
-# a1 = entrop(X)
-# print(a1[0])
-# print(a1[1])
-# a2 = entrop(b)
-# print(a2[0])
-# print(a2[1])
-# print("")
+    # 第一步：打开工作簿
+    wb = openpyxl.load_workbook('d:/11.xlsx')
+    # 第二步：选取表单
+    sh = wb['Sheet1']
+    # 第三步：读取数据
+    # 参数 row:行  column：列
+    data = []
+    for cell in list(sh.rows)[5]:  # 获取一条测试用例数据
+        # 判断该单元格是否为字符串，如果是字符串类型则需要使用eval();如果不是字符串类型则不需要使用eval()
+        if isinstance(cell.value, str):
+            data.append(0)
+        else:
+            data.append(cell.value)
+    print()
+
+
+    data1 = np.array([10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, -140000])
+    print(-data1)
+    print("求和",sum(-data1))
+    profile = np.irr(-data1)
+    # print(sum(data[1:61]))
+    # profile = np.irr(data[1:61])
+    print(profile)
+    print(pow(profile + 1, 12) - 1)
+    # 关闭工作薄
+    wb.close()

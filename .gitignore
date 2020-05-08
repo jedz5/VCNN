@@ -1,0 +1,12 @@
+
+*.pyc
+*.log
+*.npy
+*.JPG
+*.bmp
+imgs
+model
+train
+vccc
+*.h5
+*.gz

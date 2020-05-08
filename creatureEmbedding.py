@@ -9,17 +9,17 @@ from enum import IntEnum
 from subprocess import Popen
 from client import run_remote_server
 Linux = "Linux" == platform.system()
-def runClient(ip,port,jsonFile):
+def runClient(ip,port,jsonFile,noGUI="--noGUI"):
     if Linux:
         os.chdir("/home/enigma/work/enigma/project/vcmi/RD/builds")
     else:
         os.chdir(r"D:\project\vcmi\RD")
     if Linux:
-        clientpath = "./bin/vcmiclient -d --nointro --disable-video --noGUI --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
+        clientpath = "./bin/vcmiclient -d --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {} {}".format(port,jsonFile,noGUI)
         rc = Popen(clientpath)
     else:
         # clientpath = "vcmi_client -d --serverip 192.168.3.200 --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(port,jsonFile)
-        clientpath = "vcmi_client -d --serverip {} --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {}".format(ip,port,jsonFile)
+        clientpath = "vcmi_client -d --serverip {} --nointro --disable-video --testingport {} --testingfileprefix MPTEST -b {} {}".format(ip,port,jsonFile,noGUI)
         rc = os.system(clientpath)
     #
     return rc
@@ -218,4 +218,4 @@ def start_one_battle(ip,port,remote=False):
     # runClient(port, "random")
 if __name__ == '__main__':
     # genJsons(1)
-    start_one_battle("192.168.3.13",3030,False)
+    start_one_battle("192.168.3.14",3030,False)
