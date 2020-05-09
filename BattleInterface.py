@@ -182,6 +182,7 @@ class BattleInterface:
         self.current_hex.hex_j = j
         self.current_hex.pixels_x = mouse_x - (mouse_x - (14 + (22 if i % 2 == 0 else 0))) % 44
         self.current_hex.pixels_y = mouse_y - (mouse_y - 86) % 42
+        print(mouse_x, mouse_y,i,j)
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
     def handleBattle(self,act):
@@ -216,7 +217,7 @@ def start_game():
     pl2 = BPlayer()
     players = [pl1, pl2]
     battle = Battle()
-    battle.loadFile("D:/project/VCNN/train/selfplay.json")
+    battle.loadFile("D:/project/VCNN/ENV/selfplay.json")
     battle.checkNewRound()
     bi = BattleInterface(battle)
     # 事件循环(main loop)

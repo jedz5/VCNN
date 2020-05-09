@@ -4,7 +4,7 @@ import copy
 import numpy as np
 from enum import Enum
 import logging
-
+import sys
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log','w')
@@ -63,8 +63,10 @@ class BHex:
         self.y = y
         self.x = x
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
 class BStack(object):
-    def  __init__(self):
+    def __init__(self):
         self.amount = 0
         self.attack = 0
         self.defense = 0
@@ -92,9 +94,12 @@ class BStack(object):
         self.isFly = False
         self.isShooter = False
         self.blockRetaliate = False
+        self.attack_nearby_all = False
+        self.wide_breath = False
         self.amountBase = 0
         self.inBattle = 0  #Battle()
-
+    def __eq__(self, other):
+        return self.id == other.id
     def acssessableAndAttackable(self):
         ini = lambda x: -9 if x > 0 and x < self.inBattle.bFieldWidth - 1 else 100 # side colunm
         bf = [[ini(col) for col in range(self.inBattle.bFieldWidth)] for row in range(self.inBattle.bFieldHeight)]
@@ -143,33 +148,50 @@ class BStack(object):
                             break
         bf[self.x][self.y] = self.speed
         return bf
-    def computeCasualty(self,opposite,shoot=False,half=True):
+    def damaged(self,damage,estimate = False):
+        hpInAll = self.health * (self.amount - 1) + self.firstHPLeft
+        if (damage >= hpInAll):
+            damage = hpInAll
+            killed = self.amount
+            firstHPLeft = 0
+        else:
+            rest = int((hpInAll - damage - 1) / self.health) + 1
+            firstHPLeft = (hpInAll - damage - 1) % self.health + 1
+            killed = self.amount - rest
+        if(not estimate):
+            self.amount -= killed
+            self.firstHPLeft = firstHPLeft
+        return damage,killed,firstHPLeft
+    def computeCasualty(self,opposite,stand,estimate=False):
+        total_damage = 0
         if(self.attack >= opposite.attack):
             damageMin = int(self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
             damageMax = int(self.maxDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
         else:
             damageMin = int(self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
             damageMax = int(self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
-        damage = random.randint(damageMin,damageMax)
+        damage = int((damageMin+damageMax)/2) if estimate else random.randint(damageMin,damageMax)
         if(self.isShooter):
-            if(not shoot or half ):
+            if(not self.canShoot() or self.isHalf() ):
                 damage = int(damage/2)
-        logger.info('make {} damage'.format(damage))
-        hpInAll = opposite.health*(opposite.amount-1) + opposite.firstHPLeft
-        if(damage >= hpInAll):
-            killed = opposite.amount
-            firstHPLeft = 0
         else:
-            rest = int((hpInAll - damage - 1)/opposite.health) + 1
-            firstHPLeft = (hpInAll - damage - 1)%opposite.health + 1
-            killed = opposite.amount - rest
-        logger.info("killed {} {},firstHPLeft {}".format(killed,opposite.name,firstHPLeft))
-        return killed,firstHPLeft
+            others = self.get_attacked_stacks(opposite,stand)
+            for st in others:
+                real_damage, killed, firstHPLeft = st.damaged(damage, estimate)
+                if (not estimate):
+                    logger.info("make {} damage killed {} {},firstHPLeft {}".format(real_damage, killed, opposite.name, firstHPLeft))
+                if(self.side == st.side):
+                    total_damage += -real_damage
+                else:
+                    total_damage += real_damage
+        real_damage, killed, firstHPLeft = opposite.damaged(damage,estimate)
+        total_damage += real_damage
+        if(not estimate):
+            logger.info("make {} damage killed {} {},firstHPLeft {}".format(real_damage,killed,opposite.name,firstHPLeft))
+        return total_damage,killed,firstHPLeft
     def meeleAttack(self,opposite,retaliate):
         logger.info('{} meele attacking {}'.format(self.name, opposite.name))
-        killed,firstHPLeft = self.computeCasualty(opposite)
-        opposite.amount -= killed
-        opposite.firstHPLeft = firstHPLeft
+        damage,killed,firstHPLeft = self.computeCasualty(opposite)
         self.isMoved = True
         if(opposite.amount == 0):
             logger.info("{} perished".format(opposite.name))
@@ -191,9 +213,31 @@ class BStack(object):
             if(enemy.side != self.side and enemy.isAlive() and self.getDistance(enemy) == 1):
                 return False
         return True
-    def getNeibours(self,src = 0):
+    def get_attacked_stacks(self,defender,stand):
+        attacked = []
+        if(self.attack_nearby_all):
+            neibs = self.getNeibours(stand)
+            for st in self.inBattle.stacks:
+                if st != defender:
+                    for nb in neibs:
+                        if (st.x == nb.x and st.y == nb.y):
+                            attacked.append(st)
+        elif(self.wide_breath):
+            df = defender.get_position()
+            df.y += (0.5 if df.x % 2 == 0 else 0)
+            at = stand
+            at.y += (0.5 if at.x % 2 == 0 else 0)
+            other = BHex(int(df.x * 2 - at.x),int(df.y * 2 - at.y))
+            for st in self.inBattle.stacks:
+                if st != defender:
+                    if (st.x == other.x and st.y == other.y):
+                        attacked.append(st)
+        return attacked
+    def get_position(self):
+        return BHex(self.x,self.y)
+    def getNeibours(self,src = None):
         adj = []
-        if(src == 0):
+        if(not src ):
             src = self
         self.checkAndPush(src.x,src.y - 1,  adj)
         self.checkAndPush(src.x,src.y + 1,  adj)
@@ -225,9 +269,7 @@ class BStack(object):
         return abs(yDst) + abs(xDst)
     def shoot(self,opposite):
         logger.info('{} shooting {}'.format(self.name,opposite.name))
-        killed,firstHPLeft = self.computeCasualty(opposite,True,self.isHalf(opposite))
-        opposite.amount -= killed
-        opposite.firstHPLeft = firstHPLeft
+        damage,killed,firstHPLeft = self.computeCasualty(opposite)
         if (opposite.amount == 0):
             logger.info("{} perished".format(opposite.name))
         self.isMoved = True
@@ -277,7 +319,29 @@ class BStack(object):
                                 #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
                                 legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
         return legalMoves
+    def potential_target(self):
+        bf = self.acssessableAndAttackable()
+        attackable = []
+        unreach = []
+        for sts in self.inBattle.stacks:
+            if bf[sts.x][sts.y] == -1:
+                attackable.append(sts)
+            elif bf[sts.x][sts.y] == -2:
+                unreach.append(sts)
+        return attackable,unreach
 
+    def activeStack(self):
+        attackable, unreach = self.potential_target()
+        max_damage = -9999
+        best_target = 0
+        for target in attackable:
+            delt,get = Battle.estimateDamage(target)
+            damage = delt - get
+            if damage > max_damage:
+                max_damage = damage
+                best_target = BHex(target.x,target.y)
+        # if best_target:
+        #     if
 
 class BObstacle(object):
     def __init__(self,kind = 0):
@@ -287,31 +351,22 @@ class BObstacle(object):
         self.hexType = hexType.obstacle
 class BObstacleInfo:
     def __init__(self,pos,w,h,isabs,imname):
-        self.x = int(pos/Battle.bFieldWidth)
-        self.y = pos%Battle.bFieldWidth
+        self.x = int(pos / Battle.bFieldWidth)
+        self.y = pos % Battle.bFieldWidth
         self.width = w
         self.height = h
         self.isabs = isabs
         self.imname = imname
 def isFly(x):
-    if "ability" in x:
-        for y in x['ability']:
-            if y['type'] == 43:
-                return 1
-    return 0
-
+    return x['ability'][0]
 def isShoot(x):
-        if "ability" in x:
-            for y in x['ability']:
-                if y['type'] == 44:
-                    return 1
-        return 0
+    return x['ability'][1]
 def blockRetaliate(x):
-    if "ability" in x:
-        for y in x['ability']:
-            if y['type'] == 68:
-                return 1
-    return 0
+    return x['ability'][2]
+def attack_nearby_all(x):
+    return x['ability'][3]
+def wide_breath(x):
+    return x['ability'][4]
 batId = 0
 class Battle(object):
     bFieldWidth = 17
@@ -372,6 +427,8 @@ class Battle(object):
                 st.isFly = isFly(x)
                 st.isShooter = isShoot(x)
                 st.blockRetaliate = blockRetaliate(x)
+                st.attack_nearby_all = attack_nearby_all(x)
+                st.wide_breath = wide_breath(x)
                 st.speed = x['speed']
                 st.slotId = x['slot']
                 st.y = x['x']
@@ -740,8 +797,18 @@ class Battle(object):
         logger.info("final Game end. Winner is player: {}".format(winner))
         return zip(states, mcts_probs, current_players,lefts,left_bases,rights,right_bases)
 
-
-
+    def estimateDamage(self,attacker_orig,defender_orig):
+        damage_get = 0
+        defender  = copy.copy(defender_orig)
+        damage1,killed1,firstHPLeft1 = attacker_orig.computeCasualty(defender,estimate=True)
+        defender.amount -= killed1
+        defender.firstHPLeft = firstHPLeft1
+        if(defender.amount > 0 and not (defender.isRetaliated or attacker_orig.blockRetaliate)):
+            #attacker = copy.copy(attacker_orig)
+            damage2, killed2, firstHPLeft2 = defender.computeCasualty(attacker_orig,estimate=True)
+            damage_get = damage2
+        damage_dealt = damage1
+        return damage_dealt,damage_get
 
 class  BPlayer(object):
     def getAction(self,battle):
@@ -789,7 +856,7 @@ def main():
     pl2 = BPlayer()
     players = [pl1, pl2]
     battle = Battle()
-    battle.loadFile("D:/project/VCNN/train/selfplay.json")
+    battle.loadFile("D:/project/VCNN/ENV/selfplay.json")
     battle.checkNewRound()
     while(not battle.end()[0]):
         battle.checkNewRound()
@@ -805,7 +872,5 @@ def main():
         battle.doAction(act)
 if __name__ == '__main__':
     main()
-
-
 
 
