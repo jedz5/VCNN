@@ -63,32 +63,70 @@ def entrop(p):
     x = -np.log2(p) #[log2(1 / i) for i in p]
     h = - p * np.log2(p) #[-i * log2(i) for i in p]
     return x,h
-if __name__ == '__main__':
-    import openpyxl
+# -*- coding: utf-8 -*-
+# 记住上面这行是必须的，而且保存文件的编码要一致！
+import pygame
+from pygame.locals import *
+from sys import exit
 
-    # 第一步：打开工作簿
-    wb = openpyxl.load_workbook('d:/11.xlsx')
-    # 第二步：选取表单
-    sh = wb['Sheet1']
-    # 第三步：读取数据
-    # 参数 row:行  column：列
-    data = []
-    for cell in list(sh.rows)[5]:  # 获取一条测试用例数据
-        # 判断该单元格是否为字符串，如果是字符串类型则需要使用eval();如果不是字符串类型则不需要使用eval()
-        if isinstance(cell.value, str):
-            data.append(0)
-        else:
-            data.append(cell.value)
-    print()
+pygame.init()
+screen = pygame.display.set_mode((640, 480), 0, 32)
 
+#font = pygame.font.SysFont("宋体", 40)
+#上句在Linux可行，在我的Windows 7 64bit上不行，XP不知道行不行
+#font = pygame.font.SysFont("simsunnsimsun", 40)
+#用get_fonts()查看后看到了这个字体名，在我的机器上可以正常显示了
+font = pygame.font.SysFont("Arial", 11)
+CCellShd = pygame.image.load("D:/project/vcnn/imgs/CCellShd.bmp") #
+#CCellShd.set_colorkey(pygame.Color(255, 0, 255))
+CCellShd = CCellShd.convert_alpha()
+font.set_bold(True)
+background = pygame.image.load("D:/project/vcnn/imgs/bgrd.bmp")
+amout_backgrd = pygame.image.load("D:/project/vcnn/imgs/CmNumWin.bmp").convert_alpha()
+#amout_backgrd.fill((0,0,255))
+screen.blit(background, (0,0))
+def blend_img(img,color):
+    """Inverts the colors of a pygame Screen"""
 
-    data1 = np.array([10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, -140000])
-    print(-data1)
-    print("求和",sum(-data1))
-    profile = np.irr(-data1)
-    # print(sum(data[1:61]))
-    # profile = np.irr(data[1:61])
-    print(profile)
-    print(pow(profile + 1, 12) - 1)
-    # 关闭工作薄
-    wb.close()
+    img.lock()
+
+    for x in range(img.get_width()):
+        for y in range(img.get_height()):
+            RGBA = img.get_at((x,y))
+            if(RGBA[0] == 255):
+                continue
+            for i in range(3):
+                #new_RGBA = blend_color(RGBA,pygame.Color("purple"),1)
+                img.set_at((x,y),color )
+
+    img.unlock()
+def blend_color(color1, color2, blend_factor):
+    r1, g1, b1,a1 = color1
+    r2, g2, b2,a2 = color2
+    r = r1 + (r2 - r1) * blend_factor
+    g = g1 + (g2 - g1) * blend_factor
+    b = b1 + (b2 - b1) * blend_factor
+    return int(r), int(g), int(b),255
+text = "today is a good day to play "
+# blend_img(CCellShd,(0,255,0))
+
+screen.blit(amout_backgrd, (240, 240))
+#CCellShd.set_colorkey(pygame.Color(255, 0, 255))
+
+#text = font.render(u"{}     #".format(123), True, (255, 255, 255))
+#amout_backgrd.blit(text,(0,-2))
+blend_img(amout_backgrd,pygame.Color("blueviolet"))
+screen.blit(amout_backgrd, (300, 240))
+pygame.image.save(amout_backgrd, "D:/project/vcnn/imgs/CmNumWin_purple.bmp")
+# black_scale_surface = pygame.surface.Surface((40, 40))
+# black_scale_surface.fill((0,0,0,100))
+
+screen.blit(CCellShd, (360, 240))
+while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            exit()
+
+    # screen.blit(text_surface,(10,10))
+
+    pygame.display.update()
