@@ -106,6 +106,8 @@ class BStack(object):
         self.blockRetaliate = False
         self.attack_nearby_all = False
         self.wide_breath = False
+        self.infinite_retaliate = False
+        self.attack_twice = False
         self.amountBase = 0
         self.inBattle = 0  #Battle()
     def __eq__(self, other):
@@ -160,7 +162,7 @@ class BStack(object):
                             break
         bf[self.y][self.x] = self.speed
         return bf
-    def damaged(self,damage,estimate = False):
+    def damaged(self,damage):
         hpInAll = self.health * (self.amount - 1) + self.firstHPLeft
         if (damage >= hpInAll):
             damage = hpInAll
@@ -170,11 +172,10 @@ class BStack(object):
             rest = int((hpInAll - damage - 1) / self.health) + 1
             firstHPLeft = (hpInAll - damage - 1) % self.health + 1
             killed = self.amount - rest
-        if(not estimate):
-            self.amount -= killed
-            self.firstHPLeft = firstHPLeft
+        self.amount -= killed
+        self.firstHPLeft = firstHPLeft
         return damage,killed,firstHPLeft
-    def computeCasualty(self,opposite,stand,estimate=False):
+    def computeCasualty(self,opposite,stand,is_reta, estimate=False):
         total_damage = 0
         if(self.attack >= opposite.attack):
             damageMin = int(self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
@@ -188,10 +189,15 @@ class BStack(object):
                 damage = int(damage/2)
         else:
             others = self.get_attacked_stacks(opposite,stand)
-            for st in others:
-                real_damage, killed, firstHPLeft = st.damaged(damage, estimate)
+            for st_tmp in others:
+                if(estimate):
+                    st = copy.copy(st_tmp)
+                else:
+                    st = st_tmp
+                real_damage, killed, firstHPLeft = st.damaged(damage)
                 if (not estimate):
-                    tt = "make {} dmg killed {} {} {} left, HP {}".format(real_damage, killed, st.name,st.amount, firstHPLeft)
+                    head = "reta" if is_reta else "make"
+                    tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, st.name,st.amount, firstHPLeft)
                     logger.info(tt,True)
                     if(opposite.amount == 0):
                         logger.info("{} perished".format(opposite.name),True)
@@ -199,34 +205,32 @@ class BStack(object):
                     total_damage += -real_damage
                 else:
                     total_damage += real_damage
-        real_damage, killed, firstHPLeft = opposite.damaged(damage,estimate)
+        real_damage, killed, firstHPLeft = opposite.damaged(damage)
         total_damage += real_damage
         if(not estimate):
             if(self.canShoot()):
                 half = "(half)" if self.isHalf(opposite) else "(full)"
                 logger.info("shoot{} {}".format(half,opposite.name),True)
-            tt = "make {} dmg killed {} {} {} left, HP {}".format(real_damage, killed, opposite.name,opposite.amount, firstHPLeft)
+            head = "reta" if is_reta else "make"
+            tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, opposite.name,opposite.amount, firstHPLeft)
             logger.info(tt,True)
             if(opposite.amount == 0):
                 logger.info("{} perished".format(opposite.name),True)
         return total_damage,killed,firstHPLeft
     def meeleAttack(self,opposite,dest,is_retaliate):
-        logger.info('{} meele attacking {}'.format(self.name, opposite.name))
-        damage,killed,firstHPLeft = self.computeCasualty(opposite,dest)
-        if(not is_retaliate):
-            self.isMoved = True
-        opposite.attacked(self,is_retaliate)
-    def attacked(self,attacker,is_retaliate):
-        if(not self.isAlive()):
-            return
-        if(not is_retaliate):
-            if(attacker.blockRetaliate):
-                logger.info("blockRetaliate",True)
-                return
-            if(not self.had_retaliated):
-                logger.info("{} prepare retaliate".format(self.name),True)
-                self.meeleAttack(attacker,self.get_position(),True)
-                self.had_retaliated = True
+        self.do_attack(opposite,dest)
+    # def attacked(self,attacker,is_retaliate):
+    #     if(not self.isAlive()):
+    #         return
+    #     if(not is_retaliate):
+    #         if(attacker.blockRetaliate):
+    #             logger.info("blockRetaliate",True)
+    #             return
+    #         if(not self.had_retaliated):
+    #             logger.info("{} prepare retaliate".format(self.name),True)
+    #             self.meeleAttack(attacker,self.get_position(),True)
+    #             if(not self.infinite_retaliate):
+    #                 self.had_retaliated = True
     def canShoot(self,opposite = None):
         if (not self.isShooter or self.shots <= 0):
             return False
@@ -282,10 +286,7 @@ class BStack(object):
         return  Battle.bGetDistance(self,dist)
     def shoot(self,opposite):
         logger.info('{} shooting {}'.format(self.name,opposite.name))
-        damage,killed,firstHPLeft = self.computeCasualty(opposite,self.get_position())
-        if (opposite.amount == 0):
-            logger.info("{} perished".format(opposite.name))
-        self.isMoved = True
+        self.do_attack(opposite,self.get_position())
         self.shots -= 1
         return
     def isAlive(self):
@@ -347,16 +348,25 @@ class BStack(object):
             elif bf[sts.y][sts.x] == -2:
                 unreach.append(sts)
         return attackable,unreach
-    def estimateDamage(self,defender_orig,stand):
+    def do_attack(self,defender_orig,stand,estimate = False):
         damage_get = 0
-        defender  = copy.copy(defender_orig)
-        damage1,killed1,firstHPLeft1 = self.computeCasualty(defender,stand,estimate=True)
-        defender.amount -= killed1
-        defender.firstHPLeft = firstHPLeft1
-        if(not self.canShoot() and defender.amount > 0 and not (defender.had_retaliated or self.blockRetaliate)):
-            damage2, killed2, firstHPLeft2 = defender.computeCasualty(self,stand,estimate=True)
-            damage_get = damage2
-        damage_dealt = damage1
+        damage_dealt = 0
+        if(estimate):
+            attacker = copy.copy(self)
+            defender  = copy.copy(defender_orig)
+        else:
+            attacker = self
+            defender = defender_orig
+        N_attack = 2 if attacker.attack_twice else 1
+        for i in range(N_attack):
+            damage1,killed1,firstHPLeft1 = attacker.computeCasualty(defender,stand,False,estimate)
+            attacker.isMoved = True
+            if(not attacker.canShoot() and defender.amount > 0 and not (defender.had_retaliated or attacker.blockRetaliate)):
+                damage2, killed2, firstHPLeft2 = defender.computeCasualty(attacker,stand,True,estimate)
+                if(not defender.infinite_retaliate):
+                    defender.had_retaliated = True
+                damage_get += damage2
+            damage_dealt += damage1
         return damage_dealt,damage_get
     def go_toward(self,target):
         df = self.acssessableAndAttackable()
@@ -377,7 +387,7 @@ class BStack(object):
     def active_stack(self):
         attackable, unreach = self.potential_target()
         if(len(attackable) > 0):
-            att = [self.estimateDamage(target, stand) for target, stand in attackable]
+            att = [self.do_attack(target, stand,estimate=True) for target, stand in attackable]
             dmgs = [delt - get for delt, get in att]
             best = np.argmax(dmgs)
             best_target = attackable[best]
@@ -405,16 +415,7 @@ class BObstacleInfo:
         self.height = h
         self.isabs = isabs
         self.imname = imname
-def isFly(x):
-    return x['ability'][0]
-def isShoot(x):
-    return x['ability'][1]
-def blockRetaliate(x):
-    return x['ability'][2]
-def attack_nearby_all(x):
-    return x['ability'][3]
-def wide_breath(x):
-    return x['ability'][4]
+
 batId = 0
 
 class Battle(object):
@@ -459,37 +460,50 @@ class Battle(object):
         cp.sortStack()
         return cp
     def loadFile(self,file):
+        #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
+        creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
+                            50:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
+                            121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
+        with open(r"D:\project\VCNN\ENV\creatureData.json") as JsonFile:
+            crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
             root = json.load(jsonFile)
-            for x in root['stacks']:
-                st = BStack()
-                st.attack = x['attack']
-                st.defense = x['defense']
-                st.amount = x['baseAmount']
-                st.amountBase = x['baseAmount']
-                st.health = x['health']
-                st.firstHPLeft = x['health']
-                st.id = x['id']
-                st.side = 0 if x['isHuman'] else 1
-                st.isWide = x['isWide']
-                st.luck = x['luck']
-                st.morale = x['morale']
-                st.maxDamage = x['maxDamage']
-                st.minDamage = x['minDamage']
-                st.name = x['name']
-                st.isFly = isFly(x)
-                st.isShooter = isShoot(x)
-                st.blockRetaliate = blockRetaliate(x)
-                st.attack_nearby_all = attack_nearby_all(x)
-                st.wide_breath = wide_breath(x)
-                st.speed = x['speed']
-                st.slotId = x['slot']
-                st.x = x['x']
-                st.y = x['y']
-                if('shots' in x):
-                    st.shots = x['shots']
-                st.inBattle = self
-                self.stacks.append(st)
+            for i in range(2):
+                li = list(range(11))
+                ys = np.random.choice(li,size=len(root['army{}'.format(i)]), replace=False)
+                j = 0
+                for id,num in root['army{}'.format(i)]:
+                    x = crList[id]
+                    st = BStack()
+                    st.attack = x['attack']
+                    st.defense = x['defense']
+                    st.amount = num
+                    st.amountBase = num
+                    st.health = x['health']
+                    st.firstHPLeft = x['health']
+                    st.id = id
+                    st.side = i
+                    #st.isWide = x['isWide']
+                    st.luck = x['luck']
+                    st.morale = x['morale']
+                    st.maxDamage = x['maxDamage']
+                    st.minDamage = x['minDamage']
+                    st.name = x['name']
+                    st.isFly = creature_ability[id][0]
+                    st.isShooter = creature_ability[id][1]
+                    st.blockRetaliate = creature_ability[id][2]
+                    st.attack_nearby_all = creature_ability[id][3]
+                    st.wide_breath = creature_ability[id][4]
+                    st.infinite_retaliate = creature_ability[id][5]
+                    st.attack_twice = creature_ability[id][6]
+                    st.speed = x['speed']
+                    #st.slotId = x['slot']
+                    st.x = 15 if i else 1
+                    st.y = int(ys[j])
+                    j += 1
+                    st.shots = 16
+                    st.inBattle = self
+                    self.stacks.append(st)
 
             for x in root['obstacles']:
                 obs = BObstacle()

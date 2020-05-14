@@ -92,7 +92,7 @@
 			"maxDamage" : 6,
 			"minDamage" : 3,
 			"morale" : 0,
-			"name" : "Dragon Fly",
+			"name" : "Royal Griffin",
 			"shoot" : false,
 			"speed" : 9
 		},
@@ -2108,7 +2108,7 @@
 			"maxDamage" : 40,
 			"minDamage" : 30,
 			"morale" : 0,
-			"name" : "Devil",
+			"name" : "Phoenix",
 			"shoot" : false,
 			"speed" : 21
 		},
