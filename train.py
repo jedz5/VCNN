@@ -9,14 +9,14 @@ from __future__ import print_function
 import random
 import numpy as np
 from collections import defaultdict, deque
-import Battle as bat
+import H3_battle as bat
 from mcts_alpha import MCTSPlayer
 import traceback
 #from policy_value_net import PolicyValueNet  # Theano and Lasagne
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 import logging
-from Battle import logger
+from H3_battle import logger
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game

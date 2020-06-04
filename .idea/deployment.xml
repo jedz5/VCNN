@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="enigma@192.168.1.200:22" showNewOnSourceInSync="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="192.168.1.100" showNewOnSourceInSync="false">
     <serverData>
-      <paths name="NMMO">
-        <serverdata>
-          <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="enigma@192.168.1.200:22">
+      <paths name="192.168.1.100">
         <serverdata>
           <mappings>
             <mapping deploy="/" local="$PROJECT_DIR$" />

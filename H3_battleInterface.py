@@ -1,7 +1,7 @@
 import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 from sys import exit  # 导入sys库中的exit函数
-from Battle import *
+from H3_battle import *
 # Enum EBattleCursors { COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,
 # 						COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER,
 # 						//various attack frames
@@ -11,14 +11,7 @@ from enum import Enum
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 
-class log_with_gui(object):
-    def __init__(self,std_logger):
-        self.logger = std_logger
-        self.log_text = []
-    def info(self,text,to_gui = False):
-        self.logger.info(text)
-        if(to_gui):
-            self.log_text.append(text)
+
 class BPoint:
     def __init__(self,x,y):
         self.x = x
@@ -152,6 +145,8 @@ class BattleInterface:
         elif (self.next_act.type == actionType.attack):
             self.screen.blit(self.shader_cur_target,
                              CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
+            self.screen.blit(self.shader_cur_target,
+                             CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
         if (self.next_act.type == actionType.shoot):
             self.screen.blit(self.shader_cur_target,
                              CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
@@ -193,11 +188,13 @@ class BattleInterface:
                     amount_bgrd = copy.copy(self.amout_backgrd)
                 else:
                     amount_bgrd = copy.copy(self.amout_backgrd_enemy)
-                moved = "m" if stack.isMoved else ""
+
                 retaliate = "" if stack.had_retaliated else "r"
+                waited = "w" if stack.isWaited and not stack.isMoved else ""
+                moved = "m" if stack.isMoved else ""
                 # text_surface = self.font.render(u"123            #", True,(255, 255, 255))
                 # amount_bgrd.blit(text_surface, (0, -2))
-                text_surface = self.font.render(u"{}{}{}              #".format(stack.amount,retaliate,moved), True, (255, 255, 255))
+                text_surface = self.font.render(u"{}{}{}{}              #".format(stack.amount,retaliate,moved,waited), True, (255, 255, 255))
                 amount_bgrd.blit(text_surface, (2, -2))
                 xadd = 220 - (44 if stack.side else -22)
                 yadd = 260 - 42 * 3
@@ -254,11 +251,10 @@ class BattleInterface:
         self.current_hex.pixels_y = mouse_y - (mouse_y - 86) % 42
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
-    def handleBattle(self,act):
+    def handleBattle(self,act,agent=None):
         if not act:
             return
         battle = self.battleEngine
-        bf = battle.curStack.acssessableAndAttackable()
         battle.doAction(act)
         battle.checkNewRound()
         self.next_act = battle.curStack.active_stack()

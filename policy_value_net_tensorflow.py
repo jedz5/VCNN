@@ -9,9 +9,9 @@ Tested in Tensorflow 1.4 and 1.5
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers.python.layers import utils
-import Battle
+import H3_battle
 import logging
-from Battle import logger
+from H3_battle import logger
 #bFieldWidth = 17
 #bFieldHeight = 11
 class PolicyValueNet():
