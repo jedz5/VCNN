@@ -5,8 +5,8 @@ from torch import nn
 from H3_battle import Battle
 from H3_battle import actionType
 from H3_battle import logger
-import H3_battleInterface
-import pygame
+# import H3_battleInterface
+# import pygame
 dist_fn = torch.distributions.Categorical
 
 
@@ -23,7 +23,7 @@ def softmax(logits, mask,dev):
     logits = logits / (torch.sum(logits) + 1E-5)
     return logits
 class Net(nn.Module):
-    def __init__(self, layer_num, state_shape, device='cuda'):
+    def __init__(self, layer_num, state_shape, device='cpu'):
         super().__init__()
         self.device = device
         self.inpipe = [
@@ -95,6 +95,7 @@ class Net(nn.Module):
 
 
 def start_game():
+    import pygame
     #初始化 agent
     dev = 'cuda'
     agent = Net(3, 1024, device=dev)
@@ -102,9 +103,9 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     battle = Battle(agent=agent)
-    battle.loadFile("D:/project/VCNN/ENV/selfplay.json")
+    battle.loadFile("ENV/selfplay.json")
     battle.checkNewRound()
-    bi = H3_battleInterface.BattleInterface(battle)
+    bi = None #H3_battleInterface.BattleInterface(battle)
     bi.next_act = battle.curStack.active_stack()
     act = bi.next_act
     # 事件循环(main loop)
@@ -132,7 +133,31 @@ def start_game():
                 print("battle end")
                 return
             bi.next_act = battle.curStack.active_stack()
-
+def start_game_noGUI():
+    #初始化 agent
+    dev = 'cuda'
+    agent = Net(3, 1024, device=dev)
+    for ii in range(100):
+        battle = Battle(agent=agent)
+        battle.loadFile("ENV/selfplay.json")
+        battle.checkNewRound()
+        last = time.time()
+        next_act = battle.curStack.active_stack()
+        # 事件循环(main loop)
+        i = 1
+        while True:
+            if i % 100 == 0:
+                cost = time.time() - last
+                print(f'cost time {cost}')
+                last = time.time()
+                break
+            i += 1
+            battle.doAction(next_act)
+            battle.checkNewRound()
+            if battle.check_battle_end():
+                print("battle end")
+                return
+            next_act = battle.curStack.active_stack()
 
 if __name__ == '__main__':
-    start_game()
+    start_game_noGUI()

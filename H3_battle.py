@@ -21,6 +21,7 @@ class log_with_gui(object):
         self.logger = std_logger
         self.log_text = []
     def info(self,text,to_gui = False):
+        # pass
         self.logger.info(text)
         if(to_gui):
             self.log_text.append(text)
@@ -109,19 +110,11 @@ def neb_id(self, nb):
 class hexType(Enum):
     creature = 0
     obstacle = 1
+mapp = {100: '|', -9: '   ', -8: ' * ', -4: 'M', -2: 'E', -1: 'A', 51: '   '}
 class BHex:
-    mapp = {100:'|',-9:'   ',-8:' * ',-4:'M',-2:'E',-1:'A',51:'   '}
-    def __init__(self,x = -1,y = -1,ind = -1,bhex = None):
-        assert isinstance(x,int) and isinstance(y,int)
-        if(bhex):
-            self.x = bhex.x
-            self.y = bhex.y
-        elif ind >= 0:
-            self.y = int(ind / Battle.bFieldWidth)
-            self.x = ind % Battle.bFieldWidth
-        else:
-            self.x = x
-            self.y = y
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
     def __eq__(self, other):
         if(other):
             return self.y == other.y and self.x == other.x
@@ -169,7 +162,7 @@ class BStack(object):
         return False
     def acssessableAndAttackable(self,query_type = None,target = None):
         bf = np.ones((self.inBattle.bFieldHeight,self.inBattle.bFieldWidth))
-        bf.fill(-9)
+        bf.fill(-1)
         bf[:, 0] = 100
         bf[:, -1] = 100
         for sts in self.inBattle.stacks:
@@ -196,8 +189,10 @@ class BStack(object):
         else: #fly
             for ii in range(self.inBattle.bFieldHeight):
                 for jj in range(1,self.inBattle.bFieldWidth-1):
+                    if bf[ii,jj] > 50:
+                        continue
                     d = self.getDistance(BHex(jj,ii))
-                    if(d > 0 and d <= self.speed):
+                    if(0 < d <= self.speed):
                         bf[ii,jj] = self.speed - d
                         if query_type == action_query_type.can_move:
                             return True
@@ -206,30 +201,25 @@ class BStack(object):
             return False
         #accessable  end
         #attackable begin
-        for obs in self.inBattle.obstacles:  #obstacle,enemy and attackable,left
-            bf[obs.y,obs.x] = -8
         for sts in self.inBattle.stacks:
             if(not sts.isAlive()):
                 continue
-            if sts.side == self.side:
-                bf[sts.y,sts.x] = -4
-            else:
+            if sts.side != self.side:
                 if (self.canShoot()):
-                    bf[sts.y,sts.x] = -1  # enemy and attackbale
+                    bf[sts.y,sts.x] = 201  # enemy and attackbale
                     if query_type == action_query_type.can_attack:
                         return True
                 else:
-                    bf[sts.y,sts.x] = -2  # enemy
                     for neib in self.getNeibours(sts):
-                        if (bf[neib.y,neib.x] >= 0 and bf[neib.y,neib.x] < 50):
-                            bf[sts.y,sts.x] = -1  # attackbale
+                        if (0 <= bf[neib.y,neib.x] < 50):
+                            bf[sts.y,sts.x] = 201
                             if query_type == action_query_type.can_attack:
                                 return True
                             break
         #no target to reach
         if query_type == action_query_type.can_attack:
             return False
-        bf[self.y,self.x] = self.speed
+        bf[self.y,self.x] = 401
         return bf
     def damaged(self,damage):
         hpInAll = self.health * (self.amount - 1) + self.firstHPLeft
@@ -302,12 +292,12 @@ class BStack(object):
             for st in self.inBattle.stacks:
                 if st != defender and st.isAlive() and st.side != self.side:
                     for nb in neibs:
-                        if (st.y == nb.y and st.x == nb.x):
+                        if (st == nb):
                             attacked.append(st)
         elif(self.wide_breath):
             df = defender.get_position()
             df.x += (0.5 if df.y % 2 == 0 else 0)
-            at = BHex(bhex=stand)
+            at = BHex(stand.x,stand.y)
             at.x += (0.5 if at.y % 2 == 0 else 0)
             other = BHex(int(df.x * 2 - at.x),int(df.y * 2 - at.y))
             for st in self.inBattle.stacks:
@@ -332,7 +322,7 @@ class BStack(object):
         if(self.checkPosition(x,y)):
             adj.append(BHex(x,y))
     def checkPosition(self,x,y):
-        if (y >= 0 and y < Battle.bFieldHeight and x > 0 and x < Battle.bFieldWidth - 1):
+        if (0 <= y < Battle.bFieldHeight and 0 < x < Battle.bFieldWidth - 1):
             return True
         return False
     def isHalf(self,dist):
@@ -364,32 +354,32 @@ class BStack(object):
         self.isWaited = False
         self.isDenfenced = False
         return
-    def legalMoves(self):
-        if (self.isMoved):
-            logger.info("sth wrong happen! {} is moved!!!".format(self.name))
-            return 0
-        #ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
-        legalMoves = []
-        if(not self.isWaited):
-            legalMoves.append(0) #waite
-        legalMoves.append(1) #defend
-        aa = self.acssessableAndAttackable()
-        for i in range(0, self.inBattle.bFieldHeight):
-            for j in range(1, self.inBattle.bFieldWidth - 1):
-                if (aa[i,j] >= 0 and aa[i,j] < 50 and aa[i,j] != self.speed):
-                    #ret['move'].append(BAction(actionType.move, BHex(i,j)))
-                    legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.move, BHex(j,i))))
-                if (aa[i,j] == -1):
-                    if (self.canShoot()):
-                        #ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))target
-                        legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.shoot,target=BHex(j,i))))
-                    else:
-                        att = BHex(j,i)
-                        for nb in self.getNeibours(att):
-                            if(aa[nb.y,nb.x] >= 0 and aa[nb.y,nb.x] < 50):
-                                #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
-                                legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
-        return legalMoves
+    # def legalMoves(self):
+    #     if (self.isMoved):
+    #         logger.info("sth wrong happen! {} is moved!!!".format(self.name))
+    #         return 0
+    #     #ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
+    #     legalMoves = []
+    #     if(not self.isWaited):
+    #         legalMoves.append(0) #waite
+    #     legalMoves.append(1) #defend
+    #     aa = self.acssessableAndAttackable()
+    #     for i in range(0, self.inBattle.bFieldHeight):
+    #         for j in range(1, self.inBattle.bFieldWidth - 1):
+    #             if (aa[i,j] >= 0 and aa[i,j] < 50 and aa[i,j] != self.speed):
+    #                 #ret['move'].append(BAction(actionType.move, BHex(i,j)))
+    #                 legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.move, BHex(j,i))))
+    #             if (aa[i,j] == -1):
+    #                 if (self.canShoot()):
+    #                     #ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))target
+    #                     legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.shoot,target=BHex(j,i))))
+    #                 else:
+    #                     att = BHex(j,i)
+    #                     for nb in self.getNeibours(att):
+    #                         if(aa[nb.y,nb.x] >= 0 and aa[nb.y,nb.x] < 50):
+    #                             #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
+    #                             legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
+    #     return legalMoves
 
 
 
@@ -398,14 +388,14 @@ class BStack(object):
         attackable = []
         unreach = []
         for sts in self.inBattle.stacks:
-            if bf[sts.y,sts.x] == -1:
+            if bf[sts.y,sts.x] == 201:
                 if(self.canShoot()):
                     attackable.append((sts,0))
                 else:
                     for nb in sts.getNeibours():
-                        if(bf[nb.y,nb.x] >=0 and bf[nb.y,nb.x] < 50):
+                        if(0 <= bf[nb.y,nb.x] < 50):
                             attackable.append((sts, nb))
-            elif bf[sts.y,sts.x] == -2:
+            elif bf[sts.y,sts.x] == 200:
                 unreach.append(sts)
         return attackable,unreach
     def do_attack(self,defender_orig,stand,estimate = False):
@@ -439,15 +429,15 @@ class BStack(object):
     def go_toward(self,target):
         df = self.acssessableAndAttackable()
         min_dist = 999
-        dest = 0
+        dest = None
         for i in range(Battle.bFieldHeight):
             for j in range(Battle.bFieldWidth):
-                if(df[i,j] >= 0 and df[i,j] < 50):
-                    distance = Battle.bGetDistance(BHex(j,i),target)
+                if(0 <= df[i,j] < 50):
+                    dest = BHex(j, i)
+                    distance = Battle.bGetDistance(dest,target)
                     if(distance < min_dist):
                         min_dist = distance
-                        dest = BHex(j,i)
-        if(dest == self.get_position()):
+        if(Battle.bGetDistance(self,target) <= min_dist):
             return BAction(actionType.defend)
         else:
             return BAction(actionType.move,dest=dest)
@@ -470,13 +460,13 @@ class BStack(object):
             elif act_id == actionType.defend.value:
                 next_act = BAction(actionType.defend)
             elif act_id == actionType.move.value:
-                next_act = BAction(actionType.move,dest=BHex(ind=position_id))
+                next_act = BAction(actionType.move,dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth))
             elif act_id == actionType.attack.value:
                 t = self.inBattle.defender_stacks[target_id] if self.side == 0 else self.inBattle.attacker_stacks[target_id]
                 if self.canShoot():
-                    next_act = BAction(actionType.shoot, dest=BHex(ind=position_id), target=t)
+                    next_act = BAction(actionType.shoot, dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth), target=t)
                 else:
-                    next_act = BAction(actionType.attack,dest=BHex(ind=position_id),target=t)
+                    next_act = BAction(actionType.attack,dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth),target=t)
             else:
                 logger.info("not implemented action!!",True)
             return next_act
@@ -567,7 +557,7 @@ class Battle(object):
         creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
                             50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
                             121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
-        with open(r"D:\project\VCNN\ENV\creatureData.json") as JsonFile:
+        with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
             root = json.load(jsonFile)
@@ -623,17 +613,14 @@ class Battle(object):
 
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
-        if (curSt):
-            if(not curSt.checkPosition(bTo.x,bTo.y)):
-                logger.info('dist {},{} not valid'.format(bTo.x,bTo.y))
-                return False
-            bf = curSt.acssessableAndAttackable()
-            if(bAtt):
-                return self.bGetDistance(bTo,bAtt) == 1 and bf[bTo.y,bTo.x] >= 0 and bf[bAtt.y,bAtt.x] == -1
-            else:
-                return bf[bTo.y,bTo.x] >= 0
-        logger.info('src {},{} not valid'.format(bFrom.x,bFrom.y))
-        return False
+        if(not curSt.checkPosition(bTo.x,bTo.y)):
+            logger.info('dist {},{} not valid'.format(bTo.x,bTo.y))
+            return False
+        bf = curSt.acssessableAndAttackable()
+        if(bAtt):
+            return self.bGetDistance(bTo,bAtt) == 1 and bf[bTo.y,bTo.x] >= 0 and bf[bAtt.y,bAtt.x] == 201
+        else:
+            return 50 > bf[bTo.y,bTo.x] >= 0
     @staticmethod
     def bGetDistance(src,dist):
         y1,x1 = src.x,src.y #历史原因交换了.x 和 .y -_ -
@@ -672,6 +659,10 @@ class Battle(object):
     def currentState(self):
         pass
     def currentStateFeature(self):
+        # for st in self.stackQueue:
+        #     bf = st.acssessableAndAttackable()
+        #     reachable = (bf >= 0) & (bf < 50)
+        #     me = bf ==
         pass
     def getStackHPBySlots(self):
         leftBase = [0]*7
@@ -885,9 +876,8 @@ class Battle(object):
                 mask = np.zeros((7,))
                 targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks
                 for i in range(len(targets)):
-                    if bf[targets[i].y, targets[i].x] == -1:
+                    if bf[targets[i].y, targets[i].x] == 201:
                         mask[i] = 1
-                # mask = (bf == -1)
                 return mask
             else:
                 return np.zeros((self.bFieldHeight,self.bFieldWidth))
@@ -895,6 +885,7 @@ class Battle(object):
             mask = np.zeros((self.bFieldHeight,self.bFieldWidth))
             if act_id == actionType.attack.value:
                 bf = cur_stack.acssessableAndAttackable()
+                bf[cur_stack.y,cur_stack.x] = cur_stack.speed
                 target = self.defender_stacks[target_id] if cur_stack.side == 0 else self.attacker_stacks[target_id]
                 nb = target.getNeibours()
                 for t in nb:
@@ -965,7 +956,7 @@ def main():
     pl2 = BPlayer()
     players = [pl1, pl2]
     battle = Battle()
-    battle.loadFile("D:/project/VCNN/ENV/selfplay.json")
+    battle.loadFile("ENV/selfplay.json")
     battle.checkNewRound()
     while(not battle.end()[0]):
         battle.checkNewRound()

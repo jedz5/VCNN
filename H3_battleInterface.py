@@ -72,17 +72,17 @@ class BattleInterface:
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
         stacks = self.battleEngine.stacks
-        background = pygame.image.load("D:/project/vcnn/imgs/bgrd.bmp")
+        background = pygame.image.load("imgs/bgrd.bmp")
         self.background = background
-        self.hex_shader = pygame.image.load("D:/project/vcnn/imgs/CCellShd_gray.bmp")
+        self.hex_shader = pygame.image.load("imgs/CCellShd_gray.bmp")
         self.hex_shader.set_colorkey(self.transColor)
         self.hex_shader.set_alpha(100)
-        self.shader_cur_stack = pygame.image.load("D:/project/vcnn/imgs/CCellShd_green.bmp")
+        self.shader_cur_stack = pygame.image.load("imgs/CCellShd_green.bmp")
         self.shader_cur_stack.set_colorkey(self.transColor)
-        self.shader_cur_target = pygame.image.load("D:/project/vcnn/imgs/CCellShd_red.bmp")
+        self.shader_cur_target = pygame.image.load("imgs/CCellShd_red.bmp")
         self.shader_cur_target.set_colorkey(self.transColor)
-        self.amout_backgrd = pygame.image.load("D:/project/vcnn/imgs/CmNumWin_purple.bmp").convert_alpha()
-        self.amout_backgrd_enemy = pygame.image.load("D:/project/vcnn/imgs/CmNumWin_blue.bmp").convert_alpha()
+        self.amout_backgrd = pygame.image.load("imgs/CmNumWin_purple.bmp").convert_alpha()
+        self.amout_backgrd_enemy = pygame.image.load("imgs/CmNumWin_blue.bmp").convert_alpha()
         for st in stacks:
             if st.name not in self.stimgs:
                 img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
@@ -130,7 +130,7 @@ class BattleInterface:
         curStackRange = self.battleEngine.curStack.acssessableAndAttackable()
         for i in range(self.battleEngine.bFieldHeight):
             for j in range(self.battleEngine.bFieldWidth):
-                if curStackRange[i][j] >=0 and curStackRange[i][j] < 50:
+                if 0 <= curStackRange[i][j] < 50:
                     self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
         self.screen.blit(self.shader_cur_stack, CClickableHex(self.battleEngine.curStack.y, self.battleEngine.curStack.x).getHexXY())
 
@@ -165,7 +165,7 @@ class BattleInterface:
             hoveredRange = hoveredStack.acssessableAndAttackable()
             for i in range(self.battleEngine.bFieldHeight):
                 for j in range(self.battleEngine.bFieldWidth):
-                    if hoveredRange[i][j] >= 0 and hoveredRange[i][j] < 50:
+                    if 0 <= hoveredRange[i][j] < 50:
                         self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
 
 
@@ -274,7 +274,7 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     battle = Battle()
-    battle.loadFile("D:/project/VCNN/ENV/selfplay.json")
+    battle.loadFile("ENV/selfplay.json")
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.curStack.active_stack()

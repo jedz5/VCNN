@@ -76,6 +76,6 @@ import torch.nn.functional as F
 # mask_targets_2 = torch.sparse_coo_tensor(I,torch.ones(value_size),(1,7))
 # m = torch.cat([mask_targets_1,mask_targets_2],0)
 
-a = [False,False]
-b = sum(a)
-# itemindex = itemindex.squeeze(-1)
+a = np.ones([2,3])
+b = (0 < a) & (a < 20)
+print(b)
