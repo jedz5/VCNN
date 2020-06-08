@@ -62,57 +62,19 @@ import torch.nn.functional as F
 
 
 
-# import torch.sparse
-# nnz = 3
-# dims = [5, 5, 2, 3]
-# mask_targets = [2,3]
-# value_size = len(mask_targets)
-# I = torch.tensor([[0] * value_size,mask_targets])
-# mask_targets_1 = torch.sparse_coo_tensor(I,torch.ones(value_size),(1,7))
-#
-# mask_targets = [1,4,6]
-# value_size = len(mask_targets)
-# I = torch.tensor([[0] * value_size,mask_targets])
-# mask_targets_2 = torch.sparse_coo_tensor(I,torch.ones(value_size),(1,7))
-# m = torch.cat([mask_targets_1,mask_targets_2],0)
-import itertools
-a = np.array([1,2,3,4])
-b = [1,2,3,4,5]
-c = [av+bv for (i,(av,bv)) in enumerate(itertools.zip_longest(a,b,fillvalue=0))]
-aa = np.stack([a,a])
+import torch.sparse
+nnz = 3
+dims = [5, 5, 2, 3]
+mask_targets = [2,3]
+value_size = len(mask_targets)
+I = torch.tensor([[0] * value_size,mask_targets])
+mask_targets_1 = torch.sparse_coo_tensor(I,torch.ones(value_size),(1,7))
 
-from H3_battle import BHex
-hh = 100
-ww = 200
-l2 = []
-ones = np.array([BHex(i%ww,(i**2+3)%hh) for i in range(3)])
-st = time.time()
-oney = [bh.y for bh in ones] #
-onex = [bh.x for bh in ones] #
-# oney = np.array([bh.y for bh in ones])
-# onex =np.array([bh.x for bh in ones])
-for i in range(1000):
-    mask = np.zeros([hh,ww],bool)
-    mask[oney,onex] = 1
-    l2.append(mask)
-l2 = torch.tensor(np.stack(l2),dtype=torch.int16)
-print(f'啥也不做 耗时{time.time() - st}')
-l1 = []
-a = np.random.randint(0,20,[hh,ww])
-st = time.time()
-for i in range(1000):
-    mask = (3 < a) & (a < 8)
-    l1.append(mask)
-l1 = torch.tensor(np.stack(l1),dtype=torch.int16)
-print(f'判断矩阵中元素>3 and <8 耗时{time.time() - st}')
-l3 = []
-st = time.time()
-for i in range(1000):
-    mask = np.zeros([hh,ww],bool)
-    for bh in ones:
-        mask[bh.y,bh.x] = 1
-    l3.append(mask)
-l3 = torch.tensor(np.stack(l3),dtype=torch.int16)
-print(f'啥也不做 耗时{time.time() - st}')
+mask_targets = [1,4,6]
+value_size = len(mask_targets)
+I = torch.tensor([[0] * value_size,mask_targets])
+mask_targets_2 = torch.sparse_coo_tensor(I,torch.ones(value_size),(1,7))
+m = torch.cat([mask_targets_1,mask_targets_2],0)
+
 
 
