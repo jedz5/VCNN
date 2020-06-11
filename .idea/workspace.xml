@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
-      <change beforePath="$PROJECT_DIR$/.idea/VCNN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/learning/gpu_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/gpu_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
@@ -24,12 +19,12 @@
     <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1562298099688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$xx.coverage" NAME="xx Coverage Results" MODIFIED="1590653713438" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$BattleInterface.coverage" NAME="BattleInterface Coverage Results" MODIFIED="1591503423856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591347897183" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591846119715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$run_main.coverage" NAME="run_main Coverage Results" MODIFIED="1562379234281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1562381867407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
-    <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1591494853212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1591848420742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1562061578514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1591845032564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1591848432504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$model_vcmi.coverage" NAME="model_vcmi Coverage Results" MODIFIED="1560043972069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
   </component>
   <component name="DatabaseView">
@@ -51,8 +46,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="61" column="45" lean-forward="true" selection-start-line="61" selection-start-column="45" selection-end-line="61" selection-end-column="45" />
+            <state relative-caret-position="376">
+              <caret line="59" column="25" selection-start-line="59" selection-start-column="25" selection-end-line="59" selection-end-column="25" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -63,8 +58,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/H3_battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="456" column="16" lean-forward="true" selection-start-line="456" selection-start-column="16" selection-end-line="456" selection-end-column="16" />
+            <state relative-caret-position="283">
+              <caret line="468" column="70" lean-forward="true" selection-start-line="468" selection-start-column="70" selection-end-line="468" selection-end-column="70" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -75,8 +70,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../ddd/yy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="138">
-              <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="22" />
+            <state relative-caret-position="161">
+              <caret line="7" column="3" selection-start-line="7" selection-end-line="7" selection-end-column="3" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -122,6 +117,9 @@
       <find>had_re</find>
       <find>had_defended</find>
       <find>use</find>
+      <find>move to</find>
+      <find>dist</find>
+      <find>melee</find>
     </findStrings>
     <replaceStrings>
       <replace>had_defended</replace>
@@ -276,7 +274,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.gpu_test">
+  <component name="RunManager" selected="Python.gpu_test_local">
     <configuration name="BattleInterface" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -369,9 +367,6 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="sftp://enigma@192.168.1.100:22/home/enigma/work/anaconda3/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -473,10 +468,10 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.yy" />
-        <item itemvalue="Python.BattleInterface" />
         <item itemvalue="Python.H3_battle" />
         <item itemvalue="Python.gpu_test" />
+        <item itemvalue="Python.yy" />
+        <item itemvalue="Python.BattleInterface" />
         <item itemvalue="Python.H3_battleInterface" />
       </list>
     </recent_temporary>
@@ -587,7 +582,7 @@
       <workItem from="1591584304643" duration="22781000" />
       <workItem from="1591666822410" duration="13931000" />
       <workItem from="1591753021178" duration="16306000" />
-      <workItem from="1591839991917" duration="5047000" />
+      <workItem from="1591839991917" duration="11377000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -799,11 +794,18 @@
       <option name="project" value="LOCAL" />
       <updated>1591679607233</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="完成obs部分设计">
+      <created>1591845357917</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1591845357917</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="736224000" />
+    <option name="totallyTimeSpent" value="742554000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -823,7 +825,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3801105" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3403315" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.4088398" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4088398" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -833,13 +835,13 @@
       <window_info anchor="bottom" id="Database Changes" order="10" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32928178" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="13" weight="0.33701658" />
+      <window_info active="true" anchor="bottom" id="Python Console" order="13" visible="true" weight="0.36906078" />
       <window_info anchor="bottom" id="Messages" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" visible="true" weight="0.06491416" />
       <window_info anchor="right" id="Remote Host" order="3" weight="0.22693133" />
-      <window_info anchor="right" id="SciView" order="4" weight="0.16148068" />
+      <window_info anchor="right" x="479" y="186" width="1369" height="596" id="SciView" order="4" show_stripe_button="false" type="FLOATING" weight="0.73444206" />
       <window_info anchor="right" id="Database" order="5" />
       <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
     </layout>
@@ -898,7 +900,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="robot" />
     <MESSAGE value="before (y,x)" />
     <MESSAGE value="after (x,y)" />
     <MESSAGE value="after 58" />
@@ -923,7 +924,8 @@
     <MESSAGE value="大数据量的时候array赋值比list慢?" />
     <MESSAGE value="cuda cpu 读写性能 argmax性能对比" />
     <MESSAGE value="torch cpu cuda numpy softmax 性能对比" />
-    <option name="LAST_COMMIT_MESSAGE" value="torch cpu cuda numpy softmax 性能对比" />
+    <MESSAGE value="完成obs部分设计" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成obs部分设计" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591015085440">
@@ -1090,11 +1092,6 @@
           <option name="timeStamp" value="288" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/gpu_test.py</url>
-          <line>85</line>
-          <option name="timeStamp" value="292" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
           <line>444</line>
           <option name="timeStamp" value="293" />
@@ -1110,9 +1107,9 @@
           <option name="timeStamp" value="297" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/gpu_test.py</url>
-          <line>64</line>
-          <option name="timeStamp" value="298" />
+          <url>file://$PROJECT_DIR$/H3_battle.py</url>
+          <line>921</line>
+          <option name="timeStamp" value="300" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1127,27 +1124,47 @@
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
       <expression>
+        <expression-string>target</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>mask</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>bf</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>torch.cat([id_emb,stack_attri],dim=-1)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>torch.cat([id_emb,stack_attri])</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>stack_attri.shape</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>id_emb.shape</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>id_emb.shae</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
         <expression-string>Battle.bGetDistance(dest,target)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>Battle.bGetDistance(BHex(12,4),target)</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>df</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>dest</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>dlls</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -1302,8 +1319,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../ddd/yy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="22" />
+        <state relative-caret-position="161">
+          <caret line="7" column="3" selection-start-line="7" selection-end-line="7" selection-end-column="3" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1312,8 +1329,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/H3_battle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="456" column="16" lean-forward="true" selection-start-line="456" selection-start-column="16" selection-end-line="456" selection-end-column="16" />
+        <state relative-caret-position="283">
+          <caret line="468" column="70" lean-forward="true" selection-start-line="468" selection-start-column="70" selection-end-line="468" selection-end-column="70" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
@@ -1322,8 +1339,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="61" column="45" lean-forward="true" selection-start-line="61" selection-start-column="45" selection-end-line="61" selection-end-column="45" />
+        <state relative-caret-position="376">
+          <caret line="59" column="25" selection-start-line="59" selection-start-column="25" selection-end-line="59" selection-end-column="25" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>

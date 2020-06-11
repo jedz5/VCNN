@@ -17,7 +17,7 @@ def unsparse(mask, size):
     return mask_targets
 
 def softmax(logits, mask,dev):
-    mask = torch.tensor(mask, dtype=torch.int,device=dev)
+    mask = torch.tensor(mask, dtype=torch.float,device=dev)
     logits = torch.exp(logits)
     logits = logits * mask
     logits = logits / (torch.sum(logits) + 1E-5)
@@ -40,14 +40,16 @@ class in_pipe(nn.Module):
                                       nn.ReLU(inplace=True),
                                       nn.Linear(512, 512),
                                       nn.ReLU(inplace=True))
-        self.stack_plane_conv = nn.Sequential(nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
+        self.stack_plane_conv  = nn.Sequential(my_reshape([-1, 3, 11, 17]),
+                                               nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                nn.MaxPool2d(kernel_size=2),
                                                my_reshape([-1, 14 * 8, 5, 8]),
                                                nn.Conv2d(14 * 8, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                my_reshape([-1, 32 * 5 * 8]))
-        self.global_plane_conv = nn.Sequential(nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
+        self.global_plane_conv = nn.Sequential(my_reshape([-1, 3, 11, 17]),
+                                               nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                nn.MaxPool2d(kernel_size=2),
                                                nn.Conv2d(32, out_channels=32, kernel_size=3, stride=1, padding=1),
@@ -62,10 +64,10 @@ class in_pipe(nn.Module):
         self.stack_plane_flat.to(self.device)
     def forward(self,id,stack_attri,planes,glbs):
         id_emb = self.id_emb(id)
-        stack_fc = self.stack_fc(torch.cat([id_emb,stack_attri]))
+        stack_fc = self.stack_fc(torch.cat([id_emb,stack_attri],dim=-1))
         planes_conv = self.stack_plane_conv(planes)
         glb_conv = self.global_plane_conv(glbs)
-        all_fc = self.stack_plane_flat(torch.cat([stack_fc,planes_conv,glb_conv]))
+        all_fc = self.stack_plane_flat(torch.cat([stack_fc,planes_conv,glb_conv],dim=-1))
         return all_fc
 class Net(nn.Module):
     def __init__(self, device='cpu'):
@@ -134,6 +136,7 @@ class Net(nn.Module):
 
 def start_game():
     import pygame
+    import H3_battleInterface
     #初始化 agent
     dev = 'cuda'
     agent = Net(device=dev)
@@ -143,7 +146,7 @@ def start_game():
     battle = Battle(agent=agent)
     battle.loadFile("ENV/selfplay.json")
     battle.checkNewRound()
-    bi = None #H3_battleInterface.BattleInterface(battle)
+    bi = H3_battleInterface.BattleInterface(battle)
     bi.next_act = battle.curStack.active_stack()
     act = bi.next_act
     # 事件循环(main loop)

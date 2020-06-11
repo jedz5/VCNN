@@ -462,13 +462,13 @@ class BStack(object):
             elif act_id == actionType.defend.value:
                 next_act = BAction(actionType.defend)
             elif act_id == actionType.move.value:
-                next_act = BAction(actionType.move,dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth))
+                next_act = BAction(actionType.move,dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)))
             elif act_id == actionType.attack.value:
                 t = self.inBattle.defender_stacks[target_id] if self.side == 0 else self.inBattle.attacker_stacks[target_id]
                 if self.canShoot():
-                    next_act = BAction(actionType.shoot, dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth), target=t)
+                    next_act = BAction(actionType.shoot, dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)), target=t)
                 else:
-                    next_act = BAction(actionType.attack,dest=BHex(int(position_id / Battle.bFieldWidth),position_id % Battle.bFieldWidth),target=t)
+                    next_act = BAction(actionType.attack,dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)),target=t)
             else:
                 logger.info("not implemented action!!",True)
             return next_act
@@ -622,7 +622,7 @@ class Battle(object):
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
         if(not curSt.checkPosition(bTo.x,bTo.y)):
-            logger.info('dist {},{} not valid'.format(bTo.x,bTo.y))
+            logger.info('dist {},{} not valid'.format(bTo.y,bTo.x))
             return False
         bf = curSt.acssessableAndAttackable(exclude_me=False)
         if(bAtt):
@@ -669,7 +669,7 @@ class Battle(object):
     def currentStateFeature(self):
         planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
         attri_stack = np.zeros((14,16),dtype=int)
-        ind = np.zeros((1,),dtype=int)
+        ind = np.array([122] * 14,dtype=int)
         i = 0
         for st in self.stackQueue:
             bf = st.acssessableAndAttackable()
@@ -677,7 +677,7 @@ class Battle(object):
             planes_stack[i, 1] = bf == 401
             planes_stack[i, 2] = bf == 201
             #
-            ind[0] = st.id
+            ind[i] = st.id
             attri_stack[i] = np.array([st.y,st.x,st.side,st.amount,st.attack,st.defense,st.maxDamage,st.minDamage,st.health,int(st.had_moved),int(st.had_retaliated),int(st.had_waited),st.speed,st.luck,st.morale,st.shots])
             i += 1
 
@@ -788,11 +788,11 @@ class Battle(object):
         if (act.type == actionType.defend):
             return "defend"
         if (act.type == actionType.move):
-            return "move to ({},{})".format(act.dest.x,act.dest.y)
+            return "move to ({},{})".format(act.dest.y,act.dest.x)
         if (act.type == actionType.attack):
-            return "melee ({},{}),({},{})".format(act.dest.x,act.dest.y,act.target.x,act.target.y)
+            return "melee ({},{}),({},{})".format(act.dest.y,act.dest.x,act.target.y,act.target.x)
         if (act.type == actionType.shoot):
-            return "shoot ({},{})".format(act.target.x,act.target.y)
+            return "shoot ({},{})".format(act.target.y,act.target.x)
     def end(self):
         live = {0:False,1:False}
         for st in self.stacks:
