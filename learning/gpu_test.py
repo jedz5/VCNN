@@ -22,30 +22,68 @@ def softmax(logits, mask,dev):
     logits = logits * mask
     logits = logits / (torch.sum(logits) + 1E-5)
     return logits
-class Net(nn.Module):
-    def __init__(self, layer_num, state_shape, device='cpu'):
-        super().__init__()
+class my_reshape(nn.Module):
+    def __init__(self,shape):
+        super(my_reshape, self).__init__()
+        self.shape = shape
+    def forward(self,x):
+        x = x.reshape(*self.shape)
+        return x
+class in_pipe(nn.Module):
+    def __init__(self, device='cpu'):
+        super(in_pipe,self).__init__()
         self.device = device
-        self.inpipe = [
-            nn.Linear(1024, 1024),
-            nn.ReLU(inplace=True)]
-        for i in range(layer_num):
-            self.inpipe += [nn.Linear(1024, 1024), nn.ReLU(inplace=True)]
-        self.inpipe = nn.Sequential(*self.inpipe)
+        self.id_emb = nn.Embedding(150, 16, padding_idx=122)
+        self.stack_fc = nn.Sequential(nn.Linear(16 + 16, 64),
+                                      my_reshape([-1,64 * 14]),
+                                      nn.Linear(64 * 14, 512),
+                                      nn.ReLU(inplace=True),
+                                      nn.Linear(512, 512),
+                                      nn.ReLU(inplace=True))
+        self.stack_plane_conv = nn.Sequential(nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               nn.MaxPool2d(kernel_size=2),
+                                               my_reshape([-1, 14 * 8, 5, 8]),
+                                               nn.Conv2d(14 * 8, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               my_reshape([-1, 32 * 5 * 8]))
+        self.global_plane_conv = nn.Sequential(nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               nn.MaxPool2d(kernel_size=2),
+                                               nn.Conv2d(32, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               my_reshape([-1, 32 * 5 * 8]))
+        self.stack_plane_flat = nn.Linear(512 + 32 * 5 * 8 * 2, 512)
+        #
+        self.id_emb.to(self.device)
+        self.stack_fc.to(self.device)
+        self.stack_plane_conv.to(self.device)
+        self.global_plane_conv.to(self.device)
+        self.stack_plane_flat.to(self.device)
+    def forward(self,id,stack_attri,planes,glbs):
+        id_emb = self.id_emb(id)
+        stack_fc = self.stack_fc(torch.cat([id_emb,stack_attri]))
+        planes_conv = self.stack_plane_conv(planes)
+        glb_conv = self.global_plane_conv(glbs)
+        all_fc = self.stack_plane_flat(torch.cat([stack_fc,planes_conv,glb_conv]))
+        return all_fc
+class Net(nn.Module):
+    def __init__(self, device='cpu'):
+        super(Net,self).__init__()
+        self.device = device
+        self.inpipe = in_pipe(device=self.device)
+        self.act_ids = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 5))
+        self.position = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 11*17))
+        self.targets = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 7))
+        self.spells = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))
 
-        self.act_ids = nn.Sequential(nn.Linear(1024, 1024),nn.ReLU(inplace=True),nn.Linear(1024, 5))
-        self.position = nn.Sequential(nn.Linear(1024, 1024),nn.ReLU(inplace=True),nn.Linear(1024, 11*17))
-        self.targets = nn.Sequential(nn.Linear(1024, 1024),nn.ReLU(inplace=True),nn.Linear(1024, 7))
-        self.spells = nn.Sequential(nn.Linear(1024, 1024),nn.ReLU(inplace=True),nn.Linear(1024,10))
-
-        self.inpipe.to(self.device)
         self.act_ids.to(self.device)
         self.position.to(self.device)
         self.targets.to(self.device)
         self.spells.to(self.device)
 
-    def forward(self, s,env):
-        h = self.inpipe(s)
+    def forward(self,id,stack_attri,planes,glbs,env):
+        h = self.inpipe(id,stack_attri,planes,glbs)
         mask_acts = env.legal_act(level = 0)
         act_logits = self.act_ids(h)
         targets_logits = self.targets(h)
@@ -98,7 +136,7 @@ def start_game():
     import pygame
     #初始化 agent
     dev = 'cuda'
-    agent = Net(3, 1024, device=dev)
+    agent = Net(device=dev)
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
@@ -112,7 +150,7 @@ def start_game():
     i = 0
     last = time.time()
     while True:
-        if i % 20 == 0:
+        if i % 1 == 0:
             if act:
                 cost = time.time() - last
                 print(f'cost time {cost}')
@@ -160,4 +198,4 @@ def start_game_noGUI():
             next_act = battle.curStack.active_stack()
 
 if __name__ == '__main__':
-    start_game_noGUI()
+    start_game()

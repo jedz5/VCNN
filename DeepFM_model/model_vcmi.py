@@ -25,8 +25,8 @@ class DeepFM_vcmi(nn.Module):
     network, we use bachnorm and dropout technology for all hidden layers,
     and "Adam" method for optimazation.
 
-    You may find more details in this paper:
     DeepFM: A Factorization-Machine based Neural Network for CTR Prediction,
+    You may find more details in this paper:
     Huifeng Guo, Ruiming Tang, Yunming Yey, Zhenguo Li, Xiuqiang He.
     """
 

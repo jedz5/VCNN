@@ -190,10 +190,8 @@ class BattleInterface:
                     amount_bgrd = copy.copy(self.amout_backgrd_enemy)
 
                 retaliate = "" if stack.had_retaliated else "r"
-                waited = "w" if stack.isWaited and not stack.isMoved else ""
-                moved = "m" if stack.isMoved else ""
-                # text_surface = self.font.render(u"123            #", True,(255, 255, 255))
-                # amount_bgrd.blit(text_surface, (0, -2))
+                waited = "w" if stack.had_waited and not stack.had_moved else ""
+                moved = "m" if stack.had_moved else ""
                 text_surface = self.font.render(u"{}{}{}{}              #".format(stack.amount,retaliate,moved,waited), True, (255, 255, 255))
                 amount_bgrd.blit(text_surface, (2, -2))
                 xadd = 220 - (44 if stack.side else -22)

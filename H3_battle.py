@@ -4,7 +4,7 @@ import copy
 import numpy as np
 from enum import Enum
 import logging
-import sys
+import itertools
 import torch
 
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -130,10 +130,11 @@ class BStack(object):
         self.minDamage = 0
         self.firstHPLeft = 0
         self.health = 0
-        self.isMoved = False
         self.side = 0
+        self.had_moved = False
         self.had_retaliated = False
-        self.isWaited = False
+        self.had_waited = False
+        self.had_defended = False
         self.speed = 0
         self.luck = 0
         self.morale = 0
@@ -141,7 +142,7 @@ class BStack(object):
         self.shots = 10
         self.hexType = hexType.creature
         #辅助参数
-        self.isDenfenced = False
+        
         self.name = 'unKnown'
         self.slotId = 0
         self.x = 0
@@ -342,26 +343,26 @@ class BStack(object):
     def beShoot(self,attacker):
         return
     def wait(self):
-        self.isWaited = True
+        self.had_waited = True
     def defend(self):
         self.defense += 2
-        self.isDenfenced = True
-        self.isMoved = True
+        self.had_defended = True
+        self.had_moved = True
     def newRound(self):
-        if self.isDenfenced:
+        if self.had_defended:
             self.defense -= 2
-        self.isMoved = False
+        self.had_moved = False
         self.had_retaliated = False
-        self.isWaited = False
-        self.isDenfenced = False
+        self.had_waited = False
+        self.had_defended = False
         return
     # def legalMoves(self):
-    #     if (self.isMoved):
+    #     if (self.had_moved):
     #         logger.info("sth wrong happen! {} is moved!!!".format(self.name))
     #         return 0
-    #     #ret = {'wait': self.isWaited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
+    #     #ret = {'wait': self.had_waited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
     #     legalMoves = []
-    #     if(not self.isWaited):
+    #     if(not self.had_waited):
     #         legalMoves.append(0) #waite
     #     legalMoves.append(1) #defend
     #     aa = self.acssessableAndAttackable()
@@ -418,7 +419,7 @@ class BStack(object):
                 break
             damage1,killed1,firstHPLeft1 = attacker.computeCasualty(defender,stand,False,estimate)
             damage_dealt += damage1
-            attacker.isMoved = True
+            attacker.had_moved = True
             if (not defender.isAlive()):
                 break
             if(not attacker.canShoot() and defender.isAlive() and not (defender.had_retaliated or attacker.blockRetaliate)):
@@ -447,13 +448,12 @@ class BStack(object):
     def active_stack(self):
         if self.inBattle.agent:
             agent = self.inBattle.agent
-            # st = time.time()
-            ins = torch.rand((1, 1024), device='cpu')
-            ins = ins.to(agent.device)
-            # ins.to(agent.device)
-            # ins = ins.to(agent.device)
-            result = agent(ins, self.inBattle)
-            # print(time.time() - st)
+            ind, attri_stack, planes_stack, plane_glb = self.inBattle.currentStateFeature()
+            ind = torch.tensor(np.expand_dims(ind, 0),device=agent.device,dtype=torch.long)
+            attri_stack = torch.tensor(np.expand_dims(attri_stack, 0),device=agent.device,dtype=torch.float)
+            planes_stack = torch.tensor(np.expand_dims(planes_stack, 0), device=agent.device,dtype=torch.float)
+            plane_glb = torch.tensor(np.expand_dims(plane_glb, 0), device=agent.device,dtype=torch.float)
+            result = agent(ind, attri_stack, planes_stack, plane_glb, self.inBattle)
             act_id = result['act_id']
             position_id = result['position_id']
             target_id = result['target_id']
@@ -475,7 +475,7 @@ class BStack(object):
         else:
             attackable, unreach = self.potential_target()
             if not self.inBattle.debug:
-                if(self.inBattle.round == 0 and not self.isWaited):
+                if(self.inBattle.round == 0 and not self.had_waited):
                     return BAction(actionType.wait)
             if(len(attackable) > 0):
                 att = [self.do_attack(target, stand,estimate=True) for target, stand in attackable]
@@ -648,13 +648,13 @@ class Battle(object):
         src = srcs[0]
         src.x = bTo.x
         src.y = bTo.y
-        src.isMoved = True
+        src.had_moved = True
 
     def sortStack(self):
         self.last_stack = self.curStack
-        self.toMove = list(filter(lambda elem:elem.isAlive() and not elem.isMoved and not elem.isWaited,self.stacks))
-        self.waited = list(filter(lambda elem:elem.isAlive() and not elem.isMoved and elem.isWaited,self.stacks))
-        self.moved = list(filter(lambda elem:elem.isAlive() and elem.isMoved,self.stacks))
+        self.toMove = list(filter(lambda elem:elem.isAlive() and not elem.had_moved and not elem.had_waited,self.stacks))
+        self.waited = list(filter(lambda elem:elem.isAlive() and not elem.had_moved and elem.had_waited,self.stacks))
+        self.moved = list(filter(lambda elem:elem.isAlive() and elem.had_moved,self.stacks))
 
         self.toMove.sort(key=lambda elem:(-elem.speed,elem.y,elem.x))
         self.waited.sort(key=lambda elem: (elem.speed, elem.y, elem.x))
@@ -667,11 +667,31 @@ class Battle(object):
     def currentState(self):
         pass
     def currentStateFeature(self):
-        # for st in self.stackQueue:
-        #     bf = st.acssessableAndAttackable()
-        #     reachable = (bf >= 0) & (bf < 50)
-        #     me = bf ==
-        pass
+        planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
+        attri_stack = np.zeros((14,16),dtype=int)
+        ind = np.zeros((1,),dtype=int)
+        i = 0
+        for st in self.stackQueue:
+            bf = st.acssessableAndAttackable()
+            planes_stack[i, 0] = (bf >= 0) & (bf < 50)
+            planes_stack[i, 1] = bf == 401
+            planes_stack[i, 2] = bf == 201
+            #
+            ind[0] = st.id
+            attri_stack[i] = np.array([st.y,st.x,st.side,st.amount,st.attack,st.defense,st.maxDamage,st.minDamage,st.health,int(st.had_moved),int(st.had_retaliated),int(st.had_waited),st.speed,st.luck,st.morale,st.shots])
+            i += 1
+
+        plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)
+        for st in self.attacker_stacks:
+            plane_glb[0,st.y, st.x] = 1
+        for st in self.defender_stacks:
+            plane_glb[1,st.y, st.x] = 1
+        for st in self.obstacles:
+            plane_glb[2,st.y, st.x] = 1
+        return ind, attri_stack, planes_stack, plane_glb
+
+
+
     def getStackHPBySlots(self):
         leftBase = [0]*7
         rightBase = [0]*7
@@ -802,7 +822,7 @@ class Battle(object):
             logger.info("battle end~")
             return
         self.sortStack()
-        if(self.stackQueue[0].isMoved):
+        if(self.stackQueue[0].had_moved):
             self.newRound()
             self.sortStack()
         if(not is_self_play):
@@ -818,11 +838,11 @@ class Battle(object):
     def doAction(self,action):
         logger.log_text.clear()
         logger.info(self.action2Str(action),True)
-        if(self.curStack.isMoved):
+        if(self.curStack.had_moved):
             logger.info("{} is already moved".format(self.curStack))
             return
         if(action.type == actionType.wait):
-            if (self.curStack.isWaited):
+            if (self.curStack.had_waited):
                 logger.info("{} is already waited".format(self.curStack))
                 return
             self.curStack.wait()
@@ -861,14 +881,14 @@ class Battle(object):
             logger.info("spell not implemented yet")
     def legal_act(self,level=0,act_id=0,spell_id=0,target_id=0):
         cur_stack = self.curStack
-        if cur_stack.isMoved:
+        if cur_stack.had_moved:
             return None
 
         if level ==0:
             legals = np.zeros((5,))
-            if not cur_stack.isWaited:
+            if not cur_stack.had_waited:
                 legals[actionType.wait.value] = 1
-            if not cur_stack.isDenfenced:
+            if not cur_stack.had_defended:
                 legals[actionType.defend.value] = 1
             if cur_stack.acssessableAndAttackable(query_type=action_query_type.can_move):
                 legals[actionType.move.value] = 1

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="refactor acssesable_and_attackable -1 -&gt; 201, etc">
-      <change afterPath="$PROJECT_DIR$/ENV/debug.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ENV/debug1.json" afterDir="false" />
+    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
       <change beforePath="$PROJECT_DIR$/.idea/VCNN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/selfplay.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/selfplay.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" beforeDir="false" afterPath="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learning/gpu_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/gpu_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,7 +29,7 @@
     <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1562381867407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1591494853212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1562061578514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1591347815417" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1591845032564" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$model_vcmi.coverage" NAME="model_vcmi Coverage Results" MODIFIED="1560043972069" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
   </component>
   <component name="DatabaseView">
@@ -47,14 +48,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="488">
-              <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
+            <state relative-caret-position="248">
+              <caret line="61" column="45" lean-forward="true" selection-start-line="61" selection-start-column="45" selection-end-line="61" selection-end-column="45" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
-                <element signature="e#3944#5111#0" />
               </folding>
             </state>
           </provider>
@@ -63,8 +63,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/H3_battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="23">
-              <caret line="446" column="8" selection-start-line="446" selection-start-column="8" selection-end-line="446" selection-end-column="8" />
+            <state relative-caret-position="317">
+              <caret line="456" column="16" lean-forward="true" selection-start-line="456" selection-start-column="16" selection-end-line="456" selection-end-column="16" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -73,19 +73,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ENV/selfplay.json">
+        <entry file="file://$PROJECT_DIR$/../ddd/yy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46">
-              <caret line="2" column="87" selection-start-line="2" selection-start-column="87" selection-end-line="2" selection-end-column="87" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="819" column="29" lean-forward="true" selection-start-line="819" selection-start-column="29" selection-end-line="819" selection-end-column="29" />
+            <state relative-caret-position="138">
+              <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -93,8 +87,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/H3_battleInterface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="226">
-              <caret line="275" column="17" selection-start-line="275" selection-start-column="17" selection-end-line="275" selection-end-column="17" />
+            <state relative-caret-position="4071">
+              <caret line="186" column="36" selection-start-line="186" selection-start-column="36" selection-end-line="186" selection-end-column="36" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -119,9 +113,21 @@
       <find>-1</find>
       <find>got</find>
       <find>devi</find>
-      <find>acssessableAndAttackable</find>
       <find>spri</find>
+      <find>pit</find>
+      <find>acssessableAndAttackable</find>
+      <find>isDenfenced</find>
+      <find>isWaited</find>
+      <find>isMoved</find>
+      <find>had_re</find>
+      <find>had_defended</find>
+      <find>use</find>
     </findStrings>
+    <replaceStrings>
+      <replace>had_defended</replace>
+      <replace>had_moved</replace>
+      <replace>had_waited</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -129,21 +135,23 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/learning/gpu_test.py" />
-        <option value="$PROJECT_DIR$/learning/xx.py" />
         <option value="$PROJECT_DIR$/ENV/selfplay.json" />
         <option value="$PROJECT_DIR$/ENV/debug.json" />
-        <option value="$PROJECT_DIR$/H3_battle.py" />
         <option value="$PROJECT_DIR$/ENV/debug1.json" />
+        <option value="$PROJECT_DIR$/learning/xx.py" />
         <option value="$PROJECT_DIR$/H3_battleInterface.py" />
+        <option value="$PROJECT_DIR$/DeepFM_model/model_vcmi.py" />
+        <option value="$PROJECT_DIR$/../ddd/yy.py" />
+        <option value="$PROJECT_DIR$/learning/gpu_test.py" />
+        <option value="$PROJECT_DIR$/H3_battle.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-1773" />
-    <option name="y" value="269" />
+    <option name="y" value="268" />
     <option name="width" value="1400" />
-    <option name="height" value="992" />
+    <option name="height" value="993" />
   </component>
   <component name="ProjectId" id="1c3wnRPTKIV7toF0j4PMzaY65XL" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -180,7 +188,7 @@
       </profile-state>
     </entry>
   </component>
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectView">
@@ -195,6 +203,11 @@
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
+              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
+              <item name="DeepFM_model" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
@@ -223,8 +236,8 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="D:/doc/Profile stats cpu 100.png" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ddd" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.23474178" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -263,33 +276,14 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.BattleInterface">
-    <configuration name="Battle" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.gpu_test">
+    <configuration name="BattleInterface" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="D:\project\VCNN\H3_battle.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="BattleInterface" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="VCNN" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="D:\Program Files\python37\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -397,9 +391,6 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="D:\anaconda\envs\new37\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -422,13 +413,32 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="D:\anaconda\envs\new37\python.exe" />
+      <option name="SDK_HOME" value="D:\Program Files\python37\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/xx.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="yy" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="ddd" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="D:\anaconda\envs\new37\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../ddd" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../ddd/yy.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -456,18 +466,18 @@
       <item itemvalue="Python.xx" />
       <item itemvalue="Python.gpu_test_local" />
       <item itemvalue="Python.BattleInterface" />
-      <item itemvalue="Python.Battle" />
       <item itemvalue="Python.gpu_test" />
       <item itemvalue="Python.H3_battleInterface" />
       <item itemvalue="Python.H3_battle" />
+      <item itemvalue="Python.yy" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.yy" />
         <item itemvalue="Python.BattleInterface" />
         <item itemvalue="Python.H3_battle" />
         <item itemvalue="Python.gpu_test" />
         <item itemvalue="Python.H3_battleInterface" />
-        <item itemvalue="Python.Battle" />
       </list>
     </recent_temporary>
   </component>
@@ -573,7 +583,11 @@
       <workItem from="1591258978010" duration="11268000" />
       <workItem from="1591319807018" duration="17975000" />
       <workItem from="1591414810337" duration="7282000" />
-      <workItem from="1591494431581" duration="11119000" />
+      <workItem from="1591494431581" duration="23719000" />
+      <workItem from="1591584304643" duration="22781000" />
+      <workItem from="1591666822410" duration="13931000" />
+      <workItem from="1591753021178" duration="16306000" />
+      <workItem from="1591839991917" duration="5047000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -722,11 +736,74 @@
       <option name="project" value="LOCAL" />
       <updated>1591452895108</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
+      <created>1591515757592</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1591515757592</updated>
+    </task>
+    <task id="LOCAL-00023" summary="for 循环赋值耗时测试">
+      <created>1591590051905</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1591590051905</updated>
+    </task>
+    <task id="LOCAL-00024" summary="sparse">
+      <created>1591590191443</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1591590191443</updated>
+    </task>
+    <task id="LOCAL-00025" summary="矩阵堆叠乘法 cpu vs cuda">
+      <created>1591590377536</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1591590377536</updated>
+    </task>
+    <task id="LOCAL-00026" summary="CNN reshape">
+      <created>1591606636793</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1591606636793</updated>
+    </task>
+    <task id="LOCAL-00027" summary="onesxy = np.array([[bh.y,bh.x,bh.z,bh.a,bh.b,bh.c] for bh in ones])&#10;oney,onex,onez,onea,oneb,onec = onesxy.transpose()">
+      <created>1591609425713</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1591609425713</updated>
+    </task>
+    <task id="LOCAL-00028" summary="大数据量的时候array赋值比list慢?">
+      <created>1591612968967</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1591612968967</updated>
+    </task>
+    <task id="LOCAL-00029" summary="cuda cpu 读写性能 argmax性能对比">
+      <created>1591670181054</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1591670181054</updated>
+    </task>
+    <task id="LOCAL-00030" summary="torch cpu cuda numpy softmax 性能对比">
+      <created>1591679607233</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1591679607233</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="665559000" />
+    <option name="totallyTimeSpent" value="736224000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -740,33 +817,85 @@
   <component name="ToolWindowManager">
     <frame x="-1929" y="-9" width="1938" height="1098" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4943182" visible="true" weight="0.17972103" />
-      <window_info id="Structure" order="1" sideWeight="0.5056818" side_tool="true" visible="true" weight="0.17972103" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4913295" visible="true" weight="0.18776824" />
+      <window_info id="Structure" order="1" sideWeight="0.5086705" side_tool="true" weight="0.18240343" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.17458564" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.1359116" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4088398" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3801105" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3403315" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.4088398" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.20773481" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.5325967" />
       <window_info anchor="bottom" id="File Transfer" order="9" weight="0.32928178" />
       <window_info anchor="bottom" id="Database Changes" order="10" />
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.32928178" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Python Console" order="13" visible="true" weight="0.22209945" />
+      <window_info anchor="bottom" id="Python Console" order="13" weight="0.33701658" />
+      <window_info anchor="bottom" id="Messages" order="14" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" visible="true" weight="0.06491416" />
       <window_info anchor="right" id="Remote Host" order="3" weight="0.22693133" />
-      <window_info anchor="right" id="SciView" order="4" visible="true" weight="0.16148068" />
+      <window_info anchor="right" id="SciView" order="4" weight="0.16148068" />
       <window_info anchor="right" id="Database" order="5" />
+      <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="robot" />
@@ -785,7 +914,16 @@
     <MESSAGE value="随机定位&#10;从creatureData 加载兵种&#10;增加无限反击 双击" />
     <MESSAGE value="rename H3_battle.py H3_battleinterface.py&#10;add h3_ppo" />
     <MESSAGE value="refactor acssesable_and_attackable -1 -&gt; 201, etc" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor acssesable_and_attackable -1 -&gt; 201, etc" />
+    <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
+    <MESSAGE value="for 循环赋值耗时测试" />
+    <MESSAGE value="sparse" />
+    <MESSAGE value="矩阵堆叠乘法 cpu vs cuda" />
+    <MESSAGE value="CNN reshape" />
+    <MESSAGE value="onesxy = np.array([[bh.y,bh.x,bh.z,bh.a,bh.b,bh.c] for bh in ones])&#10;oney,onex,onez,onea,oneb,onec = onesxy.transpose()" />
+    <MESSAGE value="大数据量的时候array赋值比list慢?" />
+    <MESSAGE value="cuda cpu 读写性能 argmax性能对比" />
+    <MESSAGE value="torch cpu cuda numpy softmax 性能对比" />
+    <option name="LAST_COMMIT_MESSAGE" value="torch cpu cuda numpy softmax 性能对比" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1591015085440">
@@ -942,33 +1080,18 @@
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>62</line>
-          <option name="timeStamp" value="257" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>46</line>
-          <option name="timeStamp" value="261" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>19</line>
-          <option name="timeStamp" value="263" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>848</line>
+          <line>868</line>
           <option name="timeStamp" value="287" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>864</line>
+          <line>884</line>
           <option name="timeStamp" value="288" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/learning/gpu_test.py</url>
-          <line>47</line>
+          <line>85</line>
           <option name="timeStamp" value="292" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -978,13 +1101,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>481</line>
+          <line>480</line>
           <option name="timeStamp" value="296" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>476</line>
+          <line>475</line>
           <option name="timeStamp" value="297" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/learning/gpu_test.py</url>
+          <line>64</line>
+          <option name="timeStamp" value="298" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1061,16 +1189,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/learning/xx.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1702">
-          <caret line="78" column="18" selection-start-line="78" selection-start-column="18" selection-end-line="78" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/anaconda/envs/new37/Lib/site-packages/torch/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -1082,34 +1200,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="338">
           <caret line="363" selection-start-line="363" selection-end-line="363" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="47" column="21" selection-start-line="47" selection-start-column="21" selection-end-line="47" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-            <element signature="e#3944#5111#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/selfplay.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="2" column="87" selection-start-line="2" selection-start-column="87" selection-end-line="2" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/H3_battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="446" column="8" selection-start-line="446" selection-start-column="8" selection-end-line="446" selection-end-column="8" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1127,20 +1217,116 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/selfplay.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="46">
+          <caret line="2" column="87" selection-start-line="2" selection-start-column="87" selection-end-line="2" selection-end-column="87" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/-294079134/numpy/core/_multiarray_umath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="10369" column="8" selection-start-line="10369" selection-start-column="8" selection-end-line="10369" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/torch/nn/functional.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="1229" selection-start-line="1229" selection-end-line="1229" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="2030" column="29" selection-start-line="2030" selection-start-column="26" selection-end-line="2030" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/torch/nn/modules/sparse.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="79" column="65" selection-start-line="79" selection-start-column="54" selection-end-line="79" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/torch/nn/modules/pooling.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="141">
+          <caret line="897" column="6" selection-start-line="897" selection-start-column="6" selection-end-line="897" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DeepFM_model/model_vcmi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1127">
+          <caret line="76" column="33" lean-forward="true" selection-start-line="76" selection-start-column="33" selection-end-line="76" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/xx.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="12" column="18" lean-forward="true" selection-start-line="12" selection-start-column="18" selection-end-line="12" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/torch/nn/modules/conv.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7705">
+          <caret line="342" column="37" selection-start-line="342" selection-start-column="37" selection-end-line="342" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/H3_battleInterface.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="275" column="17" selection-start-line="275" selection-start-column="17" selection-end-line="275" selection-end-column="17" />
+        <state relative-caret-position="4071">
+          <caret line="186" column="36" selection-start-line="186" selection-start-column="36" selection-end-line="186" selection-end-column="36" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
+    <entry file="file://D:/Program Files/python37/Lib/site-packages/cycler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="819" column="29" lean-forward="true" selection-start-line="819" selection-start-column="29" selection-end-line="819" selection-end-column="29" />
+        <state relative-caret-position="322">
+          <caret line="427" column="4" selection-start-line="427" selection-start-column="4" selection-end-line="427" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../ddd/yy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/H3_battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="456" column="16" lean-forward="true" selection-start-line="456" selection-start-column="16" selection-end-line="456" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="61" column="45" lean-forward="true" selection-start-line="61" selection-start-column="45" selection-end-line="61" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
