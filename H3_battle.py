@@ -142,7 +142,8 @@ class BStack(object):
         self.shots = 10
         self.hexType = hexType.creature
         #辅助参数
-        
+
+        self.by_AI = 1
         self.name = 'unKnown'
         self.slotId = 0
         self.x = 0
@@ -245,8 +246,9 @@ class BStack(object):
             damageMin = int(self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
             damageMax = int(self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
         damage = int((damageMin+damageMax)/2) if estimate else random.randint(damageMin,damageMax)
+        can_shoot = self.canShoot()
         if(self.isShooter):
-            if(not self.canShoot() or self.isHalf(opposite) ):
+            if(not can_shoot or self.isHalf(opposite) ):
                 damage = int(damage/2)
         else:
             others = self.get_attacked_stacks(opposite,stand)
@@ -269,7 +271,7 @@ class BStack(object):
         real_damage, killed, firstHPLeft = opposite.damaged(damage)
         total_damage += real_damage
         if(not estimate):
-            if(self.canShoot()):
+            if(can_shoot): # damage is done and enemy may die, so this flag may change
                 half = "(half)" if self.isHalf(opposite) else "(full)"
                 logger.info("shoot{} {}".format(half,opposite.name),True)
             head = "reta" if is_reta else "make"
@@ -445,18 +447,40 @@ class BStack(object):
         else:
             return BAction(actionType.move,dest=dest)
 
-    def active_stack(self):
-        if self.inBattle.agent:
+    def active_stack(self,ret_obs = False,print_act = False):
+        if self.by_AI:
+            attackable, unreach = self.potential_target()
+            if not self.inBattle.debug:
+                if (self.inBattle.round == 0 and not self.had_waited):
+                    return BAction(actionType.wait)
+            if (len(attackable) > 0):
+                att = [self.do_attack(target, stand, estimate=True) for target, stand in attackable]
+                dmgs = [delt - get for delt, get in att]
+                best = np.argmax(dmgs)
+                best_target = attackable[best]
+                if (self.canShoot()):
+                    return BAction(actionType.shoot, target=best_target[0])
+                else:
+                    return BAction(actionType.attack, target=best_target[0], dest=best_target[1])
+            else:
+                distants = [self.getDistance(x) for x in unreach]
+                closest = np.argmin(distants)
+                return self.go_toward(unreach[closest])
+        elif self.inBattle.agent:
+            # {'act_id':act_id, 'spell_id':spell_id,'target_id':target_id,'position_id':position_id,
+            #             'mask_acts':mask_acts,'mask_spell':mask_spell,'mask_targets':mask_targets,'mask_position':mask_position}
             agent = self.inBattle.agent
             ind, attri_stack, planes_stack, plane_glb = self.inBattle.currentStateFeature()
-            ind = torch.tensor(np.expand_dims(ind, 0),device=agent.device,dtype=torch.long)
-            attri_stack = torch.tensor(np.expand_dims(attri_stack, 0),device=agent.device,dtype=torch.float)
-            planes_stack = torch.tensor(np.expand_dims(planes_stack, 0), device=agent.device,dtype=torch.float)
-            plane_glb = torch.tensor(np.expand_dims(plane_glb, 0), device=agent.device,dtype=torch.float)
-            result = agent(ind, attri_stack, planes_stack, plane_glb, self.inBattle)
+            if agent.in_train:
+                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.inBattle,print_act)
+            else:
+                with torch.no_grad():
+                    result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.inBattle,
+                                   print_act)
             act_id = result['act_id']
             position_id = result['position_id']
             target_id = result['target_id']
+            spell_id = result['spell_id']
             if act_id == actionType.wait.value:
                 next_act = BAction(actionType.wait)
             elif act_id == actionType.defend.value:
@@ -471,25 +495,23 @@ class BStack(object):
                     next_act = BAction(actionType.attack,dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)),target=t)
             else:
                 logger.info("not implemented action!!",True)
-            return next_act
+            if not ret_obs:
+                return next_act
+            # act_id = torch.tensor([[0]]) if act_id < 0 else torch.tensor([[act_id]])
+            # position_id = torch.tensor([[0]]) if position_id < 0 else torch.tensor([[position_id]])
+            # target_id = torch.tensor([[0]]) if target_id < 0 else torch.tensor([[target_id]])
+            # spell_id = torch.tensor([[0]]) if spell_id < 0 else torch.tensor([[spell_id]])
+            act_id = 0 if act_id < 0 else act_id
+            position_id = 0 if position_id < 0 else position_id
+            target_id = 0 if target_id < 0 else target_id
+            spell_id = 0 if spell_id < 0 else spell_id
+            obs = {'ind':ind, 'attri_stack':attri_stack, 'planes_stack':planes_stack, 'plane_glb':plane_glb}
+            acts = {'act_id':act_id,'position_id':position_id,'target_id':target_id,'spell_id':spell_id}
+            mask = {'mask_acts':result['mask_acts'],'mask_spell':result['mask_spell'],'mask_targets':result['mask_targets'],'mask_position':result['mask_position']}
+            return next_act,obs,acts,mask
         else:
-            attackable, unreach = self.potential_target()
-            if not self.inBattle.debug:
-                if(self.inBattle.round == 0 and not self.had_waited):
-                    return BAction(actionType.wait)
-            if(len(attackable) > 0):
-                att = [self.do_attack(target, stand,estimate=True) for target, stand in attackable]
-                dmgs = [delt - get for delt, get in att]
-                best = np.argmax(dmgs)
-                best_target = attackable[best]
-                if(self.canShoot()):
-                    return BAction(actionType.shoot,target=best_target[0])
-                else:
-                    return BAction(actionType.attack,target=best_target[0],dest=best_target[1])
-            else:
-                distants = [self.getDistance(x) for x in unreach]
-                closest = np.argmin(distants)
-                return self.go_toward(unreach[closest])
+            logger.info("no way to contrl the stack!!")
+            exit(-1)
 
 
 class BObstacle(object):
@@ -517,7 +539,7 @@ class Battle(object):
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
     bTotalFieldSize = 2 + 8*bFieldSize
-    def __init__(self,gui = None , load_file = None,agent = None,debug = False):
+    def __init__(self,by_AI = [0,1], gui = None , load_file = None,agent = None,debug = False):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stacks = []
         self.defender_stacks = []
@@ -532,6 +554,7 @@ class Battle(object):
         self.curStack = 0
         self.last_stack = None
         self.batId = 0
+        self.by_AI = by_AI
         self.bat_interface = None
         self.agent = agent
         self.debug = debug
@@ -580,6 +603,7 @@ class Battle(object):
                     st.firstHPLeft = x['health']
                     st.id = id
                     st.side = i
+                    st.by_AI = self.by_AI[i]
                     #st.isWide = x['isWide']
                     st.luck = x['luck']
                     st.morale = x['morale']
@@ -596,7 +620,8 @@ class Battle(object):
                     st.speed = x['speed']
                     #st.slotId = x['slot']
                     if shuffle_postion:
-                        st.x = 15 if i else 1
+                        # st.x = 15 if i else 1
+                        st.x = px
                         st.y = int(ys[j])
                     else:
                         st.x = px
@@ -609,15 +634,15 @@ class Battle(object):
                         self.defender_stacks.append(st)
                     else:
                         self.attacker_stacks.append(st)
-            for x in root['obstacles']:
-                obs = BObstacle()
-                obs.kind = x['type']
-                obs.x = x['x']
-                obs.y = x['y']
-                self.obstacles.append(obs)
-            for x in root['obs']:
-                oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
-                self.obsinfo.append(oi)
+            # for x in root['obstacles']:
+            #     obs = BObstacle()
+            #     obs.kind = x['type']
+            #     obs.x = x['x']
+            #     obs.y = x['y']
+            #     self.obstacles.append(obs)
+            # for x in root['obs']:
+            #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
+            #     self.obsinfo.append(oi)
 
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
@@ -814,9 +839,14 @@ class Battle(object):
             if x.isAlive():
                 def_alive = True
                 break
-        if not att_alive or not def_alive:
-            return True
-        return False
+        return not att_alive or not def_alive
+    def get_winner(self):
+        def_alive = False
+        for x in self.defender_stacks:
+            if x.isAlive():
+                def_alive = True
+                break
+        return int(def_alive)
     def checkNewRound(self,is_self_play = 0):
         if self.check_battle_end():
             logger.info("battle end~")
@@ -867,6 +897,7 @@ class Battle(object):
                 self.curStack.meeleAttack(dest,action.dest,False)
             else:
                 logger.info("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
+                exit(-1)
         elif(action.type == actionType.shoot):
             dists = self.findStack(action.target, True)
             if (len(dists) == 0):

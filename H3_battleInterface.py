@@ -1,6 +1,6 @@
 import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
-from sys import exit  # 导入sys库中的exit函数
+import sys # 导入sys库中的exit函数
 from H3_battle import *
 # Enum EBattleCursors { COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,
 # 						COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER,
@@ -57,6 +57,7 @@ class BattleInterface:
         self.SCREEN_HEIGHT = 600
         self.BFIELD_WIDTH = 17
         self.BFIELD_HEIGHT = 11
+        self.running = True
         battleEngine.bat_interface = self
         self.battleEngine = battleEngine
         self.current_hex = CClickableHex()
@@ -113,9 +114,10 @@ class BattleInterface:
             imgback.set_colorkey((0, 255, 255))
             self.cursor[idx] = imgback
     def renderFrame(self):
-        self.clock.tick(60)
-        self.update()
-        pygame.display.update()
+        if self.running:
+            self.clock.tick(60)
+            self.update()
+            pygame.display.update()
 
     def showBackground(self):
         self.screen.fill((0,0,0))
@@ -228,8 +230,7 @@ class BattleInterface:
         # 从消息队列中循环取
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                self.running = False
             elif event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = event.pos
                 move_x, move_y = event.rel
@@ -249,13 +250,15 @@ class BattleInterface:
         self.current_hex.pixels_y = mouse_y - (mouse_y - 86) % 42
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
-    def handleBattle(self,act,agent=None):
+    def handleBattle(self,act,print_act=True):
         if not act:
             return
         battle = self.battleEngine
         battle.doAction(act)
         battle.checkNewRound()
-        self.next_act = battle.curStack.active_stack()
+        if battle.check_battle_end():
+            return
+        self.next_act = battle.curStack.active_stack(print_act = print_act)
 
     def getObstaclePosition(self,img, obinfo):
         if obinfo.isabs:
@@ -272,7 +275,7 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     debug = False
-    battle = Battle(debug=debug)
+    battle = Battle(debug=debug,by_AI=[1,1])
     if debug:
         battle.loadFile("ENV/debug1.json",shuffle_postion=False)
     else:
@@ -281,13 +284,14 @@ def start_game():
     bi = BattleInterface(battle)
     bi.next_act = battle.curStack.active_stack()
     # 事件循环(main loop)
-    while True:
+    while bi.running:
         act = bi.handleEvents()
         bi.handleBattle(act)
         if battle.check_battle_end():
             logger.info("battle end~")
             return
         bi.renderFrame()
+    pygame.quit()
 if __name__ == '__main__':
     start_game()
 

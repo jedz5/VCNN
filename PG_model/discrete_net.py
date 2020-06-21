@@ -1,152 +1,100 @@
 import torch
+import time
 import numpy as np
 from torch import nn
-import torch.nn.functional as F
-from tianshou.policy import PPOPolicy
-from tianshou.data import Batch
+from H3_battle import Battle
+from H3_battle import actionType
+from H3_battle import logger
+from tianshou.data import ReplayBuffer
+dist_fn = torch.distributions.Categorical
 
-class Net(nn.Module):
-    def __init__(self, layer_num, state_shape, action_shape=0, device='cpu'):
-        super().__init__()
+
+def unsparse(mask, size):
+    value_size = len(mask)
+    I = torch.tensor([[0] * value_size, mask])
+    mask_targets = torch.sparse_coo_tensor(I, torch.ones(value_size), (1, size))
+    return mask_targets
+
+
+class my_reshape(nn.Module):
+    def __init__(self,shape):
+        super(my_reshape, self).__init__()
+        self.shape = shape
+    def forward(self,x):
+        x = x.reshape(*self.shape)
+        return x
+class in_pipe(nn.Module):
+    def __init__(self, device='cpu'):
+        super(in_pipe,self).__init__()
         self.device = device
-        self.inpipe = [
-            nn.Linear(np.prod(state_shape), 2048),
-            nn.ReLU(inplace=True)]
-        for i in range(layer_num):
-            self.inpipe += [nn.Linear(2048, 2048), nn.ReLU(inplace=True)]
-        self.inpipe = nn.Sequential(*self.inpipe)
-        self.inpipe.to(self.device)
+        self.id_emb = nn.Embedding(150, 16, padding_idx=122)
+        self.stack_fc = nn.Sequential(nn.Linear(16 + 16, 64),
+                                      my_reshape([-1,64 * 14]),
+                                      nn.Linear(64 * 14, 512),
+                                      nn.ReLU(inplace=True),
+                                      nn.Linear(512, 512),
+                                      nn.ReLU(inplace=True))
+        self.stack_plane_conv  = nn.Sequential(my_reshape([-1, 3, 11, 17]),
+                                               nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               nn.MaxPool2d(kernel_size=2),
+                                               my_reshape([-1, 14 * 8, 5, 8]),
+                                               nn.Conv2d(14 * 8, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               my_reshape([-1, 32 * 5 * 8]))
+        self.global_plane_conv = nn.Sequential(my_reshape([-1, 3, 11, 17]),
+                                               nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               nn.MaxPool2d(kernel_size=2),
+                                               nn.Conv2d(32, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.ReLU(inplace=True),
+                                               my_reshape([-1, 32 * 5 * 8]))
+        self.stack_plane_flat = nn.Linear(512 + 32 * 5 * 8 * 2, 512)
+        #
+        self.id_emb.to(self.device)
+        self.stack_fc.to(self.device)
+        self.stack_plane_conv.to(self.device)
+        self.global_plane_conv.to(self.device)
+        self.stack_plane_flat.to(self.device)
+    def forward(self,ind,attri_stack,planes_stack,plane_glb):
+        id_emb = self.id_emb(ind)
+        stack_fc = self.stack_fc(torch.cat([id_emb,attri_stack],dim=-1))
+        planes_conv = self.stack_plane_conv(planes_stack)
+        glb_conv = self.global_plane_conv(plane_glb)
+        all_fc = self.stack_plane_flat(torch.cat([stack_fc,planes_conv,glb_conv],dim=-1))
+        return all_fc
+class H3_net(nn.Module):
+    def __init__(self, device='cpu'):
+        super(H3_net,self).__init__()
+        self.device = device
+        self.inpipe = in_pipe(device=self.device)
+        self.act_ids = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 5),nn.BatchNorm1d(5))
+        self.position = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 11*17),nn.BatchNorm1d(11*17))
+        self.targets = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 7),nn.BatchNorm1d(7))
+        self.spells = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10),nn.BatchNorm1d(10))
+        self.critic = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1),nn.BatchNorm1d(1))
 
-    def forward(self, s):
-        # if not isinstance(s, torch.Tensor):
-        #     s = torch.tensor(s, device=self.device, dtype=torch.float)
-        # batch = s.shape[0]
-        # s = s.view(batch, -1)
-        logits = self.inpipe(s)
-        return logits
+        self.act_ids.to(self.device)
+        self.position.to(self.device)
+        self.targets.to(self.device)
+        self.spells.to(self.device)
+        self.critic.to(self.device)
+
+    def forward(self,ind,attri_stack,planes_stack,plane_glb,critic_only = False):
+        ind_t = torch.tensor(ind, device=self.device, dtype=torch.long)
+        attri_stack_t = torch.tensor(attri_stack, device=self.device, dtype=torch.float)
+        planes_stack_t = torch.tensor(planes_stack, device=self.device, dtype=torch.float)
+        plane_glb_t = torch.tensor(plane_glb, device=self.device, dtype=torch.float)
+        h = self.inpipe(ind_t,attri_stack_t,planes_stack_t,plane_glb_t)
+        value = self.critic(h)
+        if critic_only:
+            return value
+        act_logits = self.act_ids(h)
+        targets_logits = self.targets(h)
+        position_logits = self.position(h)
+        spell_logits = self.spells(h)
+        return act_logits,targets_logits,position_logits,spell_logits,value
 
 
-class Actor(nn.Module):
-    def __init__(self, preprocess_net, action_shape):
-        super().__init__()
-        self.preprocess = preprocess_net
-        self.last = nn.Linear(128, np.prod(action_shape))
-
-    def forward(self, s, state=None, info={}):
-        logits, h = self.preprocess(s, state)
-        logits = F.softmax(self.last(logits), dim=-1)
-        return logits, h
 
 
-class Critic(nn.Module):
-    def __init__(self, preprocess_net):
-        super().__init__()
-        self.preprocess = preprocess_net
-        self.last = nn.Linear(128, 1)
-
-    def forward(self, s):
-        logits, h = self.preprocess(s, None)
-        logits = self.last(logits)
-        return logits
-class H3_policy(PPOPolicy):
-    def forward(self, batch, env, **kwargs):
-        act_and_mask = self.actor(batch.obs, env=env, info=batch.info)
-
-        return Batch(act_id=act_and_mask['act_id'],..., state=batch.obs, )
-
-    def learn(self, batch, batch_size=None, repeat=1, **kwargs):
-        self._batch = batch_size
-        losses, clip_losses, vf_losses, ent_losses = [], [], [], []
-        v = []
-        old_log_prob = []
-        with torch.no_grad():
-            for b in batch.split(batch_size, permute=False):
-                v.append(self.critic(b.obs))
-                old_log_prob.append(self(b).dist.log_prob(
-                    torch.tensor(b.act, device=v[0].device)))
-        batch.v = torch.cat(v, dim=0)  # old value
-        dev = batch.v.device
-        batch.act = torch.tensor(batch.act, dtype=torch.float, device=dev)
-        batch.logp_old = torch.cat(old_log_prob, dim=0)
-        batch.returns = torch.tensor(
-            batch.returns, dtype=torch.float, device=dev
-        ).reshape(batch.v.shape)
-        if self._rew_norm:
-            mean, std = batch.returns.mean(), batch.returns.std()
-            if std > self.__eps:
-                batch.returns = (batch.returns - mean) / std
-        batch.adv = batch.returns - batch.v
-        if self._rew_norm:
-            mean, std = batch.adv.mean(), batch.adv.std()
-            if std > self.__eps:
-                batch.adv = (batch.adv - mean) / std
-        for _ in range(repeat):
-            for b in batch.split(batch_size):
-                dist = self(b).dist
-                value = self.critic(b.obs)
-                ratio = (dist.log_prob(b.act) - b.logp_old).exp().float()
-                surr1 = ratio * b.adv
-                surr2 = ratio.clamp(
-                    1. - self._eps_clip, 1. + self._eps_clip) * b.adv
-                if self._dual_clip:
-                    clip_loss = -torch.max(torch.min(surr1, surr2),
-                                           self._dual_clip * b.adv).mean()
-                else:
-                    clip_loss = -torch.min(surr1, surr2).mean()
-                clip_losses.append(clip_loss.item())
-                if self._value_clip:
-                    v_clip = b.v + (value - b.v).clamp(
-                        -self._eps_clip, self._eps_clip)
-                    vf1 = (b.returns - value).pow(2)
-                    vf2 = (b.returns - v_clip).pow(2)
-                    vf_loss = .5 * torch.max(vf1, vf2).mean()
-                else:
-                    vf_loss = .5 * (b.returns - value).pow(2).mean()
-                vf_losses.append(vf_loss.item())
-                e_loss = dist.entropy().mean()
-                ent_losses.append(e_loss.item())
-                loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
-                losses.append(loss.item())
-                self.optim.zero_grad()
-                loss.backward()
-                nn.utils.clip_grad_norm_(list(
-                    self.actor.parameters()) + list(self.critic.parameters()),
-                    self._max_grad_norm)
-                self.optim.step()
-        return {
-            'loss': losses,
-            'loss/clip': clip_losses,
-            'loss/vf': vf_losses,
-            'loss/ent': ent_losses,
-        }
-# class DQN(nn.Module):
-#
-#     def __init__(self, h, w, action_shape, device='cpu'):
-#         super(DQN, self).__init__()
-#         self.device = device
-#
-#         self.conv1 = nn.Conv2d(4, 16, kernel_size=5, stride=2)
-#         self.bn1 = nn.BatchNorm2d(16)
-#         self.conv2 = nn.Conv2d(16, 32, kernel_size=5, stride=2)
-#         self.bn2 = nn.BatchNorm2d(32)
-#         self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
-#         self.bn3 = nn.BatchNorm2d(32)
-#
-#         def conv2d_size_out(size, kernel_size=5, stride=2):
-#             return (size - (kernel_size - 1) - 1) // stride + 1
-#
-#         convw = conv2d_size_out(conv2d_size_out(conv2d_size_out(w)))
-#         convh = conv2d_size_out(conv2d_size_out(conv2d_size_out(h)))
-#         linear_input_size = convw * convh * 32
-#         self.fc = nn.Linear(linear_input_size, 512)
-#         self.head = nn.Linear(512, action_shape)
-#
-#     def forward(self, x, state=None, info={}):
-#         if not isinstance(x, torch.Tensor):
-#             x = torch.tensor(x, device=self.device, dtype=torch.float)
-#         x = x.permute(0, 3, 1, 2)
-#         x = F.relu(self.bn1(self.conv1(x)))
-#         x = F.relu(self.bn2(self.conv2(x)))
-#         x = F.relu(self.bn3(self.conv3(x)))
-#         x = self.fc(x.reshape(x.size(0), -1))
-#         return self.head(x), state
