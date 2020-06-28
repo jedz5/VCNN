@@ -2,11 +2,7 @@ import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 import sys # 导入sys库中的exit函数
 from H3_battle import *
-# Enum EBattleCursors { COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,
-# 						COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER,
-# 						//various attack frames
-# 						COMBAT_SHOOT_PENALTY = 15, COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,
-# 						COMBAT_SACRIFICE, COMBAT_TELEPORT}
+import math
 from enum import Enum
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
@@ -51,28 +47,34 @@ class CClickableHex:
             self.pixels_y = 86 + 42 * self.hex_i
         return self.pixels_x,self.pixels_y
 class BattleInterface:
-    def __init__(self, battleEngine):
+    def __init__(self, battle_engine):
         # 定义窗口的分辨率
         self.SCREEN_WIDTH = 1000
         self.SCREEN_HEIGHT = 600
         self.BFIELD_WIDTH = 17
         self.BFIELD_HEIGHT = 11
         self.running = True
-        battleEngine.bat_interface = self
-        self.battleEngine = battleEngine
+        battle_engine.bat_interface = self
+        self.battle_engine = battle_engine
         self.current_hex = CClickableHex()
+        self.hoveredStack = None
         self.transColor = pygame.Color(255, 0, 255)
         self.stimgs = {}
         self.stimgs_dead = {}
-        self.cursor = [0] * 20
+        self.cursor = None
+        self.cursor_pos = (0,0)
+        self.cursor_attack = [None] * 6
+        self.cursor_move = [None] * 5
+        self.cursor_shoot = [None] * 2
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 11)
         self.font.set_bold(True)
         self.loadIMGs()
         self.next_act = None
+        self.act = None
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
-        stacks = self.battleEngine.stacks
+        stacks = self.battle_engine.stacks
         background = pygame.image.load("imgs/bgrd.bmp")
         self.background = background
         self.hex_shader = pygame.image.load("imgs/CCellShd_gray.bmp")
@@ -97,7 +99,7 @@ class BattleInterface:
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16, 16, 16))
                 self.stimgs_dead[st.name] = imgback
-        for oi in self.battleEngine.obsinfo:
+        for oi in self.battle_engine.obsinfo:
             if oi.imname not in self.stimgs:
                 img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
                 imgback = pygame.Surface(img.get_size())
@@ -107,12 +109,19 @@ class BattleInterface:
                 else:
                     imgback.set_colorkey((0, 0, 0))
                 self.stimgs[oi.imname] = imgback
-        for idx in range(20):
-            img = pygame.image.load("imgs/cursor/" + str(idx) + ".bmp").convert_alpha()
-            imgback = pygame.Surface(img.get_size())
-            imgback.blit(img, (0, 0))
-            imgback.set_colorkey((0, 255, 255))
-            self.cursor[idx] = imgback
+        for idx in range(6):
+            img = pygame.image.load("imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_attack[idx] = img
+        for idx in range(5):
+            img = pygame.image.load("imgs/cursor/move/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_move[idx] = img
+        for idx in range(2):
+            img = pygame.image.load("imgs/cursor/shoot/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_shoot[idx] = img
+        self.cursor = self.cursor_move[0]
     def renderFrame(self):
         if self.running:
             self.clock.tick(60)
@@ -127,46 +136,43 @@ class BattleInterface:
     def showBattlefieldObjects(self):
         ##########
         ##########
-        stacks = self.battleEngine.stacks
+        stacks = self.battle_engine.stacks
         #show active stack
-        curStackRange = self.battleEngine.curStack.acssessableAndAttackable()
-        for i in range(self.battleEngine.bFieldHeight):
-            for j in range(self.battleEngine.bFieldWidth):
+        curStackRange = self.battle_engine.cur_stack.get_global_state()
+        for i in range(self.battle_engine.bFieldHeight):
+            for j in range(self.battle_engine.bFieldWidth):
                 if 0 <= curStackRange[i][j] < 50:
                     self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
-        self.screen.blit(self.shader_cur_stack, CClickableHex(self.battleEngine.curStack.y, self.battleEngine.curStack.x).getHexXY())
-
-        #stack target
-        if (self.next_act.type == actionType.wait):
-            pass
-        elif (self.next_act.type == actionType.defend):
-            pass
-        elif (self.next_act.type == actionType.move):
-            self.screen.blit(self.shader_cur_target,
-                             CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
-        elif (self.next_act.type == actionType.attack):
-            self.screen.blit(self.shader_cur_target,
-                             CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
-            self.screen.blit(self.shader_cur_target,
-                             CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
-        if (self.next_act.type == actionType.shoot):
-            self.screen.blit(self.shader_cur_target,
-                             CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+        self.screen.blit(self.shader_cur_stack, CClickableHex(self.battle_engine.cur_stack.y, self.battle_engine.cur_stack.x).getHexXY())
+        if self.battle_engine.cur_stack.by_AI > 0:
+            #stack target
+            if (self.next_act.type == actionType.wait):
+                pass
+            elif (self.next_act.type == actionType.defend):
+                pass
+            elif (self.next_act.type == actionType.move):
+                self.screen.blit(self.shader_cur_target,
+                                 CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
+            elif (self.next_act.type == actionType.attack):
+                self.screen.blit(self.shader_cur_target,
+                                 CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
+                self.screen.blit(self.shader_cur_target,
+                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+            if (self.next_act.type == actionType.shoot):
+                self.screen.blit(self.shader_cur_target,
+                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
         # show obstacles
-        for oi in self.battleEngine.obsinfo:
+        for oi in self.battle_engine.obsinfo:
             img = self.stimgs[oi.imname]
             x, y = self.getObstaclePosition(img, oi)
             self.screen.blit(img, (x, y))
 
         # hover on stack
-        hoveredStack = 0
-        for stack in stacks:
-            if self.current_hex.hex_i == stack.y and self.current_hex.hex_j == stack.x:
-                hoveredStack = stack
-        if hoveredStack:
-            hoveredRange = hoveredStack.acssessableAndAttackable()
-            for i in range(self.battleEngine.bFieldHeight):
-                for j in range(self.battleEngine.bFieldWidth):
+
+        if self.hoveredStack:
+            hoveredRange = self.hoveredStack.get_global_state()
+            for i in range(self.battle_engine.bFieldHeight):
+                for j in range(self.battle_engine.bFieldWidth):
                     if 0 <= hoveredRange[i][j] < 50:
                         self.screen.blit(self.hex_shader, CClickableHex(i,j).getHexXY())
 
@@ -174,7 +180,7 @@ class BattleInterface:
         # show stacks
         for stack in stacks:
                 coord = CClickableHex.getXYUnitAnim(BHex(stack.x,stack.y),stack)
-                if (stack.isAlive()):
+                if (stack.is_alive()):
                     img = self.stimgs[stack.name]
                     img = pygame.transform.flip(img, True, False) if stack.side else img
                 else:
@@ -185,7 +191,7 @@ class BattleInterface:
         # show stack amounts
         for stack in stacks:
             coord = CClickableHex.getXYUnitAnim(BHex(stack.x, stack.y), stack)
-            if (stack.isAlive()):
+            if (stack.is_alive()):
                 if(stack.side == 0):
                     amount_bgrd = copy.copy(self.amout_backgrd)
                 else:
@@ -199,25 +205,24 @@ class BattleInterface:
                 xadd = 220 - (44 if stack.side else -22)
                 yadd = 260 - 42 * 3
                 self.screen.blit(amount_bgrd, (coord.x + 450 - xadd - amount_bgrd.get_width(), coord.y + 400 - yadd - amount_bgrd.get_height()))
-
+        # show cursor
+        self.screen.blit(self.cursor, (self.cursor_pos[0], self.cursor_pos[1]))
         #info
-        if(not self.battleEngine.last_stack):
+        if(not self.battle_engine.last_stack):
             return
         root = pygame.Surface((300, 200))
         #root.fill((int(back_color[0]), int(back_color[1]), int(back_color[2])))
         root.set_colorkey((0,0,0))
-        last_stack_coord = CClickableHex.getXYUnitAnim(BHex(self.battleEngine.last_stack.x, self.battleEngine.last_stack.y), self.battleEngine.last_stack)
+        last_stack_coord = CClickableHex.getXYUnitAnim(BHex(self.battle_engine.last_stack.x, self.battle_engine.last_stack.y), self.battle_engine.last_stack)
         start_height = 0
         for text in logger.log_text:
             ftext = self.font.render(text, True, (255, 255, 255))
             root.blit(ftext, (0,start_height))
             start_height = start_height + ftext.get_height() + 5
-        xadd = 220 - (44 if self.battleEngine.last_stack.side else -22)
+        xadd = 220 - (44 if self.battle_engine.last_stack.side else -22)
         yadd = 260 - 42 * 3
         self.screen.blit(root, (last_stack_coord.x + 450 - xadd, last_stack_coord.y + 400 - yadd))
-        #show cursor
-        # cursorMap = curStackRange.deepcopy()
-        # if cursorMap[self.current_hex.hex_i,self.current_hex.hex_j] < 0
+         #CClickableHex(self.current_hex.hex_i,self.current_hex.hex_j).getHexXY()
     def update(self):
         self.showBackground()
         self.showBattlefieldObjects()
@@ -233,32 +238,119 @@ class BattleInterface:
                 self.running = False
             elif event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = event.pos
-                move_x, move_y = event.rel
                 self.handleMouseMotion(mouse_x, mouse_y)
             elif event.type == pygame.MOUSEBUTTONUP:
-                return self.next_act
+                cur_stack = self.battle_engine.cur_stack
+                if cur_stack.by_AI == 0:
+                    return self.act
+                else:
+                    return self.next_act
+            elif event.type == pygame.KEYDOWN:
+                cur_stack = self.battle_engine.cur_stack
+                if cur_stack.by_AI == 0:
+                    if event.key == pygame.K_SPACE:
+                        return BAction(actionType.defend)
+                    if event.key == pygame.K_w:
+                        if cur_stack.had_waited:
+                            logger.info("can't wait any more!",True)
+                        else:
+                            return BAction(actionType.wait)
 
-
+    def shift_attack_pointer(self,sector,mouse_x, mouse_y):
+        x = mouse_x -16
+        y = mouse_y - 16
+        if sector == 0:
+            x -= 6
+            y += 16
+        if sector == 1:
+            x -= 6
+            y -= 6
+        if sector == 2:
+            x += 16
+            y -= 6
+        if sector == 3:
+            x += 16
+            y += 11
+        if sector == 4:
+            x += 16
+            y += 16
+        if sector == 5:
+            x -= 6
+            y += 16
+        self.cursor_pos = (x,y)
     def handleMouseMotion(self, mouse_x, mouse_y):
         #hover on hex
-        if mouse_x < 58 or mouse_y <86:
+        if mouse_x < 58 or mouse_y <86 or mouse_x >= 750 or mouse_y >= 545:
             return
+
         i,j = CClickableHex.XYtoIJ(mouse_x,mouse_y)
         self.current_hex.hex_i = i
         self.current_hex.hex_j = j
-        self.current_hex.pixels_x = mouse_x - (mouse_x - (14 + (22 if i % 2 == 0 else 0))) % 44
-        self.current_hex.pixels_y = mouse_y - (mouse_y - 86) % 42
+        px = mouse_x - (mouse_x - (14 + (22 if i % 2 == 0 else 0))) % 44
+        py = mouse_y - (mouse_y - 86) % 42
+        self.current_hex.pixels_x = px
+        self.current_hex.pixels_y = py
+        self.cursor_pos = (px + 12 , py + 16)
+        #hover on stack
+        self.hoveredStack = None
+        for stack in self.battle_engine.stacks:
+            if self.current_hex.hex_i == stack.y and self.current_hex.hex_j == stack.x:
+                self.hoveredStack = stack
+        #cursor and action
+        cur_stack = self.battle_engine.cur_stack
+        bf = cur_stack.get_global_state()
+        h = self.current_hex
+        if bf[h.hex_i, h.hex_j] == 201:
+            if cur_stack.can_shoot():
+                if cur_stack.is_half(BHex(h.hex_j,h.hex_i)):
+                    self.cursor = self.cursor_shoot[1]
+                else:
+                    self.cursor = self.cursor_shoot[0]
+                self.act = BAction(actionType.shoot,target=self.hoveredStack)
+            else:
+                bf[cur_stack.y,cur_stack.x] = cur_stack.speed
+                subdividingAngle = 2.0 * np.pi / 6.0 # Divide hex in 6 directions
+                hexMidX = self.current_hex.pixels_x + 22
+                hexMidY = self.current_hex.pixels_y + 21
+                cursorHexAngle = np.pi - math.atan2(hexMidY - mouse_y, mouse_x - hexMidX) + subdividingAngle / 2
+                sector = int(cursorHexAngle / subdividingAngle) % 6
+                # zigzagCorrection =0 if (self.current_hex.hex_i % 2) else 1
+                from_dest = self.battle_engine.direction_to_hex(BHex(self.current_hex.hex_j,self.current_hex.hex_i),sector)
+
+                if 0 <= bf[from_dest.y,from_dest.x] < 50:
+                    self.cursor = self.cursor_attack[sector]
+                    self.shift_attack_pointer(sector,mouse_x,mouse_y)
+                    self.act = BAction(actionType.attack, target=self.hoveredStack, dest=from_dest)
+                else:
+                    self.cursor = self.cursor_move[0]
+                    self.act = None
+        elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
+            self.cursor = self.cursor_move[4]
+            self.act = None
+        elif bf[h.hex_i, h.hex_j] == 800 or bf[h.hex_i, h.hex_j] == 100:
+            self.cursor = self.cursor_move[3]
+            self.act = None
+        elif 0 <= bf[h.hex_i, h.hex_j] < 50:
+            if cur_stack.is_fly:
+                self.cursor = self.cursor_move[2]
+                self.act = BAction(actionType.move, dest=BHex(h.hex_j,h.hex_i))
+            else:
+                self.cursor = self.cursor_move[1]
+                self.act = BAction(actionType.move, dest=BHex(h.hex_j,h.hex_i))
+        elif bf[h.hex_i, h.hex_j] < 0:
+            self.cursor = self.cursor_move[0]
+            self.act = None
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
     def handleBattle(self,act,print_act=True):
         if not act:
             return
-        battle = self.battleEngine
+        battle = self.battle_engine
         battle.doAction(act)
         battle.checkNewRound()
         if battle.check_battle_end():
             return
-        self.next_act = battle.curStack.active_stack(print_act = print_act)
+        self.next_act = battle.cur_stack.active_stack(print_act = print_act)
 
     def getObstaclePosition(self,img, obinfo):
         if obinfo.isabs:
@@ -274,15 +366,15 @@ def start_game():
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    debug = False
-    battle = Battle(debug=debug,by_AI=[1,1])
+    debug = True
+    battle = Battle(debug=debug,by_AI=[0,1])
     if debug:
-        battle.loadFile("ENV/debug1.json",shuffle_postion=False)
+        battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
     else:
-        battle.loadFile("ENV/selfplay.json", shuffle_postion=True)
+        battle.loadFile("ENV/debu1.json", shuffle_postion=False)
     battle.checkNewRound()
     bi = BattleInterface(battle)
-    bi.next_act = battle.curStack.active_stack()
+    bi.next_act = battle.cur_stack.active_stack()
     # 事件循环(main loop)
     while bi.running:
         act = bi.handleEvents()

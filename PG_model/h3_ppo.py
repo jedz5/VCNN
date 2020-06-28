@@ -14,39 +14,11 @@ from tianshou.data import Batch, ReplayBuffer
 
 import pygame
 import H3_battleInterface
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--task', type=str, default='Pong')
-    parser.add_argument('--seed', type=int, default=1626)
-    parser.add_argument('--buffer-size', type=int, default=2000)
-    parser.add_argument('--lr', type=float, default=1e-3)
-    parser.add_argument('--gamma', type=float, default=0.99)
-    parser.add_argument('--epoch', type=int, default=100)
-    parser.add_argument('--step-per-epoch', type=int, default=100)
-    parser.add_argument('--collect-per-step', type=int, default=10)
-    parser.add_argument('--repeat-per-collect', type=int, default=2)
-    parser.add_argument('--batch-size', type=int, default=64)
-    parser.add_argument('--layer-num', type=int, default=1)
-    parser.add_argument('--training-num', type=int, default=2)
-    parser.add_argument('--test-num', type=int, default=2)
-    parser.add_argument('--logdir', type=str, default='log')
-    parser.add_argument('--render', type=float, default=0.)
-    parser.add_argument(
-        '--device', type=str,
-        default='cuda' if torch.cuda.is_available() else 'cpu')
-    # ppo special
-    parser.add_argument('--vf-coef', type=float, default=0.5)
-    parser.add_argument('--ent-coef', type=float, default=0.0)
-    parser.add_argument('--eps-clip', type=float, default=0.2)
-    parser.add_argument('--max-grad-norm', type=float, default=0.5)
-    parser.add_argument('--max_episode_steps', type=int, default=2000)
-    args = parser.parse_known_args()[0]
-    return args
-
+np.set_printoptions(precision=2,suppress=True)
 dev = 'cuda'
 def softmax(logits, mask_orig,dev,add_little = False):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
-    logits1 = torch.exp(logits)
+    logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
     logits2 = logits1 * mask
     logits3 = logits2 / (torch.sum(logits2,dim=-1,keepdim=True) + 1E-9)
     if add_little:
@@ -87,13 +59,13 @@ class H3_policy(PGPolicy):
                  optim: torch.optim.Optimizer,
                  dist_fn: torch.distributions.Distribution,
                  device,
-                 discount_factor: float = 0.99,
+                 discount_factor: float = 0.9,
                  max_grad_norm: Optional[float] = 0.5,
                  eps_clip: float = .2,
                  vf_coef: float = .5,
                  ent_coef: float = .01,
                  action_range: Optional[Tuple[float, float]] = None,
-                 gae_lambda: float = 0.95,
+                 gae_lambda: float = 0.92,
                  dual_clip: float = 5.,
                  value_clip: bool = True,
                  reward_normalization: bool = False,
@@ -130,7 +102,7 @@ class H3_policy(PGPolicy):
             for b in batch.split(self._batch, shuffle=False):
                 v_.append(self.ppo_net(**b.obs_next,critic_only = True))
         v_ = torch.cat(v_, dim=0).cpu().numpy()
-        return self.compute_episodic_return(
+        return v_,self.compute_episodic_return(
             batch, v_, gamma=self._gamma, gae_lambda=self._lambda)
 
     def forward(self, ind,attri_stack,planes_stack,plane_glb,
@@ -201,10 +173,6 @@ class H3_policy(PGPolicy):
                 spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
                 old_prob_spell.append(self.dist_fn(spell_logits).log_prob(torch.tensor(b.act.spell_id, device=self.device)))
         batch.v = torch.cat(v, dim=0)  # old value
-        # batch.act.act_id = torch.tensor(batch.act.act_id, dtype=torch.float, device=self.device)
-        # batch.act.target_id = torch.tensor(batch.act.target_id, dtype=torch.float, device=self.device)
-        # batch.act.position_id = torch.tensor(batch.act.position_id, dtype=torch.float, device=self.device)
-        # batch.act.spell_id = torch.tensor(batch.act.spell_id, dtype=torch.float, device=self.device)
         batch.old_prob_act = torch.cat(old_prob_act, dim=0)
         batch.old_prob_target = torch.cat(old_prob_target, dim=0)
         batch.old_prob_position = torch.cat(old_prob_position, dim=0)
@@ -275,12 +243,12 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
     buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
     battle = Battle(agent=agent)
     # battle.loadFile(f'ENV/debug{random.randint(1,2)}.json',shuffle_postion=True)
-    battle.loadFile(file,shuffle_postion=True) #, shuffle_postion=True
+    battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
     init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
     for ii in range(n_step):
-        acting_stack = battle.curStack
+        acting_stack = battle.cur_stack
         if acting_stack.by_AI:
             battle_action = acting_stack.active_stack()
             obs, acts, mask = None,None,None
@@ -307,14 +275,14 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
         buffer.done[len(buffer) - 1] = True
     return buffer
 def init_stack_position(battle):
-    return
+    pass
     mask = np.zeros([11,17])
     mask[:,0] = 1
     mask[:, 16] = 1
-    me = battle.attacker_stacks[0]
-    me.amountBase = random.randint(20,40)
-    me.amount = me.amountBase
     for st in battle.stacks:
+        base1 = random.random() * 2 + 0.1
+        st.amount_base = int(st.amount_base * base1)
+        st.amount = st.amount_base
         pos = random.randint(1,11*17 - 1)
         while True:
             if mask[int(pos/17),pos%17]:
@@ -330,32 +298,34 @@ def start_train():
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev)
-    buffer = ReplayBuffer(2000,ignore_obs_next=True)
-    file = 'env/debug1.json'
+    buffer = ReplayBuffer(6000,ignore_obs_next=True)
     while True:
         agent.eval()
         agent.in_train = False
         for _ in range(20):
+            file = f'env/debug{random.randint(1, 3)}.json'
             buffer_ep = collect_eps(agent,file)
             if len(buffer_ep):
                 buffer.update(buffer_ep)
         batch_data, indice = buffer.sample(0)
         agent.train()
         agent.in_train = True
-        batch_data = agent.process_gae(batch_data)
-        loss = agent.learn(batch_data)
-        print(loss)
+        v,batch_data = agent.process_gae(batch_data)
         print(batch_data.done.astype(np.int))
         print(batch_data.rew.astype(np.int))
+        # print(batch_data.returns.squeeze())
         print(batch_data.act.act_id.astype(np.int))
+        loss = agent.learn(batch_data)
+        print(loss)
         agent.eval()
         agent.in_train = False
+        file = f'env/debug{random.randint(1, 3)}.json'
         cont = start_game(file,agent)
         if not cont:
             return
         buffer.reset()
 
-def start_game(file,agent = None,by_AI = [0,1]):
+def start_game(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     if not agent:
         actor_critic = H3_net(dev)
@@ -367,11 +337,11 @@ def start_game(file,agent = None,by_AI = [0,1]):
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
-    battle.loadFile(file,shuffle_postion=True)
-    init_stack_position(battle)
+    battle.loadFile(file,shuffle_postion=False)
+    # init_stack_position(battle)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
-    bi.next_act = battle.curStack.active_stack(print_act=True)
+    bi.next_act = battle.cur_stack.active_stack(print_act=True)
     act = bi.next_act
     # 事件循环(main loop)
     i = 0
@@ -411,7 +381,7 @@ def start_game_noGUI():
         battle.loadFile("ENV/selfplay.json")
         battle.checkNewRound()
         last = time.time()
-        next_act = battle.curStack.active_stack()
+        next_act = battle.cur_stack.active_stack()
         # 事件循环(main loop)
         i = 1
         while True:
@@ -426,10 +396,10 @@ def start_game_noGUI():
             if battle.check_battle_end():
                 print("battle end")
                 return
-            next_act = battle.curStack.active_stack()
+            next_act = battle.cur_stack.active_stack()
 
 def main():
     start_train()
-    # start_game(by_AI=[1, 1])
+    # start_game("ENV/debug2.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()

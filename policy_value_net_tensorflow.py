@@ -142,7 +142,7 @@ class PolicyValueNet():
         output: a list of (action, probability) tuples for each available
         action and the score of the board state
         """
-        legal_positions = battle.curStack.legalMoves()
+        legal_positions = battle.cur_stack.legalMoves()
         current_state = battle.currentStateFeature()
         act_probs, valueL,valueR, fvalue_left, fvalue_right = self.policy_value([current_state])
         act_probs = zip(legal_positions, act_probs[0][legal_positions])

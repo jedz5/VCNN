@@ -28,7 +28,7 @@ class in_pipe(nn.Module):
         super(in_pipe,self).__init__()
         self.device = device
         self.id_emb = nn.Embedding(150, 16, padding_idx=122)
-        self.stack_fc = nn.Sequential(nn.Linear(16 + 16, 64),
+        self.stack_fc = nn.Sequential(nn.Linear(14 + 16, 64),
                                       my_reshape([-1,64 * 14]),
                                       nn.Linear(64 * 14, 512),
                                       nn.ReLU(inplace=True),
@@ -68,11 +68,11 @@ class H3_net(nn.Module):
         super(H3_net,self).__init__()
         self.device = device
         self.inpipe = in_pipe(device=self.device)
-        self.act_ids = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 5),nn.BatchNorm1d(5))
-        self.position = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 11*17),nn.BatchNorm1d(11*17))
-        self.targets = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 7),nn.BatchNorm1d(7))
-        self.spells = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10),nn.BatchNorm1d(10))
-        self.critic = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1),nn.BatchNorm1d(1))
+        self.act_ids = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 5))#,nn.BatchNorm1d(5))
+        self.position = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 11*17))#,nn.BatchNorm1d(11*17))
+        self.targets = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 7))#,nn.BatchNorm1d(7))
+        self.spells = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
+        self.critic = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
 
         self.act_ids.to(self.device)
         self.position.to(self.device)

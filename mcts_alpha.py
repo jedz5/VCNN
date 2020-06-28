@@ -114,7 +114,7 @@ class ActionNode(object):
         stateHash = gameState.getHash()
         left, leftBase, right, rightBase = gameState.getStackHPBySlots()
         if stateHash not in self._states.keys():
-            self._states[stateHash] = StateNode(self,gameState.currentPlayer(),left,right,gameState.curStack.name)
+            self._states[stateHash] = StateNode(self, gameState.currentPlayer(), left, right, gameState.cur_stack.name)
         else:
             self._states[stateHash].left_base = left
             self._states[stateHash].right_base = right
@@ -202,10 +202,10 @@ class MCTS(object):
             action_id, actionNode = stateNode.select(self._c_puct)
             act = state.indexToAction(action_id)
             if level == 1:
-                logger.info("{}.{} playout {} action {}_start".format(state.batId, level, state.curStack.name,
-                                                                state.action2Str(action_id)))
+                logger.info("{}.{} playout {} action {}_start".format(state.batId, level, state.cur_stack.name,
+                                                                      state.action2Str(action_id)))
             else:
-                logger.info("{}.{} playout {} action {}".format(state.batId,level,state.curStack.name,state.action2Str(action_id)))
+                logger.info("{}.{} playout {} action {}".format(state.batId, level, state.cur_stack.name, state.action2Str(action_id)))
             state.doAction(act)
             state.checkNewRound(1)
             #actionNode._aplayout = "{}.{}".format(state.batId,level)
@@ -269,7 +269,7 @@ class MCTS(object):
             self._root._parent = None
         else:
             left, leftBase, right, rightBase = battle.getStackHPBySlots()
-            self._root = StateNode(None,battle.currentPlayer(),left,right,battle.curStack.name)
+            self._root = StateNode(None, battle.currentPlayer(), left, right, battle.cur_stack.name)
 
     def __str__(self):
         return "MCTS"
@@ -292,7 +292,7 @@ class MCTSPlayer(object):
         self.mcts.update_with_move(-1,battle)
 
     def getAction(self, battle, temp=1e-3, return_prob=1):
-        sensible_moves = battle.curStack.legalMoves()
+        sensible_moves = battle.cur_stack.legalMoves()
         move_probs = np.zeros(battle.bTotalFieldSize)
         if len(sensible_moves) > 0:
             acts, probs = self.mcts.get_move_probs(battle, temp)
