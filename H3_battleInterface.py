@@ -72,6 +72,7 @@ class BattleInterface:
         self.loadIMGs()
         self.next_act = None
         self.act = None
+        pygame.mouse.set_visible(False)
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
         stacks = self.battle_engine.stacks
@@ -257,7 +258,7 @@ class BattleInterface:
                             return BAction(actionType.wait)
 
     def shift_attack_pointer(self,sector,mouse_x, mouse_y):
-        x = mouse_x -16
+        x = mouse_x - 16
         y = mouse_y - 16
         if sector == 0:
             x -= 6
@@ -290,7 +291,7 @@ class BattleInterface:
         py = mouse_y - (mouse_y - 86) % 42
         self.current_hex.pixels_x = px
         self.current_hex.pixels_y = py
-        self.cursor_pos = (px + 12 , py + 16)
+        self.cursor_pos = (mouse_x - 16 , mouse_y - 16)
         #hover on stack
         self.hoveredStack = None
         for stack in self.battle_engine.stacks:
@@ -322,7 +323,7 @@ class BattleInterface:
                     self.shift_attack_pointer(sector,mouse_x,mouse_y)
                     self.act = BAction(actionType.attack, target=self.hoveredStack, dest=from_dest)
                 else:
-                    self.cursor = self.cursor_move[0]
+                    self.cursor = self.cursor_move[3]
                     self.act = None
         elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
             self.cursor = self.cursor_move[4]
@@ -338,7 +339,7 @@ class BattleInterface:
                 self.cursor = self.cursor_move[1]
                 self.act = BAction(actionType.move, dest=BHex(h.hex_j,h.hex_i))
         elif bf[h.hex_i, h.hex_j] < 0:
-            self.cursor = self.cursor_move[0]
+            self.cursor = self.cursor_move[3]
             self.act = None
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 

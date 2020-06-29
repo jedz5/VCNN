@@ -2,19 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
-      <change afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/discrete_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/tianshou/data/collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/tianshou/data/collector.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/tianshou/trainer/onpolicy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/tianshou/trainer/onpolicy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug1.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug1.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcts_alpha.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcts_alpha.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/policy_value_net_tensorflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy_value_net_tensorflow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -727,7 +720,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592709054436</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
+      <created>1593329857617</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1593329857617</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -795,7 +795,6 @@
     <MESSAGE value="随机定位&#10;从creatureData 加载兵种&#10;增加无限反击 双击" />
     <MESSAGE value="rename H3_battle.py H3_battleinterface.py&#10;add h3_ppo" />
     <MESSAGE value="refactor acssesable_and_attackable -1 -&gt; 201, etc" />
-    <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
     <MESSAGE value="for 循环赋值耗时测试" />
     <MESSAGE value="sparse" />
     <MESSAGE value="矩阵堆叠乘法 cpu vs cuda" />
@@ -807,7 +806,8 @@
     <MESSAGE value="完成obs部分设计" />
     <MESSAGE value="推理部分完成 开始训练部分" />
     <MESSAGE value="训练版本v0.1 攻击范围内ok 范围外not ok 然后就all not ok...." />
-    <option name="LAST_COMMIT_MESSAGE" value="训练版本v0.1 攻击范围内ok 范围外not ok 然后就all not ok...." />
+    <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
+    <option name="LAST_COMMIT_MESSAGE" value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592556128820">
@@ -818,10 +818,10 @@
       <screen x="0" y="0" width="1920" height="1032" />
     </state>
     <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261417271" />
-    <state x="-1462" y="14" key="CommitChangelistDialog2" timestamp="1592709053314">
+    <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2" timestamp="1593329856546">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
-    <state x="-1462" y="14" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709053314" />
+    <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593329856546" />
     <state width="1411" height="582" key="DebuggerActiveHint" timestamp="1593261407923">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -870,10 +870,10 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1828" y="54" key="SettingsEditor/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592484039008" />
-    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2" timestamp="1592709056714">
+    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2" timestamp="1593329879195">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
-    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709056714" />
+    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593329879195" />
     <state width="971" height="551" key="XDebugger.FullValuePopup" timestamp="1592882643556">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -882,10 +882,10 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593057744301" />
-    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup" timestamp="1593316620950">
+    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup" timestamp="1593396332595">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
-    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593316620950" />
+    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593396332595" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1062,7 +1062,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battleInterface.py</url>
-          <line>244</line>
+          <line>245</line>
           <option name="timeStamp" value="435" />
         </line-breakpoint>
       </breakpoints>
