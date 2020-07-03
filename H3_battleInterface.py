@@ -72,6 +72,7 @@ class BattleInterface:
         self.loadIMGs()
         self.next_act = None
         self.act = None
+        self.dump_dir = "./ENV/curriculum"
         pygame.mouse.set_visible(False)
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
@@ -147,19 +148,19 @@ class BattleInterface:
         self.screen.blit(self.shader_cur_stack, CClickableHex(self.battle_engine.cur_stack.y, self.battle_engine.cur_stack.x).getHexXY())
         if self.battle_engine.cur_stack.by_AI > 0:
             #stack target
-            if (self.next_act.type == actionType.wait):
+            if (self.next_act.type == action_type.wait):
                 pass
-            elif (self.next_act.type == actionType.defend):
+            elif (self.next_act.type == action_type.defend):
                 pass
-            elif (self.next_act.type == actionType.move):
+            elif (self.next_act.type == action_type.move):
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
-            elif (self.next_act.type == actionType.attack):
+            elif (self.next_act.type == action_type.attack):
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
-            if (self.next_act.type == actionType.shoot):
+            if (self.next_act.type == action_type.shoot):
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
         # show obstacles
@@ -247,15 +248,18 @@ class BattleInterface:
                 else:
                     return self.next_act
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    self.battle_engine.dump_curriculum(self.dump_dir)
+                    return
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
                     if event.key == pygame.K_SPACE:
-                        return BAction(actionType.defend)
+                        return BAction(action_type.defend)
                     if event.key == pygame.K_w:
                         if cur_stack.had_waited:
                             logger.info("can't wait any more!",True)
                         else:
-                            return BAction(actionType.wait)
+                            return BAction(action_type.wait)
 
     def shift_attack_pointer(self,sector,mouse_x, mouse_y):
         x = mouse_x - 16
@@ -307,7 +311,7 @@ class BattleInterface:
                     self.cursor = self.cursor_shoot[1]
                 else:
                     self.cursor = self.cursor_shoot[0]
-                self.act = BAction(actionType.shoot,target=self.hoveredStack)
+                self.act = BAction(action_type.shoot, target=self.hoveredStack)
             else:
                 bf[cur_stack.y,cur_stack.x] = cur_stack.speed
                 subdividingAngle = 2.0 * np.pi / 6.0 # Divide hex in 6 directions
@@ -321,7 +325,7 @@ class BattleInterface:
                 if 0 <= bf[from_dest.y,from_dest.x] < 50:
                     self.cursor = self.cursor_attack[sector]
                     self.shift_attack_pointer(sector,mouse_x,mouse_y)
-                    self.act = BAction(actionType.attack, target=self.hoveredStack, dest=from_dest)
+                    self.act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
                 else:
                     self.cursor = self.cursor_move[3]
                     self.act = None
@@ -334,10 +338,10 @@ class BattleInterface:
         elif 0 <= bf[h.hex_i, h.hex_j] < 50:
             if cur_stack.is_fly:
                 self.cursor = self.cursor_move[2]
-                self.act = BAction(actionType.move, dest=BHex(h.hex_j,h.hex_i))
+                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
             else:
                 self.cursor = self.cursor_move[1]
-                self.act = BAction(actionType.move, dest=BHex(h.hex_j,h.hex_i))
+                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
         elif bf[h.hex_i, h.hex_j] < 0:
             self.cursor = self.cursor_move[3]
             self.act = None
@@ -367,12 +371,13 @@ def start_game():
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    debug = True
+    debug = False
     battle = Battle(debug=debug,by_AI=[0,1])
     if debug:
         battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
     else:
-        battle.loadFile("ENV/debu1.json", shuffle_postion=False)
+        battle.loadFile("ENV/debug3.json", shuffle_postion=False)
+        # battle.load_curriculum("ENV/curriculum/1.json")
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()

@@ -6,7 +6,8 @@ from enum import Enum
 import logging
 import itertools
 import torch
-
+import os
+import json
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 std_logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log','w')
@@ -63,7 +64,7 @@ def printF(bh,stacks,curSt):
         ff(line)
 
 
-class actionType(Enum):
+class action_type(Enum):
     wait = 0
     defend = 1
     move = 2
@@ -126,9 +127,9 @@ class BStack(object):
         self.amount = 0
         self.attack = 0
         self.defense = 0
-        self.maxDamage = 0
-        self.minDamage = 0
-        self.firstHPLeft = 0
+        self.max_damage = 0
+        self.min_damage = 0
+        self.first_HP_Left = 0
         self.health = 0
         self.side = 0
         self.had_moved = False
@@ -225,26 +226,26 @@ class BStack(object):
             bf[self.y,self.x] = 401
         return bf
     def damaged(self,damage):
-        hpInAll = self.health * (self.amount - 1) + self.firstHPLeft
+        hpInAll = self.health * (self.amount - 1) + self.first_HP_Left
         if (damage >= hpInAll):
             damage = hpInAll
             killed = self.amount
-            firstHPLeft = 0
+            first_HP_Left = 0
         else:
             rest = int((hpInAll - damage - 1) / self.health) + 1
-            firstHPLeft = (hpInAll - damage - 1) % self.health + 1
+            first_HP_Left = (hpInAll - damage - 1) % self.health + 1
             killed = self.amount - rest
         self.amount -= killed
-        self.firstHPLeft = firstHPLeft
-        return damage,killed,firstHPLeft
+        self.first_HP_Left = first_HP_Left
+        return damage,killed,first_HP_Left
     def computeCasualty(self,opposite,stand,is_reta, estimate=False):
         total_damage = 0
         if(self.attack >= opposite.attack):
-            damageMin = int(self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
-            damageMax = int(self.maxDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
+            damageMin = int(self.min_damage * (1 + (self.attack - opposite.attack) * 0.05) * self.amount)
+            damageMax = int(self.max_damage * (1 + (self.attack - opposite.attack) * 0.05) * self.amount)
         else:
-            damageMin = int(self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
-            damageMax = int(self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
+            damageMin = int(self.min_damage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
+            damageMax = int(self.max_damage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
         damage = int((damageMin+damageMax)/2) if estimate else random.randint(damageMin,damageMax)
         can_shoot = self.can_shoot()
         if(self.is_shooter):
@@ -257,29 +258,29 @@ class BStack(object):
                     st = copy.copy(st_tmp)
                 else:
                     st = st_tmp
-                real_damage, killed, firstHPLeft = st.damaged(damage)
+                real_damage, killed, first_HP_Left = st.damaged(damage)
                 if(self.side == st.side):
                     total_damage += -real_damage
                 else:
                     total_damage += real_damage
                 if (not estimate):
                     head = "reta" if is_reta else "make"
-                    tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, st.name,st.amount, firstHPLeft)
+                    tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, st.name,st.amount, first_HP_Left)
                     logger.info(tt,True)
                     if(opposite.amount == 0):
                         logger.info("{} perished".format(opposite.name),True)
-        real_damage, killed, firstHPLeft = opposite.damaged(damage)
+        real_damage, killed, first_HP_Left = opposite.damaged(damage)
         total_damage += real_damage
         if(not estimate):
             if(can_shoot): # damage is done and enemy may die, so this flag may change
                 half = "(half)" if self.is_half(opposite) else "(full)"
                 logger.info("shoot{} {}".format(half,opposite.name),True)
             head = "reta" if is_reta else "make"
-            tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, opposite.name,opposite.amount, firstHPLeft)
+            tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, opposite.name,opposite.amount, first_HP_Left)
             logger.info(tt,True)
             if(opposite.amount == 0):
                 logger.info("{} perished".format(opposite.name),True)
-        return total_damage,killed,firstHPLeft
+        return total_damage,killed,first_HP_Left
     def meeleAttack(self,opposite,dest,is_retaliate):
         self.do_attack(opposite,dest)
     def can_shoot(self, opposite = None):
@@ -361,22 +362,22 @@ class BStack(object):
     #     if(not self.had_waited):
     #         legalMoves.append(0) #waite
     #     legalMoves.append(1) #defend
-    #     aa = self.acssessableAndAttackable()
+    #     aa = self.get_global_state()
     #     for i in range(0, self.inBattle.bFieldHeight):
     #         for j in range(1, self.inBattle.bFieldWidth - 1):
     #             if (aa[i,j] >= 0 and aa[i,j] < 50 and aa[i,j] != self.speed):
-    #                 #ret['move'].append(BAction(actionType.move, BHex(i,j)))
-    #                 legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.move, BHex(j,i))))
+    #                 #ret['move'].append(BAction(action_type.move, BHex(i,j)))
+    #                 legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.move, BHex(j,i))))
     #             if (aa[i,j] == -1):
     #                 if (self.can_shoot()):
-    #                     #ret['shoot'].append(BAction(actionType.shoot,0,BHex(i,j)))target
-    #                     legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.shoot,target=BHex(j,i))))
+    #                     #ret['shoot'].append(BAction(action_type.shoot,0,BHex(i,j)))target
+    #                     legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.shoot,target=BHex(j,i))))
     #                 else:
     #                     att = BHex(j,i)
     #                     for nb in self.getNeibours(att):
     #                         if(aa[nb.y,nb.x] >= 0 and aa[nb.y,nb.x] < 50):
-    #                             #ret['melee'].append(BAction(actionType.shoot,nb,BHex(i,j)))
-    #                             legalMoves.append(self.inBattle.actionToIndex(BAction(actionType.attack,nb,att)))
+    #                             #ret['melee'].append(BAction(action_type.shoot,nb,BHex(i,j)))
+    #                             legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.attack,nb,att)))
     #     return legalMoves
 
 
@@ -413,13 +414,13 @@ class BStack(object):
         for i in range(N_attack):
             if(not attacker.is_alive()):
                 break
-            damage1,killed1,firstHPLeft1 = attacker.computeCasualty(defender,stand,False,estimate)
+            damage1,killed1,first_HP_Left1 = attacker.computeCasualty(defender,stand,False,estimate)
             damage_dealt += damage1
             attacker.had_moved = True
             if (not defender.is_alive()):
                 break
             if(not attacker.can_shoot() and defender.is_alive() and not (defender.had_retaliated or attacker.block_retaliate)):
-                damage2, killed2, firstHPLeft2 = defender.computeCasualty(attacker,defender.get_position(),True,estimate)
+                damage2, killed2, first_HP_Left2 = defender.computeCasualty(attacker,defender.get_position(),True,estimate)
                 damage_get += damage2
                 if(not defender.infinite_retaliate):
                     defender.had_retaliated = True
@@ -437,25 +438,25 @@ class BStack(object):
                         min_dist = distance
                         dest = temp
         if(Battle.bGetDistance(self,target) <= min_dist):
-            return BAction(actionType.defend)
+            return BAction(action_type.defend)
         else:
-            return BAction(actionType.move,dest=dest)
+            return BAction(action_type.move, dest=dest)
 
     def active_stack(self,ret_obs = False,print_act = False):
         if self.by_AI == 1:
             attackable, unreach = self.potential_target()
             if not self.in_battle.debug:
                 if (self.in_battle.round == 0 and not self.had_waited):
-                    return BAction(actionType.wait)
+                    return BAction(action_type.wait)
             if (len(attackable) > 0):
                 att = [self.do_attack(target, stand, estimate=True) for target, stand in attackable]
                 dmgs = [delt - get for delt, get in att]
                 best = np.argmax(dmgs)
                 best_target = attackable[best]
                 if (self.can_shoot()):
-                    return BAction(actionType.shoot, target=best_target[0])
+                    return BAction(action_type.shoot, target=best_target[0])
                 else:
-                    return BAction(actionType.attack, target=best_target[0], dest=best_target[1])
+                    return BAction(action_type.attack, target=best_target[0], dest=best_target[1])
             else:
                 distants = [self.get_distance(x) for x in unreach]
                 closest = np.argmin(distants)
@@ -464,7 +465,7 @@ class BStack(object):
             # {'act_id':act_id, 'spell_id':spell_id,'target_id':target_id,'position_id':position_id,
             #             'mask_acts':mask_acts,'mask_spell':mask_spell,'mask_targets':mask_targets,'mask_position':mask_position}
             agent = self.in_battle.agent
-            ind, attri_stack, planes_stack, plane_glb = self.in_battle.currentStateFeature()
+            ind, attri_stack, planes_stack, plane_glb = self.in_battle.current_state_feature()
             if agent.in_train:
                 result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
             else:
@@ -475,18 +476,18 @@ class BStack(object):
             position_id = result['position_id']
             target_id = result['target_id']
             spell_id = result['spell_id']
-            if act_id == actionType.wait.value:
-                next_act = BAction(actionType.wait)
-            elif act_id == actionType.defend.value:
-                next_act = BAction(actionType.defend)
-            elif act_id == actionType.move.value:
-                next_act = BAction(actionType.move,dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)))
-            elif act_id == actionType.attack.value:
+            if act_id == action_type.wait.value:
+                next_act = BAction(action_type.wait)
+            elif act_id == action_type.defend.value:
+                next_act = BAction(action_type.defend)
+            elif act_id == action_type.move.value:
+                next_act = BAction(action_type.move, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
+            elif act_id == action_type.attack.value:
                 t = self.in_battle.defender_stacks[target_id] if self.side == 0 else self.in_battle.attacker_stacks[target_id]
                 if self.can_shoot():
-                    next_act = BAction(actionType.shoot, dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)), target=t)
+                    next_act = BAction(action_type.shoot, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
                 else:
-                    next_act = BAction(actionType.attack,dest=BHex(position_id % Battle.bFieldWidth,int(position_id / Battle.bFieldWidth)),target=t)
+                    next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
             else:
                 logger.info("not implemented action!!",True)
             if not ret_obs:
@@ -526,7 +527,10 @@ class BObstacleInfo:
         self.imname = imname
 
 batId = 0
-
+#[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
+creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
+                            50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
+                            121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
 class Battle(object):
     bFieldWidth = 17
     bFieldHeight = 11
@@ -547,7 +551,7 @@ class Battle(object):
         self.waited = []
         self.moved = []
         self.stackQueue = []
-        self.cur_stack = 0
+        self.cur_stack = None
         self.last_stack = None
         self.batId = 0
         self.by_AI = by_AI
@@ -576,10 +580,6 @@ class Battle(object):
         cp.sortStack()
         return cp
     def loadFile(self,file,shuffle_postion = True):
-        #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
-        creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
-                            50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
-                            121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
@@ -596,16 +596,18 @@ class Battle(object):
                     st.amount = num
                     st.amount_base = num
                     st.health = x['health']
-                    st.firstHPLeft = x['health']
+                    st.first_HP_Left = x['health']
                     st.id = id
                     st.side = i
                     st.by_AI = self.by_AI[i]
                     #st.isWide = x['isWide']
                     st.luck = x['luck']
                     st.morale = x['morale']
-                    st.maxDamage = x['maxDamage']
-                    st.minDamage = x['minDamage']
+                    st.max_damage = x['max_damage']
+                    st.min_damage = x['min_damage']
                     st.name = x['name']
+                    st.speed = x['speed']
+                    st.shots = 16
                     st.is_fly = creature_ability[id][0]
                     st.is_shooter = creature_ability[id][1]
                     st.block_retaliate = creature_ability[id][2]
@@ -613,7 +615,6 @@ class Battle(object):
                     st.wide_breath = creature_ability[id][4]
                     st.infinite_retaliate = creature_ability[id][5]
                     st.attack_twice = creature_ability[id][6]
-                    st.speed = x['speed']
                     #st.slotId = x['slot']
                     if shuffle_postion:
                         st.x = 15 if i else 1
@@ -623,7 +624,6 @@ class Battle(object):
                         st.x = px
                         st.y = py
                     j += 1
-                    st.shots = 16
                     st.in_battle = self
                     self.stacks.append(st)
                     if st.side:
@@ -639,7 +639,72 @@ class Battle(object):
             # for x in root['obs']:
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
-
+    def load_curriculum(self,file):
+        with open("ENV/creatureData.json") as JsonFile:
+            crList = json.load(JsonFile)["creatures"]
+        with open(file) as JsonFile:
+            js = json.load(JsonFile)
+            curr = js["stacks"]
+            self.round = js['round']
+        curr = np.array(curr).reshape(14,-1)
+        for i in range(14):
+            py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots = curr[i]
+            if px == 0:
+                break
+            x = crList[id]
+            st = BStack()
+            st.attack = attack
+            st.defense = defense
+            st.amount = amount
+            st.amount_base = amount_base
+            st.health = health
+            st.first_HP_Left = first_HP_Left
+            st.id = id
+            st.side = side
+            st.by_AI = self.by_AI[side]
+            st.luck = luck
+            st.morale = morale
+            st.max_damage = max_damage
+            st.min_damage = min_damage
+            st.name = x['name']
+            st.speed = speed
+            st.shots = shots
+            st.had_moved = had_moved
+            st.had_defended = had_defended
+            st.had_retaliated = had_retaliated
+            st.had_waited = had_waited
+            st.is_fly = creature_ability[id][0]
+            st.is_shooter = creature_ability[id][1]
+            st.block_retaliate = creature_ability[id][2]
+            st.attack_nearby_all = creature_ability[id][3]
+            st.wide_breath = creature_ability[id][4]
+            st.infinite_retaliate = creature_ability[id][5]
+            st.attack_twice = creature_ability[id][6]
+            st.x = px
+            st.y = py
+            st.in_battle = self
+            self.stacks.append(st)
+            if st.side:
+                self.defender_stacks.append(st)
+            else:
+                self.attacker_stacks.append(st)
+    def dump_curriculum(self,dir):
+        files = []
+        for f in os.listdir(dir):
+            tmp_f = os.path.join(dir,f)
+            if os.path.isdir(tmp_f):
+                continue
+            else:
+                files.append(int(os.path.splitext(f)[0]))
+        if len(files):
+            nmax = max(files) + 1
+        else:
+            nmax = 0
+        dump_in = os.path.join(dir, f'{nmax}.json')
+        attri_stack = self.current_state_feature(curriculum=True)
+        with open(dump_in,'w', encoding='utf-8') as JsonFile:
+            json.dump({'stacks':attri_stack.reshape(-1).tolist(),'round':self.round},JsonFile)
+        print(f"states dumped in {dump_in}")
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
         if(not curSt.checkPosition(bTo.x,bTo.y)):
@@ -687,21 +752,29 @@ class Battle(object):
 
     def currentState(self):
         pass
-    def currentStateFeature(self):
+    def current_state_feature(self,curriculum = False):
         planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
-        attri_stack = np.zeros((14,14),dtype=int)
+        attri_stack = np.zeros((14,14),dtype=int) if not curriculum else np.zeros((14,20),dtype=int)
         ind = np.array([122] * 14,dtype=int)
-        i = 0
-        for st in self.stackQueue:
+        for i,st in enumerate(self.stackQueue):
             bf = st.get_global_state()
             planes_stack[i, 0] = (bf >= 0) & (bf < 50)
             planes_stack[i, 1] = bf == 401
             planes_stack[i, 2] = bf == 201
             #
             ind[i] = st.id
-            attri_stack[i] = np.array([st.side,st.amount,st.firstHPLeft,st.attack,st.defense,st.maxDamage,st.minDamage,int(st.had_moved),int(st.had_retaliated),int(st.had_waited),st.speed,st.luck,st.morale,st.shots])
-            i += 1
-
+            if curriculum:
+                attri_stack[i] = np.array(
+                    [st.y, st.x, st.id, st.side, st.amount, st.amount_base, st.first_HP_Left, st.health, st.attack, st.defense, st.max_damage, st.min_damage,
+                     int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
+                     st.shots])
+            else:
+                attri_stack[i] = np.array(
+                    [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
+                     int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
+                     st.shots])
+        if curriculum:
+            return attri_stack
         plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)
         for st in self.attacker_stacks:
             plane_glb[0,st.y, st.x] = 1
@@ -714,18 +787,7 @@ class Battle(object):
 
 
     def getStackHPBySlots(self):
-        leftBase = [0]*7
-        rightBase = [0]*7
-        left = [0]*7
-        right = [0]*7
-        for st in self.stacks:
-            if(st.side == 0):
-                leftBase[st.slotId] = st.amount_base * st.health
-                left[st.slotId] = ((st.amount - 1) * st.health + st.firstHPLeft) if st.amount > 0 else 0
-            else:
-                rightBase[st.slotId] = st.amount_base * st.health
-                right[st.slotId] = ((st.amount - 1) * st.health + st.firstHPLeft) if st.amount > 0 else 0
-        return left,leftBase,right,rightBase
+        pass
 
     def findStack(self,dist,alive=True):
         ret = list(filter(lambda elem: elem.x == dist.x and elem.y == dist.y and elem.is_alive() == alive, self.stacks))
@@ -755,15 +817,15 @@ class Battle(object):
         pass
     def action2Str(self,act):
         #act = self.indexToAction(act)
-        if(act.type == actionType.wait):
+        if(act.type == action_type.wait):
             return "wait"
-        if (act.type == actionType.defend):
+        if (act.type == action_type.defend):
             return "defend"
-        if (act.type == actionType.move):
+        if (act.type == action_type.move):
             return "move to ({},{})".format(act.dest.y,act.dest.x)
-        if (act.type == actionType.attack):
+        if (act.type == action_type.attack):
             return "melee ({},{}),({},{})".format(act.dest.y,act.dest.x,act.target.y,act.target.x)
-        if (act.type == actionType.shoot):
+        if (act.type == action_type.shoot):
             return "shoot ({},{})".format(act.target.y,act.target.x)
     def end(self):
         live = {0:False,1:False}
@@ -795,10 +857,10 @@ class Battle(object):
                 break
         return int(def_alive)
     def checkNewRound(self,is_self_play = 0):
+        self.sortStack()
         if self.check_battle_end():
             logger.info("battle end~")
             return
-        self.sortStack()
         if(self.stackQueue[0].had_moved):
             self.newRound()
             self.sortStack()
@@ -818,14 +880,14 @@ class Battle(object):
         if(self.cur_stack.had_moved):
             logger.info("{} is already moved".format(self.cur_stack))
             return
-        if(action.type == actionType.wait):
+        if(action.type == action_type.wait):
             if (self.cur_stack.had_waited):
                 logger.info("{} is already waited".format(self.cur_stack))
                 return
             self.cur_stack.wait()
-        elif(action.type == actionType.defend):
+        elif(action.type == action_type.defend):
             self.cur_stack.defend()
-        elif(action.type == actionType.move):
+        elif(action.type == action_type.move):
             if (self.cur_stack.x == action.dest.x and self.cur_stack.y == action.dest.y):
                 logger.info("can't move to where you already are!!")
                 return
@@ -833,7 +895,7 @@ class Battle(object):
                 self.move(self.cur_stack, action.dest)
             else:
                 logger.info("you can't reach ({},{})".format(action.dest.y,action.dest.x))
-        elif(action.type == actionType.attack):
+        elif(action.type == action_type.attack):
             dests = self.findStack(action.target,True)
             if(len(dests) == 0):
                 logger.info("wrong attack dist ({},{})".format(action.target.y,action.target.x))
@@ -845,7 +907,7 @@ class Battle(object):
             else:
                 logger.info("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
                 exit(-1)
-        elif(action.type == actionType.shoot):
+        elif(action.type == action_type.shoot):
             dists = self.findStack(action.target, True)
             if (len(dists) == 0):
                 logger.info("wrong shoot dist ({},{})".format(action.target.y,action.target.x))
@@ -855,7 +917,7 @@ class Battle(object):
                 self.cur_stack.shoot(dist)
             else:
                 logger.info("{} can't shoot {}".format(self.cur_stack.name, dist.name))
-        elif (action.type == actionType.spell):
+        elif (action.type == action_type.spell):
             logger.info("spell not implemented yet")
     def legal_act(self,level=0,act_id=0,spell_id=0,target_id=0):
         cur_stack = self.cur_stack
@@ -865,21 +927,21 @@ class Battle(object):
         if level ==0:
             legals = np.zeros((5,))
             if not cur_stack.had_waited:
-                legals[actionType.wait.value] = 1
+                legals[action_type.wait.value] = 1
             if not cur_stack.had_defended:
-                legals[actionType.defend.value] = 1
-            if cur_stack.acssessableAndAttackable(query_type=action_query_type.can_move):
-                legals[actionType.move.value] = 1
-            if cur_stack.acssessableAndAttackable(query_type=action_query_type.can_attack):
-                legals[actionType.attack.value] = 1
+                legals[action_type.defend.value] = 1
+            if cur_stack.get_global_state(query_type=action_query_type.can_move):
+                legals[action_type.move.value] = 1
+            if cur_stack.get_global_state(query_type=action_query_type.can_attack):
+                legals[action_type.attack.value] = 1
             return legals
         elif level == 1:
-            if act_id == actionType.move.value:
-                bf = cur_stack.acssessableAndAttackable().flatten()
+            if act_id == action_type.move.value:
+                bf = cur_stack.get_global_state().flatten()
                 mask = (bf >= 0) & (bf < 50)
                 return mask.flatten()
-            elif act_id == actionType.attack.value:
-                bf = cur_stack.acssessableAndAttackable()
+            elif act_id == action_type.attack.value:
+                bf = cur_stack.get_global_state()
                 mask = np.zeros((7,))
                 targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks
                 for i in range(len(targets)):
@@ -890,8 +952,8 @@ class Battle(object):
                 return np.zeros((self.bFieldHeight,self.bFieldWidth))
         elif level == 2:
             mask = np.zeros((self.bFieldHeight,self.bFieldWidth))
-            if act_id == actionType.attack.value:
-                bf = cur_stack.acssessableAndAttackable(exclude_me=False)
+            if act_id == action_type.attack.value:
+                bf = cur_stack.get_global_state(exclude_me=False)
                 target = self.defender_stacks[target_id] if cur_stack.side == 0 else self.attacker_stacks[target_id]
                 nb = target.get_neighbor()
                 for t in nb:

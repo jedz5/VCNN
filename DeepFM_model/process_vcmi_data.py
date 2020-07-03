@@ -101,8 +101,8 @@ class fineTune_Dataset(Dataset):
                 dataV[slot, 3,0] = 1
                 dataV[slot, 4,0] = st["baseAmount"]
                 dataV[slot, 5,0] = st["attack"]
-                dataV[slot, 6,0] = st["maxDamage"]
-                dataV[slot, 7,0] = st["minDamage"]
+                dataV[slot, 6,0] = st["max_damage"]
+                dataV[slot, 7,0] = st["min_damage"]
                 dataV[slot, 8,0] = st["health"]
                 dataV[slot, 9,0] = st["defense"]
                 # 1 kill
@@ -194,8 +194,8 @@ def storeTrainSimple(jsonsPath,outpath,NSamples = 6):
                         dataV[i, slot , 3] = 1
                         dataV[i, slot , 4] = st["baseAmount"]
                         dataV[i, slot , 5] = st["attack"]
-                        dataV[i, slot , 6] = st["maxDamage"]
-                        dataV[i, slot , 7] = st["minDamage"]
+                        dataV[i, slot , 6] = st["max_damage"]
+                        dataV[i, slot , 7] = st["min_damage"]
                         dataV[i, slot , 8] = st["health"]
                         dataV[i, slot , 9] = st["defense"]
                         # 1 kill

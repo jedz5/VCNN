@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple, Union, Optional
 from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
-
+import sys
 import pygame
 import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
@@ -20,7 +20,7 @@ def softmax(logits, mask_orig,dev,add_little = False):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
     logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
     logits2 = logits1 * mask
-    logits3 = logits2 / (torch.sum(logits2,dim=-1,keepdim=True) + 1E-9)
+    logits3 = logits2.true_divide (torch.sum(logits2,dim=-1,keepdim=True) + 1E-9)
     if add_little:
         logits3 += 1E-9
     return logits3
@@ -121,18 +121,18 @@ class H3_policy(PGPolicy):
         if print_act:
             print(act_logits)
         act_id = self.dist_fn(act_logits).sample()[0].item()
-        if act_id == actionType.move.value:
+        if act_id == action_type.move.value:
             mask_position = env.legal_act(level=1, act_id=act_id)
             position_logits = softmax(position_logits, mask_position, self.device)
             position_id = self.dist_fn(position_logits).sample()[0].item()
-        elif act_id == actionType.attack.value:
+        elif act_id == action_type.attack.value:
             mask_targets = env.legal_act(level=1, act_id=act_id)
-            targets_logits = softmax(targets_logits, mask_targets, self.device)
-            if torch.sum(targets_logits,dim=-1,keepdim=True).item() > 0.5:
-                target_id = self.dist_fn(targets_logits).sample()[0].item()
+            targets_prob = softmax(targets_logits, mask_targets, self.device)
+            if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.8:
+                target_id = self.dist_fn(targets_prob).sample()[0].item()
             else:
-                logger.info("no attack target found!!")
-                assert 0
+                ids = np.arange(len(mask_targets))
+                target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
             mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
             position_logits = softmax(position_logits, mask_position, self.device)
             if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.5:
@@ -239,59 +239,103 @@ class H3_policy(PGPolicy):
             'loss/vf': vf_losses,
             'loss/ent': ent_losses,
         }
-def collect_eps(agent,file,n_step = 200,n_episode = 1):
-    buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
-    battle = Battle(agent=agent)
-    # battle.loadFile(f'ENV/debug{random.randint(1,2)}.json',shuffle_postion=True)
-    battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
-    init_stack_position(battle)
-    battle.checkNewRound()
-    had_acted = False
-    for ii in range(n_step):
-        acting_stack = battle.cur_stack
-        if acting_stack.by_AI:
-            battle_action = acting_stack.active_stack()
-            obs, acts, mask = None,None,None
-        else:
-            battle_action,obs,acts,mask = acting_stack.active_stack(ret_obs=True)
-            had_acted = True
-        battle.doAction(battle_action)
+def collect_eps(agent,file,n_step = 50,n_episode = 1,self_play = True):
+    if self_play:
+        buffer_att = ReplayBuffer(size=n_step * 2 + 1, ignore_obs_next=True)
+        buffer_def = ReplayBuffer(size=n_step * 2 + 1, ignore_obs_next=True)
+        battle = Battle(agent=agent,by_AI=[2,2])
+        battle.loadFile(file,shuffle_postion=False)
         battle.checkNewRound()
-        #battle.curStack had updated
-        done = battle.check_battle_end()
-        reward = 0
-        if done:
-            reward = -1 if battle.by_AI[battle.get_winner()] else 1
-            print("battle end")
-            if acting_stack.by_AI:
-                if had_acted:
-                    buffer.rew[len(buffer) - 1] = reward
+        for ii in range(n_step * 2):
+            acting_stack = battle.cur_stack
+            battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True)
+            battle.doAction(battle_action)
+            battle.checkNewRound()
+            done = battle.check_battle_end()
+            reward = -0.05
+            if acting_stack.side == 0:
+                if done:
+                    if battle.get_winner() == 0:
+                        reward = 1
+                    else:
+                        reward = -1
+                    buffer_att.add(obs=obs, act=acts, rew=reward, done=True, info=mask)
+                    if len(buffer_def):
+                        buffer_def.rew[len(buffer_def) - 1] = -reward
+                        buffer_def.done[len(buffer_def) - 1] = True
+                    break
+                else:
+                    buffer_att.add(obs=obs, act=acts, rew=reward, done=False, info=mask)
             else:
-                buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
-            break
-        if not acting_stack.by_AI:
-            buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
-    if len(buffer) != 0:
-        buffer.done[len(buffer) - 1] = True
-    return buffer
-def init_stack_position(battle):
-    pass
-    mask = np.zeros([11,17])
-    mask[:,0] = 1
-    mask[:, 16] = 1
-    for st in battle.stacks:
-        base1 = random.random() * 2 + 0.1
-        st.amount_base = int(st.amount_base * base1)
-        st.amount = st.amount_base
-        pos = random.randint(1,11*17 - 1)
-        while True:
-            if mask[int(pos/17),pos%17]:
-                pos = random.randint(1, 11 * 17 - 1)
+                if done:
+                    if battle.get_winner() == 1:
+                        reward = 1
+                    else:
+                        reward = -1
+                    buffer_def.add(obs=obs, act=acts, rew=reward, done=True, info=mask)
+                    if len(buffer_att):
+                        buffer_att.rew[len(buffer_att) - 1] = -reward
+                        buffer_att.done[len(buffer_att) - 1] = True
+                    break
+                else:
+                    buffer_def.add(obs=obs, act=acts, rew=reward, done=False, info=mask)
+        if len(buffer_att):
+            buffer_att.done[len(buffer_att) - 1] = True
+        if len(buffer_def):
+            buffer_def.done[len(buffer_def) - 1] = True
+            buffer_att.update(buffer_def)
+        return buffer_att
+    else:
+        buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
+        battle = Battle(agent=agent)
+        battle.loadFile(file)
+        battle.checkNewRound()
+        had_acted = False
+        for ii in range(n_step):
+            acting_stack = battle.cur_stack
+            if acting_stack.by_AI == 1:
+                battle_action = acting_stack.active_stack()
+                obs, acts, mask = None,None,None
             else:
+                battle_action,obs,acts,mask = acting_stack.active_stack(ret_obs=True)
+                had_acted = True
+            battle.doAction(battle_action)
+            battle.checkNewRound()
+            #battle.curStack had updated
+            done = battle.check_battle_end()
+            reward = -0.05
+            if done:
+                agent_win = battle.by_AI[battle.get_winner()] == 2
+                reward = 1 if agent_win else -1
+                print("battle end")
+                if agent_win:
+                    buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
+                else:
+                    if had_acted:
+                        buffer.rew[len(buffer) - 1] = reward
                 break
-        st.x = pos%17
-        st.y = int(pos/17)
-        mask[st.y,st.x] = 1
+            if acting_stack.by_AI == 2:
+                buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
+        if len(buffer) != 0:
+            buffer.done[len(buffer) - 1] = True
+        return buffer
+# def init_stack_position(battle):
+#     mask = np.zeros([11,17])
+#     mask[:,0] = 1
+#     mask[:, 16] = 1
+#     for st in battle.stacks:
+#         base1 = random.random() * 2 + 0.1
+#         st.amount_base = int(st.amount_base * base1)
+#         st.amount = st.amount_base
+#         pos = random.randint(1,11*17 - 1)
+#         while True:
+#             if mask[int(pos/17),pos%17]:
+#                 pos = random.randint(1, 11 * 17 - 1)
+#             else:
+#                 break
+#         st.x = pos%17
+#         st.y = int(pos/17)
+#         mask[st.y,st.x] = 1
 def start_train():
     # 初始化 agent
     actor_critic = H3_net(dev)
@@ -303,7 +347,7 @@ def start_train():
         agent.eval()
         agent.in_train = False
         for _ in range(20):
-            file = f'env/debug{random.randint(1, 3)}.json'
+            file = f"./ENV/debug{random.randint(1,3)}.json"
             buffer_ep = collect_eps(agent,file)
             if len(buffer_ep):
                 buffer.update(buffer_ep)
@@ -319,7 +363,7 @@ def start_train():
         print(loss)
         agent.eval()
         agent.in_train = False
-        file = f'env/debug{random.randint(1, 3)}.json'
+        file = f"./ENV/debug{random.randint(1,3)}.json"
         cont = start_game(file,agent)
         if not cont:
             return
@@ -338,7 +382,6 @@ def start_game(file,agent = None,by_AI = [2,1]):
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
     battle.loadFile(file,shuffle_postion=False)
-    # init_stack_position(battle)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack(print_act=True)
@@ -403,3 +446,5 @@ def main():
     # start_game("ENV/debug2.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()
+    # softmax(torch.tensor([-13.0746, 7.5548, 4.7415, 5.3910, 5.4793, -0.0773, -0.0671]), np.array([1, 0, 0, 0, 0, 0, 0]),
+    #         'cpu')
