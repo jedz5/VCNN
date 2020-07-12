@@ -8,5 +8,6 @@ imgs
 model
 train
 vccc
+venv
 *.h5
 *.gz

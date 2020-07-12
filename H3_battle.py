@@ -1,10 +1,8 @@
 import random
-import json
 import copy
 import numpy as np
 from enum import Enum
 import logging
-import itertools
 import torch
 import os
 import json
@@ -15,7 +13,9 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 std_logger.addHandler(handler)
-
+import sys
+sys.path.extend(['D:\\project\\VCNN\\VCCC\\x64\\Release'])
+import VCbattle
 
 class log_with_gui(object):
     def __init__(self,std_logger):
@@ -28,40 +28,6 @@ class log_with_gui(object):
             self.log_text.append(text)
 logger = log_with_gui(std_logger)
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
-
-def printF(bh,stacks,curSt):
-    def f(n):
-        if n >= 0 and n < 50:
-            if(n == 0 or n == curSt.speed - 1 or n%3 == 0):
-                return n
-            else:
-                return BHex.mapp[51]
-        else:
-            return BHex.mapp[n]
-    bf = [[f(n) for n in line] for line in bh]
-    def ff(l):
-        for n in l:
-            if(not isinstance(n,str)):
-                print('%3d'%n, end=".")
-            else:
-                print(n, end=".")
-        print()
-
-    bf[curSt.y,curSt.x] = 'M'
-    for st in stacks:
-        if(st.is_alive()):
-            bf[st.y,st.x] = bf[st.y,st.x]+str(st.amount)
-    print("      ",end="")
-    [print("%3d "%i,end="") for i in range(1,len(bf[0]) - 1)]
-    print()
-    i = 0
-    for line in bf:
-        if(i % 2 == 0):
-            print("%3d  "%i,end="")
-        else:
-            print("%3d"%i,end="")
-        i += 1
-        ff(line)
 
 
 class action_type(Enum):
@@ -108,10 +74,6 @@ def neb_id(self, nb):
                 return 3
             else:
                 return 4
-class hexType(Enum):
-    creature = 0
-    obstacle = 1
-mapp = {100: '|', -9: '   ', -8: ' * ', -4: 'M', -2: 'E', -1: 'A', 51: '   '}
 class BHex:
     def __init__(self,x,y):
         self.x = x
@@ -141,7 +103,7 @@ class BStack(object):
         self.morale = 0
         self.id = 0
         self.shots = 10
-        self.hex_type = hexType.creature
+        # self.hex_type = hexType.creature
         #辅助参数
 
         self.by_AI = 1
@@ -163,68 +125,69 @@ class BStack(object):
         if(other):
             return self.x == other.x and self.y == other.y
         return False
-    def get_global_state(self, query_type = None, exclude_me = True):
-        bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
-        bf.fill(-1)
-        bf[:, 0] = 100
-        bf[:, -1] = 100
-        for sts in self.in_battle.stacks:
-            if(sts.is_alive()):
-                bf[sts.y,sts.x] = 400 if sts.side == self.side else 200
-        for obs in self.in_battle.obstacles:
-            bf[obs.y,obs.x] = 800
-        #init battleField end
-        # accessable  begin
-        travellers = []
-        bf[self.y,self.x] = self.speed
-        travellers.append(self)
-        if(not self.is_fly):
-            while(len(travellers) > 0):
-                current = travellers.pop()
-                speedLeft = bf[current.y,current.x] - 1
-                for adj in self.get_neighbor(current):
-                    if(bf[adj.y,adj.x] < speedLeft):
-                        bf[adj.y,adj.x] = speedLeft
-                        if (speedLeft > 0):
-                            travellers.append(adj)
-                            if query_type == action_query_type.can_move:
-                                return True
-        else: #fly
-            for ii in range(self.in_battle.bFieldHeight):
-                for jj in range(1, self.in_battle.bFieldWidth - 1):
-                    if bf[ii,jj] > 50:
-                        continue
-                    d = self.get_distance(BHex(jj, ii))
-                    if(0 < d <= self.speed):
-                        bf[ii,jj] = self.speed - d
-                        if query_type == action_query_type.can_move:
-                            return True
-        #no space to move to
-        if query_type == action_query_type.can_move:
-            return False
-        #accessable  end
-        #attackable begin
-        for sts in self.in_battle.stacks:
-            if(not sts.is_alive()):
-                continue
-            if sts.side != self.side:
-                if (self.can_shoot()):
-                    bf[sts.y,sts.x] = 201  # enemy and attackbale
-                    if query_type == action_query_type.can_attack:
-                        return True
-                else:
-                    for neib in self.get_neighbor(sts):
-                        if (0 <= bf[neib.y,neib.x] < 50):
-                            bf[sts.y,sts.x] = 201
-                            if query_type == action_query_type.can_attack:
-                                return True
-                            break
-        #no target to reach
-        if query_type == action_query_type.can_attack:
-            return False
-        if exclude_me:
-            bf[self.y,self.x] = 401
-        return bf
+    def get_global_state(self, query_type = -1, exclude_me = True):
+        return VCbattle.get_global_state(self,self.in_battle.stacks,query_type,exclude_me)
+        # bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
+        # bf.fill(-1)
+        # bf[:, 0] = 100
+        # bf[:, -1] = 100
+        # for sts in self.in_battle.stacks:
+        #     if(sts.is_alive()):
+        #         bf[sts.y,sts.x] = 400 if sts.side == self.side else 200
+        # for obs in self.in_battle.obstacles:
+        #     bf[obs.y,obs.x] = 800
+        # #init battleField end
+        # # accessable  begin
+        # travellers = []
+        # bf[self.y,self.x] = self.speed
+        # travellers.append(self)
+        # if(not self.is_fly):
+        #     while(len(travellers) > 0):
+        #         current = travellers.pop()
+        #         speedLeft = bf[current.y,current.x] - 1
+        #         for adj in self.get_neighbor(current):
+        #             if(bf[adj.y,adj.x] < speedLeft):
+        #                 bf[adj.y,adj.x] = speedLeft
+        #                 if (speedLeft > 0):
+        #                     travellers.append(adj)
+        #                     if query_type == action_query_type.can_move:
+        #                         return True
+        # else: #fly
+        #     for ii in range(self.in_battle.bFieldHeight):
+        #         for jj in range(1, self.in_battle.bFieldWidth - 1):
+        #             if bf[ii,jj] > 50:
+        #                 continue
+        #             d = self.get_distance(BHex(jj, ii))
+        #             if(0 < d <= self.speed):
+        #                 bf[ii,jj] = self.speed - d
+        #                 if query_type == action_query_type.can_move:
+        #                     return True
+        # #no space to move to
+        # if query_type == action_query_type.can_move:
+        #     return False
+        # #accessable  end
+        # #attackable begin
+        # for sts in self.in_battle.stacks:
+        #     if(not sts.is_alive()):
+        #         continue
+        #     if sts.side != self.side:
+        #         if (self.can_shoot()):
+        #             bf[sts.y,sts.x] = 201  # enemy and attackbale
+        #             if query_type == action_query_type.can_attack:
+        #                 return True
+        #         else:
+        #             for neib in self.get_neighbor(sts):
+        #                 if (0 <= bf[neib.y,neib.x] < 50):
+        #                     bf[sts.y,sts.x] = 201
+        #                     if query_type == action_query_type.can_attack:
+        #                         return True
+        #                     break
+        # #no target to reach
+        # if query_type == action_query_type.can_attack:
+        #     return False
+        # if exclude_me:
+        #     bf[self.y,self.x] = 401
+        # return bf
     def damaged(self,damage):
         hpInAll = self.health * (self.amount - 1) + self.first_HP_Left
         if (damage >= hpInAll):
@@ -516,7 +479,7 @@ class BObstacle(object):
         self.kind = kind
         self.x = 0
         self.y = 0
-        self.hexType = hexType.obstacle
+        # self.hexType = hexType.obstacle
 class BObstacleInfo:
     def __init__(self,pos,w,h,isabs,imname):
         self.y = int(pos / Battle.bFieldWidth)
@@ -930,9 +893,9 @@ class Battle(object):
                 legals[action_type.wait.value] = 1
             if not cur_stack.had_defended:
                 legals[action_type.defend.value] = 1
-            if cur_stack.get_global_state(query_type=action_query_type.can_move):
+            if cur_stack.get_global_state(query_type=action_query_type.can_move.value):
                 legals[action_type.move.value] = 1
-            if cur_stack.get_global_state(query_type=action_query_type.can_attack):
+            if cur_stack.get_global_state(query_type=action_query_type.can_attack.value):
                 legals[action_type.attack.value] = 1
             return legals
         elif level == 1:

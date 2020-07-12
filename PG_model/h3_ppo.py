@@ -12,10 +12,10 @@ from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 import sys
-import pygame
-import H3_battleInterface
+# import pygame
+# import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
-dev = 'cuda'
+dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
     logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
@@ -99,7 +99,7 @@ class H3_policy(PGPolicy):
                 batch, None, gamma=self._gamma, gae_lambda=self._lambda)
         v_ = []
         with torch.no_grad():
-            for b in batch.split(self._batch, shuffle=False):
+            for b in batch.split(self._batch): #, shuffle=False
                 v_.append(self.ppo_net(**b.obs_next,critic_only = True))
         v_ = torch.cat(v_, dim=0).cpu().numpy()
         return v_,self.compute_episodic_return(
@@ -150,7 +150,7 @@ class H3_policy(PGPolicy):
         old_prob_target = []
         old_prob_spell = []
         with torch.no_grad():
-            for b in batch.split(batch_size,shuffle=False):
+            for b in batch.split(batch_size): #,shuffle=False
                 # obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
                 # acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
                 # mask = {'mask_acts': result['mask_acts'], 'mask_spell': result['mask_spell'],
@@ -343,6 +343,7 @@ def start_train():
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev)
     buffer = ReplayBuffer(6000,ignore_obs_next=True)
+    count = 0
     while True:
         agent.eval()
         agent.in_train = False
@@ -360,16 +361,20 @@ def start_train():
         # print(batch_data.returns.squeeze())
         print(batch_data.act.act_id.astype(np.int))
         loss = agent.learn(batch_data)
-        print(loss)
-        agent.eval()
-        agent.in_train = False
-        file = f"./ENV/debug{random.randint(1,3)}.json"
-        cont = start_game(file,agent)
-        if not cont:
-            return
+        # print(loss)
+        # agent.eval()
+        # agent.in_train = False
+        # file = f"./ENV/debug{random.randint(1,3)}.json"
+        # cont = start_game(file,agent)
+        # if not cont:
+        #     return
         buffer.reset()
-
+        count += 1
+        if count == 20:
+            break
 def start_game(file,agent = None,by_AI = [2,1]):
+    import pygame
+    import H3_battleInterface
     #初始化 agent
     if not agent:
         actor_critic = H3_net(dev)
@@ -390,7 +395,6 @@ def start_game(file,agent = None,by_AI = [2,1]):
     i = 0
     last = time.time()
     while bi.running:
-        # if i % 1 == 0:
         if act:
             cost = time.time() - last
             print(f'cost time {cost}')
@@ -404,15 +408,6 @@ def start_game(file,agent = None,by_AI = [2,1]):
                 return True
         bi.handleBattle(act,print_act = True)
         bi.renderFrame()
-        # else:
-        #     i += 1
-        #     battle.doAction(bi.next_act)
-        #     battle.checkNewRound()
-        #     if battle.check_battle_end():
-        #         print("battle end background")
-        #         pygame.quit()
-        #         return True
-        #     bi.next_act = battle.curStack.active_stack()
     print("game end")
     pygame.quit()
     return False
@@ -446,5 +441,3 @@ def main():
     # start_game("ENV/debug2.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()
-    # softmax(torch.tensor([-13.0746, 7.5548, 4.7415, 5.3910, 5.4793, -0.0773, -0.0671]), np.array([1, 0, 0, 0, 0, 0, 0]),
-    #         'cpu')

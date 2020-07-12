@@ -2,14 +2,18 @@ import torch
 import time
 import numpy as np
 from tianshou.data import ReplayBuffer
-# a = np.array([1,1,1,1,1,1,1])
-# np.save("d:/a.npy",a)
-# buffer_def = ReplayBuffer(100, ignore_obs_next=True)
-# buffer_att = ReplayBuffer(100, ignore_obs_next=True)
-# buffer_def.add(obs=1, act=1, rew=1, done=1)
-# # buffer_att.update(buffer_def)
-# buffer_def.update(buffer_att)
+from tianshou.data import Batch
 
-a = np.array([1,1,1,0,0,0])
-c = np.arange(len(a))
-b = np.random.choice(c,p=(a/a.sum()))
+# data = Batch(a=np.array([[0.0, 2.0], [1.0, 3.0]]), b=[[5, -5]])
+# data = ReplayBuffer(20,0,ignore_obs_next=True)
+# for i in range(10):
+#     done = 1 if i % 3 == 0 else 0
+#     data.add(i,i,i,done)
+#
+# index = np.arange(10)
+# print(data[index])
+# print(data[index])
+# print(data[index])
+
+a = np.zeros([2,3,4,5])
+b = a[0, ..., 0]

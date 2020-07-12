@@ -1,3 +1,4 @@
+
 import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 import sys # 导入sys库中的exit函数
@@ -376,7 +377,7 @@ def start_game():
     if debug:
         battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
     else:
-        battle.loadFile("ENV/debug3.json", shuffle_postion=False)
+        battle.loadFile("ENV/selfplay.json", shuffle_postion=True)
         # battle.load_curriculum("ENV/curriculum/1.json")
     battle.checkNewRound()
     bi = BattleInterface(battle)
