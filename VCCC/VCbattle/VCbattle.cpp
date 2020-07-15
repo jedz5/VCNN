@@ -19,7 +19,7 @@ void check_and_push(int x, int y, std::vector<bhex>& adj) {
 		adj.push_back(bhex(x, y));
 }
 int get_distance(const bhex& self, const bhex& dest) {
-	int y1 = self.x; //历史原因交换了.x 和.y - _ -
+	int y1 = self.x; // 鍘嗗彶鍘熷洜浜ゆ崲浜唜  y
 	int x1 = self.y;
 	int y2 = dest.x;
 	int x2 = dest.y;
@@ -64,40 +64,39 @@ enum action_query_type {
 class bstack :public bhex{
 public:
 	int amount = 0;
-	int attack = 0;
-	int defense = 0;
-	int max_damage = 0;
-	int min_damage = 0;
-	int first_HP_Left = 0;
-	int health = 0;
+	//int attack = 0;
+	//int defense = 0;
+	//int max_damage = 0;
+	//int min_damage = 0;
+	//int first_HP_Left = 0;
+	//int health = 0;
 	int side = 0;
-	bool had_moved = false;
-	bool had_retaliated = false;
-	bool had_waited = false;
-	bool had_defended = false;
+	//bool had_moved = false;
+	//bool had_retaliated = false;
+	//bool had_waited = false;
+	//bool had_defended = false;
 	int speed = 0;
-	int luck = 0;
-	int morale = 0;
-	int id = 0;
+	//int luck = 0;
+	//int morale = 0;
+	//int id = 0;
 	int shots = 10;
 		// hex_type = hexType.creature
-		//辅助参数
-
-	int by_AI = 1;
-	std::string name = "unKnown";
-	int slotId = 0;
-	bool is_wide = false;
+		//
+	//int by_AI = 1;
+	//std::string name = "unKnown";
+	//int slotId = 0;
+	//bool is_wide = false;
 	bool is_fly = false;
 	bool is_shooter = false;
-	bool block_retaliate = false;
-	bool attack_nearby_all = false;
-	bool wide_breath = false;
-	bool infinite_retaliate = false;
-	bool attack_twice = false;
-	int amount_base = 0;
+	//bool block_retaliate = false;
+	//bool attack_nearby_all = false;
+	//bool wide_breath = false;
+	//bool infinite_retaliate = false;
+	//bool attack_twice = false;
+	//int amount_base = 0;
 	//in_battle = 0;  //Battle()
 	bool equals(const bhex& bh);
-	bool equals(const bstack& bh);
+	//bool equals(const bstack& bh);
 	bool is_alive() const;
 	bool can_shoot(const std::vector<bstack>& stacks);
 };
@@ -107,10 +106,10 @@ bool bstack::equals(const bhex& bh)
 	return this->x = bh.x && this->y == bh.y;
 }
 
-bool bstack::equals(const bstack& bs)
-{
-	return this->x = bs.x && this->y == bs.y && this->id == bs.id;
-}
+//bool bstack::equals(const bstack& bs)
+//{
+//	return this->x = bs.x && this->y == bs.y && this->id == bs.id;
+//}
 
 bool bstack::is_alive() const {
 	return this->amount > 0;

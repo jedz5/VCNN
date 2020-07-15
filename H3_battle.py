@@ -13,8 +13,13 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 std_logger.addHandler(handler)
+import platform
+Linux = "Linux" == platform.system()
 import sys
-sys.path.extend(['D:\\project\\VCNN\\VCCC\\x64\\Release'])
+if Linux:
+    sys.path.extend(['/home/enigma/work/project/VCNN/','/home/enigma/work/project/VCNN/VCCC/VCbattle/build'])
+else:
+    sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
 import VCbattle
 
 class log_with_gui(object):
