@@ -48,9 +48,9 @@ std::vector<bhex> bhex::get_neighbor() {
 	check_and_push(this->x - 1, this->y, adj);
 	check_and_push(this->x + 1, this->y, adj);
 	check_and_push(this->x + 1 - zigzag, this->y - 1, adj);
-	check_and_push(this->x, this->y - 1, adj);
+	check_and_push(this->x - zigzag, this->y - 1, adj);
 	check_and_push(this->x + 1 - zigzag, this->y + 1, adj);
-	check_and_push(this->x, this->y + 1, adj);
+	check_and_push(this->x - zigzag, this->y + 1, adj);
 	return adj;
 }
 enum action_query_type {
@@ -157,7 +157,7 @@ py::object get_global_state(py::object& in_self,std::vector<py::object>& in_stac
 			else
 				bf(i, j) = -1;
 	for (auto st : stacks) {
-		if (st.amount > 0)
+		if (st.is_alive() > 0)
 			if (st.side == self.side)
 				bf(st.y,st.x) = 400;
 			else

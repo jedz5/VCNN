@@ -55,15 +55,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="开始selfplay性能测试">
+      <change afterPath="$PROJECT_DIR$/ENV/battles/0.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ENV/battles/1.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/curriculum/0.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/curriculum/1.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/curriculum/11.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug1.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug2.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/stdafx.h" beforeDir="false" afterPath="$PROJECT_DIR$/VCCC/VCbattle/stdafx.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learning/gpu_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/gpu_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learning/xx.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/xx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -71,7 +81,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1563026840030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
-    <SUITE FILE_PATH="coverage/VCNN$xx.coverage" NAME="xx Coverage Results" MODIFIED="1593852312968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
+    <SUITE FILE_PATH="coverage/VCNN$xx.coverage" NAME="xx Coverage Results" MODIFIED="1594896319340" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591846119715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$run_main.coverage" NAME="run_main Coverage Results" MODIFIED="1562379234281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$test_vcpy_remote.coverage" NAME="test_vcpy_remote Coverage Results" MODIFIED="1594784348627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/VCCC/VCbattle" />
@@ -81,9 +91,9 @@
     <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1593862543003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$pytest_for_pong_ppo_test_ppo.coverage" NAME="pytest for pong_ppo.test_ppo Coverage Results" MODIFIED="1591936137808" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../DNN/tianshou/examples" />
     <SUITE FILE_PATH="coverage/VCNN$yy.coverage" NAME="yy Coverage Results" MODIFIED="1592463632584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../ddd" />
-    <SUITE FILE_PATH="coverage/VCNN$H3_battleInterface.coverage" NAME="H3_battleInterface Coverage Results" MODIFIED="1594439978750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VCNN$H3_battleInterface.coverage" NAME="H3_battleInterface Coverage Results" MODIFIED="1594821171033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1562298099688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
-    <SUITE FILE_PATH="coverage/VCNN$h3_ppo_remote.coverage" NAME="h3_ppo_remote Coverage Results" MODIFIED="1593776807991" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$h3_ppo_remote.coverage" NAME="h3_ppo_remote Coverage Results" MODIFIED="1594821266285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$BattleInterface.coverage" NAME="BattleInterface Coverage Results" MODIFIED="1591503423856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1591848420742" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1592042956035" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
@@ -103,67 +113,6 @@
     <expand />
     <select />
   </component>
-  <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/test_vcpy.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-line="6" selection-end-column="83" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-129">
-              <caret line="6" column="20" lean-forward="true" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="593">
-              <caret line="221" column="8" lean-forward="true" selection-start-line="221" selection-start-column="8" selection-end-line="221" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/H3_battle.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="483">
-              <caret line="21" column="83" selection-start-line="21" selection-start-column="83" selection-end-line="21" selection-end-column="83" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="true" current-in-tab="false">
-        <entry file="remoteDeploymentFS://&lt;9e6712ac-04f2-44f4-b4f2-08c96b282a38&gt;/H3_battle.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="46">
-              <caret line="2" column="18" lean-forward="true" selection-start-line="2" selection-start-column="18" selection-end-line="2" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -171,58 +120,12 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>action_query_type</find>
-      <find>VCbattle</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" />
-        <option value="$PROJECT_DIR$/VCCC/VCbattle/stdafx.h" />
-        <option value="$PROJECT_DIR$/VCCC/VCbattle/test_vcpy.py" />
-        <option value="$PROJECT_DIR$/VCCC/VCbattle/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/H3_battle.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="-7" />
-    <option name="width" value="1629" />
-    <option name="height" value="1392" />
   </component>
   <component name="ProjectId" id="1c3wnRPTKIV7toF0j4PMzaY65XL" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
-  </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="PG_model" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -237,7 +140,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="D:/doc" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../doc/pstats" />
     <property name="settings.editor.selected.configurable" value="File.Encoding" />
     <property name="settings.editor.splitter.proportion" value="0.23474178" />
   </component>
@@ -253,30 +156,18 @@
     <option name="mySupportQtDebugging" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\project\VCNN\ENV" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\project\VCNN\ENV\curriculum" />
+      <recent name="D:\project\VCNN\ENV\battles" />
       <recent name="D:\project\VCNN\VCCC" />
       <recent name="D:\project\VCNN\imgs\cursor\move" />
       <recent name="D:\project\VCNN\imgs\cursor\shoot" />
-      <recent name="D:\project\VCNN\imgs\cursor\attack" />
-      <recent name="D:\project\VCNN\learning" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\project\VCNN\ENV" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="Python.h3_ppo_remote">
+  <component name="RunManager" selected="Python.h3_ppo">
     <configuration default="true" type="DjangoTestsConfigurationType">
       <module name="ddd" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -321,6 +212,19 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="ADDITIONAL_ARGS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Python.FlaskServer" factoryName="Flask server">
+      <module name="ddd" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
     <configuration name="H3_battle" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -415,9 +319,6 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="D:\Program Files\python376\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -437,6 +338,9 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="sftp://enigma@192.168.1.100:22/home/enigma/work/anaconda/envs/vcnn/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -500,6 +404,9 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="sftp://enigma@192.168.1.100:22/home/enigma/work/anaconda/envs/vcnn/bin/python" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/VCCC/VCbattle" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -535,19 +442,6 @@
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Python.FlaskServer" factoryName="Flask server">
-      <module name="ddd" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
@@ -609,8 +503,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test_vcpy_remote" />
         <item itemvalue="Python.h3_ppo" />
+        <item itemvalue="Python.test_vcpy_remote" />
         <item itemvalue="Python.test_vcpy" />
       </list>
     </recent_temporary>
@@ -752,7 +646,10 @@
       <workItem from="1594437143406" duration="2710000" />
       <workItem from="1594439959739" duration="3133000" />
       <workItem from="1594626141407" duration="4285000" />
-      <workItem from="1594781979283" duration="5791000" />
+      <workItem from="1594781979283" duration="10011000" />
+      <workItem from="1594804769903" duration="7640000" />
+      <workItem from="1594864993634" duration="18941000" />
+      <workItem from="1594944284740" duration="18449000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -999,11 +896,18 @@
       <option name="project" value="LOCAL" />
       <updated>1593397860947</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="cmake vcbattle">
+      <created>1594788431196</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1594788431196</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="941016000" />
+    <option name="totallyTimeSpent" value="990266000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1013,35 +917,6 @@
       <are-packages-shown value="true" />
       <is-autoscroll-to-source value="true" />
     </todo-panel>
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="1629" height="1392" extended-state="0" />
-    <editor active="true" />
-    <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19614148" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Database Changes" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" weight="0.3294412" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
-      <window_info anchor="bottom" id="File Transfer" weight="0.20850709" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3294412" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3994996" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info active="true" anchor="right" id="Remote Host" visible="true" weight="0.13826367" />
-      <window_info anchor="right" id="SciView" weight="0.2784566" />
-      <window_info anchor="right" id="Database" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -1061,14 +936,7 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -1087,9 +955,9 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="obstacle imgs" />
     <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
     <MESSAGE value="one batllte" />
@@ -1114,7 +982,8 @@
     <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
     <MESSAGE value="界面功能补齐&#10;pygame.mouse.set_visible(False)" />
     <MESSAGE value="开始selfplay性能测试" />
-    <option name="LAST_COMMIT_MESSAGE" value="开始selfplay性能测试" />
+    <MESSAGE value="cmake vcbattle" />
+    <option name="LAST_COMMIT_MESSAGE" value="cmake vcbattle" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1339" y="200" key="#Inspections" timestamp="1593413796184">
@@ -1130,21 +999,27 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1055" y="184" width="386" height="709" key="#com.intellij.ide.ui.customization.CustomizableActionsPanel.FindAvailableActionsDialog/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593499710863" />
-    <state x="1550" y="315" width="710" height="592" key="#xdebugger.evaluate" timestamp="1594521595325">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state x="1153" y="434" width="824" height="404" key="#xdebugger.evaluate" timestamp="1595387737610">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261417271" />
     <state x="-1184" y="338" key="#xdebugger.evaluate/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593693148892" />
     <state x="1550" y="315" key="#xdebugger.evaluate/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594521595325" />
+    <state x="1153" y="434" width="824" height="404" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595387737610" />
     <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2" timestamp="1593397859947">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593397859947" />
-    <state width="1449" height="582" key="DebuggerActiveHint" timestamp="1593682283986">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="2256" height="751" key="DebuggerActiveHint" timestamp="1595471925006">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261407923" />
     <state width="1449" height="582" key="DebuggerActiveHint/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593682283986" />
+    <state width="2256" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595471925006" />
+    <state x="91" y="91" width="2378" height="1210" key="DiffContextDialog" timestamp="1595470688054">
+      <screen x="0" y="0" width="2560" height="1392" />
+    </state>
+    <state x="91" y="91" width="2378" height="1210" key="DiffContextDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595470688054" />
     <state x="-1796" y="323" width="1426" height="621" key="EnvironmentVariablesDialog" timestamp="1593518318967">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -1155,62 +1030,70 @@
     <state x="-920" y="320" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593413829383" />
     <state x="-920" y="320" key="FileChooserDialogImpl/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593433717023" />
     <state x="923" y="320" key="FileChooserDialogImpl/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594210648553" />
-    <state width="1189" height="132" key="GridCell.Tab.0.bottom" timestamp="1594564911897">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.0.bottom" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.bottom/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.bottom/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.bottom/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1189" height="132" key="GridCell.Tab.0.center" timestamp="1594564911897">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
+    <state width="2504" height="714" key="GridCell.Tab.0.center" timestamp="1595473519284">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.center/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.center/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.center/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1189" height="132" key="GridCell.Tab.0.left" timestamp="1594564911897">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519284" />
+    <state width="2504" height="714" key="GridCell.Tab.0.left" timestamp="1595473519284">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.left/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973557" />
     <state width="1744" height="415" key="GridCell.Tab.0.left/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117469" />
     <state width="1189" height="132" key="GridCell.Tab.0.left/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1189" height="132" key="GridCell.Tab.0.right" timestamp="1594564911897">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519284" />
+    <state width="2504" height="714" key="GridCell.Tab.0.right" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.right/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.right/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.right/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1189" height="132" key="GridCell.Tab.1.bottom" timestamp="1594564911898">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
+    <state width="2504" height="714" key="GridCell.Tab.1.bottom" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.bottom/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973559" />
     <state width="1744" height="327" key="GridCell.Tab.1.bottom/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.bottom/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1189" height="132" key="GridCell.Tab.1.center" timestamp="1594564911898">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
+    <state width="2504" height="714" key="GridCell.Tab.1.center" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.center/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="327" key="GridCell.Tab.1.center/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.center/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1189" height="132" key="GridCell.Tab.1.left" timestamp="1594564911898">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
+    <state width="2504" height="714" key="GridCell.Tab.1.left" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.left/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="327" key="GridCell.Tab.1.left/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.left/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1189" height="132" key="GridCell.Tab.1.right" timestamp="1594564911898">
-      <screen x="0" y="0" width="2560" height="1342" />
+    <state width="2504" height="714" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
+    <state width="2504" height="714" key="GridCell.Tab.1.right" timestamp="1595473519285">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.right/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973559" />
     <state width="1744" height="327" key="GridCell.Tab.1.right/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.right/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
+    <state width="2504" height="714" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595473519285" />
     <state x="-1262" y="168" key="RollbackChangesDialog" timestamp="1591157685962">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -1225,21 +1108,23 @@
     </state>
     <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593397865844" />
     <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593741687316" />
-    <state width="971" height="551" key="XDebugger.FullValuePopup" timestamp="1592882643556">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1295" height="711" key="XDebugger.FullValuePopup" timestamp="1595471924998">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="971" height="551" key="XDebugger.FullValuePopup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592882643556" />
-    <state width="693" height="535" key="javadoc.popup" timestamp="1594436833911">
-      <screen x="0" y="0" width="1772" height="1080" />
+    <state width="1295" height="711" key="XDebugger.FullValuePopup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595471924998" />
+    <state width="1002" height="690" key="javadoc.popup" timestamp="1595216245406">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="750" height="535" key="javadoc.popup/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593502872861" />
     <state width="693" height="535" key="javadoc.popup/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594436833911" />
+    <state width="1002" height="690" key="javadoc.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595216245406" />
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog" timestamp="1593418484188">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593057744301" />
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593418484188" />
-    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup" timestamp="1594781901594">
+    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup" timestamp="1595408190592">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414532365" />
@@ -1247,14 +1132,14 @@
     <state x="419" y="439" width="840" height="1032" key="search.everywhere.popup/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594436710085" />
     <state x="2339" y="439" width="840" height="1032" key="search.everywhere.popup/1920.0.1772.1080/0.0.1772.1080@1920.0.1772.1080" timestamp="1594434938057" />
     <state x="605" y="545" width="1214" height="1283" key="search.everywhere.popup/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594524783970" />
-    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1594781901594" />
+    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595408190592" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>5</line>
+          <line>15</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1274,13 +1159,48 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>251</line>
+          <line>202</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/VCCC/VCbattle/test_vcpy.py</url>
-          <line>3</line>
+          <line>7</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../../Program Files/python376/Lib/pstats.py</url>
+          <line>383</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../DNN/tianshou/tianshou/policy/base.py</url>
+          <line>141</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/H3_battle.py</url>
+          <line>193</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/H3_battle.py</url>
+          <line>896</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/H3_battleInterface.py</url>
+          <line>237</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>187</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>383</line>
+          <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -1291,70 +1211,6 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/stdafx.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="138">
-          <caret line="6" column="15" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/creatureEmbedding.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="10" selection-start-line="10" selection-end-line="10" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2018.3/system/remote_sources/-1906318761/-1402704252/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="313" column="36" selection-start-line="313" selection-start-column="36" selection-end-line="313" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-129">
-          <caret line="6" column="20" lean-forward="true" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="593">
-          <caret line="221" column="8" lean-forward="true" selection-start-line="221" selection-start-column="8" selection-end-line="221" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/test_vcpy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="6" selection-end-column="83" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/H3_battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="483">
-          <caret line="21" column="83" selection-start-line="21" selection-start-column="83" selection-end-line="21" selection-end-column="83" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
   <component name="masterDetails">
     <states>

@@ -6,6 +6,7 @@ import logging
 import torch
 import os
 import json
+import pprint
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 std_logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log','w')
@@ -22,16 +23,14 @@ else:
     sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
 import VCbattle
 
-class log_with_gui(object):
-    def __init__(self,std_logger):
-        self.logger = std_logger
-        self.log_text = []
-    def info(self,text,to_gui = False):
-        # pass
-        self.logger.info(text)
-        if(to_gui):
-            self.log_text.append(text)
-logger = log_with_gui(std_logger)
+def set_logger(lg_on,lg):
+    global log_gui_on
+    log_gui_on = lg_on
+    global logger
+    logger = lg
+def get_logger():
+    return log_gui_on,logger
+set_logger(False,std_logger)
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
 
 
@@ -192,7 +191,7 @@ class BStack(object):
         #     return False
         # if exclude_me:
         #     bf[self.y,self.x] = 401
-        # return bf
+        return bf
     def damaged(self,damage):
         hpInAll = self.health * (self.amount - 1) + self.first_HP_Left
         if (damage >= hpInAll):
@@ -208,12 +207,14 @@ class BStack(object):
         return damage,killed,first_HP_Left
     def computeCasualty(self,opposite,stand,is_reta, estimate=False):
         total_damage = 0
-        if(self.attack >= opposite.attack):
-            damageMin = int(self.min_damage * (1 + (self.attack - opposite.attack) * 0.05) * self.amount)
-            damageMax = int(self.max_damage * (1 + (self.attack - opposite.attack) * 0.05) * self.amount)
+        if(self.attack >= opposite.defense):
+            power = 1 + min((self.attack - opposite.defense),60) * 0.05
+            damageMin = int(self.min_damage * power * self.amount)
+            damageMax = int(self.max_damage * power * self.amount)
         else:
-            damageMin = int(self.min_damage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
-            damageMax = int(self.max_damage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
+            power = 1 + max((self.attack - opposite.defense),-30) * 0.025
+            damageMin = max(int(self.min_damage * power * self.amount),1)
+            damageMax = max(int(self.max_damage * power * self.amount),1)
         damage = int((damageMin+damageMax)/2) if estimate else random.randint(damageMin,damageMax)
         can_shoot = self.can_shoot()
         if(self.is_shooter):
@@ -234,20 +235,20 @@ class BStack(object):
                 if (not estimate):
                     head = "reta" if is_reta else "make"
                     tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, st.name,st.amount, first_HP_Left)
-                    logger.info(tt,True)
+                    logger.debug(tt,True)
                     if(opposite.amount == 0):
-                        logger.info("{} perished".format(opposite.name),True)
+                        logger.debug("{} perished".format(opposite.name),True)
         real_damage, killed, first_HP_Left = opposite.damaged(damage)
         total_damage += real_damage
         if(not estimate):
             if(can_shoot): # damage is done and enemy may die, so this flag may change
                 half = "(half)" if self.is_half(opposite) else "(full)"
-                logger.info("shoot{} {}".format(half,opposite.name),True)
+                logger.debug("shoot{} {}".format(half,opposite.name),True)
             head = "reta" if is_reta else "make"
             tt = "{} {} dmg killed {} {} {} left, HP {}".format(head,real_damage, killed, opposite.name,opposite.amount, first_HP_Left)
-            logger.info(tt,True)
+            logger.debug(tt,True)
             if(opposite.amount == 0):
-                logger.info("{} perished".format(opposite.name),True)
+                logger.debug("{} perished".format(opposite.name),True)
         return total_damage,killed,first_HP_Left
     def meeleAttack(self,opposite,dest,is_retaliate):
         self.do_attack(opposite,dest)
@@ -301,7 +302,7 @@ class BStack(object):
     def get_distance(self, dist):
         return  Battle.bGetDistance(self,dist)
     def shoot(self,opposite):
-        logger.info('{} shooting {}'.format(self.name,opposite.name))
+        logger.debug('{} shooting {}'.format(self.name,opposite.name))
         self.do_attack(opposite,self.get_position())
         self.shots -= 1
         return
@@ -323,7 +324,7 @@ class BStack(object):
         return
     # def legalMoves(self):
     #     if (self.had_moved):
-    #         logger.info("sth wrong happen! {} is moved!!!".format(self.name))
+    #         logger.error("sth wrong happen! {} is moved!!!".format(self.name))
     #         return 0
     #     #ret = {'wait': self.had_waited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
     #     legalMoves = []
@@ -366,6 +367,9 @@ class BStack(object):
                 unreach.append(sts)
         return attackable,unreach
     def do_attack(self,defender_orig,stand,estimate = False):
+        if self.had_moved:
+            logger.error(f"{self.name}({self.y},{self.x}) had moved already")
+            exit(-1)
         damage_get = 0
         damage_dealt = 0
         if(estimate):
@@ -457,7 +461,7 @@ class BStack(object):
                 else:
                     next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
             else:
-                logger.info("not implemented action!!",True)
+                logger.error("not implemented action!!",True)
             if not ret_obs:
                 return next_act
             # act_id = torch.tensor([[0]]) if act_id < 0 else torch.tensor([[act_id]])
@@ -475,7 +479,7 @@ class BStack(object):
         elif self.by_AI == 0:
             return
         else:
-            logger.info("no way to contrl the stack!!")
+            logger.error("no way to contrl the stack!!")
             exit(-1)
 
 
@@ -548,6 +552,7 @@ class Battle(object):
         cp.sortStack()
         return cp
     def loadFile(self,file,shuffle_postion = True):
+        bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
@@ -557,6 +562,8 @@ class Battle(object):
                 ys = np.random.choice(li,size=len(root['army{}'.format(i)]), replace=False)
                 j = 0
                 for id,num,py,px in root['army{}'.format(i)]:
+                    assert bf[py, px] != 1
+                    bf[py, px] = 1
                     x = crList[id]
                     st = BStack()
                     st.attack = x['attack']
@@ -607,18 +614,29 @@ class Battle(object):
             # for x in root['obs']:
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
-    def load_curriculum(self,file):
+
+    def load_battle(self,file,load_ai_side = False):
+        bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
-        with open(file) as JsonFile:
-            js = json.load(JsonFile)
-            curr = js["stacks"]
-            self.round = js['round']
-        curr = np.array(curr).reshape(14,-1)
+        if isinstance(file,str):
+            with open(file) as JsonFile:
+                js = json.load(JsonFile)
+                curr = js["stacks"]
+                curr = np.array(curr)
+                self.round = js['round']
+                if load_ai_side:
+                    test_side = random.choice(js['test_AI'])
+                    self.by_AI = [1,1]
+                    self.by_AI[test_side] = 2
+        else:
+            curr,self.round = file
         for i in range(14):
             py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots = curr[i]
             if px == 0:
                 break
+            assert bf[py,px] != 1
+            bf[py, px] = 1
             x = crList[id]
             st = BStack()
             st.attack = attack
@@ -656,7 +674,7 @@ class Battle(object):
                 self.defender_stacks.append(st)
             else:
                 self.attacker_stacks.append(st)
-    def dump_curriculum(self,dir):
+    def dump_battle(self,dir):
         files = []
         for f in os.listdir(dir):
             tmp_f = os.path.join(dir,f)
@@ -671,12 +689,12 @@ class Battle(object):
         dump_in = os.path.join(dir, f'{nmax}.json')
         attri_stack = self.current_state_feature(curriculum=True)
         with open(dump_in,'w', encoding='utf-8') as JsonFile:
-            json.dump({'stacks':attri_stack.reshape(-1).tolist(),'round':self.round},JsonFile)
+            JsonFile.write(pprint.pformat({'stacks':attri_stack.tolist(),'round':self.round},indent=1,width=256).replace('\'','"'))
         print(f"states dumped in {dump_in}")
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
         if(not curSt.checkPosition(bTo.x,bTo.y)):
-            logger.info('dist {},{} not valid'.format(bTo.y,bTo.x))
+            logger.error('dist {},{} not valid'.format(bTo.y,bTo.x))
             return False
         bf = curSt.get_global_state(exclude_me=False)
         if(bAtt):
@@ -694,15 +712,15 @@ class Battle(object):
         if((yDst >= 0 and xDst >= 0) or (yDst < 0 and xDst < 0)):
             return max(abs(yDst),abs(xDst))
         return abs(yDst) + abs(xDst)
-    def move(self,bFrom,bTo):
-        srcs = self.findStack(bFrom)
-        if(len(srcs) == 0):
-            logger.info("sth wrong move from {},not exist".format(bFrom))
+    def move(self,bFrom,bTo,and_attack = False):
+        if bFrom.had_moved:
+            logger.error(f"{bFrom.name}({bFrom.y},{bFrom.x}) had moved already")
+            exit(-1)
+        bFrom.x = bTo.x
+        bFrom.y = bTo.y
+        if and_attack:
             return
-        src = srcs[0]
-        src.x = bTo.x
-        src.y = bTo.y
-        src.had_moved = True
+        bFrom.had_moved = True
 
     def sortStack(self):
         self.last_stack = self.cur_stack
@@ -763,8 +781,8 @@ class Battle(object):
     def direction_to_hex(self, mySelf, dirct):
         zigzagCorrection =0 if (mySelf.y % 2) else 1
         if(dirct < 0 or dirct > 5):
-            logger.info('wrong direction {}'.format(dirct))
-            return None
+            logger.error('wrong direction {}'.format(dirct))
+            exit(-1)
         if(dirct == 0):
             return BHex(mySelf.x - 1,mySelf.y)
         if(dirct == 1):
@@ -800,7 +818,7 @@ class Battle(object):
         for st in self.stacks:
             live[st.side] = live[st.side] or st.is_alive()
         if self.round > 20:
-            return True,-1
+            return True,0
         return not (live[0] and live[1]),self.currentPlayer()
 
     def getHash(self):
@@ -834,59 +852,63 @@ class Battle(object):
             self.sortStack()
         if(not is_self_play):
             side = "" if self.cur_stack.side else "me "
-            logger.info("now it's {}{} turn".format(side, self.cur_stack.name), True)
+            logger.debug("now it's {}{} turn".format(side, self.cur_stack.name), True)
 
     def newRound(self):
         self.round += 1
-        logger.info("now it's round {}".format(self.round))
+        logger.debug("now it's round {}".format(self.round))
         for st in self.stacks:
             if(st.is_alive()):
                 st.newRound()
     def doAction(self,action):
-        logger.log_text.clear()
-        logger.info(self.action2Str(action),True)
+        if log_gui_on:
+            logger.log_text.clear()
+        logger.debug(self.action2Str(action),True)
         if(self.cur_stack.had_moved):
-            logger.info("{} is already moved".format(self.cur_stack))
-            return
+            logger.error("{} is already moved".format(self.cur_stack))
+            exit(-1)
         if(action.type == action_type.wait):
             if (self.cur_stack.had_waited):
-                logger.info("{} is already waited".format(self.cur_stack))
-                return
+                logger.error("{} is already waited".format(self.cur_stack))
+                exit(-1)
             self.cur_stack.wait()
         elif(action.type == action_type.defend):
             self.cur_stack.defend()
         elif(action.type == action_type.move):
             if (self.cur_stack.x == action.dest.x and self.cur_stack.y == action.dest.y):
-                logger.info("can't move to where you already are!!")
-                return
+                logger.error("can't move to where you already are!!")
+                exit(-1)
             if (self.canReach(self.cur_stack, action.dest)):
                 self.move(self.cur_stack, action.dest)
             else:
-                logger.info("you can't reach ({},{})".format(action.dest.y,action.dest.x))
+                logger.error("you can't reach ({},{})".format(action.dest.y,action.dest.x))
+                exit(-1)
         elif(action.type == action_type.attack):
             dests = self.findStack(action.target,True)
             if(len(dests) == 0):
-                logger.info("wrong attack dist ({},{})".format(action.target.y,action.target.x))
-                return
+                logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
+                exit(-1)
             dest = dests[0]
             if (self.canReach(self.cur_stack, action.dest, action.target)):
-                self.move(self.cur_stack, action.dest)
+                self.move(self.cur_stack, action.dest,and_attack=True)
                 self.cur_stack.meeleAttack(dest, action.dest, False)
             else:
-                logger.info("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
+                logger.error("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
                 exit(-1)
         elif(action.type == action_type.shoot):
             dists = self.findStack(action.target, True)
             if (len(dists) == 0):
-                logger.info("wrong shoot dist ({},{})".format(action.target.y,action.target.x))
-                return
+                logger.error("wrong shoot dist ({},{})".format(action.target.y,action.target.x))
+                exit(-1)
             dist = dists[0]
             if (self.cur_stack.can_shoot(action.target)):
                 self.cur_stack.shoot(dist)
             else:
-                logger.info("{} can't shoot {}".format(self.cur_stack.name, dist.name))
+                logger.error("{} can't shoot {}".format(self.cur_stack.name, dist.name))
+                exit(-1)
         elif (action.type == action_type.spell):
-            logger.info("spell not implemented yet")
+            logger.error("spell not implemented yet")
+            exit(-1)
     def legal_act(self,level=0,act_id=0,spell_id=0,target_id=0):
         cur_stack = self.cur_stack
         if cur_stack.had_moved:

@@ -2,13 +2,30 @@
 import pygame  # 导入pygame库
 from pygame.locals import *  # 导入pygame库中的一些常量
 import sys # 导入sys库中的exit函数
+import H3_battle
 from H3_battle import *
 import math
 from enum import Enum
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 
+class log_with_gui(object):
+    def __init__(self,std_logger):
+        self.logger = std_logger
+        self.log_text = []
+    def info(self,text,to_gui = False):
+        # pass
+        self.logger.info(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def debug(self,text,to_gui = False):
+        # pass
+        self.logger.debug(text)
+        if(to_gui):
+            self.log_text.append(text)
 
+logger = log_with_gui(get_logger()[1])
+set_logger(True,logger)
 class BPoint:
     def __init__(self,x,y):
         self.x = x
@@ -245,12 +262,15 @@ class BattleInterface:
             elif event.type == pygame.MOUSEBUTTONUP:
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
-                    return self.act
+                    act = self.act
+                    self.cursor = self.cursor_move[3]
+                    self.act = None
+                    return act
                 else:
                     return self.next_act
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
-                    self.battle_engine.dump_curriculum(self.dump_dir)
+                    self.battle_engine.dump_battle(self.dump_dir)
                     return
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
@@ -374,11 +394,11 @@ def start_game():
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     debug = False
     battle = Battle(debug=debug,by_AI=[0,1])
-    if debug:
-        battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
-    else:
-        battle.loadFile("ENV/selfplay.json", shuffle_postion=True)
-        # battle.load_curriculum("ENV/curriculum/1.json")
+    # if debug:
+    #     battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
+    # else:
+    #     battle.loadFile("ENV/battles/debug1.json", shuffle_postion=True)
+    battle.load_battle("ENV/battles/1.json")
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()
