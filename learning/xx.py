@@ -16,11 +16,7 @@ from pstats import SortKey
 #
 # pcpu.print_callees("h3_ppo","forward")  #("h3_ppo","__call__")  # 可以显示哪个函数调用了哪些函数
 # pcuda.print_callees("h3_ppo","forward")  #("h3_ppo","__call__")
-def set_value2(value2):
-    global a
-    a = value2
-def get_value2():
-    return a
-set_value2(2)
-def print_a():
-    print(a)
+
+
+a = torch.tensor([[1,2],[3,4]])
+b = torch.argmax(a,dim=-1)[0].item()

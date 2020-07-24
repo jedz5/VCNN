@@ -67,16 +67,17 @@ class H3_policy(PGPolicy):
             mean, std = batch.rew.mean(), batch.rew.std()
             if std > self.__eps:
                 batch.rew = (batch.rew - mean) / std
+
         if self._lambda in [0, 1]:
-            return None,self.compute_episodic_return(
+            return self.compute_episodic_return(
                 batch, None, gamma=self._gamma, gae_lambda=self._lambda)
-        v_ = []
+        v_next = []
         with torch.no_grad():
             for b in batch.split(self._batch, shuffle=False): #
-                v_.append(self.ppo_net(**b.obs_next,critic_only = True))
-        v_ = torch.cat(v_, dim=0).cpu().numpy()
-        return v_,self.compute_episodic_return(
-            batch, v_, gamma=self._gamma, gae_lambda=self._lambda)
+                v_next.append(self.ppo_net(**b.obs_next,critic_only = True))
+        v_next = torch.cat(v_next, dim=0).cpu().numpy()
+        return self.compute_episodic_return(
+            batch, v_next, gamma=self._gamma, gae_lambda=self._lambda)
 
     def forward(self, ind,attri_stack,planes_stack,plane_glb,
                 env,print_act = False,
@@ -90,30 +91,52 @@ class H3_policy(PGPolicy):
         target_id = -1
         mask_spell = np.zeros(10, dtype=bool)
         spell_id = -1
-        act_logits = softmax(act_logits, mask_acts, self.device)
-        if print_act:
-            print(act_logits)
-            print(value)
-        act_id = self.dist_fn(act_logits).sample()[0].item()
-        if act_id == action_type.move.value:
-            mask_position = env.legal_act(level=1, act_id=act_id)
-            position_logits = softmax(position_logits, mask_position, self.device)
-            position_id = self.dist_fn(position_logits).sample()[0].item()
-        elif act_id == action_type.attack.value:
-            mask_targets = env.legal_act(level=1, act_id=act_id)
-            targets_prob = softmax(targets_logits, mask_targets, self.device)
-            if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.8:
-                target_id = self.dist_fn(targets_prob).sample()[0].item()
-            else:
-                ids = np.arange(len(mask_targets))
-                target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
-            mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-            position_logits = softmax(position_logits, mask_position, self.device)
-            if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.5:
+        if self.in_train:
+            act_logits = softmax(act_logits, mask_acts, self.device)
+            if print_act:
+                print(act_logits)
+                print(value)
+            act_id = self.dist_fn(act_logits).sample()[0].item()
+            if act_id == action_type.move.value:
+                mask_position = env.legal_act(level=1, act_id=act_id)
+                position_logits = softmax(position_logits, mask_position, self.device)
                 position_id = self.dist_fn(position_logits).sample()[0].item()
-        return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
-                'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
+            elif act_id == action_type.attack.value:
+                mask_targets = env.legal_act(level=1, act_id=act_id)
+                targets_prob = softmax(targets_logits, mask_targets, self.device)
+                if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.8:
+                    target_id = self.dist_fn(targets_prob).sample()[0].item()
+                else:
+                    ids = np.arange(len(mask_targets))
+                    target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
+                mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
+                position_logits = softmax(position_logits, mask_position, self.device)
+                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.5:
+                    position_id = self.dist_fn(position_logits).sample()[0].item()
+            return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
+                    'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
                 'mask_position': mask_position, 'value': value}
+        else:
+            act_logits = softmax(act_logits, mask_acts, self.device)
+            if print_act:
+                print(act_logits)
+                print(value)
+            act_id = torch.argmax(act_logits,dim=-1)[0].item()
+            if act_id == action_type.move.value:
+                mask_position = env.legal_act(level=1, act_id=act_id)
+                position_logits = softmax(position_logits, mask_position, self.device)
+                position_id = torch.argmax(position_logits,dim=-1)[0].item()
+            elif act_id == action_type.attack.value:
+                mask_targets = env.legal_act(level=1, act_id=act_id)
+                targets_prob = softmax(targets_logits, mask_targets, self.device)
+                target_id = torch.argmax(targets_prob, dim=-1)[0].item()
+                mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
+                position_logits = softmax(position_logits, mask_position, self.device)
+                if torch.sum(position_logits, dim=-1, keepdim=True).item() > 0.5:
+                    position_id = torch.argmax(position_logits, dim=-1)[0].item()
+            return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
+                    'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
+                    'mask_position': mask_position, 'value': value}
 
     def learn(self, batch, batch_size=None, repeat=3, **kwargs):
         self._batch = batch_size
@@ -251,7 +274,7 @@ def collect_eps(agent,file,mode = 1,n_step = 50,n_episode = 1,self_play = True):
         if mode:
             battle.load_battle(file)
         else:
-            battle.loadFile(file, shuffle_postion=False)
+            battle.loadFile(file, shuffle_postion=True)
         battle.checkNewRound()
         for ii in range(n_step * 2):
             acting_stack = battle.cur_stack
@@ -296,7 +319,7 @@ def collect_eps(agent,file,mode = 1,n_step = 50,n_episode = 1,self_play = True):
         buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
         battle = Battle(agent=agent)
         if mode:
-            battle.load_battle(file,load_ai_side=True)
+            battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
         else:
             battle.loadFile(file, shuffle_postion=False)
         battle.checkNewRound()
@@ -359,22 +382,28 @@ def profiles():
         acting_stack = battle.cur_stack
         battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True)
     print("end")
+def to_dev(agent,dev):
+    agent.to(dev)
+    agent.device = dev
+    agent.ppo_net.device = dev
+    agent.ppo_net.inpipe.device = dev
 def start_train():
     # 初始化 agent
     actor_critic = H3_net(dev)
-    optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
+    optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-4)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.92)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1,discount_factor=0.5)
     buffer = ReplayBuffer(6000,ignore_obs_next=True)
     bdir = "./ENV/curriculum"
     fss = os.listdir(bdir)
     count = 0
     while True:
         agent.eval()
-        agent.in_train = False
+        agent.in_train = True
+        to_dev(agent,"cpu")
         for _ in range(20):
             fjson = random.choice(fss)
-            print(f'this time {fjson}')
+            # print(f'this time {fjson}')
             fjson = os.path.join(bdir, fjson)
             # file = f"./ENV/debug{random.randint(1,3)}.json"
             buffer_ep = collect_eps(agent,fjson,self_play=False)
@@ -382,23 +411,35 @@ def start_train():
                 buffer.update(buffer_ep)
         batch_data, indice = buffer.sample(0)
         agent.train()
-        agent.in_train = True
-        v,batch_data = agent.process_gae(batch_data)
-        print(v.squeeze())
-        print(batch_data.returns)
-        # print(batch_data.returns.squeeze())
-        print(batch_data.act.act_id.astype(np.int))
+        batch_data = agent.process_gae(batch_data)
+        # v = []
+        # with torch.no_grad():
+        #     for b in batch_data.split(256, shuffle=False):  #
+        #         v.append(agent.ppo_net(**b.obs, critic_only=True))
+        # v = torch.cat(v, dim=0).cpu().numpy()
+        # print(v.squeeze())
+        # print(batch_data.returns)
+        # print(batch_data.act.act_id.astype(np.int))
+        to_dev(agent, "cuda")
         loss = agent.learn(batch_data,batch_size=256)
-        print(loss)
+        # v = []
+        # with torch.no_grad():
+        #     for b in batch_data.split(256, shuffle=False):  #
+        #         v.append(agent.ppo_net(**b.obs, critic_only=True))
+        # v = torch.cat(v, dim=0).cpu().numpy()
+        # print(v.squeeze())
+        #print(loss)
         #pdb.set_trace()
         agent.eval()
         agent.in_train = False
+        to_dev(agent, "cpu")
         fjson = random.choice(fss)
         fjson = os.path.join(bdir, fjson)
-        start_game(fjson,mode=1,agent=agent)
+        win_rate = start_game_noGUI(fjson,mode=1,agent=agent)
+        logger.info(f"test-{count} end, agent win rate = {win_rate}")
         buffer.reset()
         count += 1
-        if count == 100:
+        if count == 500:
             break
 def start_game(file,mode = 0,agent = None):
     import pygame
@@ -415,7 +456,7 @@ def start_game(file,mode = 0,agent = None):
     # debug = True
     battle = Battle(agent=agent)
     if mode:
-        battle.load_battle(file,load_ai_side=True)
+        battle.load_battle(file,load_ai_side=True,shuffle_postion=True)
     else:
         battle.loadFile(file,shuffle_postion=False)
     battle.checkNewRound()
@@ -433,29 +474,30 @@ def start_game(file,mode = 0,agent = None):
     print("game end")
     pygame.quit()
     return False
+
 def start_game_noGUI(file,mode = 0,agent = None,by_AI = [2,1]):
     #初始化 agent
+    test_win = 0
     for ii in range(20):
         battle = Battle(agent=agent)
         if mode:
-            battle.load_battle(file,load_ai_side=True)
+            battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
         else:
             battle.loadFile(file, shuffle_postion=False)
         battle.checkNewRound()
         next_act = battle.cur_stack.active_stack()
         # 事件循环(main loop)
-        test_win = 0
         while True:
             battle.doAction(next_act)
             battle.checkNewRound()
             if battle.check_battle_end():
                 winner = battle.get_winner()
-                logger.info(f"battle end, winner is {winner}")
+                logger.debug(f"battle end, winner is {winner}")
                 if battle.by_AI[winner] == 2:
                     test_win += 1
                 break
             next_act = battle.cur_stack.active_stack()
-    logger.info(f"test end, agent win rate = {test_win/20}")
+    return test_win/20
 def main():
     start_train()
     # start_game("ENV/curriculum/1.json",mode=1,by_AI=[0, 0])

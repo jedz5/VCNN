@@ -615,7 +615,7 @@ class Battle(object):
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
 
-    def load_battle(self,file,load_ai_side = False):
+    def load_battle(self,file,load_ai_side = False, shuffle_postion=False):
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -674,6 +674,8 @@ class Battle(object):
                 self.defender_stacks.append(st)
             else:
                 self.attacker_stacks.append(st)
+        if shuffle_postion:
+            self.init_stack_position()
     def dump_battle(self,dir):
         files = []
         for f in os.listdir(dir):
@@ -722,6 +724,23 @@ class Battle(object):
             return
         bFrom.had_moved = True
 
+    def init_stack_position(self):
+        mask = np.zeros([11, 17])
+        mask[:, 0] = 1
+        mask[:, 16] = 1
+        for st in self.stacks:
+            # base1 = random.random() * 2 + 0.1
+            # st.amount_base = int(st.amount_base * base1)
+            # st.amount = st.amount_base
+            pos = random.randint(1, 11 * 17 - 1)
+            while True:
+                if mask[int(pos / 17), pos % 17]:
+                    pos = random.randint(1, 11 * 17 - 1)
+                else:
+                    break
+            st.x = pos % 17
+            st.y = int(pos / 17)
+            mask[st.y, st.x] = 1
     def sortStack(self):
         self.last_stack = self.cur_stack
         self.toMove = list(filter(lambda elem: elem.is_alive() and not elem.had_moved and not elem.had_waited, self.stacks))
@@ -845,7 +864,7 @@ class Battle(object):
     def checkNewRound(self,is_self_play = 0):
         self.sortStack()
         if self.check_battle_end():
-            logger.info("battle end~")
+            logger.debug("battle end~")
             return
         if(self.stackQueue[0].had_moved):
             self.newRound()
