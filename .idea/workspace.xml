@@ -55,14 +55,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="修复了shuffle=False之后仍然学习不到的版本">
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learning/xx.py" beforeDir="false" afterPath="$PROJECT_DIR$/learning/xx.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,45 +100,6 @@
     <expand />
     <select />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="508">
-              <caret line="487" column="43" selection-start-line="487" selection-start-column="43" selection-end-line="487" selection-end-column="43" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/H3_battle.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="183">
-              <caret line="455" column="34" lean-forward="true" selection-start-line="455" selection-start-column="34" selection-end-line="455" selection-end-column="34" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="mock://D:/doc/pstats/cpu_cuda500_local.pstat">
-          <provider selected="true" editor-type-id="profiler-session-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PG_model/discrete_net.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1426">
-              <caret line="69" column="19" selection-start-line="69" selection-start-column="13" selection-end-line="69" selection-end-column="19" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -160,14 +119,6 @@
       </set>
     </option>
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/PG_model/discrete_net.py" />
-        <option value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
-      </list>
-    </option>
-  </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-4" />
     <option name="width" value="1342" />
@@ -177,30 +128,6 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="PG_model" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -208,13 +135,13 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="D:/doc/pstats" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../DNN/Tensorflow-eager-execution-master" />
     <property name="settings.editor.selected.configurable" value="File.Encoding" />
     <property name="settings.editor.splitter.proportion" value="0.23474178" />
   </component>
@@ -240,18 +167,6 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\project\VCNN\ENV" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager" selected="Python.h3_ppo">
     <configuration default="true" type="DjangoTestsConfigurationType">
@@ -298,6 +213,19 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="ADDITIONAL_ARGS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Python.FlaskServer" factoryName="Flask server">
+      <module name="ddd" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
     <configuration name="H3_battle" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -392,9 +320,6 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="D:\Program Files\python376\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -518,19 +443,6 @@
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Python.FlaskServer" factoryName="Flask server">
-      <module name="ddd" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="launchJavascriptDebuger" value="false" />
       <method v="2" />
     </configuration>
     <configuration default="true" type="Tox" factoryName="Tox">
@@ -740,7 +652,8 @@
       <workItem from="1594864993634" duration="18941000" />
       <workItem from="1594944284740" duration="18449000" />
       <workItem from="1595558048086" duration="9156000" />
-      <workItem from="1595576336302" duration="1748000" />
+      <workItem from="1595576336302" duration="4698000" />
+      <workItem from="1595853306882" duration="255000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -1001,11 +914,18 @@
       <option name="project" value="LOCAL" />
       <updated>1595474454698</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="推理阶段用cpu learn阶段用cuda">
+      <created>1595578201249</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1595578201249</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1001170000" />
+    <option name="totallyTimeSpent" value="1004375000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1015,35 +935,6 @@
       <are-packages-shown value="true" />
       <is-autoscroll-to-source value="true" />
     </todo-panel>
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="-4" y="0" width="1342" height="1395" extended-state="0" />
-    <editor active="true" />
-    <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.33333334" visible="true" weight="0.07492114" />
-      <window_info id="Structure" order="1" sideWeight="0.6666667" side_tool="true" visible="true" weight="0.07492114" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.515807" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39933443" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Python Console" order="12" weight="0.43760398" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info anchor="right" id="SciView" order="4" />
-      <window_info anchor="right" id="Database" order="5" />
-      <window_info anchor="right" id="Coverage" order="6" side_tool="true" />
-    </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -1061,18 +952,41 @@
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
-        <entry key="MAIN">
+        <entry key="1">
           <value>
             <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
+              <option name="SHOW_ONLY_AFFECTED_CHANGES" value="true" />
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                  <entry key="roots">
+                    <value>
+                      <list>
+                        <option value="$PROJECT_DIR$" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
               </option>
             </State>
           </value>
         </entry>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="1" value="TOOL_WINDOW" />
       </map>
     </option>
     <option name="RECENT_FILTERS">
@@ -1089,9 +1003,9 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="matplot" />
     <MESSAGE value="one batllte" />
     <MESSAGE value="install -&gt; builds" />
     <MESSAGE value="2020.2.13 前期工作提交+elo.py 开始elo分析" />
@@ -1116,7 +1030,8 @@
     <MESSAGE value="开始selfplay性能测试" />
     <MESSAGE value="cmake vcbattle" />
     <MESSAGE value="修复了shuffle=False之后仍然学习不到的版本" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复了shuffle=False之后仍然学习不到的版本" />
+    <MESSAGE value="推理阶段用cpu learn阶段用cuda" />
+    <option name="LAST_COMMIT_MESSAGE" value="推理阶段用cpu learn阶段用cuda" />
   </component>
   <component name="WindowStateProjectService">
     <state x="-1339" y="200" key="#Inspections" timestamp="1593413796184">
@@ -1132,23 +1047,23 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1055" y="184" width="386" height="709" key="#com.intellij.ide.ui.customization.CustomizableActionsPanel.FindAvailableActionsDialog/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593499710863" />
-    <state x="1153" y="434" width="824" height="404" key="#xdebugger.evaluate" timestamp="1595387737610">
+    <state x="991" y="850" width="824" height="404" key="#xdebugger.evaluate" timestamp="1595772119128">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261417271" />
     <state x="-1184" y="338" key="#xdebugger.evaluate/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593693148892" />
     <state x="1550" y="315" key="#xdebugger.evaluate/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594521595325" />
-    <state x="1153" y="434" width="824" height="404" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595387737610" />
+    <state x="991" y="850" width="824" height="404" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595772119128" />
     <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2" timestamp="1593397859947">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1462" y="14" width="1396" height="1052" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593397859947" />
-    <state width="2256" height="751" key="DebuggerActiveHint" timestamp="1595471925006">
+    <state width="2256" height="751" key="DebuggerActiveHint" timestamp="1595928299141">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261407923" />
     <state width="1449" height="582" key="DebuggerActiveHint/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593682283986" />
-    <state width="2256" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595471925006" />
+    <state width="2256" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928299141" />
     <state x="91" y="91" width="2378" height="1210" key="DiffContextDialog" timestamp="1595509939624">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
@@ -1157,76 +1072,77 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1796" y="323" width="1426" height="621" key="EnvironmentVariablesDialog/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593518318967" />
-    <state x="923" y="320" key="FileChooserDialogImpl" timestamp="1594210648553">
-      <screen x="0" y="0" width="1772" height="1080" />
+    <state x="928" y="339" key="FileChooserDialogImpl" timestamp="1595904438843">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="-920" y="320" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593413829383" />
     <state x="-920" y="320" key="FileChooserDialogImpl/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593433717023" />
     <state x="923" y="320" key="FileChooserDialogImpl/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594210648553" />
-    <state width="1309" height="702" key="GridCell.Tab.0.bottom" timestamp="1595513875261">
+    <state x="928" y="339" key="FileChooserDialogImpl/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595904438843" />
+    <state width="1309" height="269" key="GridCell.Tab.0.bottom" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.bottom/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.bottom/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.bottom/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1309" height="702" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.0.center" timestamp="1595513875261">
+    <state width="1309" height="269" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.0.center" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.center/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.center/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.center/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1309" height="702" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.0.left" timestamp="1595513875261">
+    <state width="1309" height="269" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.0.left" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.left/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973557" />
     <state width="1744" height="415" key="GridCell.Tab.0.left/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117469" />
     <state width="1189" height="132" key="GridCell.Tab.0.left/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1309" height="702" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.0.right" timestamp="1595513875261">
+    <state width="1309" height="269" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.0.right" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.0.right/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="415" key="GridCell.Tab.0.right/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594437117470" />
     <state width="1189" height="132" key="GridCell.Tab.0.right/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911897" />
-    <state width="1309" height="702" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.1.bottom" timestamp="1595513875262">
+    <state width="1309" height="269" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.1.bottom" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.bottom/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973559" />
     <state width="1744" height="327" key="GridCell.Tab.1.bottom/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.bottom/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1309" height="702" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875262" />
-    <state width="1309" height="702" key="GridCell.Tab.1.center" timestamp="1595513875261">
+    <state width="1309" height="269" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.1.center" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.center/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="327" key="GridCell.Tab.1.center/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.center/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1309" height="702" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.1.left" timestamp="1595513875261">
+    <state width="1309" height="269" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.1.left" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.left/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973558" />
     <state width="1744" height="327" key="GridCell.Tab.1.left/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.left/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1309" height="702" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875261" />
-    <state width="1309" height="702" key="GridCell.Tab.1.right" timestamp="1595513875262">
+    <state width="1309" height="269" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
+    <state width="1309" height="269" key="GridCell.Tab.1.right" timestamp="1595928749153">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="946" height="267" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414591660" />
     <state width="1892" height="187" key="GridCell.Tab.1.right/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593695973559" />
     <state width="1744" height="327" key="GridCell.Tab.1.right/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594213308988" />
     <state width="1189" height="132" key="GridCell.Tab.1.right/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594564911898" />
-    <state width="1309" height="702" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595513875262" />
+    <state width="1309" height="269" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595928749153" />
     <state x="-1262" y="168" key="RollbackChangesDialog" timestamp="1591157685962">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -1242,11 +1158,11 @@
     <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593397865844" />
     <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593741687316" />
     <state x="601" y="264" key="Vcs.Push.Dialog.v2/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595474459045" />
-    <state width="1295" height="711" key="XDebugger.FullValuePopup" timestamp="1595471924998">
+    <state width="1295" height="711" key="XDebugger.FullValuePopup" timestamp="1595767461993">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="971" height="551" key="XDebugger.FullValuePopup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592882643556" />
-    <state width="1295" height="711" key="XDebugger.FullValuePopup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595471924998" />
+    <state width="1295" height="711" key="XDebugger.FullValuePopup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595767461993" />
     <state width="1002" height="690" key="javadoc.popup" timestamp="1595216245406">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
@@ -1258,7 +1174,7 @@
     </state>
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593057744301" />
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.982/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593418484188" />
-    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup" timestamp="1595497025968">
+    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup" timestamp="1595766191699">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593414532365" />
@@ -1266,7 +1182,7 @@
     <state x="419" y="439" width="840" height="1032" key="search.everywhere.popup/1920.0.1772.1080/0.0.1772.1080@0.0.1772.1080" timestamp="1594436710085" />
     <state x="2339" y="439" width="840" height="1032" key="search.everywhere.popup/1920.0.1772.1080/0.0.1772.1080@1920.0.1772.1080" timestamp="1594434938057" />
     <state x="605" y="545" width="1214" height="1283" key="search.everywhere.popup/2560.0.1920.982/0.0.2560.1342@0.0.2560.1342" timestamp="1594524783970" />
-    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595497025968" />
+    <state x="605" y="565" width="1214" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595766191699" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1302,7 +1218,7 @@
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://D:/Program Files/python376/Lib/pstats.py</url>
+          <url>file://$PROJECT_DIR$/../../Program Files/python376/Lib/pstats.py</url>
           <line>383</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
@@ -1325,16 +1241,6 @@
           <url>file://$PROJECT_DIR$/../DNN/tianshou/tianshou/policy/base.py</url>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>423</line>
-          <option name="timeStamp" value="42" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PG_model/discrete_net.py</url>
-          <line>94</line>
-          <option name="timeStamp" value="43" />
-        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -1344,56 +1250,6 @@
         </breakpoint>
       </default-breakpoints>
     </breakpoint-manager>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../DNN/tianshou/tianshou/policy/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="54" column="16" lean-forward="true" selection-start-line="54" selection-start-column="16" selection-end-line="54" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../DNN/tianshou/tianshou/policy/modelfree/pg.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/python376/Lib/site-packages/torch/nn/modules/module.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="430" column="12" selection-start-line="430" selection-start-column="12" selection-end-line="430" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="508">
-          <caret line="487" column="43" selection-start-line="487" selection-start-column="43" selection-end-line="487" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PG_model/discrete_net.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1426">
-          <caret line="69" column="19" selection-start-line="69" selection-start-column="13" selection-end-line="69" selection-end-column="19" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/H3_battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="183">
-          <caret line="455" column="34" lean-forward="true" selection-start-line="455" selection-start-column="34" selection-end-line="455" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
   </component>
   <component name="masterDetails">
     <states>

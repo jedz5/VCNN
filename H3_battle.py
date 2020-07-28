@@ -414,7 +414,7 @@ class BStack(object):
         else:
             return BAction(action_type.move, dest=dest)
 
-    def active_stack(self,ret_obs = False,print_act = False):
+    def active_stack(self,ret_obs = False,print_act = False,debug = False):
         if self.by_AI == 1:
             attackable, unreach = self.potential_target()
             if not self.in_battle.debug:
@@ -437,7 +437,10 @@ class BStack(object):
             # {'act_id':act_id, 'spell_id':spell_id,'target_id':target_id,'position_id':position_id,
             #             'mask_acts':mask_acts,'mask_spell':mask_spell,'mask_targets':mask_targets,'mask_position':mask_position}
             agent = self.in_battle.agent
-            ind, attri_stack, planes_stack, plane_glb = self.in_battle.current_state_feature()
+            if debug:
+                ind, attri_stack, planes_stack, plane_glb,debug_attri_stack = self.in_battle.current_state_feature(debug = debug)
+            else:
+                ind, attri_stack, planes_stack, plane_glb = self.in_battle.current_state_feature()
             if agent.in_train:
                 result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
             else:
@@ -475,7 +478,10 @@ class BStack(object):
             obs = {'ind':ind, 'attri_stack':attri_stack, 'planes_stack':planes_stack, 'plane_glb':plane_glb}
             acts = {'act_id':act_id,'position_id':position_id,'target_id':target_id,'spell_id':spell_id}
             mask = {'mask_acts':result['mask_acts'],'mask_spell':result['mask_spell'],'mask_targets':result['mask_targets'],'mask_position':result['mask_position']}
-            return next_act,obs,acts,mask
+            if not debug:
+                return next_act,obs,acts,mask
+            else:
+                return next_act, obs, acts, mask,debug_attri_stack
         elif self.by_AI == 0:
             return
         else:
@@ -728,6 +734,8 @@ class Battle(object):
         mask = np.zeros([11, 17])
         mask[:, 0] = 1
         mask[:, 16] = 1
+        self.attacker_stacks[0].amount = random.randint(25,35)
+        self.defender_stacks[0].amount = random.randint(3, 5)
         for st in self.stacks:
             # base1 = random.random() * 2 + 0.1
             # st.amount_base = int(st.amount_base * base1)
@@ -757,9 +765,11 @@ class Battle(object):
 
     def currentState(self):
         pass
-    def current_state_feature(self,curriculum = False):
+    def current_state_feature(self,curriculum = False,debug = False):
         planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
         attri_stack = np.zeros((14,14),dtype=int) if not curriculum else np.zeros((14,20),dtype=int)
+        if debug:
+            debug_attri_stack = np.zeros((14,20),dtype=int)
         ind = np.array([122] * 14,dtype=int)
         for i,st in enumerate(self.stackQueue):
             bf = st.get_global_state()
@@ -778,6 +788,11 @@ class Battle(object):
                     [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
                      int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
                      st.shots])
+                if debug:
+                    debug_attri_stack[i] = np.array(
+                    [st.y, st.x, st.id, st.side, st.amount, st.amount_base, st.first_HP_Left, st.health, st.attack, st.defense, st.max_damage, st.min_damage,
+                     int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
+                     st.shots])
         if curriculum:
             return attri_stack
         plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)
@@ -787,7 +802,10 @@ class Battle(object):
             plane_glb[1,st.y, st.x] = 1
         for st in self.obstacles:
             plane_glb[2,st.y, st.x] = 1
-        return ind, attri_stack, planes_stack, plane_glb
+        if debug:
+            return ind, attri_stack, planes_stack, plane_glb,debug_attri_stack
+        else:
+            return ind, attri_stack, planes_stack, plane_glb
 
 
 

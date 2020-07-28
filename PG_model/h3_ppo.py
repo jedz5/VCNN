@@ -282,7 +282,7 @@ def collect_eps(agent,file,mode = 1,n_step = 50,n_episode = 1,self_play = True):
             battle.doAction(battle_action)
             battle.checkNewRound()
             done = battle.check_battle_end()
-            reward = -0.01
+            reward = 0
             if acting_stack.side == 0:
                 if done:
                     if battle.get_winner() == 0:
@@ -319,7 +319,7 @@ def collect_eps(agent,file,mode = 1,n_step = 50,n_episode = 1,self_play = True):
         buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
         battle = Battle(agent=agent)
         if mode:
-            battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
+            battle.load_battle(file,load_ai_side=True, shuffle_postion=True)
         else:
             battle.loadFile(file, shuffle_postion=False)
         battle.checkNewRound()
@@ -330,44 +330,35 @@ def collect_eps(agent,file,mode = 1,n_step = 50,n_episode = 1,self_play = True):
                 battle_action = acting_stack.active_stack()
                 obs, acts, mask = None,None,None
             else:
-                battle_action,obs,acts,mask = acting_stack.active_stack(ret_obs=True)
+                debug_a = True
+                if not debug_a:
+                    battle_action,obs,acts,mask = acting_stack.active_stack(ret_obs=True)
+                else:
+                    battle_action, obs, acts, mask,debug_attri_stack = acting_stack.active_stack(ret_obs=True,debug=True)
                 had_acted = True
             battle.doAction(battle_action)
             battle.checkNewRound()
             #battle.curStack had updated
             done = battle.check_battle_end()
-            reward = -0.01
+            reward = 0
             if done:
                 agent_win = battle.by_AI[battle.get_winner()] == 2
                 reward = 1 if agent_win else -1
                 if acting_stack.by_AI == 2:
+                    if debug_a:
+                        mask["debug_attri_stack"] = debug_attri_stack
                     buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
                 else:
                     if had_acted:
                         buffer.rew[len(buffer) - 1] = reward
                 break
             if acting_stack.by_AI == 2:
-                buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
+                if debug_a:
+                    mask["debug_attri_stack"] = debug_attri_stack
+                buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
         if len(buffer) != 0:
             buffer.done[len(buffer) - 1] = True
         return buffer
-# def init_stack_position(battle):
-#     mask = np.zeros([11,17])
-#     mask[:,0] = 1
-#     mask[:, 16] = 1
-#     for st in battle.stacks:
-#         base1 = random.random() * 2 + 0.1
-#         st.amount_base = int(st.amount_base * base1)
-#         st.amount = st.amount_base
-#         pos = random.randint(1,11*17 - 1)
-#         while True:
-#             if mask[int(pos/17),pos%17]:
-#                 pos = random.randint(1, 11 * 17 - 1)
-#             else:
-#                 break
-#         st.x = pos%17
-#         st.y = int(pos/17)
-#         mask[st.y,st.x] = 1
 def profiles():
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
@@ -400,7 +391,7 @@ def start_train():
     while True:
         agent.eval()
         agent.in_train = True
-        to_dev(agent,"cpu")
+        # to_dev(agent,"cpu")
         for _ in range(20):
             fjson = random.choice(fss)
             # print(f'this time {fjson}')
@@ -412,30 +403,30 @@ def start_train():
         batch_data, indice = buffer.sample(0)
         agent.train()
         batch_data = agent.process_gae(batch_data)
-        # v = []
-        # with torch.no_grad():
-        #     for b in batch_data.split(256, shuffle=False):  #
-        #         v.append(agent.ppo_net(**b.obs, critic_only=True))
-        # v = torch.cat(v, dim=0).cpu().numpy()
-        # print(v.squeeze())
-        # print(batch_data.returns)
-        # print(batch_data.act.act_id.astype(np.int))
-        to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=256)
-        # v = []
-        # with torch.no_grad():
-        #     for b in batch_data.split(256, shuffle=False):  #
-        #         v.append(agent.ppo_net(**b.obs, critic_only=True))
-        # v = torch.cat(v, dim=0).cpu().numpy()
-        # print(v.squeeze())
+        v = []
+        with torch.no_grad():
+            for b in batch_data.split(256, shuffle=False):  #
+                v.append(agent.ppo_net(**b.obs, critic_only=True))
+        v = torch.cat(v, dim=0).cpu().numpy()
+        print(v.squeeze())
+        print(batch_data.returns)
+        print(batch_data.act.act_id.astype(np.int))
+        # to_dev(agent, "cuda")
+        loss = agent.learn(batch_data,batch_size=32,repeat=10)
+        v = []
+        with torch.no_grad():
+            for b in batch_data.split(256, shuffle=False):  #
+                v.append(agent.ppo_net(**b.obs, critic_only=True))
+        v = torch.cat(v, dim=0).cpu().numpy()
+        print(v.squeeze())
         #print(loss)
         #pdb.set_trace()
         agent.eval()
         agent.in_train = False
-        to_dev(agent, "cpu")
+        # to_dev(agent, "cpu")
         fjson = random.choice(fss)
         fjson = os.path.join(bdir, fjson)
-        win_rate = start_game_noGUI(fjson,mode=1,agent=agent)
+        win_rate = start_game(fjson,mode=1,agent=agent)
         logger.info(f"test-{count} end, agent win rate = {win_rate}")
         buffer.reset()
         count += 1
