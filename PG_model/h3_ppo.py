@@ -346,7 +346,7 @@ def start_game(file,agent = None,by_AI = [2,1]):
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
     battle.loadFile(file,shuffle_postion=False)
-    # init_stack_position(battle)
+    init_stack_position(battle)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack(print_act=True)

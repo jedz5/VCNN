@@ -475,12 +475,13 @@ class BStack(object):
             #             'mask_acts':mask_acts,'mask_spell':mask_spell,'mask_targets':mask_targets,'mask_position':mask_position}
             agent = self.in_battle.agent
             ind, attri_stack, planes_stack, plane_glb = self.in_battle.currentStateFeature()
-            if agent.in_train:
-                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
-            else:
-                with torch.no_grad():
-                    result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,
-                                   print_act)
+            result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
+            # if agent.in_train:
+            #     result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
+            # else:
+            #     with torch.no_grad():
+            #         result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,
+            #                        print_act)
             act_id = result['act_id']
             position_id = result['position_id']
             target_id = result['target_id']
