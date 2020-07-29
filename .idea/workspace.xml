@@ -55,13 +55,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="在debug模式下attri_stack增加x,y位置信息">
-      <change afterPath="$PROJECT_DIR$/ENV/debug2.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/VCNN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/stdafx.h" beforeDir="false" afterPath="$PROJECT_DIR$/VCCC/VCbattle/stdafx.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -285,6 +283,9 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -360,12 +361,12 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.gpu_test_local" />
-      <item itemvalue="Python.pong_ppo" />
-      <item itemvalue="Python.xx" />
       <item itemvalue="Python.H3_battleInterface" />
       <item itemvalue="Python.H3_battle" />
+      <item itemvalue="Python.gpu_test_local" />
       <item itemvalue="Python.h3_ppo" />
+      <item itemvalue="Python.pong_ppo" />
+      <item itemvalue="Python.xx" />
     </list>
     <recent_temporary>
       <list>
