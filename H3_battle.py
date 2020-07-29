@@ -14,7 +14,14 @@ handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 std_logger.addHandler(handler)
-
+import platform
+Linux = "Linux" == platform.system()
+import sys
+if Linux:
+    sys.path.extend(['/home/enigma/work/project/VCNN/','/home/enigma/work/project/VCNN/VCCC/VCbattle/build'])
+else:
+    sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
+import VCbattle
 
 class log_with_gui(object):
     def __init__(self,std_logger):
@@ -162,68 +169,69 @@ class BStack(object):
         if(other):
             return self.x == other.x and self.y == other.y
         return False
-    def get_global_state(self, query_type = None, exclude_me = True):
-        bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
-        bf.fill(-1)
-        bf[:, 0] = 100
-        bf[:, -1] = 100
-        for sts in self.in_battle.stacks:
-            if(sts.is_alive()):
-                bf[sts.y,sts.x] = 400 if sts.side == self.side else 200
-        for obs in self.in_battle.obstacles:
-            bf[obs.y,obs.x] = 800
-        #init battleField end
-        # accessable  begin
-        travellers = []
-        bf[self.y,self.x] = self.speed
-        travellers.append(self)
-        if(not self.is_fly):
-            while(len(travellers) > 0):
-                current = travellers.pop()
-                speedLeft = bf[current.y,current.x] - 1
-                for adj in self.get_neighbor(current):
-                    if(bf[adj.y,adj.x] < speedLeft):
-                        bf[adj.y,adj.x] = speedLeft
-                        if (speedLeft > 0):
-                            travellers.append(adj)
-                            if query_type == action_query_type.can_move:
-                                return True
-        else: #fly
-            for ii in range(self.in_battle.bFieldHeight):
-                for jj in range(1, self.in_battle.bFieldWidth - 1):
-                    if bf[ii,jj] > 50:
-                        continue
-                    d = self.get_distance(BHex(jj, ii))
-                    if(0 < d <= self.speed):
-                        bf[ii,jj] = self.speed - d
-                        if query_type == action_query_type.can_move:
-                            return True
-        #no space to move to
-        if query_type == action_query_type.can_move:
-            return False
-        #accessable  end
-        #attackable begin
-        for sts in self.in_battle.stacks:
-            if(not sts.is_alive()):
-                continue
-            if sts.side != self.side:
-                if (self.can_shoot()):
-                    bf[sts.y,sts.x] = 201  # enemy and attackbale
-                    if query_type == action_query_type.can_attack:
-                        return True
-                else:
-                    for neib in self.get_neighbor(sts):
-                        if (0 <= bf[neib.y,neib.x] < 50):
-                            bf[sts.y,sts.x] = 201
-                            if query_type == action_query_type.can_attack:
-                                return True
-                            break
-        #no target to reach
-        if query_type == action_query_type.can_attack:
-            return False
-        if exclude_me:
-            bf[self.y,self.x] = 401
-        return bf
+    def get_global_state(self, query_type = -1, exclude_me = True):
+        return VCbattle.get_global_state(self, self.in_battle.stacks, query_type, exclude_me)
+        # bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
+        # bf.fill(-1)
+        # bf[:, 0] = 100
+        # bf[:, -1] = 100
+        # for sts in self.in_battle.stacks:
+        #     if(sts.is_alive()):
+        #         bf[sts.y,sts.x] = 400 if sts.side == self.side else 200
+        # for obs in self.in_battle.obstacles:
+        #     bf[obs.y,obs.x] = 800
+        # #init battleField end
+        # # accessable  begin
+        # travellers = []
+        # bf[self.y,self.x] = self.speed
+        # travellers.append(self)
+        # if(not self.is_fly):
+        #     while(len(travellers) > 0):
+        #         current = travellers.pop()
+        #         speedLeft = bf[current.y,current.x] - 1
+        #         for adj in self.get_neighbor(current):
+        #             if(bf[adj.y,adj.x] < speedLeft):
+        #                 bf[adj.y,adj.x] = speedLeft
+        #                 if (speedLeft > 0):
+        #                     travellers.append(adj)
+        #                     if query_type == action_query_type.can_move:
+        #                         return True
+        # else: #fly
+        #     for ii in range(self.in_battle.bFieldHeight):
+        #         for jj in range(1, self.in_battle.bFieldWidth - 1):
+        #             if bf[ii,jj] > 50:
+        #                 continue
+        #             d = self.get_distance(BHex(jj, ii))
+        #             if(0 < d <= self.speed):
+        #                 bf[ii,jj] = self.speed - d
+        #                 if query_type == action_query_type.can_move:
+        #                     return True
+        # #no space to move to
+        # if query_type == action_query_type.can_move:
+        #     return False
+        # #accessable  end
+        # #attackable begin
+        # for sts in self.in_battle.stacks:
+        #     if(not sts.is_alive()):
+        #         continue
+        #     if sts.side != self.side:
+        #         if (self.can_shoot()):
+        #             bf[sts.y,sts.x] = 201  # enemy and attackbale
+        #             if query_type == action_query_type.can_attack:
+        #                 return True
+        #         else:
+        #             for neib in self.get_neighbor(sts):
+        #                 if (0 <= bf[neib.y,neib.x] < 50):
+        #                     bf[sts.y,sts.x] = 201
+        #                     if query_type == action_query_type.can_attack:
+        #                         return True
+        #                     break
+        # #no target to reach
+        # if query_type == action_query_type.can_attack:
+        #     return False
+        # if exclude_me:
+        #     bf[self.y,self.x] = 401
+        # return bf
     def damaged(self,damage):
         hpInAll = self.health * (self.amount - 1) + self.firstHPLeft
         if (damage >= hpInAll):
@@ -239,17 +247,19 @@ class BStack(object):
         return damage,killed,firstHPLeft
     def computeCasualty(self,opposite,stand,is_reta, estimate=False):
         total_damage = 0
-        if(self.attack >= opposite.attack):
-            damageMin = int(self.minDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
-            damageMax = int(self.maxDamage*(1+(self.attack - opposite.attack)*0.05)*self.amount)
+        if(self.attack >= opposite.defense):
+            damageMin = int(self.minDamage*(1+(self.attack - opposite.defense)*0.05)*self.amount)
+            damageMax = int(self.maxDamage*(1+(self.attack - opposite.defense)*0.05)*self.amount)
         else:
-            damageMin = int(self.minDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
-            damageMax = int(self.maxDamage * (1 + (self.attack - opposite.attack) * 0.025) * self.amount)
+            damageMin = int(self.minDamage * (1 + (self.attack - opposite.defense) * 0.025) * self.amount)
+            damageMax = int(self.maxDamage * (1 + (self.attack - opposite.defense) * 0.025) * self.amount)
         damage = int((damageMin+damageMax)/2) if estimate else random.randint(damageMin,damageMax)
+        damage = max(damage,1)
         can_shoot = self.can_shoot()
         if(self.is_shooter):
             if(not can_shoot or self.is_half(opposite)):
                 damage = int(damage/2)
+                damage = max(damage, 1)
         else:
             others = self.get_attacked_stacks(opposite,stand)
             for st_tmp in others:
@@ -361,7 +371,7 @@ class BStack(object):
     #     if(not self.had_waited):
     #         legalMoves.append(0) #waite
     #     legalMoves.append(1) #defend
-    #     aa = self.acssessableAndAttackable()
+    #     aa = self.get_global_state()
     #     for i in range(0, self.inBattle.bFieldHeight):
     #         for j in range(1, self.inBattle.bFieldWidth - 1):
     #             if (aa[i,j] >= 0 and aa[i,j] < 50 and aa[i,j] != self.speed):
@@ -868,18 +878,18 @@ class Battle(object):
                 legals[actionType.wait.value] = 1
             if not cur_stack.had_defended:
                 legals[actionType.defend.value] = 1
-            if cur_stack.acssessableAndAttackable(query_type=action_query_type.can_move):
+            if cur_stack.get_global_state(query_type=action_query_type.can_move.value):
                 legals[actionType.move.value] = 1
-            if cur_stack.acssessableAndAttackable(query_type=action_query_type.can_attack):
+            if cur_stack.get_global_state(query_type=action_query_type.can_attack.value):
                 legals[actionType.attack.value] = 1
             return legals
         elif level == 1:
             if act_id == actionType.move.value:
-                bf = cur_stack.acssessableAndAttackable().flatten()
+                bf = cur_stack.get_global_state().flatten()
                 mask = (bf >= 0) & (bf < 50)
                 return mask.flatten()
             elif act_id == actionType.attack.value:
-                bf = cur_stack.acssessableAndAttackable()
+                bf = cur_stack.get_global_state()
                 mask = np.zeros((7,))
                 targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks
                 for i in range(len(targets)):
@@ -891,7 +901,7 @@ class Battle(object):
         elif level == 2:
             mask = np.zeros((self.bFieldHeight,self.bFieldWidth))
             if act_id == actionType.attack.value:
-                bf = cur_stack.acssessableAndAttackable(exclude_me=False)
+                bf = cur_stack.get_global_state(exclude_me=False)
                 target = self.defender_stacks[target_id] if cur_stack.side == 0 else self.attacker_stacks[target_id]
                 nb = target.get_neighbor()
                 for t in nb:

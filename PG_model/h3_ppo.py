@@ -15,7 +15,7 @@ from tianshou.data import Batch, ReplayBuffer
 import pygame
 import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
-dev = 'cuda'
+dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
     logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
@@ -249,7 +249,7 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
     had_acted = False
     for ii in range(n_step):
         acting_stack = battle.cur_stack
-        if acting_stack.by_AI:
+        if acting_stack.by_AI != 2:
             battle_action = acting_stack.active_stack()
             obs, acts, mask = None,None,None
         else:
@@ -261,28 +261,28 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
         done = battle.check_battle_end()
         reward = 0
         if done:
-            reward = -1 if battle.by_AI[battle.get_winner()] else 1
+            reward = 1 if battle.by_AI[battle.get_winner()] == 2 else -1
             print("battle end")
-            if acting_stack.by_AI:
+            if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
             else:
                 buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
             break
-        if not acting_stack.by_AI:
+        if acting_stack.by_AI == 2:
             buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
     if len(buffer) != 0:
         buffer.done[len(buffer) - 1] = True
     return buffer
 def init_stack_position(battle):
-    pass
+    # pass
     mask = np.zeros([11,17])
     mask[:,0] = 1
     mask[:, 16] = 1
     for st in battle.stacks:
-        base1 = random.random() * 2 + 0.1
-        st.amount_base = int(st.amount_base * base1)
-        st.amount = st.amount_base
+        # base1 = random.random() * 2 + 0.1
+        # st.amount_base = int(st.amount_base * base1)
+        # st.amount = st.amount_base
         pos = random.randint(1,11*17 - 1)
         while True:
             if mask[int(pos/17),pos%17]:
@@ -303,7 +303,8 @@ def start_train():
         agent.eval()
         agent.in_train = False
         for _ in range(20):
-            file = f'env/debug{random.randint(1, 3)}.json'
+            # file = f'env/debug{random.randint(1, 3)}.json'
+            file = f'env/debug3.json'
             buffer_ep = collect_eps(agent,file)
             if len(buffer_ep):
                 buffer.update(buffer_ep)
@@ -311,15 +312,22 @@ def start_train():
         agent.train()
         agent.in_train = True
         v,batch_data = agent.process_gae(batch_data)
+        v_ = []
+        with torch.no_grad():
+            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         print(batch_data.done.astype(np.int))
-        print(batch_data.rew.astype(np.int))
+        print(batch_data.returns)
+        print(v_.squeeze())
         # print(batch_data.returns.squeeze())
         print(batch_data.act.act_id.astype(np.int))
         loss = agent.learn(batch_data)
-        print(loss)
+        with torch.no_grad():
+            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        print(v_.squeeze())
         agent.eval()
         agent.in_train = False
-        file = f'env/debug{random.randint(1, 3)}.json'
+        # file = f'env/debug{random.randint(1, 3)}.json'
+        file = f'env/debug3.json'
         cont = start_game(file,agent)
         if not cont:
             return

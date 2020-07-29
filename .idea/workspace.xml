@@ -1,20 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:training" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:training" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:tf" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me">
-      <change afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/discrete_net.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DNN/tianshou/tianshou/data/collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/tianshou/data/collector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DNN/tianshou/tianshou/trainer/onpolicy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../DNN/tianshou/tianshou/trainer/onpolicy.py" afterDir="false" />
+    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="在debug模式下attri_stack增加x,y位置信息">
+      <change afterPath="$PROJECT_DIR$/ENV/debug2.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/VCNN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCNN.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug1.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug1.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mcts_alpha.py" beforeDir="false" afterPath="$PROJECT_DIR$/mcts_alpha.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/policy_value_net_tensorflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy_value_net_tensorflow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,6 +110,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectId" id="1c3wnRPTKIV7toF0j4PMzaY65XL" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -134,17 +182,17 @@
     </option>
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\project\VCNN\ENV" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\project\VCNN\imgs\cursor\move" />
       <recent name="D:\project\VCNN\imgs\cursor\shoot" />
       <recent name="D:\project\VCNN\imgs\cursor\attack" />
       <recent name="D:\project\VCNN\learning" />
     </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\project\VCNN\ENV" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.H3_battleInterface">
+  <component name="RunManager" selected="Python.h3_ppo">
     <configuration name="H3_battle" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -171,6 +219,9 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -234,9 +285,6 @@
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="true" />
@@ -296,28 +344,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="yy" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="ddd" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="D:\anaconda\envs\new37\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../ddd" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../ddd/yy.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="tests" factoryName="Unittests">
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -333,23 +359,6 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for pong_ppo.test_ppo" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="tianshou" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../DNN/tianshou/examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_parameters" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;pong_ppo.test_ppo&quot;" />
-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.gpu_test_local" />
       <item itemvalue="Python.pong_ppo" />
@@ -357,15 +366,11 @@
       <item itemvalue="Python.H3_battleInterface" />
       <item itemvalue="Python.H3_battle" />
       <item itemvalue="Python.h3_ppo" />
-      <item itemvalue="Python.yy" />
-      <item itemvalue="Python tests.pytest for pong_ppo.test_ppo" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.H3_battleInterface" />
         <item itemvalue="Python.h3_ppo" />
-        <item itemvalue="Python.yy" />
-        <item itemvalue="Python tests.pytest for pong_ppo.test_ppo" />
+        <item itemvalue="Python.H3_battleInterface" />
         <item itemvalue="Python.H3_battle" />
       </list>
     </recent_temporary>
@@ -758,6 +763,11 @@
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
+        <entry key="1">
+          <value>
+            <State />
+          </value>
+        </entry>
         <entry key="MAIN">
           <value>
             <State />
@@ -810,58 +820,69 @@
     <option name="LAST_COMMIT_MESSAGE" value="训练版本v0.1 攻击范围内ok 范围外not ok 然后就all not ok...." />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592556128820">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592556128820" />
-    <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate" timestamp="1593261417271">
-      <screen x="0" y="0" width="1920" height="1032" />
+    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595930833777" />
+    <state x="1274" y="444" width="710" height="592" key="#xdebugger.evaluate" timestamp="1595941088579">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261417271" />
+    <state x="1274" y="444" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595941088579" />
     <state x="-1462" y="14" key="CommitChangelistDialog2" timestamp="1592709053314">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1462" y="14" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709053314" />
-    <state width="1411" height="582" key="DebuggerActiveHint" timestamp="1593261407923">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="2227" height="751" key="DebuggerActiveHint" timestamp="1595941081852">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261407923" />
+    <state width="2227" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595941081852" />
     <state x="-1234" y="233" key="FileChooserDialogImpl" timestamp="1591085750137">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1234" y="233" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1591085750137" />
-    <state width="1892" height="356" key="GridCell.Tab.0.bottom" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.0.bottom" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.0.center" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.0.center" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.0.left" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.0.left" timestamp="1595987555433">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.0.right" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555433" />
+    <state width="1306" height="317" key="GridCell.Tab.0.right" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.1.bottom" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.1.bottom" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.1.center" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.1.center" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.1.left" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.1.left" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1892" height="356" key="GridCell.Tab.1.right" timestamp="1593262986633">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state width="1306" height="317" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
+    <state width="1306" height="317" key="GridCell.Tab.1.right" timestamp="1595987555434">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
+    <state width="1306" height="317" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987555434" />
     <state x="-1262" y="168" key="RollbackChangesDialog" timestamp="1591157685962">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -882,10 +903,11 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593057744301" />
-    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup" timestamp="1593316620950">
-      <screen x="-1920" y="0" width="1920" height="1080" />
+    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup" timestamp="1595987282664">
+      <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593316620950" />
+    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595987282664" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -972,12 +994,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>382</line>
+          <line>392</line>
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>851</line>
+          <line>861</line>
           <option name="timeStamp" value="287" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1031,11 +1053,6 @@
           <option name="timeStamp" value="411" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>163</line>
-          <option name="timeStamp" value="426" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/../DNN/tianshou/examples/discrete_net.py</url>
           <line>35</line>
           <option name="timeStamp" value="427" />
@@ -1054,11 +1071,6 @@
           <url>file://$PROJECT_DIR$/../ddd/yy.py</url>
           <line>43</line>
           <option name="timeStamp" value="430" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>762</line>
-          <option name="timeStamp" value="434" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battleInterface.py</url>
