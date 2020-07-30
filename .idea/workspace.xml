@@ -54,11 +54,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;active_stack()中去掉了&#10;if agent.in_train 判断">
+    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;log info 改 debug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
@@ -737,7 +734,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596016533461</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="原始可用版本&#10;log info 改 debug">
+      <created>1596076135736</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1596076135736</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -797,7 +801,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="creature imgs" />
     <MESSAGE value="obstacle imgs" />
     <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
@@ -822,7 +825,8 @@
     <MESSAGE value="推理部分完成 开始训练部分" />
     <MESSAGE value="训练版本v0.1 攻击范围内ok 范围外not ok 然后就all not ok...." />
     <MESSAGE value="原始可用版本&#10;active_stack()中去掉了&#10;if agent.in_train 判断" />
-    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;active_stack()中去掉了&#10;if agent.in_train 判断" />
+    <MESSAGE value="原始可用版本&#10;log info 改 debug" />
+    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;log info 改 debug" />
   </component>
   <component name="WindowStateProjectService">
     <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
