@@ -13,51 +13,19 @@
       <path>
         <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:training" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:first" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:dependabot" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:pip" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:training" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="GROUP_NODE:tf" type="e8cecc67:BranchNodeDescriptor" />
-      </path>
-      <path>
-        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
-        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
         <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
       </path>
     </expand>
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;log info 改 debug">
+    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;test 阶段argmax 不再 softmax">
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ddd/yy.py" beforeDir="false" afterPath="$PROJECT_DIR$/../ddd/yy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -741,7 +709,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596076135736</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="原始可用版本&#10;test 阶段argmax 不再 softmax">
+      <created>1596078570001</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1596078570001</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -801,7 +776,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="obstacle imgs" />
     <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
     <MESSAGE value="one batllte" />
@@ -826,7 +800,8 @@
     <MESSAGE value="训练版本v0.1 攻击范围内ok 范围外not ok 然后就all not ok...." />
     <MESSAGE value="原始可用版本&#10;active_stack()中去掉了&#10;if agent.in_train 判断" />
     <MESSAGE value="原始可用版本&#10;log info 改 debug" />
-    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;log info 改 debug" />
+    <MESSAGE value="原始可用版本&#10;test 阶段argmax 不再 softmax" />
+    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;test 阶段argmax 不再 softmax" />
   </component>
   <component name="WindowStateProjectService">
     <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
@@ -1016,7 +991,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>862</line>
+          <line>865</line>
           <option name="timeStamp" value="287" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

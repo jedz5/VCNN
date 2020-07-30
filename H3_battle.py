@@ -594,6 +594,9 @@ class Battle(object):
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
             root = json.load(jsonFile)
+            self.by_AI = [1,1]
+            agent_s = random.choice(root["agent_side"])
+            self.by_AI[agent_s] = 2
             for i in range(2):
                 li = list(range(11))
                 ys = np.random.choice(li,size=len(root['army{}'.format(i)]), replace=False)

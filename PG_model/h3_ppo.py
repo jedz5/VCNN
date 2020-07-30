@@ -329,8 +329,8 @@ def start_train():
         agent.eval()
         agent.in_train = True
         for _ in range(20):
-            # file = f'env/debug{random.randint(1, 3)}.json'
-            file = f'env/debug3.json'
+            file = f'env/debug{random.randint(3, 4)}.json'
+            # file = f'env/debug3.json'
             buffer_ep = collect_eps(agent,file)
             if len(buffer_ep):
                 buffer.update(buffer_ep)
@@ -352,9 +352,9 @@ def start_train():
         print(v_.squeeze())
         agent.eval()
         agent.in_train = False
-        # file = f'env/debug{random.randint(1, 3)}.json'
-        file = f'env/debug3.json'
-        wrate = start_game_noGUI(file,mode=0,agent=agent)
+        file = f'env/debug{random.randint(3, 4)}.json'
+        # file = f'env/debug4.json'
+        wrate = start_game(file,agent=agent)
         logger.info(f"test-{count} win rate = {wrate}")
         buffer.reset()
         if count == 100:
@@ -394,18 +394,18 @@ def start_game(file,agent = None,by_AI = [2,1]):
     print("game end")
     pygame.quit()
     return False
-def start_game_noGUI(file,mode = 0,agent = None,by_AI = [2,1]):
+def start_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
     for ii in range(20):
         battle = Battle(agent=agent)
-        if mode:
-            battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
-        else:
-            battle.loadFile(file, shuffle_postion=False)
-            if random.randint(0, 1):
-                init_stack_position(battle)
-            # init_stack_position(battle)
+        # if mode:
+        #     battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
+        # else:
+        battle.loadFile(file, shuffle_postion=False)
+        if random.randint(0, 1):
+            init_stack_position(battle)
+        # init_stack_position(battle)
         battle.checkNewRound()
         next_act = battle.cur_stack.active_stack()
         # 事件循环(main loop)
