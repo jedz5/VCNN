@@ -19,11 +19,8 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;test 阶段argmax 不再 softmax">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;增加test_win_rate &amp;&amp; agent_side">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
     </list>
@@ -716,7 +713,14 @@
       <option name="project" value="LOCAL" />
       <updated>1596078570001</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="原始可用版本&#10;增加test_win_rate &amp;&amp; agent_side">
+      <created>1596081133464</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1596081133464</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -776,7 +780,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="dff" />
     <MESSAGE value="matplot" />
     <MESSAGE value="one batllte" />
     <MESSAGE value="install -&gt; builds" />
@@ -801,7 +804,8 @@
     <MESSAGE value="原始可用版本&#10;active_stack()中去掉了&#10;if agent.in_train 判断" />
     <MESSAGE value="原始可用版本&#10;log info 改 debug" />
     <MESSAGE value="原始可用版本&#10;test 阶段argmax 不再 softmax" />
-    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;test 阶段argmax 不再 softmax" />
+    <MESSAGE value="原始可用版本&#10;增加test_win_rate &amp;&amp; agent_side" />
+    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;增加test_win_rate &amp;&amp; agent_side" />
   </component>
   <component name="WindowStateProjectService">
     <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
@@ -818,11 +822,11 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1462" y="14" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709053314" />
-    <state width="2227" height="751" key="DebuggerActiveHint" timestamp="1595941081852">
+    <state width="2227" height="751" key="DebuggerActiveHint" timestamp="1596098907934">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261407923" />
-    <state width="2227" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595941081852" />
+    <state width="2227" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596098907934" />
     <state x="100" y="101" width="1189" height="1192" key="DiffContextDialog" timestamp="1596073653524">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
@@ -831,46 +835,46 @@
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
     <state x="-1234" y="233" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1591085750137" />
-    <state width="1376" height="317" key="GridCell.Tab.0.bottom" timestamp="1596016829398">
+    <state width="1315" height="838" key="GridCell.Tab.0.bottom" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829398" />
-    <state width="1376" height="317" key="GridCell.Tab.0.center" timestamp="1596016829397">
+    <state width="1315" height="838" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.0.center" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829397" />
-    <state width="1376" height="317" key="GridCell.Tab.0.left" timestamp="1596016829397">
+    <state width="1315" height="838" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.0.left" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829397" />
-    <state width="1376" height="317" key="GridCell.Tab.0.right" timestamp="1596016829397">
+    <state width="1315" height="838" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.0.right" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829397" />
-    <state width="1376" height="317" key="GridCell.Tab.1.bottom" timestamp="1596016829398">
+    <state width="1315" height="838" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.1.bottom" timestamp="1596099415737">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829398" />
-    <state width="1376" height="317" key="GridCell.Tab.1.center" timestamp="1596016829398">
+    <state width="1315" height="838" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415737" />
+    <state width="1315" height="838" key="GridCell.Tab.1.center" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829398" />
-    <state width="1376" height="317" key="GridCell.Tab.1.left" timestamp="1596016829398">
+    <state width="1315" height="838" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.1.left" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829398" />
-    <state width="1376" height="317" key="GridCell.Tab.1.right" timestamp="1596016829398">
+    <state width="1315" height="838" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
+    <state width="1315" height="838" key="GridCell.Tab.1.right" timestamp="1596099415736">
       <screen x="0" y="0" width="2560" height="1392" />
     </state>
     <state width="1892" height="356" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1376" height="317" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596016829398" />
+    <state width="1315" height="838" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
     <state x="-1262" y="168" key="RollbackChangesDialog" timestamp="1591157685962">
       <screen x="-1920" y="0" width="1920" height="1080" />
     </state>
@@ -990,11 +994,6 @@
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>865</line>
-          <option name="timeStamp" value="287" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/../DNN/tianshou/tianshou/data/buffer.py</url>
           <line>204</line>
           <option name="timeStamp" value="318" />
@@ -1068,6 +1067,11 @@
           <url>file://$PROJECT_DIR$/H3_battleInterface.py</url>
           <line>260</line>
           <option name="timeStamp" value="435" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>335</line>
+          <option name="timeStamp" value="436" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

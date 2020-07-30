@@ -12,8 +12,6 @@ from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 import sys
-import pygame
-import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
 logger = get_logger()[1]
 dev = 'cpu'
@@ -268,8 +266,8 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
     battle = Battle(agent=agent)
     # battle.loadFile(f'ENV/debug{random.randint(1,2)}.json',shuffle_postion=True)
     battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
-    if random.randint(0,1):
-        init_stack_position(battle)
+    # if random.randint(0,1):
+    #     init_stack_position(battle)
     # init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
@@ -322,13 +320,13 @@ def start_train():
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.92)
     buffer = ReplayBuffer(6000,ignore_obs_next=True)
     count = 0
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(20):
+        for _ in range(100):
             file = f'env/debug{random.randint(3, 4)}.json'
             # file = f'env/debug3.json'
             buffer_ep = collect_eps(agent,file)
@@ -341,27 +339,28 @@ def start_train():
         v_ = []
         with torch.no_grad():
             v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        print(batch_data.done.astype(np.int))
-        print(batch_data.returns)
-        print(v_.squeeze())
-        # print(batch_data.returns.squeeze())
-        print(batch_data.act.act_id.astype(np.int))
+        # print(batch_data.done.astype(np.int))
+        # print(batch_data.returns)
+        # print(v_.squeeze())
+        # print(batch_data.act.act_id.astype(np.int))
         loss = agent.learn(batch_data)
         with torch.no_grad():
             v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        print(v_.squeeze())
+        # print(v_.squeeze())
         agent.eval()
         agent.in_train = False
         file = f'env/debug{random.randint(3, 4)}.json'
         # file = f'env/debug4.json'
-        wrate = start_game(file,agent=agent)
+        wrate = start_game_noGUI(file,agent=agent)
         logger.info(f"test-{count} win rate = {wrate}")
         buffer.reset()
-        if count == 100:
-            exit()
+        if count == 500:
+            sys.exit(-1)
         count += 1
 
 def start_game(file,agent = None,by_AI = [2,1]):
+    import pygame
+    import H3_battleInterface
     #初始化 agent
     if not agent:
         actor_critic = H3_net(dev)
@@ -374,8 +373,8 @@ def start_game(file,agent = None,by_AI = [2,1]):
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
     battle.loadFile(file,shuffle_postion=False)
-    if random.randint(0, 1):
-        init_stack_position(battle)
+    # if random.randint(0, 1):
+    #     init_stack_position(battle)
     # init_stack_position(battle)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
@@ -423,6 +422,6 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
 
 def main():
     start_train()
-    # start_game("ENV/debug2.json",by_AI=[2, 1])
+    start_game("ENV/debug2.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()

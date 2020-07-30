@@ -498,7 +498,7 @@ class BStack(object):
                     next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
             else:
                 logger.error("not implemented action!!",True)
-                exit(-1)
+                sys.exit(-1)
             if not ret_obs:
                 return next_act
             # act_id = torch.tensor([[0]]) if act_id < 0 else torch.tensor([[act_id]])
@@ -517,7 +517,7 @@ class BStack(object):
             return
         else:
             logger.error("no way to contrl the stack!!")
-            exit(-1)
+            sys.exit(-1)
 
 
 class BObstacle(object):
@@ -657,7 +657,7 @@ class Battle(object):
         curSt = bFrom
         if(not curSt.checkPosition(bTo.x,bTo.y)):
             logger.error('dist {},{} not valid'.format(bTo.y,bTo.x))
-            exit(-1)
+            sys.exit(-1)
         bf = curSt.get_global_state(exclude_me=False)
         if(bAtt):
             return self.bGetDistance(bTo,bAtt) == 1 and 50 > bf[bTo.y,bTo.x] >= 0 and bf[bAtt.y,bAtt.x] == 201
@@ -678,7 +678,7 @@ class Battle(object):
         srcs = self.findStack(bFrom)
         if(len(srcs) == 0):
             logger.error("sth wrong move from {},not exist".format(bFrom))
-            exit(-1)
+            sys.exit(-1)
         src = srcs[0]
         src.x = bTo.x
         src.y = bTo.y
@@ -747,7 +747,7 @@ class Battle(object):
         zigzagCorrection =0 if (mySelf.y % 2) else 1
         if(dirct < 0 or dirct > 5):
             logger.error('wrong direction {}'.format(dirct))
-            exit()
+            sys.exit()
         if(dirct == 0):
             return BHex(mySelf.x - 1,mySelf.y)
         if(dirct == 1):
@@ -826,53 +826,54 @@ class Battle(object):
             if(st.is_alive()):
                 st.newRound()
     def doAction(self,action):
-        logger.log_text.clear()
+        if log_gui_on:
+            logger.log_text.clear()
         logger.debug(self.action2Str(action),True)
         if(self.cur_stack.had_moved):
             logger.error("{} is already moved".format(self.cur_stack))
-            exit()
+            sys.exit()
         if(action.type == action_type.wait):
             if (self.cur_stack.had_waited):
                 logger.error("{} is already waited".format(self.cur_stack))
-                exit()
+                sys.exit()
             self.cur_stack.wait()
         elif(action.type == action_type.defend):
             self.cur_stack.defend()
         elif(action.type == action_type.move):
             if (self.cur_stack.x == action.dest.x and self.cur_stack.y == action.dest.y):
                 logger.error("can't move to where you already are!!")
-                exit()
+                sys.exit()
             if (self.canReach(self.cur_stack, action.dest)):
                 self.move(self.cur_stack, action.dest)
             else:
                 logger.error("you can't reach ({},{})".format(action.dest.y,action.dest.x))
-                exit()
+                sys.exit()
         elif(action.type == action_type.attack):
             dests = self.findStack(action.target,True)
             if(len(dests) == 0):
                 logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
-                exit()
+                sys.exit()
             dest = dests[0]
             if (self.canReach(self.cur_stack, action.dest, action.target)):
                 self.move(self.cur_stack, action.dest)
                 self.cur_stack.meeleAttack(dest, action.dest, False)
             else:
                 logger.error("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
-                exit(-1)
+                sys.exit(-1)
         elif(action.type == action_type.shoot):
             dists = self.findStack(action.target, True)
             if (len(dists) == 0):
                 logger.error("wrong shoot dist ({},{})".format(action.target.y,action.target.x))
-                exit()
+                sys.exit()
             dist = dists[0]
             if (self.cur_stack.can_shoot(action.target)):
                 self.cur_stack.shoot(dist)
             else:
                 logger.error("{} can't shoot {}".format(self.cur_stack.name, dist.name))
-                exit()
+                sys.exit()
         elif (action.type == action_type.spell):
             logger.error("spell not implemented yet")
-            exit()
+            sys.exit()
     def legal_act(self,level=0,act_id=0,spell_id=0,target_id=0):
         cur_stack = self.cur_stack
         if cur_stack.had_moved:
