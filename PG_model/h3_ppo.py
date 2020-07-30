@@ -11,10 +11,11 @@ from typing import Dict, List, Tuple, Union, Optional
 from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
-
+import sys
 import pygame
 import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
+logger = get_logger()[1]
 dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
@@ -102,7 +103,7 @@ class H3_policy(PGPolicy):
             for b in batch.split(self._batch, shuffle=False):
                 v_.append(self.ppo_net(**b.obs_next,critic_only = True))
         v_ = torch.cat(v_, dim=0).cpu().numpy()
-        return v_,self.compute_episodic_return(
+        return self.compute_episodic_return(
             batch, v_, gamma=self._gamma, gae_lambda=self._lambda)
 
     def forward(self, ind,attri_stack,planes_stack,plane_glb,
@@ -121,18 +122,18 @@ class H3_policy(PGPolicy):
         if print_act:
             print(act_logits)
         act_id = self.dist_fn(act_logits).sample()[0].item()
-        if act_id == actionType.move.value:
+        if act_id == action_type.move.value:
             mask_position = env.legal_act(level=1, act_id=act_id)
             position_logits = softmax(position_logits, mask_position, self.device)
             position_id = self.dist_fn(position_logits).sample()[0].item()
-        elif act_id == actionType.attack.value:
+        elif act_id == action_type.attack.value:
             mask_targets = env.legal_act(level=1, act_id=act_id)
             targets_logits = softmax(targets_logits, mask_targets, self.device)
             if torch.sum(targets_logits,dim=-1,keepdim=True).item() > 0.5:
                 target_id = self.dist_fn(targets_logits).sample()[0].item()
             else:
-                logger.info("no attack target found!!")
-                assert 0
+                logger.error("no attack target found!!")
+                exit(-1)
             mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
             position_logits = softmax(position_logits, mask_position, self.device)
             if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.5:
@@ -244,7 +245,8 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
     battle = Battle(agent=agent)
     # battle.loadFile(f'ENV/debug{random.randint(1,2)}.json',shuffle_postion=True)
     battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
-    init_stack_position(battle)
+    if random.randint(0,1):
+        init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
     for ii in range(n_step):
@@ -262,7 +264,6 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
         reward = 0
         if done:
             reward = 1 if battle.by_AI[battle.get_winner()] == 2 else -1
-            print("battle end")
             if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
@@ -297,11 +298,11 @@ def start_train():
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1)
     buffer = ReplayBuffer(6000,ignore_obs_next=True)
     while True:
         agent.eval()
-        agent.in_train = False
+        agent.in_train = True
         for _ in range(20):
             # file = f'env/debug{random.randint(1, 3)}.json'
             file = f'env/debug3.json'
@@ -310,8 +311,8 @@ def start_train():
                 buffer.update(buffer_ep)
         batch_data, indice = buffer.sample(0)
         agent.train()
-        agent.in_train = True
-        v,batch_data = agent.process_gae(batch_data)
+        # agent.in_train = True
+        batch_data = agent.process_gae(batch_data)
         v_ = []
         with torch.no_grad():
             v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
@@ -346,23 +347,18 @@ def start_game(file,agent = None,by_AI = [2,1]):
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
     battle.loadFile(file,shuffle_postion=False)
-    init_stack_position(battle)
+    if random.randint(0, 1):
+        init_stack_position(battle)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack(print_act=True)
     act = bi.next_act
     # 事件循环(main loop)
     i = 0
-    last = time.time()
     while bi.running:
-        # if i % 1 == 0:
-        if act:
-            cost = time.time() - last
-            print(f'cost time {cost}')
         act = bi.handleEvents()
         if act:
             i += 1
-            last = time.time()
             if battle.check_battle_end():
                 print("battle end")
                 pygame.quit()
@@ -394,9 +390,6 @@ def start_game_noGUI():
         i = 1
         while True:
             if i % 100 == 0:
-                cost = time.time() - last
-                print(f'cost time {cost}')
-                last = time.time()
                 break
             i += 1
             battle.doAction(next_act)
