@@ -20,8 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;增加test_win_rate &amp;&amp; agent_side">
+      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/H3_battle.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battle.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug3.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ENV/debug4.json" beforeDir="false" afterPath="$PROJECT_DIR$/ENV/debug4.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/H3_battleInterface.py" beforeDir="false" afterPath="$PROJECT_DIR$/H3_battleInterface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -72,6 +76,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-4" />
+    <option name="width" value="1394" />
+    <option name="height" value="1395" />
+  </component>
   <component name="ProjectId" id="1c3wnRPTKIV7toF0j4PMzaY65XL" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -121,7 +130,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ENV" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../DNN/Super-mario-bros-PPO-pytorch-master" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.23474178" />
   </component>
@@ -260,6 +269,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="h3_ppo_remote" type="PythonConfigurationType" factoryName="Python">
+      <module name="VCNN" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="sftp://enigma@192.168.1.100:22/home/enigma/work/anaconda/envs/vcnn/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="pong_ppo" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="VCNN" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -323,6 +354,7 @@
       <item itemvalue="Python.gpu_test_local" />
       <item itemvalue="Python.pong_ppo" />
       <item itemvalue="Python.xx" />
+      <item itemvalue="Python.h3_ppo_remote" />
       <item itemvalue="Python.H3_battleInterface" />
       <item itemvalue="Python.H3_battle" />
       <item itemvalue="Python.h3_ppo" />
@@ -460,6 +492,8 @@
       <workItem from="1592468076845" duration="518000" />
       <workItem from="1592468639132" duration="2876000" />
       <workItem from="1592556541399" duration="102000" />
+      <workItem from="1596099725452" duration="2000" />
+      <workItem from="1596099745823" duration="6593000" />
     </task>
     <task id="LOCAL-00001" summary="robot">
       <created>1551622116998</created>
@@ -724,7 +758,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="891720000" />
+    <option name="totallyTimeSpent" value="898315000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -990,7 +1024,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battle.py</url>
-          <line>390</line>
+          <line>425</line>
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1065,12 +1099,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/H3_battleInterface.py</url>
-          <line>260</line>
+          <line>262</line>
           <option name="timeStamp" value="435" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>335</line>
+          <line>260</line>
           <option name="timeStamp" value="436" />
         </line-breakpoint>
       </breakpoints>

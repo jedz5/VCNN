@@ -12,6 +12,9 @@ from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 import sys
+
+import pygame
+import H3_battleInterface
 np.set_printoptions(precision=2,suppress=True)
 logger = get_logger()[1]
 dev = 'cpu'
@@ -24,35 +27,7 @@ def softmax(logits, mask_orig,dev,add_little = False):
         logits3 += 1E-9
     return logits3
 class H3_policy(PGPolicy):
-    r"""Implementation of Proximal Policy Optimization. arXiv:1707.06347
 
-    :param torch.optim.Optimizer optim: the optimizer for actor and critic
-        network.
-    :param torch.distributions.Distribution dist_fn: for computing the action.
-    :param float discount_factor: in [0, 1], defaults to 0.99.
-    :param float max_grad_norm: clipping gradients in back propagation,
-        defaults to ``None``.
-    :param float eps_clip: :math:`\epsilon` in :math:`L_{CLIP}` in the original
-        paper, defaults to 0.2.
-    :param float vf_coef: weight for value loss, defaults to 0.5.
-    :param float ent_coef: weight for entropy loss, defaults to 0.01.
-    :param action_range: the action range (minimum, maximum).
-    :type action_range: (float, float)
-    :param float gae_lambda: in [0, 1], param for Generalized Advantage
-        Estimation, defaults to 0.95.
-    :param float dual_clip: a parameter c mentioned in arXiv:1912.09729 Equ. 5,
-        where c > 1 is a constant indicating the lower bound,
-        defaults to 5.0 (set ``None`` if you do not want to use it).
-    :param bool value_clip: a parameter mentioned in arXiv:1811.02553 Sec. 4.1,
-        defaults to ``True``.
-    :param bool reward_normalization: normalize the returns to Normal(0, 1),
-        defaults to ``True``.
-
-    .. seealso::
-
-        Please refer to :class:`~tianshou.policy.BasePolicy` for more detailed
-        explanation.
-    """
     def __init__(self,
                  net: torch.nn.Module,
                  optim: torch.optim.Optimizer,
@@ -268,7 +243,7 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
     battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
     # if random.randint(0,1):
     #     init_stack_position(battle)
-    # init_stack_position(battle)
+    init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
     for ii in range(n_step):
@@ -316,6 +291,9 @@ def init_stack_position(battle):
         st.y = int(pos/17)
         mask[st.y,st.x] = 1
 def start_train():
+    # 初始化游戏
+    pygame.init()  # 初始化pygame
+    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
@@ -326,8 +304,8 @@ def start_train():
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(100):
-            file = f'env/debug{random.randint(3, 4)}.json'
+        for _ in range(5):
+            file = f'ENV/debug{random.randint(3, 4)}.json'
             # file = f'env/debug3.json'
             buffer_ep = collect_eps(agent,file)
             if len(buffer_ep):
@@ -336,63 +314,74 @@ def start_train():
         agent.train()
         # agent.in_train = True
         batch_data = agent.process_gae(batch_data)
-        v_ = []
-        with torch.no_grad():
-            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # v_ = []
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(batch_data.done.astype(np.int))
         # print(batch_data.returns)
         # print(v_.squeeze())
         # print(batch_data.act.act_id.astype(np.int))
+        # to_dev(agent, "cuda")
         loss = agent.learn(batch_data)
-        with torch.no_grad():
-            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(v_.squeeze())
+        # to_dev(agent, "cpu")
         agent.eval()
         agent.in_train = False
-        file = f'env/debug{random.randint(3, 4)}.json'
+        file = f'ENV/debug{random.randint(3, 4)}.json'
         # file = f'env/debug4.json'
-        wrate = start_game_noGUI(file,agent=agent)
-        logger.info(f"test-{count} win rate = {wrate}")
+        # battle_int = H3_battleInterface.BattleInterface()
+        # ct = 0
+        # for xx in range(10):
+        #     ct += start_game(file,battle_int=battle_int,agent=agent)
+        # logger.info(f"test-{count} win rate = {ct/10}")
+        ct  = start_game_noGUI(file,agent=agent)
+        logger.info(f"test-{count} win rate = {ct}")
         buffer.reset()
         if count == 500:
             sys.exit(-1)
         count += 1
-
-def start_game(file,agent = None,by_AI = [2,1]):
-    import pygame
-    import H3_battleInterface
+def to_dev(agent,dev):
+    agent.to(dev)
+    agent.device = dev
+    agent.ppo_net.device = dev
+    agent.ppo_net.inpipe.device = dev
+def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
     #初始化 agent
     if not agent:
         actor_critic = H3_net(dev)
         optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
         dist = torch.distributions.Categorical
         agent = H3_policy(actor_critic, optim, dist, device=dev)
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+
     # debug = True
     battle = Battle(debug=True,agent=agent,by_AI=by_AI)
     battle.loadFile(file,shuffle_postion=False)
     # if random.randint(0, 1):
     #     init_stack_position(battle)
-    # init_stack_position(battle)
+    init_stack_position(battle)
     battle.checkNewRound()
-    bi = H3_battleInterface.BattleInterface(battle)
-    bi.next_act = battle.cur_stack.active_stack(print_act=True)
+    if not battle_int:
+        battle_int = H3_battleInterface.BattleInterface(battle)
+    else:
+        battle_int.init_battle(battle)
+    battle_int.next_act = battle.cur_stack.active_stack(print_act=True)
     i = 0
-    while bi.running:
-        act = bi.handleEvents()
+    while battle_int.running:
+        act = battle_int.handleEvents()
         if act:
             i += 1
             if battle.check_battle_end():
                 print("battle end")
-                pygame.quit()
-                return True
-        bi.handleBattle(act,print_act = True)
-        bi.renderFrame()
+                battle_int.running = False
+                # pygame.quit()
+                return 1 if battle.by_AI[battle.get_winner()] == 2 else 0
+        battle_int.handleBattle(act,print_act = True)
+        battle_int.renderFrame()
     print("game end")
-    pygame.quit()
-    return False
+    # pygame.quit()
+    return 0
 def start_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
@@ -402,8 +391,8 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
         #     battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
         # else:
         battle.loadFile(file, shuffle_postion=False)
-        if random.randint(0, 1):
-            init_stack_position(battle)
+        # if random.randint(0, 1):
+        #     init_stack_position(battle)
         # init_stack_position(battle)
         battle.checkNewRound()
         next_act = battle.cur_stack.active_stack()
@@ -422,6 +411,6 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
 
 def main():
     start_train()
-    start_game("ENV/debug2.json",by_AI=[2, 1])
+    # start_game("ENV/debug2.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()

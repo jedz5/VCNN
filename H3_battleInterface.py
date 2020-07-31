@@ -63,15 +63,13 @@ class CClickableHex:
             self.pixels_y = 86 + 42 * self.hex_i
         return self.pixels_x,self.pixels_y
 class BattleInterface:
-    def __init__(self, battle_engine):
+    def __init__(self, battle_engine = None):
         # 定义窗口的分辨率
         self.SCREEN_WIDTH = 1000
         self.SCREEN_HEIGHT = 600
         self.BFIELD_WIDTH = 17
         self.BFIELD_HEIGHT = 11
         self.running = True
-        battle_engine.bat_interface = self
-        self.battle_engine = battle_engine
         self.current_hex = CClickableHex()
         self.hoveredStack = None
         self.transColor = pygame.Color(255, 0, 255)
@@ -82,15 +80,18 @@ class BattleInterface:
         self.cursor_attack = [None] * 6
         self.cursor_move = [None] * 5
         self.cursor_shoot = [None] * 2
+        self.loadIMGs()
+        if battle_engine:
+            self.init_battle(battle_engine)
+        else:
+            self.battle_engine = None
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 11)
         self.font.set_bold(True)
-        self.loadIMGs()
         self.next_act = None
         self.act = None
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
-        stacks = self.battle_engine.stacks
         background = pygame.image.load("imgs/bgrd.bmp")
         self.background = background
         self.hex_shader = pygame.image.load("imgs/CCellShd_gray.bmp")
@@ -102,29 +103,7 @@ class BattleInterface:
         self.shader_cur_target.set_colorkey(self.transColor)
         self.amout_backgrd = pygame.image.load("imgs/CmNumWin_purple.bmp").convert_alpha()
         self.amout_backgrd_enemy = pygame.image.load("imgs/CmNumWin_blue.bmp").convert_alpha()
-        for st in stacks:
-            if st.name not in self.stimgs:
-                img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
-                imgback = pygame.Surface(img.get_size())
-                imgback.blit(img, (0, 0))
-                imgback.set_colorkey((16,16,16))
-                self.stimgs[st.name] = imgback
-                #dead
-                img = pygame.image.load("imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
-                imgback = pygame.Surface(img.get_size())
-                imgback.blit(img, (0, 0))
-                imgback.set_colorkey((16, 16, 16))
-                self.stimgs_dead[st.name] = imgback
-        for oi in self.battle_engine.obsinfo:
-            if oi.imname not in self.stimgs:
-                img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
-                imgback = pygame.Surface(img.get_size())
-                imgback.blit(img, (0, 0))
-                if oi.isabs:
-                    imgback.set_colorkey((0, 255, 255))
-                else:
-                    imgback.set_colorkey((0, 0, 0))
-                self.stimgs[oi.imname] = imgback
+
         for idx in range(6):
             img = pygame.image.load("imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
             # img.set_colorkey((0, 255, 255))
@@ -138,6 +117,33 @@ class BattleInterface:
             # img.set_colorkey((0, 255, 255))
             self.cursor_shoot[idx] = img
         self.cursor = self.cursor_move[0]
+    def init_battle(self,battle):
+        self.running = True
+        battle.bat_interface = self
+        self.battle_engine = battle
+        for st in battle.stacks:
+            if st.name not in self.stimgs:
+                img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
+                imgback = pygame.Surface(img.get_size())
+                imgback.blit(img, (0, 0))
+                imgback.set_colorkey((16,16,16))
+                self.stimgs[st.name] = imgback
+                #dead
+                img = pygame.image.load("imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
+                imgback = pygame.Surface(img.get_size())
+                imgback.blit(img, (0, 0))
+                imgback.set_colorkey((16, 16, 16))
+                self.stimgs_dead[st.name] = imgback
+        # for oi in self.battle_engine.obsinfo:
+        #     if oi.imname not in self.stimgs:
+        #         img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
+        #         imgback = pygame.Surface(img.get_size())
+        #         imgback.blit(img, (0, 0))
+        #         if oi.isabs:
+        #             imgback.set_colorkey((0, 255, 255))
+        #         else:
+        #             imgback.set_colorkey((0, 0, 0))
+        #         self.stimgs[oi.imname] = imgback
     def renderFrame(self):
         if self.running:
             self.clock.tick(60)

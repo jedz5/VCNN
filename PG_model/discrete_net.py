@@ -4,7 +4,7 @@ import numpy as np
 from torch import nn
 from H3_battle import Battle
 from H3_battle import action_type
-from H3_battle import logger
+# from H3_battle import logger
 from tianshou.data import ReplayBuffer
 dist_fn = torch.distributions.Categorical
 
@@ -31,25 +31,25 @@ class in_pipe(nn.Module):
         self.stack_fc = nn.Sequential(nn.Linear(14 + 16, 64),
                                       my_reshape([-1,64 * 14]),
                                       nn.Linear(64 * 14, 512),
-                                      nn.ReLU(inplace=True),
-                                      nn.Linear(512, 512),
                                       nn.ReLU(inplace=True))
+                                      # nn.Linear(512, 512),
+                                      # nn.ReLU(inplace=True))
         self.stack_plane_conv  = nn.Sequential(my_reshape([-1, 3, 11, 17]),
-                                               nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
+                                               nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               nn.MaxPool2d(kernel_size=2),
-                                               my_reshape([-1, 14 * 8, 5, 8]),
-                                               nn.Conv2d(14 * 8, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               # nn.MaxPool2d(kernel_size=2),
+                                               my_reshape([-1, 14 * 32, 11, 17]),
+                                               nn.Conv2d(14 * 32, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               my_reshape([-1, 32 * 5 * 8]))
+                                               my_reshape([-1, 32 * 11 * 17]))
         self.global_plane_conv = nn.Sequential(my_reshape([-1, 3, 11, 17]),
                                                nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               nn.MaxPool2d(kernel_size=2),
+                                               # nn.MaxPool2d(kernel_size=2),
                                                nn.Conv2d(32, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               my_reshape([-1, 32 * 5 * 8]))
-        self.stack_plane_flat = nn.Linear(512 + 32 * 5 * 8 * 2, 512)
+                                               my_reshape([-1, 32 * 11 * 17]))
+        self.stack_plane_flat = nn.Sequential(nn.Linear(512 + 32 * 11 * 17 * 2, 512),nn.ReLU(inplace=True))
         #
         self.id_emb.to(self.device)
         self.stack_fc.to(self.device)
@@ -68,11 +68,11 @@ class H3_net(nn.Module):
         super(H3_net,self).__init__()
         self.device = device
         self.inpipe = in_pipe(device=self.device)
-        self.act_ids = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 5))#,nn.BatchNorm1d(5))
-        self.position = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 11*17))#,nn.BatchNorm1d(11*17))
-        self.targets = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512, 7))#,nn.BatchNorm1d(7))
-        self.spells = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
-        self.critic = nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
+        self.act_ids = nn.Linear(512, 5) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(5))
+        self.position = nn.Linear(512, 11*17) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(11*17))
+        self.targets = nn.Linear(512, 7) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(7))
+        self.spells = nn.Linear(512, 10) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
+        self.critic = nn.Linear(512, 1) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
 
         self.act_ids.to(self.device)
         self.position.to(self.device)
