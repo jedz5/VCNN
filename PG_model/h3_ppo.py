@@ -13,8 +13,7 @@ from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 import sys
 
-import pygame
-import H3_battleInterface
+
 np.set_printoptions(precision=2,suppress=True)
 logger = get_logger()[1]
 dev = 'cpu'
@@ -40,8 +39,8 @@ class H3_policy(PGPolicy):
                  ent_coef: float = .01,
                  action_range: Optional[Tuple[float, float]] = None,
                  gae_lambda: float = 0.92,
-                 dual_clip: float = 5.,
-                 value_clip: bool = True,
+                 dual_clip: float = None,
+                 value_clip: bool = False,
                  reward_normalization: bool = False,
                  **kwargs) -> None:
         super().__init__(None, None, dist_fn, discount_factor, **kwargs)
@@ -159,8 +158,7 @@ class H3_policy(PGPolicy):
 
                 # act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(b.obs.ind,b.obs.attri_stack,b.obs.planes_stack,b.obs.plane_glb)
                 act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(**b.obs)
-                v.append(value)
-
+                v.append(value.squeeze(-1))
                 act_logits = softmax(act_logits, mask_acts, self.device,add_little=True)
                 old_prob_act.append(self.dist_fn(act_logits).log_prob(torch.tensor(b.act.act_id, device=self.device)))
                 targets_logits = softmax(targets_logits, mask_targets, self.device,add_little=True)
@@ -169,7 +167,10 @@ class H3_policy(PGPolicy):
                 old_prob_position.append(self.dist_fn(position_logits).log_prob(torch.tensor(b.act.position_id, device=self.device)))
                 spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
                 old_prob_spell.append(self.dist_fn(spell_logits).log_prob(torch.tensor(b.act.spell_id, device=self.device)))
-        batch.v = torch.cat(v, dim=0)  # old value
+        try:
+            batch.v = torch.cat(v, dim=0)  # old value
+        except:
+            print(v)
         batch.old_prob_act = torch.cat(old_prob_act, dim=0)
         batch.old_prob_target = torch.cat(old_prob_target, dim=0)
         batch.old_prob_position = torch.cat(old_prob_position, dim=0)
@@ -188,6 +189,10 @@ class H3_policy(PGPolicy):
                 batch.adv = (batch.adv - mean) / std
         for _ in range(repeat):
             for b in batch.split(batch_size):
+                mask_acts = b.info.mask_acts
+                mask_spell = b.info.mask_spell
+                mask_targets = b.info.mask_targets
+                mask_position = b.info.mask_position
                 act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(**b.obs)
                 act_logits = softmax(act_logits, mask_acts, self.device,add_little=True)
                 dist_act = self.dist_fn(act_logits)
@@ -236,14 +241,12 @@ class H3_policy(PGPolicy):
             'loss/vf': vf_losses,
             'loss/ent': ent_losses,
         }
-def collect_eps(agent,file,n_step = 200,n_episode = 1):
-    buffer = ReplayBuffer(size=n_step,ignore_obs_next=True)
+def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
     battle = Battle(agent=agent)
-    # battle.loadFile(f'ENV/debug{random.randint(1,2)}.json',shuffle_postion=True)
     battle.loadFile(file,shuffle_postion=False) #, shuffle_postion=True
     # if random.randint(0,1):
-    #     init_stack_position(battle)
-    init_stack_position(battle)
+    #     #     init_stack_position(battle)
+    #     # init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
     for ii in range(n_step):
@@ -258,9 +261,9 @@ def collect_eps(agent,file,n_step = 200,n_episode = 1):
         battle.checkNewRound()
         #battle.curStack had updated
         done = battle.check_battle_end()
-        reward = 0
+        reward = -0.01
         if done:
-            reward = 1 if battle.by_AI[battle.get_winner()] == 2 else -1
+            reward = 1 if battle.by_AI[battle.get_winner()] == 2 else 0
             if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
@@ -291,9 +294,8 @@ def init_stack_position(battle):
         st.y = int(pos/17)
         mask[st.y,st.x] = 1
 def start_train():
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+    import pygame
+    import H3_battleInterface  # 初始化游戏
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
@@ -304,12 +306,12 @@ def start_train():
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(5):
-            file = f'ENV/debug{random.randint(3, 4)}.json'
+        for _ in range(200):
+            file = f'ENV/debug{random.randint(3, 6)}.json'
             # file = f'env/debug3.json'
-            buffer_ep = collect_eps(agent,file)
-            if len(buffer_ep):
-                buffer.update(buffer_ep)
+            collect_eps(agent,file,buffer)
+            # if len(buffer_ep):
+            #     buffer.update(buffer_ep)
         batch_data, indice = buffer.sample(0)
         agent.train()
         # agent.in_train = True
@@ -321,23 +323,29 @@ def start_train():
         # print(batch_data.returns)
         # print(v_.squeeze())
         # print(batch_data.act.act_id.astype(np.int))
-        # to_dev(agent, "cuda")
-        loss = agent.learn(batch_data)
+        to_dev(agent, "cuda")
+        loss = agent.learn(batch_data,batch_size=32)
         # with torch.no_grad():
         #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(v_.squeeze())
-        # to_dev(agent, "cpu")
+        to_dev(agent, "cpu")
         agent.eval()
         agent.in_train = False
-        file = f'ENV/debug{random.randint(3, 4)}.json'
-        # file = f'env/debug4.json'
+
+        file = f'ENV/debug{random.randint(3, 6)}.json'
+        # pygame.init()  # 初始化pygame
+        # pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
         # battle_int = H3_battleInterface.BattleInterface()
         # ct = 0
-        # for xx in range(10):
+        # iter_N = 3
+        # for xx in range(iter_N):
         #     ct += start_game(file,battle_int=battle_int,agent=agent)
-        # logger.info(f"test-{count} win rate = {ct/10}")
-        ct  = start_game_noGUI(file,agent=agent)
-        logger.info(f"test-{count} win rate = {ct}")
+        # logger.info(f"test-{count} win rate = {ct/iter_N}")
+        for ii in range(3,7):
+            file = f'ENV/debug{ii}.json'
+            ct  = start_game_noGUI(file,agent=agent)
+            logger.info(f"test-{count}-{file} win rate = {ct}")
+
         buffer.reset()
         if count == 500:
             sys.exit(-1)
@@ -360,9 +368,10 @@ def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
     battle.loadFile(file,shuffle_postion=False)
     # if random.randint(0, 1):
     #     init_stack_position(battle)
-    init_stack_position(battle)
+    # init_stack_position(battle)
     battle.checkNewRound()
     if not battle_int:
+        import H3_battleInterface
         battle_int = H3_battleInterface.BattleInterface(battle)
     else:
         battle_int.init_battle(battle)
@@ -385,7 +394,8 @@ def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
 def start_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
-    for ii in range(20):
+    iter_N = 5
+    for ii in range(iter_N):
         battle = Battle(agent=agent)
         # if mode:
         #     battle.load_battle(file,load_ai_side=True, shuffle_postion=False)
@@ -407,7 +417,7 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
                     test_win += 1
                 break
             next_act = battle.cur_stack.active_stack()
-    return test_win/20
+    return test_win/iter_N
 
 def main():
     start_train()

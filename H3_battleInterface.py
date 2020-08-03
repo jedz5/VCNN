@@ -389,11 +389,8 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     debug = True
-    battle = Battle(debug=debug,by_AI=[0,1])
-    if debug:
-        battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
-    else:
-        battle.loadFile("ENV/debu1.json", shuffle_postion=False)
+    battle = Battle(debug=debug,by_AI = [0,0])
+    battle.loadFile("ENV/debug3.json", shuffle_postion=False,init_agent_side=False)
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()
@@ -403,9 +400,10 @@ def start_game():
         bi.handleBattle(act)
         if battle.check_battle_end():
             logger.debug("battle end~")
-            return
+            bi.running = False
+            pygame.quit()
         bi.renderFrame()
-    pygame.quit()
+
 if __name__ == '__main__':
     start_game()
 

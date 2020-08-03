@@ -585,7 +585,7 @@ class Battle(object):
         cp.attacker_stacks = list(filter(lambda x: x.side == 0, cp.stacks))
         cp.sortStack()
         return cp
-    def loadFile(self,file,shuffle_postion = True):
+    def loadFile(self,file,shuffle_postion = True,init_agent_side = True):
         #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
         creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
                             50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
@@ -594,9 +594,10 @@ class Battle(object):
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
             root = json.load(jsonFile)
-            self.by_AI = [1,1]
-            agent_s = random.choice(root["agent_side"])
-            self.by_AI[agent_s] = 2
+            if init_agent_side:
+                self.by_AI = [1,1]
+                agent_s = random.choice(root["agent_side"])
+                self.by_AI[agent_s] = 2
             for i in range(2):
                 li = list(range(11))
                 ys = np.random.choice(li,size=len(root['army{}'.format(i)]), replace=False)
