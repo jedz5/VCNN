@@ -4,47 +4,62 @@
 #include<pybind11/numpy.h>
 #include <pybind11/stl.h>
 namespace py = pybind11;
+using namespace std;
 const int  bFieldWidth = 17;
 const int  bFieldHeight = 11;
 class bhex {
 public:
-	int x = 0, y = 0;
-	bhex() = default;
-	bhex(int x, int y);
+	int x = -1, y = -1;
+	bhex() :x(0), y(0) {  }; //cout << "construct invoke!" << endl;
+	bhex(const bhex& bh) {
+		this->x = bh.x;
+		this->y = bh.y;
+		//printf("copy(%d,%d) construct invoke!\n", bh.x, bh.y);
+	}
+	bhex(int xx, int yy) :x(xx), y(yy) {};
 	bhex& operator= (const bhex& bh);
+	bool operator== (const bhex& bh);
 	std::vector<bhex> get_neighbor();
+	bhex get_clone();
 };
+bool check_position(int x, int y){
+    return (x >= 1 && x < (bFieldWidth - 1) && (y >= 0 && y < bFieldHeight));
+}
 void check_and_push(int x, int y, std::vector<bhex>& adj) {
-	if (x > 0 && x < bFieldWidth - 1 && y >= 0 && y < bFieldHeight)
+	if (check_position(x,y))
 		adj.push_back(bhex(x, y));
 }
-int get_distance(const bhex& self, const bhex& dest) {
-	int y1 = self.x; // 历史原因交换了x  y
-	int x1 = self.y;
-	int y2 = dest.x;
-	int x2 = dest.y;
-	y1 = int(y1 + x1*0.5);
-	y2 = int(y2 + x2*0.5);
-	int yDst = y2 - y1;
-	int xDst = x2 - x1;
-	if ((yDst >= 0 && xDst >= 0) || (yDst < 0 && xDst < 0))
+int get_distance_inner(int sx,int sy, int dx, int dy) {
+	int sx1 = int(sx + sy*0.5);
+	int dx1 = int(dx + dy*0.5);
+	int xDst = dx1 - sx1;
+	int yDst = dy - sy;
+	if ((xDst >= 0 && yDst >= 0) || (xDst < 0 && yDst < 0))
 		return std::max(abs(yDst), abs(xDst));
 	return abs(yDst) + abs(xDst);
 }
-bhex::bhex(int x, int y) {
-	this->x = x;
-	this->y = y;
+int get_distance(const bhex& self, const bhex& dest) {
+	return get_distance_inner(self.x,self.y,dest.x,dest.y);
 }
+//int get_distance(const py::object& self, const py::object& dest) {
+//	return get_distance(self.attr("x").cast<int>(), self.attr("y").cast<int>(), dest.attr("x").cast<int>(), dest.attr("y").cast<int>());
+//}
 bhex& bhex::operator= (const bhex& bh) {
+	//cout << "copy!" << endl;
 	this->x = bh.x;
 	this->y = bh.y;
 	return *this;
 }
+bool bhex::operator== (const bhex& bh) {
+	return this->x == bh.x && this->y == bh.y;
+}
+
 std::vector<bhex> bhex::get_neighbor() {
 	int zigzag = 0;
 	if (this->y % 2 != 0)
 		zigzag = 1;
 	std::vector<bhex> adj;
+	adj.reserve(6);
 	check_and_push(this->x - 1, this->y, adj);
 	check_and_push(this->x + 1, this->y, adj);
 	check_and_push(this->x + 1 - zigzag, this->y - 1, adj);
@@ -52,6 +67,10 @@ std::vector<bhex> bhex::get_neighbor() {
 	check_and_push(this->x + 1 - zigzag, this->y + 1, adj);
 	check_and_push(this->x - zigzag, this->y + 1, adj);
 	return adj;
+}
+bhex bhex::get_clone()
+{
+	return bhex(this->x,this->y);
 }
 enum action_query_type {
 	can_move = 0,
@@ -126,6 +145,7 @@ bool bstack::can_shoot(const std::vector<bstack>& stacks) {
 py::object get_global_state(py::object& in_self,std::vector<py::object>& in_stacks,int query_type = -1,bool exclude_me = true) {
 	bstack self;
 	std::vector<bstack> stacks;
+	stacks.reserve(14);
 	self.x = in_self.attr("x").cast<int>();
 	self.y = in_self.attr("y").cast<int>();
 	self.side = in_self.attr("side").cast<int>();
@@ -157,13 +177,14 @@ py::object get_global_state(py::object& in_self,std::vector<py::object>& in_stac
 			else
 				bf(i, j) = -1;
 	for (auto st : stacks) {
-		if (st.is_alive() > 0)
+		if (st.is_alive())
 			if (st.side == self.side)
 				bf(st.y,st.x) = 400;
 			else
 				bf(st.y, st.x) = 200;
 	}
 	std::vector<bhex> travellers;
+	travellers.reserve(30);
 	bf(self.y, self.x) = self.speed;
 	travellers.push_back(self);
 	if (!self.is_fly) {
@@ -223,7 +244,7 @@ py::object get_global_state(py::object& in_self,std::vector<py::object>& in_stac
 							return py::bool_(true);
 						break;
 					}
-			}
+			} 
 		}
 	}
 	// no target to reach
@@ -236,4 +257,35 @@ py::object get_global_state(py::object& in_self,std::vector<py::object>& in_stac
 
 PYBIND11_MODULE(VCbattle, m) {
 	m.def("get_global_state", &get_global_state, py::arg("self"), py::arg("stacks"),py::arg("query_type") = -1, py::arg("exclude_me") = true, py::return_value_policy::move); //
+	m.def("get_distance", &get_distance);
+	m.def("check_position", &check_position);
+	
+	py::class_<bhex>(m, "BHex")
+		.def(py::init())
+		.def(py::init<int, int>())
+		.def_readwrite("x",&bhex::x)
+		.def_readwrite("y", &bhex::y)
+		.def("__eq__", &bhex::operator==)
+		.def("get_neighbor", &bhex::get_neighbor, py::return_value_policy::move)
+		.def("__copy__", &bhex::get_clone, py::return_value_policy::move);
 }
+
+//vector<bhex> get_n2() {
+//	vector<bhex> nb;
+//	nb.reserve(6);
+//	for (int i = 0; i < 6; i++) {
+//		nb.push_back(bhex(i, i));
+//		cout << "***" << endl;
+//	}
+//	cout << "------------------------------"<<endl;
+//	return nb;
+//}
+//int main() {
+//	//unique_ptr < vector<unique_ptr<bhex>>> xx = get_n();
+//	vector<bhex> xx = get_n2();
+//	auto yy = xx;
+//	yy[0].x = 111;
+//	for (int i = 0; i < 6; i++) {
+//		cout << xx[i].x<< endl;
+//	}
+//}

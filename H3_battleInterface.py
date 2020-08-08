@@ -3,7 +3,8 @@ from pygame.locals import *  # 导入pygame库中的一些常量
 import sys # 导入sys库中的exit函数
 from H3_battle import *
 import math
-from enum import Enum
+import VCCC.x64.Release.VCbattle  as vb
+from VCCC.x64.Release.VCbattle import BHex
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 
@@ -19,6 +20,11 @@ class log_with_gui(object):
     def debug(self,text,to_gui = False):
         # pass
         self.logger.debug(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def error(self,text,to_gui = False):
+        # pass
+        self.logger.error(text)
         if(to_gui):
             self.log_text.append(text)
 
@@ -90,6 +96,8 @@ class BattleInterface:
         self.font.set_bold(True)
         self.next_act = None
         self.act = None
+        self.dump_dir = "./ENV/battles"
+        pygame.mouse.set_visible(False)
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
         background = pygame.image.load("imgs/bgrd.bmp")
@@ -264,10 +272,16 @@ class BattleInterface:
             elif event.type == pygame.MOUSEBUTTONUP:
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
-                    return self.act
+                    act = self.act
+                    self.cursor = self.cursor_move[3]
+                    self.act = None
+                    return act
                 else:
                     return self.next_act
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_d:
+                    self.battle_engine.dump_battle(self.dump_dir)
+                    return
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
                     if event.key == pygame.K_SPACE:
@@ -279,7 +293,7 @@ class BattleInterface:
                             return BAction(action_type.wait)
 
     def shift_attack_pointer(self,sector,mouse_x, mouse_y):
-        x = mouse_x -16
+        x = mouse_x - 16
         y = mouse_y - 16
         if sector == 0:
             x -= 6
@@ -312,7 +326,7 @@ class BattleInterface:
         py = mouse_y - (mouse_y - 86) % 42
         self.current_hex.pixels_x = px
         self.current_hex.pixels_y = py
-        self.cursor_pos = (px + 12 , py + 16)
+        self.cursor_pos = (mouse_x - 16 , mouse_y - 16)
         #hover on stack
         self.hoveredStack = None
         for stack in self.battle_engine.stacks:
@@ -344,7 +358,7 @@ class BattleInterface:
                     self.shift_attack_pointer(sector,mouse_x,mouse_y)
                     self.act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
                 else:
-                    self.cursor = self.cursor_move[0]
+                    self.cursor = self.cursor_move[3]
                     self.act = None
         elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
             self.cursor = self.cursor_move[4]
@@ -360,7 +374,7 @@ class BattleInterface:
                 self.cursor = self.cursor_move[1]
                 self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
         elif bf[h.hex_i, h.hex_j] < 0:
-            self.cursor = self.cursor_move[0]
+            self.cursor = self.cursor_move[3]
             self.act = None
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
@@ -389,8 +403,8 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     debug = True
-    battle = Battle(debug=debug,by_AI = [0,0])
-    battle.loadFile("ENV/debug3.json", shuffle_postion=False,init_agent_side=False)
+    battle = Battle(debug=debug,by_AI = [0,1])
+    battle.loadFile("ENV/debug5.json", shuffle_postion=False,init_agent_side=False)
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()
