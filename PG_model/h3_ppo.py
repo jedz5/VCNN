@@ -1,16 +1,10 @@
 
 import sys
 sys.path.extend(['/home/enigma/work/project/VCNN', 'D:/project/VCNN/'])
-import pprint
-import argparse
-from torch.utils.tensorboard import SummaryWriter
-import time
 from PG_model.discrete_net import H3_net
-import torch
-import numpy as np
 from torch import nn
-from typing import Dict, List, Tuple, Union, Optional
-from H3_battle import *
+from typing import Tuple, Optional
+from ENV.H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 
@@ -104,7 +98,10 @@ class H3_policy(PGPolicy):
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
                 position_logits = softmax(position_logits, mask_position, self.device)
-                position_id = self.dist_fn(position_logits).sample()[0].item()
+                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.9:
+                    position_id = self.dist_fn(position_logits).sample()[0].item()
+                else:
+                    position_id = torch.argmax(position_logits, dim=-1)[0].item()
             elif act_id == action_type.attack.value:
                 mask_targets = env.legal_act(level=1, act_id=act_id)
                 targets_prob = softmax(targets_logits, mask_targets, self.device)
@@ -271,20 +268,25 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
         done = battle.check_battle_end()
         reward = -0.01
         if done:
-            reward = 1 if battle.by_AI[battle.get_winner()] == 2 else 0
+            if battle.by_AI[battle.get_winner()] == 2:
+                reward = 1
+                # if int(file[-6]) in  [0,1,2,3,4]:
+                #     logger.info()
+                logger.info(f"win {int(file[-6])}")
             if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
+                    buffer.done[len(buffer) - 1] = True
             else:
-                buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask)
+                buffer.add(obs=obs, act=acts, rew=reward, done=True, info=mask)
             break
         if acting_stack.by_AI == 2:
             buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
+    #TODO 修复
     if len(buffer) != 0:
         buffer.done[len(buffer) - 1] = True
     return buffer
 def init_stack_position(battle):
-    # pass
     mask = np.zeros([11,17])
     mask[:,0] = 1
     mask[:, 16] = 1
@@ -302,8 +304,6 @@ def init_stack_position(battle):
         st.y = int(pos/17)
         mask[st.y,st.x] = 1
 def start_train():
-    import pygame
-    import H3_battleInterface  # 初始化游戏
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
@@ -314,7 +314,7 @@ def start_train():
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(1000):
+        for _ in range(200):
             file = f'ENV/battles/{random.randint(0, 6)}.json'
             # file = f'env/debug3.json'
             collect_eps(agent,file,buffer)
@@ -371,16 +371,16 @@ def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
         optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
         dist = torch.distributions.Categorical
         agent = H3_policy(actor_critic, optim, dist, device=dev)
-
+        agent.in_train = True
     # debug = True
     battle = Battle(agent=agent,by_AI=by_AI)
-    battle.loadFile(file,shuffle_postion=False)
+    battle.load_battle(file,shuffle_postion=False)
     # if random.randint(0, 1):
     #     init_stack_position(battle)
     # init_stack_position(battle)
     battle.checkNewRound()
     if not battle_int:
-        import H3_battleInterface
+        from ENV import H3_battleInterface
         battle_int = H3_battleInterface.BattleInterface(battle)
     else:
         battle_int.init_battle(battle)
@@ -424,6 +424,9 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
 
 def main():
     start_train()
-    # start_game("ENV/debug2.json",by_AI=[2, 1])
+    # import pygame
+    # pygame.init()  # 初始化pygame
+    # pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+    # start_game("ENV/battles/7.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()

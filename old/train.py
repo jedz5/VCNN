@@ -8,15 +8,14 @@ An implementation of the training pipeline of AlphaZero for Gomoku
 from __future__ import print_function
 import random
 import numpy as np
-from collections import defaultdict, deque
-import H3_battle as bat
-from mcts_alpha import MCTSPlayer
+from collections import deque
+from ENV import H3_battle as bat
+from old.mcts_alpha import MCTSPlayer
 import traceback
 #from policy_value_net import PolicyValueNet  # Theano and Lasagne
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
-from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
-import logging
-from H3_battle import logger
+from old.policy_value_net_tensorflow import PolicyValueNet # Tensorflow
+from ENV.H3_battle import logger
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game

@@ -1,7 +1,5 @@
 import tensorflow as tf
-import numpy as np
-import loadJson
-from tensorflow.contrib.layers.python.layers import utils
+from old import loadJson
 
 # Network Parameters
 hexY = 11

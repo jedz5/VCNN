@@ -7,7 +7,7 @@ import numpy as np
 import platform
 from enum import IntEnum
 from subprocess import Popen
-from client import run_remote_server
+from old.client import run_remote_server
 Linux = "Linux" == platform.system()
 def runClient(ip,port,jsonFile,noGUI="--noGUI"):
     if Linux:

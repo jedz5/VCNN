@@ -4,10 +4,10 @@ import json
 import numpy as np
 from enum import IntEnum
 import random
-from creatureEmbedding import load_json
-from creatureEmbedding import run_remote_server
-from creatureEmbedding import runServer
-from creatureEmbedding import runClient
+from old.creatureEmbedding import load_json
+from old.creatureEmbedding import run_remote_server
+from old.creatureEmbedding import runServer
+from old.creatureEmbedding import runClient
 import multiprocessing
 import glob
 import time

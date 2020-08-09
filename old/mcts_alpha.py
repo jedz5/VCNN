@@ -7,10 +7,7 @@ network to guide the tree search and evaluate the leaf nodes
 """
 
 import numpy as np
-import copy
-import policy_value_net_tensorflow
-import logging
-from H3_battle import logger
+from ENV.H3_battle import logger
 # def rollout_policy_fn(board):
 #     """a coarse, fast version of policy_fn used in the rollout phase."""
 #     # rollout randomly

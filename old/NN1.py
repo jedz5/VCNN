@@ -11,7 +11,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
-import loadJson as lj
+from old import loadJson as lj
 import json
 from tensorflow.contrib.layers.python.layers import utils
 # Parameters

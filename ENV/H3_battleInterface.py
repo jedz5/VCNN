@@ -1,7 +1,5 @@
 import pygame  # 导入pygame库
-from pygame.locals import *  # 导入pygame库中的一些常量
-import sys # 导入sys库中的exit函数
-from H3_battle import *
+from ENV.H3_battle import *
 import math
 # import VCCC.x64.Release.VCbattle  as vb
 from VCbattle import BHex

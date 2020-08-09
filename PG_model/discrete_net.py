@@ -1,11 +1,7 @@
 import torch
-import time
-import numpy as np
 from torch import nn
-from H3_battle import Battle
-from H3_battle import action_type
+
 # from H3_battle import logger
-from tianshou.data import ReplayBuffer
 dist_fn = torch.distributions.Categorical
 
 

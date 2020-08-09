@@ -6,8 +6,6 @@ if Linux:
 else:
     sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
 import VCbattle #as numpy_demo2
-import numpy as np
-
 
 # var1 = numpy_demo2.add_arrays_1d(np.array([1, 3, 5, 7, 9]),
 #                                  np.array([2, 4, 6, 8, 10]))
@@ -25,7 +23,7 @@ import numpy as np
 #                                  input2)
 # print('-'*50)
 # print('var3', var3)
-from H3_battle import BStack
+from ENV.H3_battle import BStack
 al = []
 a = BStack()
 a.side = 0
