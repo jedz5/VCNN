@@ -6,7 +6,7 @@
         <remote-mappings server-id="python@ssh://enigma@192.168.1.100:22/home/enigma/work/anaconda/envs/vcnn/bin/python">
           <settings>
             <list>
-              <mapping local-root="VCNN" remote-root="/home/enigma/work/project/VCNN" />
+              <mapping local-root="D:/project/VCNN" remote-root="/home/enigma/work/project/VCNN" />
             </list>
           </settings>
         </remote-mappings>

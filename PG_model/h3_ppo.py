@@ -1,4 +1,6 @@
 
+import sys
+sys.path.extend(['/home/enigma/work/project/VCNN', 'D:/project/VCNN/'])
 import pprint
 import argparse
 from torch.utils.tensorboard import SummaryWriter
@@ -11,19 +13,22 @@ from typing import Dict, List, Tuple, Union, Optional
 from H3_battle import *
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
-import sys
 
+# import pdb
 
 np.set_printoptions(precision=2,suppress=True)
 logger = get_logger()[1]
 dev = 'cpu'
-def softmax(logits, mask_orig,dev,add_little = False):
+def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
     mask = torch.tensor(mask_orig,dtype=torch.float,device=dev)
-    logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
-    logits2 = logits1 * mask
-    logits3 = logits2 / (torch.sum(logits2,dim=-1,keepdim=True) + 1E-9)
-    if add_little:
-        logits3 += 1E-9
+    if in_train:
+        logits1 = logits.sub(logits.max(dim=-1,keepdim=True)[0]).exp()
+        logits2 = logits1 * mask
+        logits3 = logits2 / (torch.sum(logits2,dim=-1,keepdim=True) + 1E-9)
+        if add_little:
+            logits3 += 1E-9
+    else:
+        logits3 = (logits + 1E9) * mask
     return logits3
 class H3_policy(PGPolicy):
 
@@ -103,34 +108,37 @@ class H3_policy(PGPolicy):
             elif act_id == action_type.attack.value:
                 mask_targets = env.legal_act(level=1, act_id=act_id)
                 targets_prob = softmax(targets_logits, mask_targets, self.device)
-                if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.8:
+                if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.9:
                     target_id = self.dist_fn(targets_prob).sample()[0].item()
                 else:
-                    ids = np.arange(len(mask_targets))
-                    target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
+                    # ids = np.arange(len(mask_targets))
+                    # target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
+                    target_id = torch.argmax(targets_prob, dim=-1)[0].item()
                 mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
                 position_logits = softmax(position_logits, mask_position, self.device)
-                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.5:
+                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.9:
                     position_id = self.dist_fn(position_logits).sample()[0].item()
+                else:
+                    position_id = torch.argmax(position_logits, dim=-1)[0].item()
             return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
                     'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
                 'mask_position': mask_position, 'value': value}
         else:
-            act_logits = softmax(act_logits, mask_acts, self.device)
+            act_logits = softmax(act_logits, mask_acts, self.device,in_train=False)
             if print_act:
                 print(act_logits)
                 print(value)
             act_id = torch.argmax(act_logits,dim=-1)[0].item()
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
-                position_logits = softmax(position_logits, mask_position, self.device)
+                position_logits = softmax(position_logits, mask_position, self.device,in_train=False)
                 position_id = torch.argmax(position_logits,dim=-1)[0].item()
             elif act_id == action_type.attack.value:
                 mask_targets = env.legal_act(level=1, act_id=act_id)
-                targets_prob = softmax(targets_logits, mask_targets, self.device)
+                targets_prob = softmax(targets_logits, mask_targets, self.device,in_train=False)
                 target_id = torch.argmax(targets_prob, dim=-1)[0].item()
                 mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-                position_logits = softmax(position_logits, mask_position, self.device)
+                position_logits = softmax(position_logits, mask_position, self.device,in_train=False)
                 if torch.sum(position_logits, dim=-1, keepdim=True).item() > 0.5:
                     position_id = torch.argmax(position_logits, dim=-1)[0].item()
             return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
@@ -301,16 +309,17 @@ def start_train():
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.0)
-    buffer = ReplayBuffer(6000,ignore_obs_next=True)
+    buffer = ReplayBuffer(10000,ignore_obs_next=True)
     count = 0
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(200):
+        for _ in range(1000):
             file = f'ENV/battles/{random.randint(0, 6)}.json'
             # file = f'env/debug3.json'
             collect_eps(agent,file,buffer)
         batch_data, indice = buffer.sample(0)
+        logger.info(len(buffer))
         agent.train()
         # agent.in_train = True
         batch_data = agent.process_gae(batch_data)
@@ -321,12 +330,14 @@ def start_train():
         # print(batch_data.returns)
         # print(v_.squeeze())
         # print(batch_data.act.act_id.astype(np.int))
-        # to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=32)
+        if Linux:
+            to_dev(agent, "cuda")
+        loss = agent.learn(batch_data,batch_size=50)
         # with torch.no_grad():
         #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(v_.squeeze())
-        # to_dev(agent, "cpu")
+        if Linux:
+            to_dev(agent, "cpu")
         agent.eval()
         agent.in_train = False
 
@@ -345,7 +356,7 @@ def start_train():
             logger.info(f"test-{count}-{ii}.json win rate = {ct}")
 
         buffer.reset()
-        if count == 5:
+        if count == 500:
             sys.exit(-1)
         count += 1
 def to_dev(agent,dev):

@@ -3,8 +3,8 @@ from pygame.locals import *  # 导入pygame库中的一些常量
 import sys # 导入sys库中的exit函数
 from H3_battle import *
 import math
-import VCCC.x64.Release.VCbattle  as vb
-from VCCC.x64.Release.VCbattle import BHex
+# import VCCC.x64.Release.VCbattle  as vb
+from VCbattle import BHex
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 

@@ -21,8 +21,8 @@ if Linux:
     sys.path.extend(['/home/enigma/work/project/VCNN/','/home/enigma/work/project/VCNN/VCCC/VCbattle/build'])
 else:
     sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
-import VCCC.x64.Release.VCbattle  as vb
-from VCCC.x64.Release.VCbattle import BHex
+import VCbattle  as vb
+from VCbattle import BHex
 def set_logger(lg_on,lg):
     global log_gui_on
     log_gui_on = lg_on
