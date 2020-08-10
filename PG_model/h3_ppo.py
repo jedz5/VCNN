@@ -22,7 +22,7 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
         if add_little:
             logits3 += 1E-9
     else:
-        logits3 = (logits + 1E9) * mask
+        logits3 = (logits + 50) * mask
     return logits3
 class H3_policy(PGPolicy):
 
@@ -246,6 +246,7 @@ class H3_policy(PGPolicy):
             'loss/vf': vf_losses,
             'loss/ent': ent_losses,
         }
+wf_flag = False
 def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
     battle = Battle(agent=agent)
     battle.load_battle(file)
@@ -270,9 +271,10 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
         if done:
             if battle.by_AI[battle.get_winner()] == 2:
                 reward = 1
-                # if int(file[-6]) in  [0,1,2,3,4]:
-                #     logger.info()
-                logger.info(f"win {int(file[-6])}")
+                wf = int(file[-6])
+                if wf in  [0,1,2,3,4]:
+                    wf_flag = True
+                    logger.info(f"win {wf}")
             if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
@@ -308,14 +310,17 @@ def start_train():
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.0)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
     buffer = ReplayBuffer(10000,ignore_obs_next=True)
     count = 0
+    new_start = 6
+    five_done = 5
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(200):
-            file = f'ENV/battles/{random.randint(0, 6)}.json'
+        for _ in range(20):
+            #TODO 为啥0.json和1.json不一样？
+            file = f'ENV/battles/{new_start}.json'
             # file = f'env/debug3.json'
             collect_eps(agent,file,buffer)
         batch_data, indice = buffer.sample(0)
@@ -332,7 +337,7 @@ def start_train():
         # print(batch_data.act.act_id.astype(np.int))
         if Linux:
             to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=50)
+        loss = agent.learn(batch_data,batch_size=100)
         # with torch.no_grad():
         #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(v_.squeeze())
@@ -341,22 +346,37 @@ def start_train():
         agent.eval()
         agent.in_train = False
 
-        file = f'ENV/battles/{random.randint(0, 6)}.json'
-        # pygame.init()  # 初始化pygame
-        # pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-        # battle_int = H3_battleInterface.BattleInterface()
-        # ct = 0
-        # iter_N = 3
-        # for xx in range(iter_N):
-        #     ct += start_game(file,battle_int=battle_int,agent=agent)
-        # logger.info(f"test-{count} win rate = {ct/iter_N}")
-        for ii in range(7):
-            file = f'ENV/battles/{ii}.json'
-            ct  = start_game_noGUI(file,agent=agent)
-            logger.info(f"test-{count}-{ii}.json win rate = {ct}")
+        #with GUI
+        # if wf_flag:
+        #     if count == 0:
+        #         import pygame
+        #         import ENV.H3_battleInterface as h3_bi
+        #     pygame.init()  # 初始化pygame
+        #     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+        #     battle_int = h3_bi.BattleInterface()
+        #     ct = 0
+        #     iter_N = 2
+        #     for xx in range(iter_N):
+        #         file = f'battles/{random.randint(0, 6)}.json'
+        #         start_game(file,battle_int=battle_int,agent=agent)
+        # logger.info(f"test-{count}")
 
+        #no GUI five done
+        ct = start_game_noGUI(file, agent=agent)
+        logger.info(f"test-{count}-{new_start}.json win rate = {ct}")
+        if ct > 0.9:
+            five_done -= 1
+            if five_done == 0:
+                new_start -= 1
+                torch.save(agent.state_dict(),"model_param.pkl")
+                logger.info("model saved")
+                five_done = 5
+                if new_start < 0:
+                    sys.exit(0)
+        else:
+            five_done = 5
         buffer.reset()
-        if count == 500:
+        if count == 1500:
             sys.exit(-1)
         count += 1
 def to_dev(agent,dev):
@@ -427,6 +447,6 @@ def main():
     # import pygame
     # pygame.init()  # 初始化pygame
     # pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    # start_game("ENV/battles/7.json",by_AI=[2, 1])
+    # start_game("ENV/battles/0.json",by_AI=[2, 1])
 if __name__ == '__main__':
     main()

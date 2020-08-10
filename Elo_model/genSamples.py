@@ -141,7 +141,7 @@ def count_loss(army,p):
     else:
         print("win: ",1-p)
     return army
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # genJsons(1)
     # my_army = [[3, 22],[0,1],[0, 1],[0, 1],[0,11],[0,1],[7,12]] #
     # my_enemy = [[23, 5], [23, 5],[23, 5]]

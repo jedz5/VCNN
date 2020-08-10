@@ -94,32 +94,32 @@ class BattleInterface:
         self.font.set_bold(True)
         self.next_act = None
         self.act = None
-        self.dump_dir = "./ENV/battles"
+        self.dump_dir = "ENV/battles"
         pygame.mouse.set_visible(False)
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
-        background = pygame.image.load("imgs/bgrd.bmp")
+        background = pygame.image.load("ENV/imgs/bgrd.bmp")
         self.background = background
-        self.hex_shader = pygame.image.load("imgs/CCellShd_gray.bmp")
+        self.hex_shader = pygame.image.load("ENV/imgs/CCellShd_gray.bmp")
         self.hex_shader.set_colorkey(self.transColor)
         self.hex_shader.set_alpha(100)
-        self.shader_cur_stack = pygame.image.load("imgs/CCellShd_green.bmp")
+        self.shader_cur_stack = pygame.image.load("ENV/imgs/CCellShd_green.bmp")
         self.shader_cur_stack.set_colorkey(self.transColor)
-        self.shader_cur_target = pygame.image.load("imgs/CCellShd_red.bmp")
+        self.shader_cur_target = pygame.image.load("ENV/imgs/CCellShd_red.bmp")
         self.shader_cur_target.set_colorkey(self.transColor)
-        self.amout_backgrd = pygame.image.load("imgs/CmNumWin_purple.bmp").convert_alpha()
-        self.amout_backgrd_enemy = pygame.image.load("imgs/CmNumWin_blue.bmp").convert_alpha()
+        self.amout_backgrd = pygame.image.load("ENV/imgs/CmNumWin_purple.bmp").convert_alpha()
+        self.amout_backgrd_enemy = pygame.image.load("ENV/imgs/CmNumWin_blue.bmp").convert_alpha()
 
         for idx in range(6):
-            img = pygame.image.load("imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
+            img = pygame.image.load("ENV/imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
             # img.set_colorkey((0, 255, 255))
             self.cursor_attack[idx] = img
         for idx in range(5):
-            img = pygame.image.load("imgs/cursor/move/" + str(idx) + ".bmp")#.convert_alpha()
+            img = pygame.image.load("ENV/imgs/cursor/move/" + str(idx) + ".bmp")#.convert_alpha()
             # img.set_colorkey((0, 255, 255))
             self.cursor_move[idx] = img
         for idx in range(2):
-            img = pygame.image.load("imgs/cursor/shoot/" + str(idx) + ".bmp")#.convert_alpha()
+            img = pygame.image.load("ENV/imgs/cursor/shoot/" + str(idx) + ".bmp")#.convert_alpha()
             # img.set_colorkey((0, 255, 255))
             self.cursor_shoot[idx] = img
         self.cursor = self.cursor_move[0]
@@ -129,20 +129,20 @@ class BattleInterface:
         self.battle_engine = battle
         for st in battle.stacks:
             if st.name not in self.stimgs:
-                img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
+                img = pygame.image.load("ENV/imgs/creatures/"+st.name+".bmp").convert_alpha()
                 imgback = pygame.Surface(img.get_size())
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16,16,16))
                 self.stimgs[st.name] = imgback
                 #dead
-                img = pygame.image.load("imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
+                img = pygame.image.load("ENV/imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
                 imgback = pygame.Surface(img.get_size())
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16, 16, 16))
                 self.stimgs_dead[st.name] = imgback
         # for oi in self.battle_engine.obsinfo:
         #     if oi.imname not in self.stimgs:
-        #         img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
+        #         img = pygame.image.load("ENV/imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
         #         imgback = pygame.Surface(img.get_size())
         #         imgback.blit(img, (0, 0))
         #         if oi.isabs:
@@ -402,7 +402,7 @@ def start_game():
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     debug = True
     battle = Battle(debug=debug,by_AI = [0,1])
-    battle.loadFile("ENV/debug5.json", shuffle_postion=False,init_agent_side=False)
+    battle.load_battle("ENV/battles/1.json", shuffle_postion=False,load_ai_side=False)
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()
