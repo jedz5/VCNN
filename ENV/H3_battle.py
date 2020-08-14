@@ -472,12 +472,8 @@ class BStack(BHex):
             #             'mask_acts':mask_acts,'mask_spell':mask_spell,'mask_targets':mask_targets,'mask_position':mask_position}
             agent = self.in_battle.agent
             ind, attri_stack, planes_stack, plane_glb = self.in_battle.current_state_feature()
-            if agent.in_train:
-                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle, print_act)
-            else:
-                with torch.no_grad():
-                    result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,
-                                   print_act)
+            with torch.no_grad():
+                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,print_act)
             act_id = result['act_id']
             position_id = result['position_id']
             target_id = result['target_id']
@@ -586,13 +582,13 @@ class Battle(object):
         cp.attacker_stacks = list(filter(lambda x: x.side == 0, cp.stacks))
         cp.sortStack()
         return cp
-    def loadFile(self,file,shuffle_postion = True,init_agent_side = True):
+    def loadFile(self,file,shuffle_postion = True,load_ai_side = True):
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
         with open(file) as jsonFile:
             root = json.load(jsonFile)
-            if init_agent_side:
+            if load_ai_side:
                 self.by_AI = [1,1]
                 agent_s = random.choice(root["agent_side"])
                 self.by_AI[agent_s] = 2

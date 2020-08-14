@@ -1,31 +1,35 @@
-import torch
-import time
-import numpy as np
-from torch import nn
-import torch.nn.functional as F
+import pandas as pd
 
+df=pd.read_excel('d:/土地款支付统计.xlsx',sheet_name='Sheet2')
+#数据 偶数行 4-60列
+a = df.iloc[::2, 4:60]
+result = {}
+#2014-2019
+for i in range(2014,2020):
+    # 日期 奇数行
+    a1 = df.iloc[1::2,4:60].copy().to_numpy()
+    b = ((pd.Timestamp(f'{i-1}-12-14 00:00:00') < a) & (a < pd.Timestamp(f'{i}-12-15 00:00:00'))).to_numpy()
+    a1[~b] = 0
+    result[i] = a1.sum(axis=-1)
 
-class BH:
-    def __init__(self,x,y,z,a,b,c):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.a = a
-        self.b = b
-        self.c = c
-hh = 100
-ww = 200
-l2 = []
-ones = np.array([BH(i%ww,(i**2+3)%hh,2,3,4,5) for i in range(70000)])
-st = time.time()
-oney = np.array([bh.y for bh in ones])
-onex =np.array([bh.x for bh in ones])
-onez =np.array([bh.z for bh in ones])
-onea =np.array([bh.a for bh in ones])
-oneb =np.array([bh.b for bh in ones])
-onec =np.array([bh.c for bh in ones])
-print(time.time() - st )
-st = time.time()
-onesxy = np.array([[bh.y,bh.x,bh.z,bh.a,bh.b,bh.c] for bh in ones])
-oney,onex,onez,onea,oneb,onec = onesxy.transpose() #
-print(time.time() - st )
+#2020 1-6月
+a1 = df.iloc[1::2,4:60].copy().to_numpy()
+b = ((pd.Timestamp(f'2019-12-14 00:00:00') < a) & (a < pd.Timestamp(f'2020-6-15 00:00:00'))).to_numpy()
+a1[~b] = 0
+result["1-6"] = a1.sum(axis=-1)
+
+#2020 7-12月
+for i in range(7,13):
+    a1 = df.iloc[1::2,4:60].copy().to_numpy()
+    b = ((pd.Timestamp(f'2020-{i-1}-14 00:00:00') < a) & (a < pd.Timestamp(f'2020-{i}-15 00:00:00'))).to_numpy()
+    a1[~b] = 0
+    result[i] = a1.sum(axis=-1)
+# 写入新文件
+df2 = df.copy()
+ii = 0
+for k in result.keys():
+    #插入对应列
+    df2.insert(3 + ii,k,0)
+    df2.iloc[1::2,3 + ii] = result[k]
+    ii += 1
+df2.to_excel('d:/hhh.xlsx')

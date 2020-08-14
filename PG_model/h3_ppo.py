@@ -22,7 +22,7 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
         if add_little:
             logits3 += 1E-9
     else:
-        logits3 = (logits + 50) * mask
+        logits3 = (logits + 20) * mask
     return logits3
 class H3_policy(PGPolicy):
 
@@ -50,7 +50,7 @@ class H3_policy(PGPolicy):
         self._range = action_range
         self.ppo_net = net
         self.optim = optim
-        self._batch = 64
+        self._batch_size = 4000
         assert 0 <= gae_lambda <= 1, 'GAE lambda should be in [0, 1].'
         self._lambda = gae_lambda
         assert dual_clip is None or dual_clip > 1, \
@@ -71,7 +71,7 @@ class H3_policy(PGPolicy):
                 batch, None, gamma=self._gamma, gae_lambda=self._lambda)
         v_ = []
         with torch.no_grad():
-            for b in batch.split(self._batch, shuffle=False):
+            for b in batch.split(self._batch_size, shuffle=False):
                 v_.append(self.ppo_net(**b.obs_next,critic_only = True))
         v_ = torch.cat(v_, dim=0).cpu().numpy()
         return self.compute_episodic_return(
@@ -92,8 +92,8 @@ class H3_policy(PGPolicy):
         if self.in_train:
             act_logits = softmax(act_logits, mask_acts, self.device)
             if print_act:
-                print(act_logits)
-                print(value)
+                logger.info(act_logits)
+                logger.info(value)
             act_id = self.dist_fn(act_logits).sample()[0].item()
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
@@ -123,8 +123,8 @@ class H3_policy(PGPolicy):
         else:
             act_logits = softmax(act_logits, mask_acts, self.device,in_train=False)
             if print_act:
-                print(act_logits)
-                print(value)
+                logger.info(act_logits)
+                logger.info(value)
             act_id = torch.argmax(act_logits,dim=-1)[0].item()
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
@@ -142,8 +142,8 @@ class H3_policy(PGPolicy):
                     'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
                     'mask_position': mask_position, 'value': value}
 
+    #TODO 5 mcts结构有何优势
     def learn(self, batch, batch_size=None, repeat=2, **kwargs):
-        self._batch = batch_size
         losses, clip_losses, vf_losses, ent_losses = [], [], [], []
         v = []
         old_prob_act = []
@@ -151,7 +151,7 @@ class H3_policy(PGPolicy):
         old_prob_target = []
         old_prob_spell = []
         with torch.no_grad():
-            for b in batch.split(batch_size,shuffle=False):
+            for b in batch.split(self._batch_size,shuffle=False):
                 # obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
                 # acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
                 # mask = {'mask_acts': result['mask_acts'], 'mask_spell': result['mask_spell'],
@@ -192,8 +192,9 @@ class H3_policy(PGPolicy):
             mean, std = batch.adv.mean(), batch.adv.std()
             if std > self.__eps:
                 batch.adv = (batch.adv - mean) / std
+        pcount = 0
         for _ in range(repeat):
-            for b in batch.split(batch_size):
+            for b in batch.split(batch_size,shuffle=False):
                 mask_acts = b.info.mask_acts
                 mask_spell = b.info.mask_spell
                 mask_targets = b.info.mask_targets
@@ -233,7 +234,11 @@ class H3_policy(PGPolicy):
                 vf_losses.append(vf_loss.item())
                 e_loss = (dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean())/4
                 ent_losses.append(e_loss.item())
+                #TODO 8 entropy工作原理
                 loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
+                if pcount < 5:
+                    logger.info("clip_loss={:.4f} vf_loss={:.4f} e_loss={:.4f}".format(clip_loss,vf_loss,e_loss))
+                pcount += 1
                 losses.append(loss.item())
                 self.optim.zero_grad()
                 loss.backward()
@@ -247,7 +252,7 @@ class H3_policy(PGPolicy):
             'loss/ent': ent_losses,
         }
 wf_flag = False
-def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
+def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1,print_act = False):
     battle = Battle(agent=agent)
     battle.load_battle(file)
     # if random.randint(0,1):
@@ -255,13 +260,15 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
     #     # init_stack_position(battle)
     battle.checkNewRound()
     had_acted = False
+    win = False
     for ii in range(n_step):
         acting_stack = battle.cur_stack
         if acting_stack.by_AI != 2:
             battle_action = acting_stack.active_stack()
             obs, acts, mask = None,None,None
         else:
-            battle_action,obs,acts,mask = acting_stack.active_stack(ret_obs=True)
+            print_act = print_act and ii < 5
+            battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True,print_act = print_act)
             had_acted = True
         battle.doAction(battle_action)
         battle.checkNewRound()
@@ -271,10 +278,7 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
         if done:
             if battle.by_AI[battle.get_winner()] == 2:
                 reward = 1
-                wf = int(file[-6])
-                if wf in  [0,1,2,3,4]:
-                    wf_flag = True
-                    logger.info(f"win {wf}")
+                win = True
             if acting_stack.by_AI != 2:
                 if had_acted:
                     buffer.rew[len(buffer) - 1] = reward
@@ -284,10 +288,10 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1):
             break
         if acting_stack.by_AI == 2:
             buffer.add(obs=obs, act=acts, rew=reward, done=done,info=mask)
-    #TODO 修复
+    #TODO 0 修复
     if len(buffer) != 0:
         buffer.done[len(buffer) - 1] = True
-    return buffer
+    return win
 def init_stack_position(battle):
     mask = np.zeros([11,17])
     mask[:,0] = 1
@@ -308,21 +312,41 @@ def init_stack_position(battle):
 def start_train():
     # 初始化 agent
     actor_critic = H3_net(dev)
-    optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
+    optim = torch.optim.Adam(actor_critic.parameters(), lr=0.005)
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
+    # agent.load_state_dict(torch.load("model_param.pkl"))
     buffer = ReplayBuffer(10000,ignore_obs_next=True)
     count = 0
-    new_start = 6
-    five_done = 5
+    f_max = 6
+    new_start = f_max
+    five_done = 3
+    ok = five_done
+    sep = 2
+    #TODO 9 batch size
     while True:
         agent.eval()
         agent.in_train = True
-        for _ in range(20):
-            #TODO 为啥0.json和1.json不一样？
-            file = f'ENV/battles/{new_start}.json'
-            # file = f'env/debug3.json'
-            collect_eps(agent,file,buffer)
+        for ii in range(500):
+            bingo = np.random.choice([0,1,2],p=[0.6,0.25,0.15])
+            if bingo == 0:
+                agent.in_train = True
+                fn = new_start
+            if bingo == 1:
+                agent.in_train = True
+                fn = min(new_start+sep,f_max)
+            if bingo == 2:
+                agent.in_train = False
+                fn = min(new_start+sep,f_max)
+            # fn = random.randint(new_start,min(new_start+1,f_max))
+            file = f'ENV/battles/{fn}.json'
+            print_act = False
+            if ii < 3 :
+                print_act = True
+                logger.info(f"------------------------{fn}.json")
+            win = collect_eps(agent,file,buffer,n_episode=ii,print_act=print_act)
+            if win and ii < 50:
+                logger.info(f"win {fn}")
         batch_data, indice = buffer.sample(0)
         logger.info(len(buffer))
         agent.train()
@@ -337,7 +361,8 @@ def start_train():
         # print(batch_data.act.act_id.astype(np.int))
         if Linux:
             to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=100)
+            #TODO 7 batch size?
+        loss = agent.learn(batch_data,batch_size=2000)
         # with torch.no_grad():
         #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
         # print(v_.squeeze())
@@ -362,21 +387,24 @@ def start_train():
         # logger.info(f"test-{count}")
 
         #no GUI five done
+        file = f'ENV/battles/{new_start}.json'
         ct = start_game_noGUI(file, agent=agent)
         logger.info(f"test-{count}-{new_start}.json win rate = {ct}")
         if ct > 0.9:
-            five_done -= 1
-            if five_done == 0:
-                new_start -= 1
+            ok -= 1
+            if ok == 0:
+                new_start -= sep
                 torch.save(agent.state_dict(),"model_param.pkl")
                 logger.info("model saved")
-                five_done = 5
-                if new_start < 0:
+                ok = five_done
+                if new_start == 0:
+                    new_start = 1
+                if new_start < 1:
                     sys.exit(0)
         else:
-            five_done = 5
+            ok = five_done
         buffer.reset()
-        if count == 1500:
+        if count == 2500:
             sys.exit(-1)
         count += 1
 def to_dev(agent,dev):
@@ -388,7 +416,7 @@ def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
     #初始化 agent
     if not agent:
         actor_critic = H3_net(dev)
-        optim = torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
+        optim = None #torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
         dist = torch.distributions.Categorical
         agent = H3_policy(actor_critic, optim, dist, device=dev)
         agent.in_train = True
@@ -441,12 +469,22 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
                 break
             next_act = battle.cur_stack.active_stack()
     return test_win/iter_N
+def start_test():
+    import pygame
+    pygame.init()  # 初始化pygame
+    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+
+    actor_critic = H3_net(dev)
+    optim = None #torch.optim.Adam(actor_critic.parameters(), lr=0.005)
+    dist = torch.distributions.Categorical
+    agent = H3_policy(actor_critic, optim, dist, device=dev)
+    agent.load_state_dict(torch.load("model_param.pkl"))
+    agent.eval()
+    agent.in_train = False
+    start_game("ENV/battles/1.json", by_AI=[2, 1],agent=agent)
 
 def main():
     start_train()
-    # import pygame
-    # pygame.init()  # 初始化pygame
-    # pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    # start_game("ENV/battles/0.json",by_AI=[2, 1])
+    # start_test()
 if __name__ == '__main__':
     main()
