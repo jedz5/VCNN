@@ -414,7 +414,27 @@ def start_game():
             bi.running = False
             pygame.quit()
         bi.renderFrame()
-
+def start_game_record():
+    # 初始化游戏
+    pygame.init()  # 初始化pygame
+    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+    battle = Battle(by_AI = [0,1])
+    battle.load_battle("ENV/battles/0.json", shuffle_postion=False,load_ai_side=False)
+    battle.checkNewRound()
+    bi = BattleInterface(battle)
+    bi.next_act = battle.cur_stack.active_stack()
+    # 事件循环(main loop)
+    while bi.running:
+        act = bi.handleEvents()
+        if act and battle.cur_stack.by_AI == 0:
+            masks = battle.get_act_masks(act)
+            ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature()
+        bi.handleBattle(act)
+        if battle.check_battle_end():
+            logger.debug("battle end~")
+            bi.running = False
+            pygame.quit()
+        bi.renderFrame()
 if __name__ == '__main__':
     start_game()
 

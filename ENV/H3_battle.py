@@ -473,7 +473,7 @@ class BStack(BHex):
             agent = self.in_battle.agent
             ind, attri_stack, planes_stack, plane_glb = self.in_battle.current_state_feature()
             with torch.no_grad():
-                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,print_act)
+                result = agent(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], self.in_battle,shooter=self.can_shoot(), print_act = print_act)
             act_id = result['act_id']
             position_id = result['position_id']
             target_id = result['target_id']
@@ -767,6 +767,13 @@ class Battle(object):
             st.x = pos % 17
             st.y = int(pos / 17)
             mask[st.y, st.x] = 1
+    #TODO get_act_masks
+    def get_act_masks(self,act):
+        target_mask = np.zeros((7,))
+        positon_mask = np.zeros(self.bFieldHeight,self.bFieldWidth)
+        cur_stack = self.cur_stack
+        act_mask = self.legal_act(level=0)
+        target_mask = self.legal_act()
     def sortStack(self):
         self.last_stack = self.cur_stack
         self.toMove = list(filter(lambda elem: elem.is_alive() and not elem.had_moved and not elem.had_waited, self.stacks))

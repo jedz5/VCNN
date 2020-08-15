@@ -22,7 +22,7 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
         if add_little:
             logits3 += 1E-9
     else:
-        logits3 = (logits + 20) * mask
+        logits3 = (logits.sub(logits.min(dim=-1,keepdim=True)[0]) + 1)* mask
     return logits3
 class H3_policy(PGPolicy):
 
@@ -77,8 +77,9 @@ class H3_policy(PGPolicy):
         return self.compute_episodic_return(
             batch, v_, gamma=self._gamma, gae_lambda=self._lambda)
 
+    #单次输入 obs->act,mask
     def forward(self, ind,attri_stack,planes_stack,plane_glb,
-                env,print_act = False,
+                env,shooter = False,print_act = False,
                 **kwargs) -> Batch:
         act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(ind,attri_stack,planes_stack,plane_glb)
         mask_acts = env.legal_act(level=0)
@@ -90,36 +91,39 @@ class H3_policy(PGPolicy):
         mask_spell = np.zeros(10, dtype=bool)
         spell_id = -1
         if self.in_train:
-            act_logits = softmax(act_logits, mask_acts, self.device)
+            act_prob = softmax(act_logits, mask_acts, self.device)
             if print_act:
-                logger.info(act_logits)
+                logger.info(act_prob)
                 logger.info(value)
-            act_id = self.dist_fn(act_logits).sample()[0].item()
+            if torch.sum(act_prob, dim=-1, keepdim=True).item() > 0.9:
+                act_id = self.dist_fn(act_prob).sample()[0].item()
+            else:
+                act_prob = softmax(act_logits, mask_acts, self.device, in_train=False)
+                act_id = torch.argmax(act_prob, dim=-1)[0].item()
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
-                position_logits = softmax(position_logits, mask_position, self.device)
-                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.9:
-                    position_id = self.dist_fn(position_logits).sample()[0].item()
+                position_prob = softmax(position_logits, mask_position, self.device)
+                if torch.sum(position_prob,dim=-1,keepdim=True).item() > 0.9:
+                    position_id = self.dist_fn(position_prob).sample()[0].item()
                 else:
-                    position_id = torch.argmax(position_logits, dim=-1)[0].item()
+                    position_prob = softmax(position_logits, mask_position, self.device, in_train=False)
+                    position_id = torch.argmax(position_prob, dim=-1)[0].item()
             elif act_id == action_type.attack.value:
                 mask_targets = env.legal_act(level=1, act_id=act_id)
                 targets_prob = softmax(targets_logits, mask_targets, self.device)
                 if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.9:
                     target_id = self.dist_fn(targets_prob).sample()[0].item()
                 else:
-                    # ids = np.arange(len(mask_targets))
-                    # target_id = np.random.choice(ids, p=(mask_targets / mask_targets.sum()))
+                    targets_prob = softmax(targets_logits, mask_targets, self.device, in_train=False)
                     target_id = torch.argmax(targets_prob, dim=-1)[0].item()
-                mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-                position_logits = softmax(position_logits, mask_position, self.device)
-                if torch.sum(position_logits,dim=-1,keepdim=True).item() > 0.9:
-                    position_id = self.dist_fn(position_logits).sample()[0].item()
-                else:
-                    position_id = torch.argmax(position_logits, dim=-1)[0].item()
-            return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
-                    'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
-                'mask_position': mask_position, 'value': value}
+                if not shooter:
+                    mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
+                    position_prob = softmax(position_logits, mask_position, self.device)
+                    if torch.sum(position_prob,dim=-1,keepdim=True).item() > 0.9:
+                        position_id = self.dist_fn(position_prob).sample()[0].item()
+                    else:
+                        position_prob = softmax(position_logits, mask_position, self.device,in_train=False)
+                        position_id = torch.argmax(position_prob, dim=-1)[0].item()
         else:
             act_logits = softmax(act_logits, mask_acts, self.device,in_train=False)
             if print_act:
@@ -135,16 +139,17 @@ class H3_policy(PGPolicy):
                 targets_prob = softmax(targets_logits, mask_targets, self.device,in_train=False)
                 target_id = torch.argmax(targets_prob, dim=-1)[0].item()
                 mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-                position_logits = softmax(position_logits, mask_position, self.device,in_train=False)
-                if torch.sum(position_logits, dim=-1, keepdim=True).item() > 0.5:
+                if not shooter:
+                    position_logits = softmax(position_logits, mask_position, self.device,in_train=False)
                     position_id = torch.argmax(position_logits, dim=-1)[0].item()
-            return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
-                    'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
-                    'mask_position': mask_position, 'value': value}
+        return {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
+                'mask_acts': mask_acts, 'mask_spell': mask_spell, 'mask_targets': mask_targets,
+                'mask_position': mask_position, 'value': value}
 
     #TODO 5 mcts结构有何优势
+    #批量输入训练
     def learn(self, batch, batch_size=None, repeat=2, **kwargs):
-        losses, clip_losses, vf_losses, ent_losses = [], [], [], []
+        # losses, clip_losses, vf_losses, ent_losses = [], [], [], []
         v = []
         old_prob_act = []
         old_prob_position = []
@@ -161,16 +166,19 @@ class H3_policy(PGPolicy):
                 mask_targets = b.info.mask_targets
                 mask_position = b.info.mask_position
 
-                # act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(b.obs.ind,b.obs.attri_stack,b.obs.planes_stack,b.obs.plane_glb)
                 act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(**b.obs)
                 v.append(value.squeeze(-1))
                 act_logits = softmax(act_logits, mask_acts, self.device,add_little=True)
+                # act_logits = act_logits.softmax(dim=-1)
                 old_prob_act.append(self.dist_fn(act_logits).log_prob(torch.tensor(b.act.act_id, device=self.device)))
                 targets_logits = softmax(targets_logits, mask_targets, self.device,add_little=True)
+                # targets_logits = targets_logits.softmax(dim=-1)
                 old_prob_target.append(self.dist_fn(targets_logits).log_prob(torch.tensor(b.act.target_id, device=self.device)))
                 position_logits = softmax(position_logits, mask_position, self.device,add_little=True)
+                # position_logits = position_logits.softmax(dim=-1)
                 old_prob_position.append(self.dist_fn(position_logits).log_prob(torch.tensor(b.act.position_id, device=self.device)))
                 spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
+                # spell_logits = spell_logits.softmax(dim=-1)
                 old_prob_spell.append(self.dist_fn(spell_logits).log_prob(torch.tensor(b.act.spell_id, device=self.device)))
         try:
             batch.v = torch.cat(v, dim=0)  # old value
@@ -201,18 +209,22 @@ class H3_policy(PGPolicy):
                 mask_position = b.info.mask_position
                 act_logits, targets_logits, position_logits, spell_logits, value = self.ppo_net(**b.obs)
                 act_logits = softmax(act_logits, mask_acts, self.device,add_little=True)
+                # act_logits = act_logits.softmax(dim=-1)
                 dist_act = self.dist_fn(act_logits)
                 prob_act = dist_act.log_prob(torch.tensor(b.act.act_id, device=self.device))
                 targets_logits = softmax(targets_logits, mask_targets, self.device,add_little=True)
+                # targets_logits = targets_logits.softmax(dim=-1)
                 dist_targets = self.dist_fn(targets_logits)
                 prob_target = dist_targets.log_prob(torch.tensor(b.act.target_id, device=self.device))
                 position_logits = softmax(position_logits, mask_position, self.device,add_little=True)
+                # position_logits = position_logits.softmax(dim=-1)
                 dist_position = self.dist_fn(position_logits)
                 prob_position = dist_position.log_prob(torch.tensor(b.act.position_id, device=self.device))
                 spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
+                # spell_logits = spell_logits.softmax(dim=-1)
                 dist_spell = self.dist_fn(spell_logits)
                 prob_spell = dist_spell.log_prob(torch.tensor(b.act.spell_id, device=self.device))
-
+                #TODO 如果old_prob太小？？？
                 ratio = (prob_act + prob_target + prob_position + prob_spell - b.old_prob_act - b.old_prob_target - b.old_prob_position - b.old_prob_spell).exp().float()
                 surr1 = ratio * b.adv
                 surr2 = ratio.clamp(
@@ -222,7 +234,7 @@ class H3_policy(PGPolicy):
                                            self._dual_clip * b.adv).mean()
                 else:
                     clip_loss = -torch.min(surr1, surr2).mean()
-                clip_losses.append(clip_loss.item())
+                # clip_losses.append(clip_loss.item())
                 if self._value_clip:
                     v_clip = b.v + (value - b.v).clamp(
                         -self._eps_clip, self._eps_clip)
@@ -231,26 +243,26 @@ class H3_policy(PGPolicy):
                     vf_loss = .5 * torch.max(vf1, vf2).mean()
                 else:
                     vf_loss = .5 * (b.returns - value).pow(2).mean()
-                vf_losses.append(vf_loss.item())
+                # vf_losses.append(vf_loss.item())
                 e_loss = (dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean())/4
-                ent_losses.append(e_loss.item())
+                # ent_losses.append(e_loss.item())
                 #TODO 8 entropy工作原理
                 loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
                 if pcount < 5:
                     logger.info("clip_loss={:.4f} vf_loss={:.4f} e_loss={:.4f}".format(clip_loss,vf_loss,e_loss))
                 pcount += 1
-                losses.append(loss.item())
+                # losses.append(loss.item())
                 self.optim.zero_grad()
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.ppo_net.parameters(),
                     self._max_grad_norm)
                 self.optim.step()
-        return {
-            'loss': losses,
-            'loss/clip': clip_losses,
-            'loss/vf': vf_losses,
-            'loss/ent': ent_losses,
-        }
+        # return {
+        #     'loss': losses,
+        #     'loss/clip': clip_losses,
+        #     'loss/vf': vf_losses,
+        #     'loss/ent': ent_losses,
+        # }
 wf_flag = False
 def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1,print_act = False):
     battle = Battle(agent=agent)
@@ -268,7 +280,7 @@ def collect_eps(agent,file,buffer,n_step = 200,n_episode = 1,print_act = False):
             obs, acts, mask = None,None,None
         else:
             print_act = print_act and ii < 5
-            battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True,print_act = print_act)
+            battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True, print_act = print_act)
             had_acted = True
         battle.doAction(battle_action)
         battle.checkNewRound()
@@ -315,15 +327,15 @@ def start_train():
     optim = torch.optim.Adam(actor_critic.parameters(), lr=0.005)
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
-    # agent.load_state_dict(torch.load("model_param.pkl"))
+    agent.load_state_dict(torch.load("model_param.pkl"))
     buffer = ReplayBuffer(10000,ignore_obs_next=True)
     count = 0
-    f_max = 6
-    new_start = f_max
+    f_max = 1
+    new_start = 0
     five_done = 3
     ok = five_done
-    sep = 2
-    #TODO 9 batch size
+    sep = 1
+    #TODO 9 SAC算法
     while True:
         agent.eval()
         agent.in_train = True
@@ -350,7 +362,7 @@ def start_train():
         batch_data, indice = buffer.sample(0)
         logger.info(len(buffer))
         agent.train()
-        # agent.in_train = True
+        agent.in_train = True
         batch_data = agent.process_gae(batch_data)
         # v_ = []
         # with torch.no_grad():
@@ -371,21 +383,6 @@ def start_train():
         agent.eval()
         agent.in_train = False
 
-        #with GUI
-        # if wf_flag:
-        #     if count == 0:
-        #         import pygame
-        #         import ENV.H3_battleInterface as h3_bi
-        #     pygame.init()  # 初始化pygame
-        #     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-        #     battle_int = h3_bi.BattleInterface()
-        #     ct = 0
-        #     iter_N = 2
-        #     for xx in range(iter_N):
-        #         file = f'battles/{random.randint(0, 6)}.json'
-        #         start_game(file,battle_int=battle_int,agent=agent)
-        # logger.info(f"test-{count}")
-
         #no GUI five done
         file = f'ENV/battles/{new_start}.json'
         ct = start_game_noGUI(file, agent=agent)
@@ -397,9 +394,9 @@ def start_train():
                 torch.save(agent.state_dict(),"model_param.pkl")
                 logger.info("model saved")
                 ok = five_done
-                if new_start == 0:
-                    new_start = 1
-                if new_start < 1:
+                # if new_start == 0:
+                #     new_start = 1
+                if new_start < 0:
                     sys.exit(0)
         else:
             ok = five_done
