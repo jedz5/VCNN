@@ -52,6 +52,7 @@ class in_pipe(nn.Module):
         self.stack_plane_conv.to(self.device)
         self.global_plane_conv.to(self.device)
         self.stack_plane_flat.to(self.device)
+    #@profile
     def forward(self,ind,attri_stack,planes_stack,plane_glb):
         id_emb = self.id_emb(ind)
         stack_fc = self.stack_fc(torch.cat([id_emb,attri_stack],dim=-1))
@@ -75,7 +76,7 @@ class H3_net(nn.Module):
         self.targets.to(self.device)
         self.spells.to(self.device)
         self.critic.to(self.device)
-
+    #@profile
     def forward(self,ind,attri_stack,planes_stack,plane_glb,critic_only = False):
         ind_t = torch.tensor(ind, device=self.device, dtype=torch.long)
         attri_stack_t = torch.tensor(attri_stack, device=self.device, dtype=torch.float)

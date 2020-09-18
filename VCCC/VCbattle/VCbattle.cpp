@@ -21,6 +21,7 @@ public:
 	bool operator== (const bhex& bh);
 	std::vector<bhex> get_neighbor();
 	bhex get_clone();
+	int to_position_id();
 };
 bool check_position(int x, int y){
     return (x >= 1 && x < (bFieldWidth - 1) && (y >= 0 && y < bFieldHeight));
@@ -71,6 +72,10 @@ std::vector<bhex> bhex::get_neighbor() {
 bhex bhex::get_clone()
 {
 	return bhex(this->x,this->y);
+}
+int bhex::to_position_id()
+{
+	return this->y * bFieldWidth + this->x;
 }
 enum action_query_type {
 	can_move = 0,
@@ -267,7 +272,8 @@ PYBIND11_MODULE(VCbattle, m) {
 		.def_readwrite("y", &bhex::y)
 		.def("__eq__", &bhex::operator==)
 		.def("get_neighbor", &bhex::get_neighbor, py::return_value_policy::move)
-		.def("__copy__", &bhex::get_clone, py::return_value_policy::move);
+		.def("__copy__", &bhex::get_clone, py::return_value_policy::move)
+		.def("to_position_id", &bhex::to_position_id);
 }
 
 //vector<bhex> get_n2() {

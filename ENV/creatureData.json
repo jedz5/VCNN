@@ -1,10 +1,10 @@
 {
 	"creatures" : [
 		{
-			"aiValue" : 80,
+			"ai_value" : 80,
 			"attack" : 4,
 			"defense" : 5,
-			"fightValue" : 100,
+			"fight_value" : 100,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 0,
@@ -17,10 +17,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 115,
+			"ai_value" : 100,
 			"attack" : 6,
 			"defense" : 5,
-			"fightValue" : 115,
+			"fight_value" : 115,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 1,
@@ -33,10 +33,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 126,
+			"ai_value" : 126,
 			"attack" : 6,
 			"defense" : 3,
-			"fightValue" : 115,
+			"fight_value" : 115,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 2,
@@ -49,10 +49,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 184,
+			"ai_value" : 200,
 			"attack" : 6,
 			"defense" : 3,
-			"fightValue" : 115,
+			"fight_value" : 115,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 3,
@@ -65,10 +65,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 351,
+			"ai_value" : 351,
 			"attack" : 8,
 			"defense" : 8,
-			"fightValue" : 324,
+			"fight_value" : 324,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 4,
@@ -81,10 +81,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 448,
+			"ai_value" : 448,
 			"attack" : 9,
 			"defense" : 9,
-			"fightValue" : 364,
+			"fight_value" : 364,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 5,
@@ -97,10 +97,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 445,
+			"ai_value" : 445,
 			"attack" : 10,
 			"defense" : 12,
-			"fightValue" : 445,
+			"fight_value" : 445,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 6,
@@ -113,10 +113,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 588,
+			"ai_value" : 588,
 			"attack" : 12,
 			"defense" : 12,
-			"fightValue" : 588,
+			"fight_value" : 588,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 7,
@@ -129,10 +129,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 485,
+			"ai_value" : 485,
 			"attack" : 12,
 			"defense" : 7,
-			"fightValue" : 485,
+			"fight_value" : 485,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 8,
@@ -145,10 +145,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 750,
+			"ai_value" : 750,
 			"attack" : 12,
 			"defense" : 10,
-			"fightValue" : 500,
+			"fight_value" : 500,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 9,
@@ -161,10 +161,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1946,
+			"ai_value" : 1946,
 			"attack" : 15,
 			"defense" : 15,
-			"fightValue" : 1668,
+			"fight_value" : 1668,
 			"health" : 100,
 			"hp" : 100,
 			"id" : 10,
@@ -177,10 +177,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 2100,
+			"ai_value" : 2100,
 			"attack" : 16,
 			"defense" : 16,
-			"fightValue" : 1800,
+			"fight_value" : 1800,
 			"health" : 100,
 			"hp" : 100,
 			"id" : 11,
@@ -193,10 +193,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 5019,
+			"ai_value" : 5019,
 			"attack" : 20,
 			"defense" : 20,
-			"fightValue" : 3585,
+			"fight_value" : 3585,
 			"health" : 200,
 			"hp" : 200,
 			"id" : 12,
@@ -209,10 +209,10 @@
 			"speed" : 12
 		},
 		{
-			"aiValue" : 8776,
+			"ai_value" : 8776,
 			"attack" : 30,
 			"defense" : 30,
-			"fightValue" : 6033,
+			"fight_value" : 6033,
 			"health" : 250,
 			"hp" : 250,
 			"id" : 13,
@@ -225,10 +225,10 @@
 			"speed" : 18
 		},
 		{
-			"aiValue" : 100,
+			"ai_value" : 100,
 			"attack" : 5,
 			"defense" : 3,
-			"fightValue" : 100,
+			"fight_value" : 100,
 			"health" : 8,
 			"hp" : 8,
 			"id" : 14,
@@ -241,10 +241,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 138,
+			"ai_value" : 138,
 			"attack" : 6,
 			"defense" : 3,
-			"fightValue" : 115,
+			"fight_value" : 115,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 15,
@@ -257,10 +257,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 138,
+			"ai_value" : 138,
 			"attack" : 6,
 			"defense" : 7,
-			"fightValue" : 194,
+			"fight_value" : 194,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 16,
@@ -273,10 +273,10 @@
 			"speed" : 3
 		},
 		{
-			"aiValue" : 209,
+			"ai_value" : 209,
 			"attack" : 7,
 			"defense" : 7,
-			"fightValue" : 209,
+			"fight_value" : 209,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 17,
@@ -289,10 +289,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 234,
+			"ai_value" : 234,
 			"attack" : 9,
 			"defense" : 5,
-			"fightValue" : 195,
+			"fight_value" : 195,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 18,
@@ -305,10 +305,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 331,
+			"ai_value" : 331,
 			"attack" : 9,
 			"defense" : 5,
-			"fightValue" : 195,
+			"fight_value" : 195,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 19,
@@ -321,10 +321,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 518,
+			"ai_value" : 518,
 			"attack" : 9,
 			"defense" : 8,
-			"fightValue" : 407,
+			"fight_value" : 407,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 20,
@@ -337,10 +337,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 532,
+			"ai_value" : 532,
 			"attack" : 9,
 			"defense" : 10,
-			"fightValue" : 418,
+			"fight_value" : 418,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 21,
@@ -353,10 +353,10 @@
 			"speed" : 12
 		},
 		{
-			"aiValue" : 517,
+			"ai_value" : 517,
 			"attack" : 9,
 			"defense" : 12,
-			"fightValue" : 690,
+			"fight_value" : 690,
 			"health" : 55,
 			"hp" : 55,
 			"id" : 22,
@@ -369,10 +369,10 @@
 			"speed" : 3
 		},
 		{
-			"aiValue" : 803,
+			"ai_value" : 803,
 			"attack" : 9,
 			"defense" : 12,
-			"fightValue" : 765,
+			"fight_value" : 765,
 			"health" : 65,
 			"hp" : 65,
 			"id" : 23,
@@ -385,10 +385,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 1806,
+			"ai_value" : 1806,
 			"attack" : 15,
 			"defense" : 14,
-			"fightValue" : 1548,
+			"fight_value" : 1548,
 			"health" : 90,
 			"hp" : 90,
 			"id" : 24,
@@ -401,10 +401,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 2030,
+			"ai_value" : 2030,
 			"attack" : 15,
 			"defense" : 14,
-			"fightValue" : 1740,
+			"fight_value" : 1740,
 			"health" : 110,
 			"hp" : 110,
 			"id" : 25,
@@ -417,10 +417,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 4872,
+			"ai_value" : 4872,
 			"attack" : 18,
 			"defense" : 18,
-			"fightValue" : 3654,
+			"fight_value" : 3654,
 			"health" : 180,
 			"hp" : 180,
 			"id" : 26,
@@ -433,10 +433,10 @@
 			"speed" : 10
 		},
 		{
-			"aiValue" : 8613,
+			"ai_value" : 8613,
 			"attack" : 27,
 			"defense" : 27,
-			"fightValue" : 6220,
+			"fight_value" : 6220,
 			"health" : 250,
 			"hp" : 250,
 			"id" : 27,
@@ -449,10 +449,10 @@
 			"speed" : 16
 		},
 		{
-			"aiValue" : 44,
+			"ai_value" : 44,
 			"attack" : 3,
 			"defense" : 3,
-			"fightValue" : 55,
+			"fight_value" : 55,
 			"health" : 4,
 			"hp" : 4,
 			"id" : 28,
@@ -465,10 +465,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 66,
+			"ai_value" : 66,
 			"attack" : 4,
 			"defense" : 4,
-			"fightValue" : 55,
+			"fight_value" : 55,
 			"health" : 4,
 			"hp" : 4,
 			"id" : 29,
@@ -481,10 +481,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 165,
+			"ai_value" : 165,
 			"attack" : 6,
 			"defense" : 6,
-			"fightValue" : 150,
+			"fight_value" : 150,
 			"health" : 16,
 			"hp" : 16,
 			"id" : 30,
@@ -497,10 +497,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 201,
+			"ai_value" : 201,
 			"attack" : 7,
 			"defense" : 7,
-			"fightValue" : 155,
+			"fight_value" : 155,
 			"health" : 16,
 			"hp" : 16,
 			"id" : 31,
@@ -513,10 +513,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 250,
+			"ai_value" : 250,
 			"attack" : 7,
 			"defense" : 10,
-			"fightValue" : 339,
+			"fight_value" : 339,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 32,
@@ -529,10 +529,10 @@
 			"speed" : 3
 		},
 		{
-			"aiValue" : 412,
+			"ai_value" : 412,
 			"attack" : 9,
 			"defense" : 10,
-			"fightValue" : 412,
+			"fight_value" : 412,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 33,
@@ -545,10 +545,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 570,
+			"ai_value" : 570,
 			"attack" : 11,
 			"defense" : 8,
-			"fightValue" : 418,
+			"fight_value" : 418,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 34,
@@ -561,10 +561,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 680,
+			"ai_value" : 680,
 			"attack" : 12,
 			"defense" : 9,
-			"fightValue" : 467,
+			"fight_value" : 467,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 35,
@@ -577,10 +577,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 884,
+			"ai_value" : 884,
 			"attack" : 12,
 			"defense" : 12,
-			"fightValue" : 680,
+			"fight_value" : 680,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 36,
@@ -593,10 +593,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 942,
+			"ai_value" : 942,
 			"attack" : 12,
 			"defense" : 12,
-			"fightValue" : 748,
+			"fight_value" : 748,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 37,
@@ -609,10 +609,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 2016,
+			"ai_value" : 2016,
 			"attack" : 16,
 			"defense" : 13,
-			"fightValue" : 2016,
+			"fight_value" : 2016,
 			"health" : 110,
 			"hp" : 110,
 			"id" : 38,
@@ -625,10 +625,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 2840,
+			"ai_value" : 2840,
 			"attack" : 16,
 			"defense" : 13,
-			"fightValue" : 2485,
+			"fight_value" : 2485,
 			"health" : 110,
 			"hp" : 110,
 			"id" : 39,
@@ -641,10 +641,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 3718,
+			"ai_value" : 3718,
 			"attack" : 19,
 			"defense" : 16,
-			"fightValue" : 3146,
+			"fight_value" : 3146,
 			"health" : 150,
 			"hp" : 150,
 			"id" : 40,
@@ -657,10 +657,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 7500,
+			"ai_value" : 7500,
 			"attack" : 24,
 			"defense" : 24,
-			"fightValue" : 5000,
+			"fight_value" : 5000,
 			"health" : 300,
 			"hp" : 300,
 			"id" : 41,
@@ -673,10 +673,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 50,
+			"ai_value" : 50,
 			"attack" : 2,
 			"defense" : 3,
-			"fightValue" : 50,
+			"fight_value" : 50,
 			"health" : 4,
 			"hp" : 4,
 			"id" : 42,
@@ -689,10 +689,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 60,
+			"ai_value" : 60,
 			"attack" : 4,
 			"defense" : 4,
-			"fightValue" : 60,
+			"fight_value" : 60,
 			"health" : 4,
 			"hp" : 4,
 			"id" : 43,
@@ -705,10 +705,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 159,
+			"ai_value" : 159,
 			"attack" : 6,
 			"defense" : 4,
-			"fightValue" : 145,
+			"fight_value" : 145,
 			"health" : 13,
 			"hp" : 13,
 			"id" : 44,
@@ -721,10 +721,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 240,
+			"ai_value" : 240,
 			"attack" : 7,
 			"defense" : 4,
-			"fightValue" : 210,
+			"fight_value" : 210,
 			"health" : 13,
 			"hp" : 13,
 			"id" : 45,
@@ -737,10 +737,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 357,
+			"ai_value" : 357,
 			"attack" : 10,
 			"defense" : 6,
-			"fightValue" : 275,
+			"fight_value" : 275,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 46,
@@ -753,10 +753,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 392,
+			"ai_value" : 392,
 			"attack" : 10,
 			"defense" : 8,
-			"fightValue" : 308,
+			"fight_value" : 308,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 47,
@@ -769,10 +769,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 445,
+			"ai_value" : 445,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 445,
+			"fight_value" : 445,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 48,
@@ -785,10 +785,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 480,
+			"ai_value" : 480,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 480,
+			"fight_value" : 480,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 49,
@@ -801,10 +801,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 765,
+			"ai_value" : 765,
 			"attack" : 13,
 			"defense" : 13,
-			"fightValue" : 765,
+			"fight_value" : 765,
 			"health" : 45,
 			"hp" : 45,
 			"id" : 50,
@@ -817,10 +817,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 1224,
+			"ai_value" : 1224,
 			"attack" : 13,
 			"defense" : 13,
-			"fightValue" : 1071,
+			"fight_value" : 1071,
 			"health" : 45,
 			"hp" : 45,
 			"id" : 51,
@@ -833,10 +833,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1670,
+			"ai_value" : 1670,
 			"attack" : 16,
 			"defense" : 12,
-			"fightValue" : 1413,
+			"fight_value" : 1413,
 			"health" : 90,
 			"hp" : 90,
 			"id" : 52,
@@ -849,10 +849,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 1848,
+			"ai_value" : 1848,
 			"attack" : 16,
 			"defense" : 14,
-			"fightValue" : 1584,
+			"fight_value" : 1584,
 			"health" : 90,
 			"hp" : 90,
 			"id" : 53,
@@ -865,10 +865,10 @@
 			"speed" : 13
 		},
 		{
-			"aiValue" : 5101,
+			"ai_value" : 5101,
 			"attack" : 19,
 			"defense" : 21,
-			"fightValue" : 3759,
+			"fight_value" : 3759,
 			"health" : 160,
 			"hp" : 160,
 			"id" : 54,
@@ -881,10 +881,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 7115,
+			"ai_value" : 7115,
 			"attack" : 26,
 			"defense" : 28,
-			"fightValue" : 5243,
+			"fight_value" : 5243,
 			"health" : 200,
 			"hp" : 200,
 			"id" : 55,
@@ -897,10 +897,10 @@
 			"speed" : 17
 		},
 		{
-			"aiValue" : 60,
+			"ai_value" : 60,
 			"attack" : 5,
 			"defense" : 4,
-			"fightValue" : 75,
+			"fight_value" : 75,
 			"health" : 6,
 			"hp" : 6,
 			"id" : 56,
@@ -913,10 +913,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 85,
+			"ai_value" : 85,
 			"attack" : 6,
 			"defense" : 6,
-			"fightValue" : 85,
+			"fight_value" : 85,
 			"health" : 6,
 			"hp" : 6,
 			"id" : 57,
@@ -929,10 +929,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 98,
+			"ai_value" : 98,
 			"attack" : 5,
 			"defense" : 5,
-			"fightValue" : 140,
+			"fight_value" : 140,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 58,
@@ -945,10 +945,10 @@
 			"speed" : 3
 		},
 		{
-			"aiValue" : 128,
+			"ai_value" : 128,
 			"attack" : 5,
 			"defense" : 5,
-			"fightValue" : 160,
+			"fight_value" : 160,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 59,
@@ -961,10 +961,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 252,
+			"ai_value" : 252,
 			"attack" : 7,
 			"defense" : 7,
-			"fightValue" : 231,
+			"fight_value" : 231,
 			"health" : 18,
 			"hp" : 18,
 			"id" : 60,
@@ -977,10 +977,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 315,
+			"ai_value" : 315,
 			"attack" : 7,
 			"defense" : 7,
-			"fightValue" : 252,
+			"fight_value" : 252,
 			"health" : 18,
 			"hp" : 18,
 			"id" : 61,
@@ -993,10 +993,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 555,
+			"ai_value" : 555,
 			"attack" : 10,
 			"defense" : 9,
-			"fightValue" : 518,
+			"fight_value" : 518,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 62,
@@ -1009,10 +1009,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 783,
+			"ai_value" : 783,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 652,
+			"fight_value" : 652,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 63,
@@ -1025,10 +1025,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 848,
+			"ai_value" : 848,
 			"attack" : 13,
 			"defense" : 10,
-			"fightValue" : 742,
+			"fight_value" : 742,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 64,
@@ -1041,10 +1041,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 1079,
+			"ai_value" : 1079,
 			"attack" : 13,
 			"defense" : 10,
-			"fightValue" : 889,
+			"fight_value" : 889,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 65,
@@ -1057,10 +1057,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 2087,
+			"ai_value" : 2087,
 			"attack" : 16,
 			"defense" : 16,
-			"fightValue" : 1753,
+			"fight_value" : 1753,
 			"health" : 120,
 			"hp" : 120,
 			"id" : 66,
@@ -1073,10 +1073,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 2382,
+			"ai_value" : 2382,
 			"attack" : 18,
 			"defense" : 18,
-			"fightValue" : 2029,
+			"fight_value" : 2029,
 			"health" : 120,
 			"hp" : 120,
 			"id" : 67,
@@ -1089,10 +1089,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 3388,
+			"ai_value" : 3388,
 			"attack" : 17,
 			"defense" : 15,
-			"fightValue" : 2420,
+			"fight_value" : 2420,
 			"health" : 150,
 			"hp" : 150,
 			"id" : 68,
@@ -1105,10 +1105,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 4696,
+			"ai_value" : 4696,
 			"attack" : 19,
 			"defense" : 17,
-			"fightValue" : 3228,
+			"fight_value" : 3228,
 			"health" : 200,
 			"hp" : 200,
 			"id" : 69,
@@ -1121,10 +1121,10 @@
 			"speed" : 14
 		},
 		{
-			"aiValue" : 59,
+			"ai_value" : 59,
 			"attack" : 4,
 			"defense" : 3,
-			"fightValue" : 73,
+			"fight_value" : 73,
 			"health" : 5,
 			"hp" : 5,
 			"id" : 70,
@@ -1137,10 +1137,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 84,
+			"ai_value" : 84,
 			"attack" : 5,
 			"defense" : 4,
-			"fightValue" : 84,
+			"fight_value" : 84,
 			"health" : 6,
 			"hp" : 6,
 			"id" : 71,
@@ -1153,10 +1153,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 154,
+			"ai_value" : 154,
 			"attack" : 6,
 			"defense" : 5,
-			"fightValue" : 140,
+			"fight_value" : 140,
 			"health" : 14,
 			"hp" : 14,
 			"id" : 72,
@@ -1169,10 +1169,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 238,
+			"ai_value" : 238,
 			"attack" : 6,
 			"defense" : 6,
-			"fightValue" : 196,
+			"fight_value" : 196,
 			"health" : 14,
 			"hp" : 14,
 			"id" : 73,
@@ -1185,10 +1185,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 336,
+			"ai_value" : 336,
 			"attack" : 9,
 			"defense" : 7,
-			"fightValue" : 240,
+			"fight_value" : 240,
 			"health" : 22,
 			"hp" : 22,
 			"id" : 74,
@@ -1201,10 +1201,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 367,
+			"ai_value" : 367,
 			"attack" : 10,
 			"defense" : 8,
-			"fightValue" : 245,
+			"fight_value" : 245,
 			"health" : 22,
 			"hp" : 22,
 			"id" : 75,
@@ -1217,10 +1217,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 517,
+			"ai_value" : 517,
 			"attack" : 9,
 			"defense" : 9,
-			"fightValue" : 379,
+			"fight_value" : 379,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 76,
@@ -1233,10 +1233,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 577,
+			"ai_value" : 577,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 423,
+			"fight_value" : 423,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 77,
@@ -1249,10 +1249,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 835,
+			"ai_value" : 835,
 			"attack" : 14,
 			"defense" : 12,
-			"fightValue" : 835,
+			"fight_value" : 835,
 			"health" : 50,
 			"hp" : 50,
 			"id" : 78,
@@ -1265,10 +1265,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 1068,
+			"ai_value" : 1068,
 			"attack" : 15,
 			"defense" : 15,
-			"fightValue" : 890,
+			"fight_value" : 890,
 			"health" : 50,
 			"hp" : 50,
 			"id" : 79,
@@ -1281,10 +1281,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 1547,
+			"ai_value" : 1547,
 			"attack" : 15,
 			"defense" : 13,
-			"fightValue" : 1215,
+			"fight_value" : 1215,
 			"health" : 80,
 			"hp" : 80,
 			"id" : 80,
@@ -1297,10 +1297,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1589,
+			"ai_value" : 1589,
 			"attack" : 16,
 			"defense" : 14,
-			"fightValue" : 1248,
+			"fight_value" : 1248,
 			"health" : 80,
 			"hp" : 80,
 			"id" : 81,
@@ -1313,10 +1313,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 4702,
+			"ai_value" : 4702,
 			"attack" : 19,
 			"defense" : 19,
-			"fightValue" : 3762,
+			"fight_value" : 3762,
 			"health" : 180,
 			"hp" : 180,
 			"id" : 82,
@@ -1329,10 +1329,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 8721,
+			"ai_value" : 8721,
 			"attack" : 25,
 			"defense" : 25,
-			"fightValue" : 6783,
+			"fight_value" : 6783,
 			"health" : 300,
 			"hp" : 300,
 			"id" : 83,
@@ -1345,10 +1345,10 @@
 			"speed" : 15
 		},
 		{
-			"aiValue" : 60,
+			"ai_value" : 60,
 			"attack" : 4,
 			"defense" : 2,
-			"fightValue" : 60,
+			"fight_value" : 60,
 			"health" : 5,
 			"hp" : 5,
 			"id" : 84,
@@ -1361,10 +1361,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 78,
+			"ai_value" : 78,
 			"attack" : 5,
 			"defense" : 3,
-			"fightValue" : 65,
+			"fight_value" : 65,
 			"health" : 5,
 			"hp" : 5,
 			"id" : 85,
@@ -1377,10 +1377,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 130,
+			"ai_value" : 130,
 			"attack" : 7,
 			"defense" : 5,
-			"fightValue" : 130,
+			"fight_value" : 130,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 86,
@@ -1393,10 +1393,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 203,
+			"ai_value" : 203,
 			"attack" : 8,
 			"defense" : 5,
-			"fightValue" : 174,
+			"fight_value" : 174,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 87,
@@ -1409,10 +1409,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 192,
+			"ai_value" : 192,
 			"attack" : 8,
 			"defense" : 4,
-			"fightValue" : 175,
+			"fight_value" : 175,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 88,
@@ -1425,10 +1425,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 240,
+			"ai_value" : 240,
 			"attack" : 8,
 			"defense" : 4,
-			"fightValue" : 200,
+			"fight_value" : 200,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 89,
@@ -1441,10 +1441,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 416,
+			"ai_value" : 416,
 			"attack" : 13,
 			"defense" : 7,
-			"fightValue" : 520,
+			"fight_value" : 520,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 90,
@@ -1457,10 +1457,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 672,
+			"ai_value" : 672,
 			"attack" : 13,
 			"defense" : 7,
-			"fightValue" : 672,
+			"fight_value" : 672,
 			"health" : 60,
 			"hp" : 60,
 			"id" : 91,
@@ -1473,10 +1473,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 1027,
+			"ai_value" : 1027,
 			"attack" : 13,
 			"defense" : 11,
-			"fightValue" : 790,
+			"fight_value" : 790,
 			"health" : 60,
 			"hp" : 60,
 			"id" : 92,
@@ -1489,10 +1489,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1106,
+			"ai_value" : 1106,
 			"attack" : 13,
 			"defense" : 11,
-			"fightValue" : 869,
+			"fight_value" : 869,
 			"health" : 60,
 			"hp" : 60,
 			"id" : 93,
@@ -1505,10 +1505,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 1266,
+			"ai_value" : 1266,
 			"attack" : 15,
 			"defense" : 12,
-			"fightValue" : 1055,
+			"fight_value" : 1055,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 94,
@@ -1521,10 +1521,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 1443,
+			"ai_value" : 1443,
 			"attack" : 17,
 			"defense" : 13,
-			"fightValue" : 1110,
+			"fight_value" : 1110,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 95,
@@ -1537,10 +1537,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 3162,
+			"ai_value" : 3162,
 			"attack" : 17,
 			"defense" : 17,
-			"fightValue" : 3162,
+			"fight_value" : 3162,
 			"health" : 160,
 			"hp" : 160,
 			"id" : 96,
@@ -1553,10 +1553,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 6168,
+			"ai_value" : 6168,
 			"attack" : 19,
 			"defense" : 19,
-			"fightValue" : 5397,
+			"fight_value" : 5397,
 			"health" : 300,
 			"hp" : 300,
 			"id" : 97,
@@ -1569,10 +1569,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 56,
+			"ai_value" : 56,
 			"attack" : 3,
 			"defense" : 5,
-			"fightValue" : 70,
+			"fight_value" : 70,
 			"health" : 6,
 			"hp" : 6,
 			"id" : 98,
@@ -1585,10 +1585,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 90,
+			"ai_value" : 90,
 			"attack" : 4,
 			"defense" : 6,
-			"fightValue" : 90,
+			"fight_value" : 90,
 			"health" : 6,
 			"hp" : 6,
 			"id" : 99,
@@ -1601,10 +1601,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 126,
+			"ai_value" : 126,
 			"attack" : 5,
 			"defense" : 6,
-			"fightValue" : 115,
+			"fight_value" : 115,
 			"health" : 14,
 			"hp" : 14,
 			"id" : 100,
@@ -1617,10 +1617,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 156,
+			"ai_value" : 156,
 			"attack" : 6,
 			"defense" : 8,
-			"fightValue" : 130,
+			"fight_value" : 130,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 101,
@@ -1633,10 +1633,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 890,
+			"ai_value" : 890,
 			"attack" : 10,
 			"defense" : 14,
-			"fightValue" : 890,
+			"fight_value" : 890,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 102,
@@ -1649,10 +1649,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 1028,
+			"ai_value" : 1028,
 			"attack" : 11,
 			"defense" : 16,
-			"fightValue" : 1028,
+			"fight_value" : 1028,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 103,
@@ -1665,10 +1665,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 268,
+			"ai_value" : 268,
 			"attack" : 7,
 			"defense" : 9,
-			"fightValue" : 215,
+			"fight_value" : 215,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 104,
@@ -1681,10 +1681,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 312,
+			"ai_value" : 312,
 			"attack" : 8,
 			"defense" : 10,
-			"fightValue" : 250,
+			"fight_value" : 250,
 			"health" : 20,
 			"hp" : 20,
 			"id" : 105,
@@ -1697,10 +1697,10 @@
 			"speed" : 13
 		},
 		{
-			"aiValue" : 552,
+			"ai_value" : 552,
 			"attack" : 11,
 			"defense" : 11,
-			"fightValue" : 506,
+			"fight_value" : 506,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 106,
@@ -1713,10 +1713,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 714,
+			"ai_value" : 714,
 			"attack" : 12,
 			"defense" : 12,
-			"fightValue" : 561,
+			"fight_value" : 561,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 107,
@@ -1729,10 +1729,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1350,
+			"ai_value" : 1350,
 			"attack" : 14,
 			"defense" : 14,
-			"fightValue" : 1050,
+			"fight_value" : 1050,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 108,
@@ -1745,10 +1745,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 1518,
+			"ai_value" : 1518,
 			"attack" : 14,
 			"defense" : 14,
-			"fightValue" : 1181,
+			"fight_value" : 1181,
 			"health" : 70,
 			"hp" : 70,
 			"id" : 109,
@@ -1761,10 +1761,10 @@
 			"speed" : 11
 		},
 		{
-			"aiValue" : 4120,
+			"ai_value" : 4120,
 			"attack" : 16,
 			"defense" : 18,
-			"fightValue" : 4120,
+			"fight_value" : 4120,
 			"health" : 175,
 			"hp" : 175,
 			"id" : 110,
@@ -1777,10 +1777,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 5931,
+			"ai_value" : 5931,
 			"attack" : 18,
 			"defense" : 20,
-			"fightValue" : 5272,
+			"fight_value" : 5272,
 			"health" : 250,
 			"hp" : 250,
 			"id" : 111,
@@ -1793,10 +1793,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 356,
+			"ai_value" : 356,
 			"attack" : 9,
 			"defense" : 9,
-			"fightValue" : 324,
+			"fight_value" : 324,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 112,
@@ -1809,10 +1809,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 330,
+			"ai_value" : 330,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 415,
+			"fight_value" : 415,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 113,
@@ -1825,10 +1825,10 @@
 			"speed" : 4
 		},
 		{
-			"aiValue" : 345,
+			"ai_value" : 345,
 			"attack" : 10,
 			"defense" : 8,
-			"fightValue" : 345,
+			"fight_value" : 345,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 114,
@@ -1841,10 +1841,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 315,
+			"ai_value" : 315,
 			"attack" : 8,
 			"defense" : 10,
-			"fightValue" : 315,
+			"fight_value" : 315,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 115,
@@ -1857,10 +1857,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 600,
+			"ai_value" : 600,
 			"attack" : 11,
 			"defense" : 12,
-			"fightValue" : 600,
+			"fight_value" : 600,
 			"health" : 50,
 			"hp" : 50,
 			"id" : 116,
@@ -1873,10 +1873,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 775,
+			"ai_value" : 775,
 			"attack" : 13,
 			"defense" : 12,
-			"fightValue" : 775,
+			"fight_value" : 775,
 			"health" : 60,
 			"hp" : 60,
 			"id" : 117,
@@ -1889,10 +1889,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 55,
+			"ai_value" : 55,
 			"attack" : 2,
 			"defense" : 2,
-			"fightValue" : 40,
+			"fight_value" : 40,
 			"health" : 3,
 			"hp" : 3,
 			"id" : 118,
@@ -1905,10 +1905,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 95,
+			"ai_value" : 90,
 			"attack" : 2,
 			"defense" : 2,
-			"fightValue" : 70,
+			"fight_value" : 70,
 			"health" : 3,
 			"hp" : 3,
 			"id" : 119,
@@ -1921,10 +1921,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 1669,
+			"ai_value" : 1669,
 			"attack" : 15,
 			"defense" : 13,
-			"fightValue" : 1431,
+			"fight_value" : 1431,
 			"health" : 75,
 			"hp" : 75,
 			"id" : 120,
@@ -1937,10 +1937,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 2012,
+			"ai_value" : 2012,
 			"attack" : 15,
 			"defense" : 13,
-			"fightValue" : 1724,
+			"fight_value" : 1724,
 			"health" : 80,
 			"hp" : 80,
 			"id" : 121,
@@ -1953,10 +1953,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 0,
+			"ai_value" : 0,
 			"attack" : 0,
 			"defense" : 0,
-			"fightValue" : 0,
+			"fight_value" : 0,
 			"health" : 0,
 			"hp" : 1,
 			"id" : 122,
@@ -1969,10 +1969,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 380,
+			"ai_value" : 380,
 			"attack" : 8,
 			"defense" : 10,
-			"fightValue" : 315,
+			"fight_value" : 315,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 123,
@@ -1985,10 +1985,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 0,
+			"ai_value" : 0,
 			"attack" : 0,
 			"defense" : 0,
-			"fightValue" : 0,
+			"fight_value" : 0,
 			"health" : 0,
 			"hp" : 1,
 			"id" : 124,
@@ -2001,10 +2001,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 490,
+			"ai_value" : 490,
 			"attack" : 11,
 			"defense" : 11,
-			"fightValue" : 490,
+			"fight_value" : 490,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 125,
@@ -2017,10 +2017,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 0,
+			"ai_value" : 0,
 			"attack" : 0,
 			"defense" : 0,
-			"fightValue" : 0,
+			"fight_value" : 0,
 			"health" : 0,
 			"hp" : 1,
 			"id" : 126,
@@ -2033,10 +2033,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 486,
+			"ai_value" : 486,
 			"attack" : 9,
 			"defense" : 9,
-			"fightValue" : 324,
+			"fight_value" : 324,
 			"health" : 25,
 			"hp" : 25,
 			"id" : 127,
@@ -2049,10 +2049,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 0,
+			"ai_value" : 0,
 			"attack" : 0,
 			"defense" : 0,
-			"fightValue" : 0,
+			"fight_value" : 0,
 			"health" : 0,
 			"hp" : 1,
 			"id" : 128,
@@ -2065,10 +2065,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 470,
+			"ai_value" : 470,
 			"attack" : 12,
 			"defense" : 8,
-			"fightValue" : 360,
+			"fight_value" : 360,
 			"health" : 35,
 			"hp" : 35,
 			"id" : 129,
@@ -2081,10 +2081,10 @@
 			"speed" : 8
 		},
 		{
-			"aiValue" : 4547,
+			"ai_value" : 4547,
 			"attack" : 18,
 			"defense" : 18,
-			"fightValue" : 3248,
+			"fight_value" : 3248,
 			"health" : 150,
 			"hp" : 150,
 			"id" : 130,
@@ -2097,10 +2097,10 @@
 			"speed" : 15
 		},
 		{
-			"aiValue" : 6721,
+			"ai_value" : 6721,
 			"attack" : 21,
 			"defense" : 18,
-			"fightValue" : 4929,
+			"fight_value" : 4929,
 			"health" : 200,
 			"hp" : 200,
 			"id" : 131,
@@ -2113,10 +2113,10 @@
 			"speed" : 21
 		},
 		{
-			"aiValue" : 78845,
+			"ai_value" : 78845,
 			"attack" : 50,
 			"defense" : 50,
-			"fightValue" : 56315,
+			"fight_value" : 56315,
 			"health" : 1000,
 			"hp" : 1000,
 			"id" : 132,
@@ -2129,10 +2129,10 @@
 			"speed" : 19
 		},
 		{
-			"aiValue" : 39338,
+			"ai_value" : 39338,
 			"attack" : 40,
 			"defense" : 40,
-			"fightValue" : 30260,
+			"fight_value" : 30260,
 			"health" : 800,
 			"hp" : 800,
 			"id" : 133,
@@ -2145,10 +2145,10 @@
 			"speed" : 16
 		},
 		{
-			"aiValue" : 19580,
+			"ai_value" : 19580,
 			"attack" : 20,
 			"defense" : 20,
-			"fightValue" : 16317,
+			"fight_value" : 16317,
 			"health" : 500,
 			"hp" : 500,
 			"id" : 134,
@@ -2161,10 +2161,10 @@
 			"speed" : 15
 		},
 		{
-			"aiValue" : 26433,
+			"ai_value" : 26433,
 			"attack" : 30,
 			"defense" : 30,
-			"fightValue" : 24030,
+			"fight_value" : 24030,
 			"health" : 750,
 			"hp" : 750,
 			"id" : 135,
@@ -2177,10 +2177,10 @@
 			"speed" : 17
 		},
 		{
-			"aiValue" : 1210,
+			"ai_value" : 1210,
 			"attack" : 17,
 			"defense" : 12,
-			"fightValue" : 805,
+			"fight_value" : 805,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 136,
@@ -2193,10 +2193,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 585,
+			"ai_value" : 585,
 			"attack" : 12,
 			"defense" : 10,
-			"fightValue" : 415,
+			"fight_value" : 415,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 137,
@@ -2209,10 +2209,10 @@
 			"speed" : 9
 		},
 		{
-			"aiValue" : 75,
+			"ai_value" : 75,
 			"attack" : 4,
 			"defense" : 2,
-			"fightValue" : 60,
+			"fight_value" : 60,
 			"health" : 4,
 			"hp" : 4,
 			"id" : 138,
@@ -2225,10 +2225,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 15,
+			"ai_value" : 15,
 			"attack" : 1,
 			"defense" : 1,
-			"fightValue" : 15,
+			"fight_value" : 15,
 			"health" : 1,
 			"hp" : 1,
 			"id" : 139,
@@ -2241,10 +2241,10 @@
 			"speed" : 3
 		},
 		{
-			"aiValue" : 145,
+			"ai_value" : 145,
 			"attack" : 6,
 			"defense" : 5,
-			"fightValue" : 145,
+			"fight_value" : 145,
 			"health" : 15,
 			"hp" : 15,
 			"id" : 140,
@@ -2257,10 +2257,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 270,
+			"ai_value" : 270,
 			"attack" : 7,
 			"defense" : 7,
-			"fightValue" : 270,
+			"fight_value" : 270,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 141,
@@ -2273,10 +2273,10 @@
 			"speed" : 5
 		},
 		{
-			"aiValue" : 345,
+			"ai_value" : 345,
 			"attack" : 9,
 			"defense" : 8,
-			"fightValue" : 285,
+			"fight_value" : 285,
 			"health" : 30,
 			"hp" : 30,
 			"id" : 142,
@@ -2289,10 +2289,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 135,
+			"ai_value" : 135,
 			"attack" : 8,
 			"defense" : 3,
-			"fightValue" : 135,
+			"fight_value" : 135,
 			"health" : 10,
 			"hp" : 10,
 			"id" : 143,
@@ -2305,10 +2305,10 @@
 			"speed" : 6
 		},
 		{
-			"aiValue" : 1024,
+			"ai_value" : 1024,
 			"attack" : 14,
 			"defense" : 7,
-			"fightValue" : 1024,
+			"fight_value" : 1024,
 			"health" : 40,
 			"hp" : 40,
 			"id" : 144,
@@ -2321,10 +2321,10 @@
 			"speed" : 7
 		},
 		{
-			"aiValue" : 500,
+			"ai_value" : 500,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 10,
+			"fight_value" : 10,
 			"health" : 1000,
 			"hp" : 1000,
 			"id" : 145,
@@ -2337,10 +2337,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 600,
+			"ai_value" : 600,
 			"attack" : 10,
 			"defense" : 10,
-			"fightValue" : 650,
+			"fight_value" : 650,
 			"health" : 250,
 			"hp" : 250,
 			"id" : 146,
@@ -2353,10 +2353,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 300,
+			"ai_value" : 300,
 			"attack" : 0,
 			"defense" : 0,
-			"fightValue" : 10,
+			"fight_value" : 10,
 			"health" : 75,
 			"hp" : 75,
 			"id" : 147,
@@ -2369,10 +2369,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 400,
+			"ai_value" : 400,
 			"attack" : 0,
 			"defense" : 5,
-			"fightValue" : 5,
+			"fight_value" : 5,
 			"health" : 100,
 			"hp" : 100,
 			"id" : 148,
@@ -2385,10 +2385,10 @@
 			"speed" : 0
 		},
 		{
-			"aiValue" : 400,
+			"ai_value" : 400,
 			"attack" : 10,
 			"defense" : 5,
-			"fightValue" : 5,
+			"fight_value" : 5,
 			"health" : 100,
 			"hp" : 100,
 			"id" : 149,

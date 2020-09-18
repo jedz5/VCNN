@@ -10,6 +10,14 @@
           <option name="port" value="22" />
         </fileTransfer>
       </webServer>
+      <webServer id="a50016b1-c681-4e3c-8eeb-d76c7769650e" name="muzero_remote" url="http://192.168.1.100">
+        <fileTransfer host="192.168.1.100" port="22" rootFolder="/home/enigma/work/project/DNN/muzero-general" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

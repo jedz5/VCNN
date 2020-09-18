@@ -1,35 +1,28 @@
-import pandas as pd
+from tianshou.data import ReplayBuffer
+from tianshou.data import Batch
+import tianshou.policy.base as bs
+import PG_model.h3_ppo as hp3
+import numpy as np
+import scipy.signal
+import json
+import torch
+# buffer = ReplayBuffer(500,ignore_obs_next=True)
+# for i in range(5):
+#     done = (i % 3) == 0 or i == 4
+#     rew = 0
+#     if done:
+#         rew = 1
+#     buffer.add(obs={"i1":i,"i2":i}, act=i, rew=rew, done=done,info={"cc":i},policy={"logp":i,"value":i})
+# buffer.done[len(buffer) -1] = True
+# data,indice = buffer.sample(0)
 
-df=pd.read_excel('d:/土地款支付统计.xlsx',sheet_name='Sheet2')
-#数据 偶数行 4-60列
-a = df.iloc[::2, 4:60]
-result = {}
-#2014-2019
-for i in range(2014,2020):
-    # 日期 奇数行
-    a1 = df.iloc[1::2,4:60].copy().to_numpy()
-    b = ((pd.Timestamp(f'{i-1}-12-14 00:00:00') < a) & (a < pd.Timestamp(f'{i}-12-15 00:00:00'))).to_numpy()
-    a1[~b] = 0
-    result[i] = a1.sum(axis=-1)
-
-#2020 1-6月
-a1 = df.iloc[1::2,4:60].copy().to_numpy()
-b = ((pd.Timestamp(f'2019-12-14 00:00:00') < a) & (a < pd.Timestamp(f'2020-6-15 00:00:00'))).to_numpy()
-a1[~b] = 0
-result["1-6"] = a1.sum(axis=-1)
-
-#2020 7-12月
-for i in range(7,13):
-    a1 = df.iloc[1::2,4:60].copy().to_numpy()
-    b = ((pd.Timestamp(f'2020-{i-1}-14 00:00:00') < a) & (a < pd.Timestamp(f'2020-{i}-15 00:00:00'))).to_numpy()
-    a1[~b] = 0
-    result[i] = a1.sum(axis=-1)
-# 写入新文件
-df2 = df.copy()
-ii = 0
-for k in result.keys():
-    #插入对应列
-    df2.insert(3 + ii,k,0)
-    df2.iloc[1::2,3 + ii] = result[k]
-    ii += 1
-df2.to_excel('d:/hhh.xlsx')
+# with open("ENV/creatureData.json") as JsonFile:
+#     crList = json.load(JsonFile)["creatures"]
+#     for i in range(100):
+#         x = crList[i]
+#         r1 = x['speed'] * int((x['max_damage'] + x['min_damage']) / 2) * x['attack'] * (1 + int(x['shoot']))
+#         r2 = x['health'] * x['defense']bbb
+#         print(f"{x['name']} = {r1} + {r2} - {x['ai_value']} = {r1 + r2 - x['ai_value']}")
+#         print(f"{x['name']} = {r1} + {r2} - {x['fight_value']} = {r1 + r2 - x['fight_value']}")
+sample_temp = np.array([0.2,0.4,0.2,0.2])
+a = np.random.multinomial(1, sample_temp, 1)

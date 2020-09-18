@@ -93,7 +93,6 @@ class BattleInterface:
         self.font = pygame.font.SysFont("Arial", 11)
         self.font.set_bold(True)
         self.next_act = None
-        self.act = None
         self.dump_dir = "ENV/battles"
         pygame.mouse.set_visible(False)
     def loadIMGs(self):
@@ -270,25 +269,24 @@ class BattleInterface:
             elif event.type == pygame.MOUSEBUTTONUP:
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
-                    act = self.act
                     self.cursor = self.cursor_move[3]
-                    self.act = None
-                    return act
-                else:
-                    return self.next_act
+                return True
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     self.battle_engine.dump_battle(self.dump_dir)
-                    return
+                    return False
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
                     if event.key == pygame.K_SPACE:
-                        return BAction(action_type.defend)
+                        self.next_act = BAction(action_type.defend)
+                        return True
                     if event.key == pygame.K_w:
                         if cur_stack.had_waited:
                             logger.error("can't wait any more!",True)
+                            return False
                         else:
-                            return BAction(action_type.wait)
+                            self.next_act = BAction(action_type.wait)
+                            return True
 
     def shift_attack_pointer(self,sector,mouse_x, mouse_y):
         x = mouse_x - 16
@@ -332,6 +330,9 @@ class BattleInterface:
                 self.hoveredStack = stack
         #cursor and action
         cur_stack = self.battle_engine.cur_stack
+        if cur_stack.by_AI != 0:
+            self.cursor = self.cursor_move[0]
+            return
         bf = cur_stack.get_global_state()
         h = self.current_hex
         if bf[h.hex_i, h.hex_j] == 201:
@@ -340,7 +341,7 @@ class BattleInterface:
                     self.cursor = self.cursor_shoot[1]
                 else:
                     self.cursor = self.cursor_shoot[0]
-                self.act = BAction(action_type.shoot, target=self.hoveredStack)
+                self.next_act = BAction(action_type.shoot, target=self.hoveredStack)
             else:
                 bf[cur_stack.y,cur_stack.x] = cur_stack.speed
                 subdividingAngle = 2.0 * np.pi / 6.0 # Divide hex in 6 directions
@@ -354,37 +355,33 @@ class BattleInterface:
                 if 0 <= bf[from_dest.y,from_dest.x] < 50:
                     self.cursor = self.cursor_attack[sector]
                     self.shift_attack_pointer(sector,mouse_x,mouse_y)
-                    self.act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
+                    self.next_act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
                 else:
                     self.cursor = self.cursor_move[3]
-                    self.act = None
         elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
             self.cursor = self.cursor_move[4]
-            self.act = None
         elif bf[h.hex_i, h.hex_j] == 800 or bf[h.hex_i, h.hex_j] == 100:
             self.cursor = self.cursor_move[3]
-            self.act = None
         elif 0 <= bf[h.hex_i, h.hex_j] < 50:
             if cur_stack.is_fly:
                 self.cursor = self.cursor_move[2]
-                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
+                self.next_act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
             else:
                 self.cursor = self.cursor_move[1]
-                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
+                self.next_act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
         elif bf[h.hex_i, h.hex_j] < 0:
             self.cursor = self.cursor_move[3]
-            self.act = None
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
-    def handleBattle(self,act,print_act=True):
-        if not act:
-            return
-        battle = self.battle_engine
-        battle.doAction(act)
-        battle.checkNewRound()
-        if battle.check_battle_end():
-            return
-        self.next_act = battle.cur_stack.active_stack(print_act = print_act)
+    # def handleBattle(self,act,print_act=True):
+    #     if not act:
+    #         return
+    #     battle = self.battle_engine
+    #     battle.doAction(act)
+    #     battle.checkNewRound()
+    #     if battle.check_battle_end():
+    #         return
+    #     self.next_act = battle.cur_stack.active_stack(print_act = print_act)
 
     def getObstaclePosition(self,img, obinfo):
         if obinfo.isabs:
@@ -401,40 +398,25 @@ def start_game():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     battle = Battle(by_AI = [0,1])
-    battle.load_battle("ENV/battles/0.json", shuffle_postion=False,load_ai_side=False)
+    battle.load_battle("ENV/battles/4.json", shuffle_postion=False,load_ai_side=False)
     battle.checkNewRound()
     bi = BattleInterface(battle)
     bi.next_act = battle.cur_stack.active_stack()
     # 事件循环(main loop)
     while bi.running:
-        act = bi.handleEvents()
-        bi.handleBattle(act)
-        if battle.check_battle_end():
-            logger.debug("battle end~")
-            bi.running = False
-            pygame.quit()
+        do_act = bi.handleEvents()
+        if do_act:
+            battle.doAction(bi.next_act)
+            battle.checkNewRound()
+            done = battle.check_battle_end()
+            if done:
+                logger.debug("battle end~")
+                bi.running = False
+                pygame.quit()
+            else:
+                bi.next_act = battle.cur_stack.active_stack()
         bi.renderFrame()
-def start_game_record():
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    battle = Battle(by_AI = [0,1])
-    battle.load_battle("ENV/battles/0.json", shuffle_postion=False,load_ai_side=False)
-    battle.checkNewRound()
-    bi = BattleInterface(battle)
-    bi.next_act = battle.cur_stack.active_stack()
-    # 事件循环(main loop)
-    while bi.running:
-        act = bi.handleEvents()
-        if act and battle.cur_stack.by_AI == 0:
-            masks = battle.get_act_masks(act)
-            ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature()
-        bi.handleBattle(act)
-        if battle.check_battle_end():
-            logger.debug("battle end~")
-            bi.running = False
-            pygame.quit()
-        bi.renderFrame()
+
 if __name__ == '__main__':
     start_game()
 
