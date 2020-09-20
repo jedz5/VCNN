@@ -39,8 +39,7 @@ class action_type(Enum):
     defend = 1
     move = 2
     attack = 3
-    shoot = 4
-    spell = 5
+    spell = 4
 class action_query_type(Enum):
     can_move = 0
     move_to = 1
@@ -352,34 +351,6 @@ class BStack(BHex):
         self.had_waited = False
         self.had_defended = False
         return
-    # def legalMoves(self):
-    #     if (self.had_moved):
-    #         logger.debug("sth wrong happen! {} is moved!!!".format(self.name))
-    #         return 0
-    #     #ret = {'wait': self.had_waited(), 'defend': True, 'move': [], 'melee': [], 'shoot': []}
-    #     legalMoves = []
-    #     if(not self.had_waited):
-    #         legalMoves.append(0) #waite
-    #     legalMoves.append(1) #defend
-    #     aa = self.get_global_state()
-    #     for i in range(0, self.inBattle.bFieldHeight):
-    #         for j in range(1, self.inBattle.bFieldWidth - 1):
-    #             if (aa[i,j] >= 0 and aa[i,j] < 50 and aa[i,j] != self.speed):
-    #                 #ret['move'].append(BAction(action_type.move, BHex(i,j)))
-    #                 legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.move, BHex(j,i))))
-    #             if (aa[i,j] == -1):
-    #                 if (self.can_shoot()):
-    #                     #ret['shoot'].append(BAction(action_type.shoot,0,BHex(i,j)))target
-    #                     legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.shoot,target=BHex(j,i))))
-    #                 else:
-    #                     att = BHex(j,i)
-    #                     for nb in self.getNeibours(att):
-    #                         if(aa[nb.y,nb.x] >= 0 and aa[nb.y,nb.x] < 50):
-    #                             #ret['melee'].append(BAction(action_type.shoot,nb,BHex(i,j)))
-    #                             legalMoves.append(self.inBattle.actionToIndex(BAction(action_type.attack,nb,att)))
-    #     return legalMoves
-
-
 
     def potential_target(self):
         bf = self.get_global_state(exclude_me=False)  #
@@ -460,7 +431,7 @@ class BStack(BHex):
                 best = np.argmax(dmgs)
                 best_target = attackable[best]
                 if (self.can_shoot()):
-                    return BAction(action_type.shoot, target=best_target[0])
+                    return BAction(action_type.attack, target=best_target[0])
                 else:
                     return BAction(action_type.attack, target=best_target[0], dest=best_target[1])
             else:
@@ -486,10 +457,7 @@ class BStack(BHex):
                 next_act = BAction(action_type.move, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
             elif act_id == action_type.attack.value:
                 t = self.in_battle.defender_stacks[target_id] if self.side == 0 else self.in_battle.attacker_stacks[target_id]
-                if self.can_shoot():
-                    next_act = BAction(action_type.shoot, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
-                else:
-                    next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
+                next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
             else:
                 logger.error("not implemented action!!",True)
                 sys.exit(-1)
@@ -783,9 +751,8 @@ class Battle(object):
             mask_position = self.legal_act(level=1,act_id=act.type.value)
         if act.type == action_type.attack:
             mask_targets = self.legal_act(level=1, act_id=act.type.value)
-            mask_position = self.legal_act(level=2, act_id=act.type.value,target=act.target)
-        if act.type == action_type.shoot:
-            mask_targets = self.legal_act(level=1, act_id=action_type.attack.value)
+            if not self.cur_stack.can_shoot():
+                mask_position = self.legal_act(level=2, act_id=act.type.value,target=act.target)
         return mask_acts,mask_spell,mask_targets,mask_position
     def sortStack(self):
         self.last_stack = self.cur_stack
@@ -875,9 +842,10 @@ class Battle(object):
         if (act.type == action_type.move):
             return "move to ({},{})".format(act.dest.y,act.dest.x)
         if (act.type == action_type.attack):
-            return "melee ({},{}),({},{})".format(act.dest.y,act.dest.x,act.target.y,act.target.x)
-        if (act.type == action_type.shoot):
-            return "shoot ({},{})".format(act.target.y,act.target.x)
+            if not self.cur_stack.can_shoot():
+                return "melee ({},{}),({},{})".format(act.dest.y,act.dest.x,act.target.y,act.target.x)
+            else:
+                return "shoot ({},{})".format(act.target.y,act.target.x)
     def end(self):
         live = {0:False,1:False}
         for st in self.stacks:
@@ -955,23 +923,14 @@ class Battle(object):
                 logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
                 sys.exit()
             dest = dests[0]
-            if (self.canReach(self.cur_stack, action.dest, action.target)):
+            if self.cur_stack.can_shoot():
+                damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.shoot(dest)
+            elif self.canReach(self.cur_stack, action.dest, action.target):
                 self.move(self.cur_stack, action.dest,and_attack=True)
                 damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.meeleAttack(dest, action.dest, False)
             else:
                 logger.error("you can't reach ({},{}) and attack {}".format(action.dest.y,action.dest.x,action.target.name))
                 sys.exit(-1)
-        elif(action.type == action_type.shoot):
-            dists = self.findStack(action.target, True)
-            if (len(dists) == 0):
-                logger.error("wrong shoot dist ({},{})".format(action.target.y,action.target.x))
-                sys.exit()
-            dist = dists[0]
-            if (self.cur_stack.can_shoot(action.target)):
-                damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.shoot(dist)
-            else:
-                logger.error("{} can't shoot {}".format(self.cur_stack.name, dist.name))
-                sys.exit()
         elif (action.type == action_type.spell):
             logger.error("spell not implemented yet")
             sys.exit()
@@ -997,7 +956,7 @@ class Battle(object):
                 bf = cur_stack.get_global_state().flatten()
                 mask = (bf >= 0) & (bf < 50)
                 return mask.flatten()
-            elif act_id == action_type.attack.value or act_id == action_type.shoot.value:
+            elif act_id == action_type.attack.value:
                 bf = cur_stack.get_global_state()
                 mask = np.zeros((7,))
                 targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/ENV/H3_battle.py" line="503" />
+    <bookmark url="file://$PROJECT_DIR$/ENV/H3_battle.py" line="471" />
   </component>
   <component name="BranchesTreeState">
     <expand>
@@ -23,38 +23,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/learning/excel_read.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/learning/gradient_learn.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/learning/gumbel.py" />
       <change beforePath="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" afterPath="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" />
       <change beforePath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" afterPath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/other.xml" afterPath="$PROJECT_DIR$/.idea/other.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/remote-mappings.xml" afterPath="$PROJECT_DIR$/.idea/remote-mappings.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/ENV/H3_battle.py" afterPath="$PROJECT_DIR$/ENV/H3_battle.py" />
       <change beforePath="$PROJECT_DIR$/ENV/H3_battleInterface.py" afterPath="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/2.json" afterPath="$PROJECT_DIR$/ENV/battles/2.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/3.json" afterPath="$PROJECT_DIR$/ENV/battles/3.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/4.json" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/5.json" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/6.json" afterPath="$PROJECT_DIR$/ENV/battles/6.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/battles/7.json" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/ENV/creatureData.json" afterPath="$PROJECT_DIR$/ENV/creatureData.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug.json" afterPath="$PROJECT_DIR$/ENV/debug.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug3.json" afterPath="$PROJECT_DIR$/ENV/debug3.json" />
-      <change beforePath="$PROJECT_DIR$/ENV/debug4.json" afterPath="$PROJECT_DIR$/ENV/debug4.json" />
-      <change beforePath="$PROJECT_DIR$/PG_model/discrete_net.py" afterPath="$PROJECT_DIR$/PG_model/discrete_net.py" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" />
-      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" afterPath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.cpp" />
-      <change beforePath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.vcxproj.user" afterPath="$PROJECT_DIR$/VCCC/VCbattle/VCbattle.vcxproj.user" />
-      <change beforePath="$PROJECT_DIR$/learning/xx.py" afterPath="$PROJECT_DIR$/learning/xx.py" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -70,7 +45,7 @@
     <SUITE FILE_PATH="coverage/VCNN$BattleInterface.coverage" NAME="BattleInterface Coverage Results" MODIFIED="1591503423856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1596891898598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$muzero.coverage" NAME="muzero Coverage Results" MODIFIED="1599363303727" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../DNN/muzero-general" />
-    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1599121818904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1600419593599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1562381867407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591846119715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$yy.coverage" NAME="yy Coverage Results" MODIFIED="1592463632584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../ddd" />
@@ -121,21 +96,33 @@
       <file leaf-file-name="h3_ppo.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="679">
-              <caret line="319" column="14" lean-forward="true" selection-start-line="319" selection-start-column="14" selection-end-line="319" selection-end-column="15" />
+            <state relative-caret-position="230">
+              <caret line="405" column="19" lean-forward="false" selection-start-line="405" selection-start-column="19" selection-end-line="405" selection-end-column="19" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="self_play.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../DNN/muzero-general/self_play.py">
+      <file leaf-file-name="H3_battle.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
-              <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+            <state relative-caret-position="19573">
+              <caret line="926" column="89" lean-forward="false" selection-start-line="926" selection-start-column="84" selection-end-line="926" selection-end-column="89" />
               <folding>
-                <element signature="e#0#11#0" expanded="true" />
+                <element signature="e#1321#1935#0" expanded="false" />
+                <element signature="e#2287#3231#0" expanded="false" />
+                <element signature="e#24283#24305#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="H3_battleInterface.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2668">
+              <caret line="120" column="58" lean-forward="false" selection-start-line="120" selection-start-column="53" selection-end-line="120" selection-end-column="58" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -151,7 +138,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_distance</find>
       <find>vb.vb</find>
       <find>Battle.bGetDistance</find>
       <find>copu</find>
@@ -181,6 +167,7 @@
       <find>reduced_channels_reward</find>
       <find>next</find>
       <find>play_game</find>
+      <find>shoot</find>
     </findStrings>
     <replaceStrings>
       <replace>min_damage</replace>
@@ -225,14 +212,14 @@
         <option value="$PROJECT_DIR$/ENV/battles/8.json" />
         <option value="$PROJECT_DIR$/ENV/debug3.json" />
         <option value="$PROJECT_DIR$/ENV/debug.json" />
-        <option value="$PROJECT_DIR$/ENV/H3_battle.py" />
-        <option value="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
         <option value="$PROJECT_DIR$/../DNN/muzero-general/notebook.ipynb" />
         <option value="$PROJECT_DIR$/../DNN/muzero-general/models.py" />
         <option value="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" />
         <option value="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" />
         <option value="$PROJECT_DIR$/learning/gumbel.py" />
         <option value="$PROJECT_DIR$/learning/xx.py" />
+        <option value="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
+        <option value="$PROJECT_DIR$/ENV/H3_battle.py" />
         <option value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
       </list>
     </option>
@@ -302,7 +289,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -313,17 +299,19 @@
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="learning" type="462c0819:PsiDirectoryNode" />
+              <item name="ENV" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="PG_model" type="462c0819:PsiDirectoryNode" />
+              <item name="ENV" type="462c0819:PsiDirectoryNode" />
+              <item name="episode" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="ProjectViewState">
@@ -384,7 +372,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.xx">
+  <component name="RunManager" selected="Python.h3_ppo_remote">
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -693,10 +681,10 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.xx" />
-        <item index="1" class="java.lang.String" itemvalue="Python.muzero" />
-        <item index="2" class="java.lang.String" itemvalue="Python.gumbel" />
-        <item index="3" class="java.lang.String" itemvalue="Python.h3_ppo" />
+        <item index="0" class="java.lang.String" itemvalue="Python.h3_ppo" />
+        <item index="1" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="2" class="java.lang.String" itemvalue="Python.muzero" />
+        <item index="3" class="java.lang.String" itemvalue="Python.gumbel" />
         <item index="4" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
       </list>
     </recent_temporary>
@@ -1145,7 +1133,14 @@
       <option name="project" value="LOCAL" />
       <updated>1597485503258</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="修改GUI逻辑循环，修改reward规则，按照兵种ai_value设置reward，在无监督样本条件下训练效果不佳">
+      <created>1600403424463</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1600403424464</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -1165,26 +1160,27 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40166667" sideWeight="0.5056861" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33916667" sideWeight="0.49431387" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.255" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4875" sideWeight="0.49431387" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32916668" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1794062" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24554184" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17901234" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24965706" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.4713522" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="1081" y="172" width="1302" height="654" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21467765" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24" sideWeight="0.49431387" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.4713522" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="921" y="260" width="1302" height="654" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14128944" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45166665" sideWeight="0.49431387" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20583333" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20583333" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32916668" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4675" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -1235,7 +1231,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="refactor acssesable_and_attackable -1 -&gt; 201, etc" />
     <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
     <MESSAGE value="for 循环赋值耗时测试" />
     <MESSAGE value="sparse" />
@@ -1260,7 +1255,8 @@
     <MESSAGE value="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数" />
     <MESSAGE value="batch size 增加到2000 rollout 500 lr 0.005 课程间隔 1 60回合左右收敛&#10;课程间隔 2 收敛难度增大&#10;考虑增加专家数据辅助训练" />
     <MESSAGE value="fix position_id = -1 和 186" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix position_id = -1 和 186" />
+    <MESSAGE value="修改GUI逻辑循环，修改reward规则，按照兵种ai_value设置reward，在无监督样本条件下训练效果不佳" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改GUI逻辑循环，修改reward规则，按照兵种ai_value设置reward，在无监督样本条件下训练效果不佳" />
   </component>
   <component name="WindowStateProjectService">
     <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
@@ -1390,22 +1386,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
-          <line>981</line>
+          <line>940</line>
           <option name="timeStamp" value="136" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>555</line>
+          <line>556</line>
           <option name="timeStamp" value="137" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>616</line>
+          <line>620</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>377</line>
+          <line>374</line>
           <option name="timeStamp" value="150" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1438,6 +1434,16 @@
           <line>28</line>
           <option name="timeStamp" value="172" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>604</line>
+          <option name="timeStamp" value="174" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>438</line>
+          <option name="timeStamp" value="175" />
+        </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
@@ -1449,7 +1455,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="173" />
+      <option name="time" value="176" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -1617,20 +1623,6 @@ s3 = torch.min(ratio, s2)</expression-string>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/VCCC/VCbattle/test_vcpy.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/gpu_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/learning/excel_read.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="782">
@@ -1797,13 +1789,6 @@ s3 = torch.min(ratio, s2)</expression-string>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ENV/battles/8.json" />
-    <entry file="file://$PROJECT_DIR$/ENV/debug.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="126" column="0" lean-forward="false" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ENV/battles/0.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -1811,36 +1796,10 @@ s3 = torch.min(ratio, s2)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/debug3.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="4" column="17" lean-forward="false" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9108">
-          <caret line="400" column="37" lean-forward="false" selection-start-line="400" selection-start-column="37" selection-end-line="400" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23">
           <caret line="1801" column="22" lean-forward="false" selection-start-line="1801" selection-start-column="19" selection-end-line="1801" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="820" column="31" lean-forward="false" selection-start-line="820" selection-start-column="31" selection-end-line="820" selection-end-column="31" />
-          <folding>
-            <element signature="e#1335#1949#0" expanded="false" />
-            <element signature="e#2301#3245#0" expanded="false" />
-            <element signature="e#26085#26107#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1949,9 +1908,6 @@ s3 = torch.min(ratio, s2)</expression-string>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="161">
           <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1972,10 +1928,58 @@ s3 = torch.min(ratio, s2)</expression-string>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/debug2.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/debug3.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="4" column="17" lean-forward="false" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/debug1.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="126" column="0" lean-forward="false" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/debug.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2898">
+          <caret line="126" column="0" lean-forward="false" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19573">
+          <caret line="926" column="89" lean-forward="false" selection-start-line="926" selection-start-column="84" selection-end-line="926" selection-end-column="89" />
+          <folding>
+            <element signature="e#1321#1935#0" expanded="false" />
+            <element signature="e#2287#3231#0" expanded="false" />
+            <element signature="e#24283#24305#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2668">
+          <caret line="120" column="58" lean-forward="false" selection-start-line="120" selection-start-column="53" selection-end-line="120" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="679">
-          <caret line="319" column="14" lean-forward="true" selection-start-line="319" selection-start-column="14" selection-end-line="319" selection-end-column="15" />
+        <state relative-caret-position="230">
+          <caret line="405" column="19" lean-forward="false" selection-start-line="405" selection-start-column="19" selection-end-line="405" selection-end-column="19" />
           <folding />
         </state>
       </provider>

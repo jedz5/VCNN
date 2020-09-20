@@ -181,13 +181,14 @@ class BattleInterface:
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
             elif (self.next_act.type == action_type.attack):
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
-            if (self.next_act.type == action_type.shoot):
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+                if not self.battle_engine.cur_stack.can_shoot():
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+                else:
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
         # show obstacles
         for oi in self.battle_engine.obsinfo:
             img = self.stimgs[oi.imname]
@@ -341,7 +342,7 @@ class BattleInterface:
                     self.cursor = self.cursor_shoot[1]
                 else:
                     self.cursor = self.cursor_shoot[0]
-                self.next_act = BAction(action_type.shoot, target=self.hoveredStack)
+                self.next_act = BAction(action_type.attack, target=self.hoveredStack)
             else:
                 bf[cur_stack.y,cur_stack.x] = cur_stack.speed
                 subdividingAngle = 2.0 * np.pi / 6.0 # Divide hex in 6 directions

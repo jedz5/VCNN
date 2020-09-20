@@ -310,7 +310,7 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
     reward = 0.
     tmp = 0.
     bl = len(buffer)
-    if battle_action.type == action_type.attack or battle_action.type == action_type.shoot:
+    if battle_action.type == action_type.attack:
         reward = killed_dealt * battle_action.target.ai_value / battle.ai_value[
             ~acting_stack.side] - killed_get * acting_stack.ai_value / battle.ai_value[acting_stack.side]
         if acting_stack.by_AI != operator:
@@ -543,11 +543,15 @@ def start_game_noGUI(file,agent = None,by_AI = [2,1]):
     return test_win/iter_N
 def get_act_info(battle,act):
     target_id = -1
+    position_id = -1
     act_id = act.type.value
     mask_acts, mask_spell, mask_targets, mask_position = battle.get_act_masks(act)
     ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature()
-    if act.type == action_type.attack or act.type == action_type.shoot:
-        position_id = act.dest.to_position_id() if act.type == action_type.attack else 0
+    if act.type == action_type.attack:
+        if not battle.cur_stack.can_shoot():
+            position_id = act.dest.to_position_id()
+        else:
+            position_id = 0
         tgt_stacks = battle.attacker_stacks if battle.cur_stack.side else battle.defender_stacks
         for i, st in enumerate(tgt_stacks):
             if st.is_alive() and st == act.target:
@@ -578,7 +582,7 @@ def start_game_record():
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     battle = Battle(by_AI = [0,1])
-    battle.load_battle("ENV/battles/1.json", shuffle_postion=False,load_ai_side=False)
+    battle.load_battle("ENV/battles/3.json", shuffle_postion=False,load_ai_side=False)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
     logps, value = None,0
