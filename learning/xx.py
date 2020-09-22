@@ -25,4 +25,6 @@ import torch
 #         print(f"{x['name']} = {r1} + {r2} - {x['ai_value']} = {r1 + r2 - x['ai_value']}")
 #         print(f"{x['name']} = {r1} + {r2} - {x['fight_value']} = {r1 + r2 - x['fight_value']}")
 sample_temp = np.array([0.2,0.4,0.2,0.2])
-a = np.random.multinomial(1, sample_temp, 1)
+a = torch.tensor(np.array([[1,2,3,4],[5,6,7,8]]),device='cuda')
+b = torch.tensor([[1],[2]],device='cuda',dtype=torch.long)
+c = torch.gather(a,1,b)

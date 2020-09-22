@@ -27,9 +27,8 @@
       <change beforePath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" afterPath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" />
       <change beforePath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" afterPath="$PROJECT_DIR$/../DNN/tianshou/examples/pong_ppo.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/ENV/H3_battle.py" afterPath="$PROJECT_DIR$/ENV/H3_battle.py" />
-      <change beforePath="$PROJECT_DIR$/ENV/H3_battleInterface.py" afterPath="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+      <change beforePath="$PROJECT_DIR$/learning/xx.py" afterPath="$PROJECT_DIR$/learning/xx.py" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -45,7 +44,7 @@
     <SUITE FILE_PATH="coverage/VCNN$BattleInterface.coverage" NAME="BattleInterface Coverage Results" MODIFIED="1591503423856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$H3_battle.coverage" NAME="H3_battle Coverage Results" MODIFIED="1596891898598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$muzero.coverage" NAME="muzero Coverage Results" MODIFIED="1599363303727" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../DNN/muzero-general" />
-    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1600419593599" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1600747106849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$xx__1_.coverage" NAME="xx (1) Coverage Results" MODIFIED="1562381867407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591846119715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$yy.coverage" NAME="yy Coverage Results" MODIFIED="1592463632584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../ddd" />
@@ -55,7 +54,7 @@
     <SUITE FILE_PATH="coverage/VCNN$gpu_test_local.coverage" NAME="gpu_test_local Coverage Results" MODIFIED="1592042956035" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$maxlikelihood.coverage" NAME="maxlikelihood Coverage Results" MODIFIED="1598000847224" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$gumbel.coverage" NAME="gumbel Coverage Results" MODIFIED="1600049254093" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
-    <SUITE FILE_PATH="coverage/VCNN$h3_ppo_remote.coverage" NAME="h3_ppo_remote Coverage Results" MODIFIED="1597482764206" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$h3_ppo_remote.coverage" NAME="h3_ppo_remote Coverage Results" MODIFIED="1600761023239" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1563026840030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1562298099688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1562061578514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -84,8 +83,8 @@
       <file leaf-file-name="xx.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/learning/xx.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="8" column="31" lean-forward="false" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+            <state relative-caret-position="644">
+              <caret line="28" column="57" lean-forward="false" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="57" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
               </folding>
@@ -96,8 +95,8 @@
       <file leaf-file-name="h3_ppo.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
-              <caret line="405" column="19" lean-forward="false" selection-start-line="405" selection-start-column="19" selection-end-line="405" selection-end-column="19" />
+            <state relative-caret-position="953">
+              <caret line="438" column="40" lean-forward="true" selection-start-line="438" selection-start-column="40" selection-end-line="438" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -106,8 +105,8 @@
       <file leaf-file-name="H3_battle.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19573">
-              <caret line="926" column="89" lean-forward="false" selection-start-line="926" selection-start-column="84" selection-end-line="926" selection-end-column="89" />
+            <state relative-caret-position="256">
+              <caret line="472" column="0" lean-forward="false" selection-start-line="472" selection-start-column="0" selection-end-line="472" selection-end-column="0" />
               <folding>
                 <element signature="e#1321#1935#0" expanded="false" />
                 <element signature="e#2287#3231#0" expanded="false" />
@@ -138,10 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>vb.vb</find>
-      <find>Battle.bGetDistance</find>
-      <find>copu</find>
-      <find>copy</find>
       <find>env</find>
       <find>imgs/</find>
       <find>torch.</find>
@@ -168,6 +163,10 @@
       <find>next</find>
       <find>play_game</find>
       <find>shoot</find>
+      <find>target_logp</find>
+      <find>shuffle</find>
+      <find>17</find>
+      <find>gather</find>
     </findStrings>
     <replaceStrings>
       <replace>min_damage</replace>
@@ -217,9 +216,9 @@
         <option value="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" />
         <option value="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" />
         <option value="$PROJECT_DIR$/learning/gumbel.py" />
-        <option value="$PROJECT_DIR$/learning/xx.py" />
         <option value="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
         <option value="$PROJECT_DIR$/ENV/H3_battle.py" />
+        <option value="$PROJECT_DIR$/learning/xx.py" />
         <option value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
       </list>
     </option>
@@ -232,6 +231,7 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="4" />
+    <option name="y" value="2" />
     <option name="width" value="1532" />
     <option name="height" value="1392" />
   </component>
@@ -288,7 +288,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -296,21 +295,11 @@
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="ENV" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
-              <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="ENV" type="462c0819:PsiDirectoryNode" />
-              <item name="episode" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -681,8 +670,8 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.h3_ppo" />
-        <item index="1" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="0" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="1" class="java.lang.String" itemvalue="Python.h3_ppo" />
         <item index="2" class="java.lang.String" itemvalue="Python.muzero" />
         <item index="3" class="java.lang.String" itemvalue="Python.gumbel" />
         <item index="4" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
@@ -1140,7 +1129,21 @@
       <option name="project" value="LOCAL" />
       <updated>1600403424464</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="重要！修复shoot action id 为3！">
+      <created>1600596396818</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1600596396818</updated>
+    </task>
+    <task id="LOCAL-00047" summary="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数">
+      <created>1600761641377</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1600761641377</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -1156,28 +1159,28 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="4" y="0" width="1532" height="1392" extended-state="0" />
+    <frame x="4" y="2" width="1532" height="1392" extended-state="0" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40166667" sideWeight="0.5056861" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20583333" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.255" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4875" sideWeight="0.49431387" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.29166666" sideWeight="0.49431387" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32916668" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17901234" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24965706" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14951989" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.4713522" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="921" y="260" width="1302" height="654" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14128944" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" show_stripe_button="false" weight="0.4713522" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="1095" y="522" width="1302" height="719" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1659808" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45166665" sideWeight="0.49431387" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31" sideWeight="0.49431387" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20583333" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4675" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1231,7 +1234,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Battle类增加debug模式&#10;修复acssessableAndAttackable exclude_me" />
     <MESSAGE value="for 循环赋值耗时测试" />
     <MESSAGE value="sparse" />
     <MESSAGE value="矩阵堆叠乘法 cpu vs cuda" />
@@ -1252,11 +1254,12 @@
     <MESSAGE value="修复position=(0,16)错误，出现了一次4.json win rate = 1.0 开始为多线程优化" />
     <MESSAGE value="整理代码文件位置" />
     <MESSAGE value="课程学习 效率提高非常明显&#10;继续调整代码文件结构" />
-    <MESSAGE value="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数" />
     <MESSAGE value="batch size 增加到2000 rollout 500 lr 0.005 课程间隔 1 60回合左右收敛&#10;课程间隔 2 收敛难度增大&#10;考虑增加专家数据辅助训练" />
     <MESSAGE value="fix position_id = -1 和 186" />
     <MESSAGE value="修改GUI逻辑循环，修改reward规则，按照兵种ai_value设置reward，在无监督样本条件下训练效果不佳" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改GUI逻辑循环，修改reward规则，按照兵种ai_value设置reward，在无监督样本条件下训练效果不佳" />
+    <MESSAGE value="重要！修复shoot action id 为3！" />
+    <MESSAGE value="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数" />
+    <option name="LAST_COMMIT_MESSAGE" value="原始可用版本&#10;胜利条件变得苛刻(一步不能错)之后反而稳定了，图形界面不再重复开关，网络结构简化，减少网络层数" />
   </component>
   <component name="WindowStateProjectService">
     <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
@@ -1365,11 +1368,6 @@
           <option name="timeStamp" value="76" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>211</line>
-          <option name="timeStamp" value="77" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://D:/Program Files/python376/Lib/site-packages/tianshou/policy/base.py</url>
           <line>133</line>
           <option name="timeStamp" value="84" />
@@ -1380,28 +1378,23 @@
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>269</line>
-          <option name="timeStamp" value="97" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
           <line>940</line>
           <option name="timeStamp" value="136" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>556</line>
+          <line>558</line>
           <option name="timeStamp" value="137" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>620</line>
+          <line>622</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>374</line>
+          <line>376</line>
           <option name="timeStamp" value="150" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1431,18 +1424,28 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>28</line>
+          <line>30</line>
           <option name="timeStamp" value="172" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>604</line>
+          <line>606</line>
           <option name="timeStamp" value="174" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://D:/Program Files/python376/Lib/site-packages/torch/distributions/multinomial.py</url>
+          <line>103</line>
+          <option name="timeStamp" value="180" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>438</line>
-          <option name="timeStamp" value="175" />
+          <line>273</line>
+          <option name="timeStamp" value="185" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>245</line>
+          <option name="timeStamp" value="192" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1455,23 +1458,25 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="176" />
+      <option name="time" value="193" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="bat.rew.sum()" language="Python" />
-        <watch expression="bat.rew" language="Python" />
-        <watch expression="battle.stacks" language="Python" />
-        <watch expression="battle.ai_value" language="Python" />
-        <watch expression="b.act.target_id" language="Python" />
-        <watch expression="b.act.act_id" language="Python" />
+        <watch expression="batch_data.returns" language="Python" />
+        <watch expression="batch_data.rew" language="Python" />
+        <watch expression="batch_data.act.target_id" language="Python" />
+        <watch expression="batch_data.act.act_id" language="Python" />
         <watch expression="__py_debug_temp_var_361770876" />
-        <watch expression="sample" />
       </configuration>
     </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>prob_act + prob_target + prob_position + prob_spell - old_prob_act - old_prob_target - old_prob_position - old_prob_spell</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>killed_dealt * battle_action.target.ai_value / battle.ai_value[
             ~acting_stack.side]</expression-string>
@@ -1524,12 +1529,17 @@ s3 = torch.min(ratio, s2)</expression-string>
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>bat.rew</expression-string>
+        <expression-string>batch_data.returns</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>bat.rew.sum()</expression-string>
+        <expression-string>batch_data.act.act_id</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>batch_data.act.target_id</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -1540,6 +1550,16 @@ s3 = torch.min(ratio, s2)</expression-string>
       </expression>
       <expression>
         <expression-string>batch_data.rew.sum()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>bat.rew</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>bat.rew.sum()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -1558,78 +1578,61 @@ s3 = torch.min(ratio, s2)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
-      <expression>
-        <expression-string>data.rew</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>battle.ai_value</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>battle.stacks</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>exp(-z - exp(-z)) / scale</expression-string>
+        <expression-string>old_prob_target.detach().numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>11 *5 / 25</expression-string>
+        <expression-string>prob_target.detach().numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>1 / 13 * 5</expression-string>
+        <expression-string>prob_target.detach().float().numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>2 / 13 *5</expression-string>
+        <expression-string>prob_target.numpy()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>1.5 /5 *50</expression-string>
+        <expression-string>prob_target / old_prob_target</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>0.1 /5 *50</expression-string>
+        <expression-string>(prob_act / old_prob_act)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>buffer.rew[len(buffer) - 1]</expression-string>
+        <expression-string>act_prob[0,act_id]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>6/ 41 * 5</expression-string>
+        <expression-string>act_logits[b.act.act_id]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>6/ 41</expression-string>
+        <expression-string>torch.LongTensor(b.act.act_id, device=self.device).unsqueeze(dim=-1)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>act_logits.gather(dim=1,index=torch.LongTensor(b.act.act_id, device=self.device).unsqueeze(dim=-1))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/learning/excel_read.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="782">
-          <caret line="34" column="27" lean-forward="false" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/Program Files/python376/Lib/site-packages/numpy/lib/format.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="347">
@@ -1918,16 +1921,6 @@ s3 = torch.min(ratio, s2)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/learning/xx.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="31" lean-forward="false" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#38#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ENV/debug2.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1956,18 +1949,6 @@ s3 = torch.min(ratio, s2)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19573">
-          <caret line="926" column="89" lean-forward="false" selection-start-line="926" selection-start-column="84" selection-end-line="926" selection-end-column="89" />
-          <folding>
-            <element signature="e#1321#1935#0" expanded="false" />
-            <element signature="e#2287#3231#0" expanded="false" />
-            <element signature="e#24283#24305#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2668">
@@ -1976,10 +1957,40 @@ s3 = torch.min(ratio, s2)</expression-string>
         </state>
       </provider>
     </entry>
+    <entry file="file://D:/Program Files/python376/Lib/site-packages/torch/distributions/multinomial.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="103" column="37" lean-forward="false" selection-start-line="103" selection-start-column="24" selection-end-line="103" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="472" column="0" lean-forward="false" selection-start-line="472" selection-start-column="0" selection-end-line="472" selection-end-column="0" />
+          <folding>
+            <element signature="e#1321#1935#0" expanded="false" />
+            <element signature="e#2287#3231#0" expanded="false" />
+            <element signature="e#24283#24305#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/xx.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="644">
+          <caret line="28" column="57" lean-forward="false" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#38#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="405" column="19" lean-forward="false" selection-start-line="405" selection-start-column="19" selection-end-line="405" selection-end-column="19" />
+        <state relative-caret-position="953">
+          <caret line="438" column="40" lean-forward="true" selection-start-line="438" selection-start-column="40" selection-end-line="438" selection-end-column="40" />
           <folding />
         </state>
       </provider>
