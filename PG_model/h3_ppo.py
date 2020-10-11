@@ -10,7 +10,7 @@ from tianshou.data import Batch, ReplayBuffer
 import scipy.signal
 # import pdb
 
-np.set_printoptions(precision=2,suppress=True)
+np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 logger = get_logger()[1]
 dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
@@ -384,7 +384,7 @@ def collect_eps(agent,file,n_step = 200,print_act = False):
 
 
 def hook_me(grad):
-    print(grad.sum())
+    print(grad.abs().sum(dim=-1))
 def init_stack_position(battle):
     mask = np.zeros([11,17])
     mask[:,0] = 1
@@ -405,11 +405,11 @@ def init_stack_position(battle):
 #@profile
 def start_train():
     lrate = 0.001
-    sample_num = 100
+    sample_num = 2
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
-    actor_critic.spells.weight.register_hook(hook_me)
+    actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
     agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.)
     # agent.load_state_dict(torch.load("model_param.pkl"))
@@ -426,7 +426,7 @@ def start_train():
         agent.process_gae(expert,single_batch=False)
         bats.append(expert)
         for ii in range(sample_num):
-            fn = random.randint(0,f_max)
+            fn =  1 #random.randint(0,f_max)
             file = f'ENV/battles/{fn}.json'
             print_act = False
             # if ii < 3 :
@@ -442,20 +442,23 @@ def start_train():
         agent.train()
         agent.in_train = True
         # batch_data = agent.process_gae(batch_data)
-        # v_ = []
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print(batch_data.done.astype(np.int))
-        # print(batch_data.returns)
-        # print(v_.squeeze())
-        # print(batch_data.act.act_id.astype(np.int))
+        v_ = []
+        with torch.no_grad():
+            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        print(batch_data.returns)
+        v_ = v_.squeeze().detach().numpy()
+        print(v_)
+        print(batch_data.returns - v_)
+        print(batch_data.policy.logps.act_logp)
+        print(batch_data.done.astype(np.float) * 1.11)
+        print(batch_data.act.act_id.astype(np.float) )
         if Linux:
             to_dev(agent, "cuda")
             #TODO 7 batch size?
         loss = agent.learn(batch_data,batch_size=2000)
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print(v_.squeeze())
+        with torch.no_grad():
+            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        print(v_.squeeze().detach().numpy())
         if Linux:
             to_dev(agent, "cpu")
         agent.eval()

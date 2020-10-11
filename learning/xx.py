@@ -24,7 +24,19 @@ import torch
 #         r2 = x['health'] * x['defense']bbb
 #         print(f"{x['name']} = {r1} + {r2} - {x['ai_value']} = {r1 + r2 - x['ai_value']}")
 #         print(f"{x['name']} = {r1} + {r2} - {x['fight_value']} = {r1 + r2 - x['fight_value']}")
-sample_temp = np.array([0.2,0.4,0.2,0.2])
-a = torch.tensor(np.array([[1,2,3,4],[5,6,7,8]]),device='cuda')
-b = torch.tensor([[1],[2]],device='cuda',dtype=torch.long)
-c = torch.gather(a,1,b)
+x = torch.arange(-100,100)
+
+a = torch.tensor(0.05,requires_grad=True)
+b = torch.tensor(-0.03,requires_grad=True)
+c = torch.tensor(-0.02,requires_grad=True)
+opt = torch.optim.Adam([a,b,c],lr=1)
+for i in range(100):
+    xx = torch.tensor(np.random.choice(x,32))
+    yy = 3 * xx * xx + 8 * xx + 5
+    opt.zero_grad()
+    loss = a*xx*xx + b*xx + c - yy
+    loss = loss * loss
+    loss = loss.mean()
+    loss.backward()
+    opt.step()
+    print(f"{a}  {b}  {c}")
