@@ -787,6 +787,7 @@ class Battle(object):
                      int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
                      st.shots])
             else:
+                #TODO 位置信息+id信息
                 attri_stack[i] = np.array(
                     [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
                      int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
