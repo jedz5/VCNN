@@ -456,7 +456,7 @@ class BStack(BHex):
             elif act_id == action_type.move.value:
                 next_act = BAction(action_type.move, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
             elif act_id == action_type.attack.value:
-                t = self.in_battle.defender_stacks[target_id] if self.side == 0 else self.in_battle.attacker_stacks[target_id]
+                t = self.in_battle.stackQueue[target_id]
                 next_act = BAction(action_type.attack, dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)), target=t)
             else:
                 logger.error("not implemented action!!",True)
@@ -776,9 +776,9 @@ class Battle(object):
         ind = np.array([122] * 14,dtype=int)
         for i,st in enumerate(self.stackQueue):
             bf = st.get_global_state()
-            planes_stack[i, 0] = (bf >= 0) & (bf < 50)
-            planes_stack[i, 1] = bf == 401
-            planes_stack[i, 2] = bf == 201
+            planes_stack[i, 0] = ((bf >= 0) & (bf < 50))
+            planes_stack[i, 1] = (bf == 401)
+            planes_stack[i, 2] = (bf == 201)
             #
             ind[i] = st.id
             if curriculum:
@@ -787,7 +787,6 @@ class Battle(object):
                      int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
                      st.shots])
             else:
-                #TODO 位置信息+id信息
                 attri_stack[i] = np.array(
                     [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
                      int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
@@ -924,6 +923,9 @@ class Battle(object):
                 logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
                 sys.exit()
             dest = dests[0]
+            if dest.side == self.cur_stack.side:
+                logging.error(f"target {dest.name}is in your side!")
+                sys.exit()
             if self.cur_stack.can_shoot():
                 damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.shoot(dest)
             elif self.canReach(self.cur_stack, action.dest, action.target):
@@ -959,8 +961,9 @@ class Battle(object):
                 return mask.flatten()
             elif act_id == action_type.attack.value:
                 bf = cur_stack.get_global_state()
-                mask = np.zeros((7,))
-                targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks
+                mask = np.zeros((14,))
+                # targets = self.defender_stacks if cur_stack.side == 0 else self.attacker_stacks
+                targets = self.stackQueue
                 for i in range(len(targets)):
                     if bf[targets[i].y, targets[i].x] == 201:
                         mask[i] = 1
@@ -973,7 +976,8 @@ class Battle(object):
             if act_id == action_type.attack.value:
                 bf = cur_stack.get_global_state(exclude_me=False)
                 if not target:
-                    target = self.defender_stacks[target_id] if cur_stack.side == 0 else self.attacker_stacks[target_id]
+                    # target = self.defender_stacks[target_id] if cur_stack.side == 0 else self.attacker_stacks[target_id]
+                    target = self.stackQueue[target_id]
                 nb = target.get_neighbor()
                 for t in nb:
                     if 0 <= bf[t.y, t.x] < 50:

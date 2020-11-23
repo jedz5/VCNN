@@ -151,10 +151,12 @@ class state_node_determ:
         self.n += 1
         global back_itr
         back_itr += 1
-        # self.v = np.max((self.q + 1000)*self.qmask) - 1000 * self.qmask.any()
-        self.v = np.max(self.q)
-        if back_itr > 2 and self.v and max(self.acts.values(),key=lambda x: x.v).v > 0:
-            print(f"here v={self.v}")
+        self.v = np.max((self.q + 1000)*self.qmask) - 1000 * self.qmask.any()
+        if self.v >0 and np.max(self.q) < 0:
+            print()
+        # self.v = np.max(self.q)
+        # if back_itr > 2 and self.v and max(self.acts.values(),key=lambda x: x.v).v > 0:
+        #     print(f"here v={self.v}")
         # print(f"here {self.s} is {self.v}")
         # pi2 = update_Pi(self.pi,self.q,Lr)
         self.pi = update_Pi(self.pi,self.q,Lr)
@@ -162,10 +164,9 @@ class state_node_determ:
             pa = self.prev_a
             qmax = -self.v if self.self_play and self.player != pa.player else self.v
             pa.q[self.a] = self.r + gamma * qmax
-            pa.back_up_v()
-        #     return pa
-        # else:
-        #     return None
+            return pa
+        else:
+            return None
 mcts_steps = 31
 stim_episode_counts = 20
 class snake_net(nn.Module):
@@ -220,17 +221,17 @@ def mcts_one_step_q(root_game:Board,qnet,qmap,self_play=False):
                 break
     q0,p0,m0 = root_node.q,root_node.pi,root_node.qmask
     # qmap[rh] = (q0,p0,m0)
-    if env.states:
+    if root_game.states:
         for i in range(4):
             rht = np.ascontiguousarray(np.rot90(rh,i))
-            qt = np.rot90(q0.reshape((6,6)),i)
+            qt = np.rot90(q0.reshape((6, 6)),i)
             pt = np.rot90(p0.reshape((6, 6)), i)
             mt = np.rot90(m0.reshape((6, 6)), i)
             qmap[rht.view(np_hash)] = (qt.flatten(), pt.flatten(), mt.flatten())
             rhf = np.ascontiguousarray(np.fliplr(rht))
-            qf = np.fliplr(qt.reshape((6,6)))
-            pf = np.fliplr(pt.reshape((6, 6)))
-            mf = np.fliplr(mt.reshape((6, 6)))
+            qf = np.fliplr(qt)
+            pf = np.fliplr(pt)
+            mf = np.fliplr(mt)
             qmap[rhf.view(np_hash)] = (qf.flatten(), pf.flatten(), mf.flatten())
     return root_node.q,root_node.pi,root_node.qmask
 def mcts_one_step(root_state):
@@ -353,8 +354,8 @@ def gumoko_games():
     from learning.gumoko_env import Board
     env = Board(width=height, height=height, n_in_row=4)
     # qnet = snake_net(N)
-    qmap = {}
-    # qmap = np.load('d:/my_qmap.npy',allow_pickle=True).item()
+    # qmap = {}
+    qmap = np.load('d:/my_qmap.npy',allow_pickle=True).item()
     # epis = []
     print(f"game start!")
     """ total trains """
@@ -363,7 +364,6 @@ def gumoko_games():
         epoch += 1
         start_player = np.random.randint(2)
         env.init_board(start_player)
-        noise = np.random.randn(policy_len) * 0.001
         """ total sample steps per game """
         if (epoch + 1) % 100 == 0:
             print(f"epoch {epoch} saving qmap len = {len(qmap)}")
@@ -374,7 +374,7 @@ def gumoko_games():
             q, p,m = mcts_one_step_q(env, None, qmap,True)
             # print(q)
             # print(p)
-            tmp = q + noise
+            tmp = q + np.random.randn(policy_len) * 0.001
             mask = env.act_mask()
             a = np.argmax((tmp + 1000)*mask)
             s2, r, t, _ = env.step(a)
