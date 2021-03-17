@@ -312,7 +312,6 @@ class H3_policy(PGPolicy):
                 # vf_losses.append(vf_loss.item())
                 e_loss = dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean()
                 # ent_losses.append(e_loss.item())
-                #TODO 8 entropy工作原理
                 #TODO 9 reward 设计 32位 vs 64
                 loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
                 if pcount < 5:
@@ -325,41 +324,54 @@ class H3_policy(PGPolicy):
                     self._max_grad_norm)
                 self.optim.step()
 r_cum = 0
-def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get):
+def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=True):
     global r_cum
     """compute reward"""
     reward = 0.
     tmp = 0.
     bl = len(buffer)
-    if battle_action.type == action_type.attack:
-        reward = killed_dealt * battle_action.target.ai_value / battle.ai_value[
-            ~acting_stack.side] - killed_get * acting_stack.ai_value / battle.ai_value[acting_stack.side]
-        if acting_stack.by_AI != operator:
-            reward = -reward
-    if done:
-        if battle.by_AI[battle.get_winner()] == operator:  # winner is operator
-            reward = 1. + reward
-            win = True
+    if td:
+        if battle_action.type == action_type.attack:
+            reward = killed_dealt * battle_action.target.ai_value / battle.ai_value[
+                ~acting_stack.side] - killed_get * acting_stack.ai_value / battle.ai_value[acting_stack.side]
+            if acting_stack.by_AI != operator:
+                reward = -reward
+        if done:
+            if battle.by_AI[battle.get_winner()] == operator:  # winner is operator
+                reward = 1. + reward
+            else:
+                reward = -1. + reward
+        reward *= 5
+        if done or acting_stack.by_AI == operator:
+            #TODO 初始分兵
+            tmp= r_cum
+            r_cum = 0.
         else:
-            reward = -1. + reward
-    reward *= 5
-    if done or acting_stack.by_AI == operator:
-        #TODO 初始分兵
-        tmp= r_cum
-        r_cum = 0.
+            r_cum += reward
+        """buffer sar"""
+        if acting_stack.by_AI == operator:
+            if bl:
+                buffer.rew[bl - 1] += tmp
+            buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask, policy={"value": value, "logps": logps})
+        elif done:
+            if bl:
+                buffer.rew[bl - 1] += reward
+                buffer.done[bl - 1] = done
+            else:
+                logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
     else:
-        r_cum += reward
-    """buffer sar"""
-    if acting_stack.by_AI == operator:
-        if bl:
-            buffer.rew[bl - 1] += tmp
-        buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask, policy={"value": value, "logps": logps})
-    elif done:
-        if bl:
-            buffer.rew[bl - 1] += reward
-            buffer.done[bl - 1] = done
+        if acting_stack.by_AI == operator:
+            if done:
+                buffer.add(obs=obs, act=acts, rew=5., done=True, info=mask, policy={"value": value, "logps": logps})
+            else:
+                buffer.add(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps})
         else:
-            logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+            if done:
+                if bl:
+                    buffer.rew[bl - 1] = -5.
+                    buffer.done[bl - 1] = True
+                else:
+                    logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 global_buffer = ReplayBuffer(200,ignore_obs_next=True)
 def collect_eps(agent,file,n_step = 200,print_act = False):
     battle = Battle(agent=agent)
@@ -385,7 +397,7 @@ def collect_eps(agent,file,n_step = 200,print_act = False):
         done = battle.check_battle_end()
         #buffer sar
         if had_acted:
-            record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get)
+            record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=False)
         #next act
         if done:
             win = (battle.by_AI[battle.get_winner()] == 2)
@@ -705,8 +717,8 @@ def start_test():
 
 def main():
     # start_game_record()
-    start_train()
-    # start_test()
+    # start_train()
+    start_test()
 
 if __name__ == '__main__':
     main()
