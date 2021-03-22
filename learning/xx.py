@@ -8,8 +8,13 @@ from collections import defaultdict
 # lk = list(k)
 # rk = range(len(k))
 # idx = np.random.choice(rk,11)
-print("test",end=' ')
+
 # if not hasattr(hasattr, '__hash'):
 #     self.__hash = int(sha1(self.view(uint8)).hexdigest(), 16)
 # return self.__hash
 # b = np.random.choice(list(range(len(a))),p=a/a.sum())
+
+a = (1,2,3,4) +(5,)
+b = True
+c = -b
+

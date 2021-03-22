@@ -232,7 +232,7 @@ class H3_policy(PGPolicy):
     def learn(self, batch, batch_size=None, repeat=4, **kwargs):
         pcount = 0
         for _ in range(repeat):
-            for b in batch.split(batch_size,shuffle=False):
+            for b in batch.split(batch_size,shuffle=True):
                 mask_acts = b.info.mask_acts
                 mask_spell = b.info.mask_spell
                 mask_targets = b.info.mask_targets
@@ -393,8 +393,8 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                     buffer.done[bl - 1] = True
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-global_buffer = ReplayBuffer(200,ignore_obs_next=True)
-global_buffer_defender = ReplayBuffer(200,ignore_obs_next=True)
+global_buffer = ReplayBuffer(500,ignore_obs_next=True)
+global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
 def collect_eps(agent,file,n_step = 200,print_act = False):
     battle = Battle(agent=agent)
     battle.load_battle(file)
@@ -552,8 +552,9 @@ def start_train():
     five_done = 5
     ok = five_done
     # expert = load_episo("ENV/episode")
-    file_list = ['ENV/battles/7.json','ENV/battles/6.json']
+    file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
     #TODO 7 SAC算法
+    batch_data = Batch()
     while True:
         agent.eval()
         agent.in_train = True
@@ -578,32 +579,33 @@ def start_train():
             bats.append(batch1)
             if win == 0 and ii < 50:
                 logger.info(f"win {file}")
-        batch_data = Batch.cat(bats)
+        batch_data1 = Batch.cat(bats)
+        batch_data = Batch.cat([batch_data,batch_data1])
         logger.info(len(batch_data.rew))
         agent.train()
         agent.in_train = True
         # batch_data = agent.process_gae(batch_data)
-        v_ = []
-        with torch.no_grad():
-            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        print(batch_data.returns)
-        v_ = v_.squeeze().detach().numpy()
-        print("predict v")
-        print(v_)
-        print("returns - v")
-        print(batch_data.returns - v_)
-        print("act_logp")
-        print(batch_data.policy.logps.act_logp)
-        print(batch_data.done.astype(np.float) * 1.11)
-        print(batch_data.act.act_id.astype(np.float) )
+        # v_ = []
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # print(batch_data.returns)
+        # v_ = v_.squeeze().detach().numpy()
+        # print("predict v")
+        # print(v_)
+        # print("returns - v")
+        # print(batch_data.returns - v_)
+        # print("act_logp")
+        # print(batch_data.policy.logps.act_logp)
+        # print(batch_data.done.astype(np.float) * 1.11)
+        # print(batch_data.act.act_id.astype(np.float) )
         if Linux:
             to_dev(agent, "cuda")
             #TODO 7 batch size?
         loss = agent.learn(batch_data,batch_size=2000)
-        with torch.no_grad():
-            v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        print("learned v")
-        print(v_.squeeze().detach().numpy())
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # print("learned v")
+        # print(v_.squeeze().detach().numpy())
         if Linux:
             to_dev(agent, "cpu")
         agent.eval()
@@ -628,6 +630,7 @@ def start_train():
         if count == 500:
             sys.exit(-1)
         count += 1
+        logger.info(f'count={count}')
 def to_dev(agent,dev):
     agent.to(dev)
     agent.device = dev

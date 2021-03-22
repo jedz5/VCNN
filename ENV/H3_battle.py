@@ -1,5 +1,7 @@
 import random
 import copy
+from typing import List, Tuple
+from operator import itemgetter
 import numpy as np
 from enum import Enum
 import logging
@@ -354,7 +356,7 @@ class BStack(BHex):
         self.had_defended = False
         return
 
-    def potential_target(self):
+    def potential_target(self): #->  type: Tuple[List[Tuple[BStack,int]],List]
         bf = self.get_global_state(exclude_me=False)  #
         attackable = []
         unreach = []
@@ -423,15 +425,16 @@ class BStack(BHex):
 
     def active_stack(self,ret_obs = False,print_act = False,action_known:tuple=None):
         if self.by_AI == 1:
-            attackable, unreach = self.potential_target()
+            attackable, unreach = self.potential_target() #type: Tuple[List[Tuple[BStack,int]],List]
             if not self.in_battle.debug:
                 if (self.in_battle.round == 0 and not self.had_waited and len(attackable) == 0):
                     return BAction(action_type.wait)
             if (len(attackable) > 0):
-                att = [self.do_attack(target, stand, estimate=True) for target, stand in attackable]
-                dmgs = [delt - get for delt, get,kd,kg in att]
-                best = np.argmax(dmgs)
-                best_target = attackable[best]
+                att = [(self.do_attack(target, stand, estimate=True) + (-target.is_shooter,-target.had_retaliated,idx)) for idx,(target, stand) in enumerate(attackable)]
+                dmgs = [(is_shooter,had_retaliated,-delt,idx) for delt, get,kd,kg,is_shooter,had_retaliated,idx in att]
+                # best = np.argmax(dmgs)
+                best = sorted(dmgs,key=itemgetter(0,1,2))
+                best_target = attackable[best[0][3]]
                 if (self.can_shoot()):
                     return BAction(action_type.attack, target=best_target[0])
                 else:
