@@ -2,9 +2,11 @@
 import sys
 sys.path.extend(['/home/enigma/work/project/VCNN', 'D:/project/VCNN/'])
 from PG_model.discrete_net import H3_net
+import torch
 from torch import nn
 from typing import Tuple, Optional
 from ENV.H3_battle import *
+from VCbattle import BHex
 from tianshou.policy import PGPolicy
 from tianshou.data import Batch, ReplayBuffer
 import scipy.signal
@@ -138,7 +140,7 @@ class H3_policy(PGPolicy):
 
     #单次输入 obs->act,mask
     def forward(self, ind,attri_stack,planes_stack,plane_glb,
-                env,shooter = False,print_act = False,
+                env,can_shoot = False,print_act = False,action_known:tuple=None,
                 **kwargs) -> Batch:
         act_logits, targets_logits_h,target_embs, position_logits_h, spell_logits, value = self.ppo_net(ind,attri_stack,planes_stack,plane_glb)
         '''ind,attri_stack,planes_stack,plane_glb shape like (batch,...) or (1,...) when inference'''
@@ -160,63 +162,44 @@ class H3_policy(PGPolicy):
             if print_act:
                 logger.info(act_logits)
                 logger.info(value)
-            # if torch.sum(act_prob, dim=-1, keepdim=True).item() > 0.9:
             temp_p = self.dist_fn(act_logits)
-            act_id = temp_p.sample()[0].item()
-            act_logp = act_logits[0,act_id].item() #temp_p.log_prob(act_id).item()
-            # else:
-            #     logger.error("wrong act")
-            #     logger.error(act_logits)
-            #     logger.error(mask_acts)
-            #     sys.exit(-1)
-            #     act_prob = softmax(act_logits, mask_acts, self.device, in_train=False)
-            #     act_id = torch.argmax(act_prob, dim=-1)[0].item()
+            ''' act by human or handcrafted AI, just give me logp'''
+            if action_known:
+                act_id = action_known[0]
+            else:
+                act_id = temp_p.sample()[0].item()
+            act_logp = act_logits[0,act_id].item()
             if act_id == action_type.move.value:
                 mask_position = env.legal_act(level=1, act_id=act_id)
                 '''target id is -1'''
                 position_logits = self.ppo_net.get_position_loggits(act_id,target_id,target_embs,mask_targets,position_logits_h,single_batch=True)
                 position_logits = softmax(position_logits, mask_position, self.device,add_little=True)
-                # if torch.sum(position_prob,dim=-1,keepdim=True).item() > 0.9:
                 temp_p = self.dist_fn(position_logits)
-                position_id = temp_p.sample()[0].item()
-                position_logp = position_logits[0,position_id].item() #temp_p.log_prob(position_id).item()
-                # else:
-                #     logger.error("wrong move")
-                #     logger.error(position_logits)
-                #     logger.error(mask_position)
-                #     sys.exit(-1)
-                #     position_prob = softmax(position_logits, mask_position, self.device, in_train=False)
-                #     position_id = torch.argmax(position_prob, dim=-1)[0].item()
+                if action_known:
+                    position_id = action_known[1]
+                else:
+                    position_id = temp_p.sample()[0].item()
+                position_logp = position_logits[0,position_id].item()
             elif act_id == action_type.attack.value:
                 mask_targets = env.legal_act(level=1, act_id=act_id)
                 targets_logits = self.ppo_net.get_target_loggits(act_id, targets_logits_h, single_batch=True)
                 targets_logits = softmax(targets_logits, mask_targets, self.device,add_little=True)
-                # if torch.sum(targets_prob,dim=-1,keepdim=True).item() > 0.9:
                 temp_p = self.dist_fn(targets_logits)
-                target_id = temp_p.sample()[0].item()
-                target_logp = targets_logits[0,target_id].item() #temp_p.log_prob(target_id).item()
-                # else:
-                #     logger.error("wrong attack target")
-                #     logger.error(targets_prob)
-                #     logger.error(mask_targets)
-                #     sys.exit(-1)
-                #     targets_prob = softmax(targets_logits, mask_targets, self.device, in_train=False)
-                #     target_id = torch.argmax(targets_prob, dim=-1)[0].item()
-                if not shooter:
+                if action_known:
+                    target_id = action_known[2]
+                else:
+                    target_id = temp_p.sample()[0].item()
+                target_logp = targets_logits[0,target_id].item()
+                if not can_shoot:
                     mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
                     position_logits = self.ppo_net.get_position_loggits(act_id, target_id, target_embs, mask_targets,position_logits_h, single_batch=True)
                     position_logits = softmax(position_logits, mask_position, self.device,add_little=True)
-                    # if torch.sum(position_prob,dim=-1,keepdim=True).item() > 0.9:
                     temp_p = self.dist_fn(position_logits)
-                    position_id = temp_p.sample()[0].item()
-                    position_logp = position_logits[0,position_id].item() #temp_p.log_prob(position_id).item()
-                    # else:
-                    #     logger.error("wrong attack move")
-                    #     logger.error(position_logits)
-                    #     logger.error(mask_position)
-                    #     sys.exit(-1)
-                    #     position_prob = softmax(position_logits, mask_position, self.device,in_train=False)
-                    #     position_id = torch.argmax(position_prob, dim=-1)[0].item()
+                    if action_known:
+                        position_id = action_known[1]
+                    else:
+                        position_id = temp_p.sample()[0].item()
+                    position_logp = position_logits[0,position_id].item()
         else:
             act_logits = softmax(act_logits, mask_acts, self.device,in_train=False)
             if print_act:
@@ -233,7 +216,7 @@ class H3_policy(PGPolicy):
                 targets_logits = self.ppo_net.get_target_loggits(act_id, targets_logits_h, single_batch=True)
                 targets_logits = softmax(targets_logits, mask_targets, self.device,in_train=False)
                 target_id = torch.argmax(targets_logits, dim=-1)[0].item()
-                if not shooter:
+                if not can_shoot:
                     mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
                     position_logits = self.ppo_net.get_position_loggits(act_id, target_id, target_embs, mask_targets,position_logits_h, single_batch=True)
                     position_logits = softmax(position_logits, mask_position, self.device,in_train=False)
@@ -323,6 +306,44 @@ class H3_policy(PGPolicy):
                 nn.utils.clip_grad_norm_(self.ppo_net.parameters(),
                     self._max_grad_norm)
                 self.optim.step()
+    def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False,action_known:tuple=None):
+        ind, attri_stack, planes_stack, plane_glb = in_battle.current_state_feature()
+        with torch.no_grad():
+            result = self.forward(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], in_battle,
+                           can_shoot=in_battle.cur_stack.can_shoot(), print_act=print_act,action_known=action_known)
+        act_id = result['act_id']
+        position_id = result['position_id']
+        target_id = result['target_id']
+        spell_id = result['spell_id']
+        if act_id == action_type.wait.value:
+            next_act = BAction(action_type.wait)
+        elif act_id == action_type.defend.value:
+            next_act = BAction(action_type.defend)
+        elif act_id == action_type.move.value:
+            next_act = BAction(action_type.move,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
+        elif act_id == action_type.attack.value:
+            t = in_battle.stackQueue[target_id]
+            next_act = BAction(action_type.attack,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)),
+                               target=t)
+        else:
+            logger.error("not implemented action!!", True)
+            sys.exit(-1)
+        if not ret_obs:
+            return next_act
+        act_id = 0 if act_id < 0 else act_id
+        position_id = 0 if position_id < 0 else position_id
+        target_id = 0 if target_id < 0 else target_id
+        spell_id = 0 if spell_id < 0 else spell_id
+        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
+        acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
+        mask = {'mask_acts': result['mask_acts'], 'mask_spell': result['mask_spell'],
+                'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
+        logps = {'act_logp': result['act_logp'], 'position_logp': result['position_logp'],
+                 'target_logp': result['target_logp'], 'spell_logp': result['spell_logp']}
+        return next_act, obs, acts, mask, logps, result['value']
+            
 r_cum = 0
 def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=True):
     global r_cum
@@ -373,6 +394,7 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 global_buffer = ReplayBuffer(200,ignore_obs_next=True)
+global_buffer_defender = ReplayBuffer(200,ignore_obs_next=True)
 def collect_eps(agent,file,n_step = 200,print_act = False):
     battle = Battle(agent=agent)
     battle.load_battle(file)
@@ -414,7 +436,87 @@ def collect_eps(agent,file,n_step = 200,print_act = False):
     bat,indice = global_buffer.sample(0)
     global_buffer.reset()
     return win,bat
+def to_action_tuple(action:BAction,battle:Battle):
+    act_id = action.type.value
+    dest_id = -1
+    target_id = -1
+    if action.type == action_type.move:
+        dest_id = action.dest.y * Battle.bFieldWidth + action.dest.x
+    if action.type == action_type.attack:
+        target_id = 0
+        find = False
+        for st in battle.stackQueue:
+            if st == action.target:
+                find = True
+                break
+            else:
+                target_id += 1
+        assert find,f"where is your target{target}??"
+        if not battle.cur_stack.can_shoot():
+            dest_id = action.dest.y * Battle.bFieldWidth + action.dest.x
+    return (act_id,dest_id,target_id)
+def collect_eps_both_sides(agent,file,n_step = 200,print_act = False):
+    battle = Battle(agent=agent)
+    battle.load_battle(file)
+    battle.checkNewRound()
+    win = -1
+    for ii in range(n_step):
+        acting_stack = battle.cur_stack
+        if acting_stack.by_AI == 2:
+            battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True, print_act=print_act)
+        else:
+            orig_battle_action = acting_stack.active_stack()
+            action_tuple = to_action_tuple(orig_battle_action,battle)
+            '''just give me logp '''
+            acting_stack.by_AI = 2
+            battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True, print_act=print_act,
+                                                                                     action_known=action_tuple)
+            acting_stack.by_AI = 1
+            '''gotcha'''
+        battle.doAction(battle_action)
+        battle.checkNewRound()
+        #battle.curStack had updated
+        done = battle.check_battle_end()
+        #buffer sar
+            # record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=False)
+        if acting_stack.side == 0:
+            global_buffer.add(obs=obs, act=acts, rew=int(done), done=int(done), info=mask, policy={"value": value, "logps": logps})
+        else:
+            global_buffer_defender.add(obs=obs, act=acts, rew=int(done), done=int(done), info=mask, policy={"value": value, "logps": logps})
+        #next act
+        if done:
+            bla = len(global_buffer)
+            bld = len(global_buffer_defender)
+            win = battle.get_winner()
+            if win == 0:
+                if bla > 0:
+                    global_buffer.rew[bla - 1] = 5
+                    global_buffer.done[bla - 1] = 1
+                else:
+                    logger.info("玩家0还没出手就赢了~")
+                if bld > 0:
+                    global_buffer_defender.rew[bld - 1] = -5
+                    global_buffer_defender.done[bld - 1] = 1
+                else:
+                    logger.info("玩家1还没出手就输了~")
+            else:
+                if bla > 0:
+                    global_buffer.rew[bla - 1] = -5
+                    global_buffer.done[bla - 1] = 1
+                else:
+                    logger.info("玩家0还没出手就输了~")
+                if bld > 0:
+                    global_buffer_defender.rew[bld - 1] = 5
+                    global_buffer_defender.done[bld - 1] = 1
+                else:
+                    logger.info("玩家1还没出手就赢了~")
+            break
 
+    bat0,indice = global_buffer.sample(0)
+    bat1,indice = global_buffer_defender.sample(0)
+    global_buffer.reset()
+    global_buffer_defender.reset()
+    return win,bat0,bat1
 
 def hook_me(grad):
     print(grad.abs().sum(dim=-1))
@@ -444,12 +546,12 @@ def start_train():
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
     # agent.load_state_dict(torch.load("model_param.pkl"))
     count = 0
     five_done = 5
     ok = five_done
-    expert = load_episo("ENV/episode")
+    # expert = load_episo("ENV/episode")
     file_list = ['ENV/battles/7.json','ENV/battles/6.json']
     #TODO 7 SAC算法
     while True:
@@ -464,10 +566,17 @@ def start_train():
             # if ii < 3 :
             #     print_act = True
             #     logger.info(f"------------------------{fn}.json")
-            win,batch_data = collect_eps(agent,file,print_act=print_act)
-            agent.process_gae(batch_data)
-            bats.append(batch_data)
-            if win and ii < 50:
+            '''single side '''
+            # win,batch_data = collect_eps(agent,file,print_act=print_act)
+            # agent.process_gae(batch_data)
+            # bats.append(batch_data)
+            '''both sides'''
+            win, batch0,batch1 = collect_eps_both_sides(agent, file, print_act=print_act)
+            agent.process_gae(batch0)
+            bats.append(batch0)
+            agent.process_gae(batch1)
+            bats.append(batch1)
+            if win == 0 and ii < 50:
                 logger.info(f"win {file}")
         batch_data = Batch.cat(bats)
         logger.info(len(batch_data.rew))
@@ -717,8 +826,8 @@ def start_test():
 
 def main():
     # start_game_record()
-    # start_train()
-    start_test()
+    start_train()
+    # start_test()
 
 if __name__ == '__main__':
     main()

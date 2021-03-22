@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/ENV/H3_battle.py" line="471" />
-  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -23,13 +20,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7528ef1b-1b4f-409b-a8f1-567649e3b51a" name="Default" comment="修改V(s)-&gt;Q(s,a)">
-      <change beforePath="" afterPath="$PROJECT_DIR$/go_explore/P1.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/learning/counter_example.py" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/ENV/battles/8.json" />
       <change beforePath="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" afterPath="$PROJECT_DIR$/../DNN/muzero-general/games/cartpole.py" />
       <change beforePath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" afterPath="$PROJECT_DIR$/../DNN/muzero-general/muzero.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/ENV/H3_battle.py" afterPath="$PROJECT_DIR$/ENV/H3_battle.py" />
+      <change beforePath="$PROJECT_DIR$/ENV/H3_battleInterface.py" afterPath="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
+      <change beforePath="$PROJECT_DIR$/ENV/battles/6.json" afterPath="$PROJECT_DIR$/ENV/battles/6.json" />
       <change beforePath="$PROJECT_DIR$/PG_model/h3_ppo.py" afterPath="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+      <change beforePath="$PROJECT_DIR$/go_explore/P1.py" afterPath="$PROJECT_DIR$/go_explore/P1.py" />
+      <change beforePath="$PROJECT_DIR$/learning/np_hash_test.py" afterPath="$PROJECT_DIR$/learning/np_hash_test.py" />
       <change beforePath="$PROJECT_DIR$/learning/xx.py" afterPath="$PROJECT_DIR$/learning/xx.py" />
+      <change beforePath="$PROJECT_DIR$/old/train.py" afterPath="$PROJECT_DIR$/old/train.py" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -41,8 +43,9 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/VCNN$run_main.coverage" NAME="run_main Coverage Results" MODIFIED="1562379234281" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/VCNN$P1.coverage" NAME="P1 Coverage Results" MODIFIED="1616142035106" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$Malkov.coverage" NAME="Malkov Coverage Results" MODIFIED="1605751382397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
-    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1606040637217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$h3_ppo.coverage" NAME="h3_ppo Coverage Results" MODIFIED="1616255267387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$gpu_test.coverage" NAME="gpu_test Coverage Results" MODIFIED="1591846119715" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$yy.coverage" NAME="yy Coverage Results" MODIFIED="1592463632584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../ddd" />
     <SUITE FILE_PATH="coverage/VCNN$cross_entropy.coverage" NAME="cross_entropy Coverage Results" MODIFIED="1602406881563" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
@@ -54,7 +57,7 @@
     <SUITE FILE_PATH="coverage/VCNN$run.coverage" NAME="run Coverage Results" MODIFIED="1563026840030" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$creatureEmbedding.coverage" NAME="creatureEmbedding Coverage Results" MODIFIED="1562061578514" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/VCNN$muzero_remote.coverage" NAME="muzero_remote Coverage Results" MODIFIED="1599271476375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../DNN/muzero-general" />
-    <SUITE FILE_PATH="coverage/VCNN$H3_battleInterface.coverage" NAME="H3_battleInterface Coverage Results" MODIFIED="1606102389706" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
+    <SUITE FILE_PATH="coverage/VCNN$H3_battleInterface.coverage" NAME="H3_battleInterface Coverage Results" MODIFIED="1616383112186" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/VCNN$qlearning.coverage" NAME="qlearning Coverage Results" MODIFIED="1602820346570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$xx.coverage" NAME="xx Coverage Results" MODIFIED="1615907334111" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$BattleInterface.coverage" NAME="BattleInterface Coverage Results" MODIFIED="1591503423856" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -68,6 +71,7 @@
     <SUITE FILE_PATH="coverage/VCNN$process_vcmi_data.coverage" NAME="process_vcmi_data Coverage Results" MODIFIED="1562298099688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/DeepFM_model" />
     <SUITE FILE_PATH="coverage/VCNN$mcts_q.coverage" NAME="mcts_q Coverage Results" MODIFIED="1604298383768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
     <SUITE FILE_PATH="coverage/VCNN$bolzman.coverage" NAME="bolzman Coverage Results" MODIFIED="1605778792051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
+    <SUITE FILE_PATH="coverage/VCNN$np_hash_test.coverage" NAME="np_hash_test Coverage Results" MODIFIED="1616040212445" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/learning" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -91,19 +95,33 @@
       <file leaf-file-name="xx.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/learning/xx.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="5" column="4" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
+            <state relative-caret-position="270">
+              <caret line="10" column="21" lean-forward="false" selection-start-line="10" selection-start-column="21" selection-end-line="10" selection-end-column="21" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="np_hash_test.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/learning/np_hash_test.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="2" column="20" lean-forward="false" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="h3_ppo.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="h3_ppo.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="402">
-              <caret line="30" column="8" lean-forward="false" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
-              <folding />
+            <state relative-caret-position="405">
+              <caret line="15" column="9" lean-forward="false" selection-start-line="15" selection-start-column="9" selection-end-line="15" selection-end-column="9" />
+              <folding>
+                <element signature="e#12578#17649#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,9 +129,11 @@
       <file leaf-file-name="P1.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/go_explore/P1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="567">
-              <caret line="21" column="55" lean-forward="true" selection-start-line="21" selection-start-column="55" selection-end-line="21" selection-end-column="55" />
-              <folding />
+            <state relative-caret-position="513">
+              <caret line="76" column="30" lean-forward="true" selection-start-line="76" selection-start-column="30" selection-end-line="76" selection-end-column="30" />
+              <folding>
+                <element signature="e#0#33#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -121,22 +141,26 @@
       <file leaf-file-name="H3_battle.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="147">
-              <caret line="443" column="40" lean-forward="false" selection-start-line="443" selection-start-column="35" selection-end-line="443" selection-end-column="40" />
+            <state relative-caret-position="164">
+              <caret line="854" column="32" lean-forward="true" selection-start-line="854" selection-start-column="32" selection-end-line="854" selection-end-column="32" />
               <folding>
-                <element signature="e#1321#1935#0" expanded="false" />
-                <element signature="e#24213#24235#0" expanded="false" />
+                <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#1307#1921#0" expanded="false" />
+                <element signature="e#3250#4515#0" expanded="false" />
+                <element signature="e#22656#22678#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="H3_battleInterface.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="H3_battleInterface.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="396" column="0" lean-forward="false" selection-start-line="396" selection-start-column="0" selection-end-line="422" selection-end-column="16" />
-              <folding />
+            <state relative-caret-position="133">
+              <caret line="268" column="56" lean-forward="false" selection-start-line="268" selection-start-column="56" selection-end-line="268" selection-end-column="56" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -152,15 +176,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>policy</find>
-      <find>logps</find>
-      <find>hp</find>
-      <find>already</find>
-      <find>range</find>
-      <find>NA_num</find>
-      <find>here we are 48</find>
-      <find>myEnv</find>
-      <find>self.q</find>
       <find>.q</find>
       <find>expand</find>
       <find>select</find>
@@ -181,7 +196,16 @@
       <find>_obs_type</find>
       <find>restore_state</find>
       <find>attack</find>
+      <find>self.in_battle</find>
       <find>agent</find>
+      <find>in your side</find>
+      <find>t</find>
+      <find>slotID</find>
+      <find>slot</find>
+      <find>slotId</find>
+      <find>last_mouse_x</find>
+      <find>permute</find>
+      <find>transpose</find>
     </findStrings>
     <replaceStrings>
       <replace>min_damage</replace>
@@ -192,9 +216,14 @@
       <replace>ai_value</replace>
       <replace>fight_value</replace>
       <replace>policy_len</replace>
+      <replace>in_battle</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>D:\project\VCNN</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
@@ -235,19 +264,20 @@
         <option value="$PROJECT_DIR$/learning/gradient_of_ax2bxc.py" />
         <option value="$PROJECT_DIR$/learning/hh.py" />
         <option value="$PROJECT_DIR$/learning/my_tool.py" />
-        <option value="$PROJECT_DIR$/learning/np_hash_test.py" />
         <option value="$PROJECT_DIR$/learning/gumoko_env.py" />
         <option value="$PROJECT_DIR$/learning/qlearning.py" />
         <option value="$PROJECT_DIR$/learning/mcts_q.py" />
         <option value="$PROJECT_DIR$/learning/Malkov.py" />
         <option value="$PROJECT_DIR$/learning/bolzman.py" />
         <option value="$PROJECT_DIR$/PG_model/discrete_net.py" />
-        <option value="$PROJECT_DIR$/ENV/H3_battle.py" />
-        <option value="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
         <option value="$PROJECT_DIR$/learning/counter_example.py" />
-        <option value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+        <option value="$PROJECT_DIR$/old/train.py" />
+        <option value="$PROJECT_DIR$/learning/np_hash_test.py" />
         <option value="$PROJECT_DIR$/learning/xx.py" />
         <option value="$PROJECT_DIR$/go_explore/P1.py" />
+        <option value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+        <option value="$PROJECT_DIR$/ENV/H3_battle.py" />
+        <option value="$PROJECT_DIR$/ENV/H3_battleInterface.py" />
       </list>
     </option>
   </component>
@@ -258,10 +288,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-82" />
-    <option name="y" value="34" />
+    <option name="x" value="-2" />
+    <option name="y" value="57" />
     <option name="width" value="1810" />
-    <option name="height" value="1032" />
+    <option name="height" value="1102" />
   </component>
   <component name="ProjectId" id="1c3wnRPTKIV7toF0j4PMzaY65XL" />
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -316,7 +346,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -327,12 +356,12 @@
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="ENV" type="462c0819:PsiDirectoryNode" />
+              <item name="go_explore" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
               <item name="VCNN" type="462c0819:PsiDirectoryNode" />
-              <item name="go_explore" type="462c0819:PsiDirectoryNode" />
+              <item name="learning" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="VCNN" type="b2602c69:ProjectViewProjectNode" />
@@ -344,6 +373,7 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="ProjectViewState">
@@ -360,7 +390,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
     <property name="settings.editor.splitter.proportion" value="0.23474178" />
-    <property name="SearchEverywhereHistoryKey" value="get_target_loggits&#9;null&#9;null&#10;get_position_loggits&#9;null&#9;null&#10;activsta&#9;null&#9;null&#10;currentstate&#9;null&#9;null&#10;state&#9;null&#9;null&#10;Battle&#9;null&#9;null&#10;load&#9;null&#9;null&#10;getglo&#9;null&#9;null&#10;canrea&#9;null&#9;null&#10;canReac&#9;null&#9;null&#10;activesta&#9;null&#9;null" />
+    <property name="SearchEverywhereHistoryKey" value="get_target_loggits&#9;null&#9;null&#10;defaultdict&#9;null&#9;null&#10;get_position_loggits&#9;null&#9;null&#10;activsta&#9;null&#9;null&#10;currentstate&#9;null&#9;null&#10;state&#9;null&#9;null&#10;Battle&#9;null&#9;null&#10;load&#9;null&#9;null&#10;getglo&#9;null&#9;null&#10;canrea&#9;null&#9;null&#10;canReac&#9;null&#9;null&#10;activesta&#9;null&#9;null" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -404,7 +434,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.xx">
+  <component name="RunManager" selected="Python.H3_battleInterface">
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -450,6 +480,25 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="ADDITIONAL_ARGS" value="" />
     </configuration>
+    <configuration name="H3_battle" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ENV" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ENV/H3_battle.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <configuration name="H3_battleInterface" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -469,20 +518,20 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <configuration name="Malkov" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="P1" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="VCNN" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/Malkov.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/go_explore/P1.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -502,44 +551,6 @@
       <module name="VCNN" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="bolzman" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="VCNN" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/bolzman.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-    </configuration>
-    <configuration name="counter_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="VCNN" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/counter_example.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -585,6 +596,25 @@
         </option>
       </PathMappingSettings>
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PG_model/h3_ppo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="np_hash_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/learning" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="VCNN" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/learning/np_hash_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -726,18 +756,18 @@
       <item index="1" class="java.lang.String" itemvalue="Python.h3_ppo" />
       <item index="2" class="java.lang.String" itemvalue="Python.pong_ppo" />
       <item index="3" class="java.lang.String" itemvalue="Python.xx" />
-      <item index="4" class="java.lang.String" itemvalue="Python.bolzman" />
-      <item index="5" class="java.lang.String" itemvalue="Python.Malkov" />
-      <item index="6" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
-      <item index="7" class="java.lang.String" itemvalue="Python.counter_example" />
+      <item index="4" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
+      <item index="5" class="java.lang.String" itemvalue="Python.P1" />
+      <item index="6" class="java.lang.String" itemvalue="Python.np_hash_test" />
+      <item index="7" class="java.lang.String" itemvalue="Python.H3_battle" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.xx" />
-        <item index="1" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
-        <item index="2" class="java.lang.String" itemvalue="Python.counter_example" />
-        <item index="3" class="java.lang.String" itemvalue="Python.bolzman" />
-        <item index="4" class="java.lang.String" itemvalue="Python.Malkov" />
+        <item index="0" class="java.lang.String" itemvalue="Python.H3_battleInterface" />
+        <item index="1" class="java.lang.String" itemvalue="Python.P1" />
+        <item index="2" class="java.lang.String" itemvalue="Python.xx" />
+        <item index="3" class="java.lang.String" itemvalue="Python.H3_battle" />
+        <item index="4" class="java.lang.String" itemvalue="Python.np_hash_test" />
       </list>
     </recent_temporary>
   </component>
@@ -876,13 +906,6 @@
       <workItem from="1596203433596" duration="1518000" />
       <workItem from="1596246598806" duration="6323000" />
       <workItem from="1596328347382" duration="26101000" />
-    </task>
-    <task id="LOCAL-00003" summary="before (y,x)">
-      <created>1557211689832</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1557211689832</updated>
     </task>
     <task id="LOCAL-00004" summary="after (x,y)">
       <created>1557216001484</created>
@@ -1220,7 +1243,14 @@
       <option name="project" value="LOCAL" />
       <updated>1606114623858</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="before go-explore">
+      <created>1615964089712</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1615964089712</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -1240,18 +1270,19 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289183" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42454955" sideWeight="0.17757009" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44707742" sideWeight="0.85046726" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36247087" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21868132" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3620309" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24960506" sideWeight="0.85046726" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32916668" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17901234" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15280066" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17874794" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1523888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16803955" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="988" y="189" width="679" height="654" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.14662273" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.328594" sideWeight="0.8224299" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24328594" sideWeight="0.4978193" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4049217" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="988" y="189" width="679" height="654" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21375617" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31753555" sideWeight="0.8224299" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1262,7 +1293,6 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20583333" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24644549" sideWeight="0.4978193" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1312,7 +1342,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="onesxy = np.array([[bh.y,bh.x,bh.z,bh.a,bh.b,bh.c] for bh in ones])&#10;oney,onex,onez,onea,oneb,onec = onesxy.transpose()" />
     <MESSAGE value="大数据量的时候array赋值比list慢?" />
     <MESSAGE value="cuda cpu 读写性能 argmax性能对比" />
     <MESSAGE value="torch cpu cuda numpy softmax 性能对比" />
@@ -1337,105 +1366,64 @@
     <MESSAGE value="发现V网络波动性的根源在于V=E(Q)而不是V=max(Q),learning模块测试用例增加对gradient和cross_entropy的理解" />
     <MESSAGE value="q learning 怎么处理max bias" />
     <MESSAGE value="修改V(s)-&gt;Q(s,a)" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改V(s)-&gt;Q(s,a)" />
+    <MESSAGE value="before go-explore" />
+    <option name="LAST_COMMIT_MESSAGE" value="before go-explore" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1595930833777">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592556128820" />
-    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595930833777" />
-    <state x="1274" y="444" width="710" height="592" key="#xdebugger.evaluate" timestamp="1595941088579">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261417271" />
-    <state x="1274" y="444" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1595941088579" />
-    <state x="-1462" y="14" key="CommitChangelistDialog2" timestamp="1592709053314">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1462" y="14" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709053314" />
-    <state width="2227" height="751" key="DebuggerActiveHint" timestamp="1596098907934">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593261407923" />
-    <state width="2227" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596098907934" />
-    <state x="100" y="101" width="1189" height="1192" key="DiffContextDialog" timestamp="1596073653524">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state x="100" y="101" width="1189" height="1192" key="DiffContextDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596073653524" />
-    <state x="-1234" y="233" key="FileChooserDialogImpl" timestamp="1591085750137">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1234" y="233" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1591085750137" />
-    <state width="1315" height="838" key="GridCell.Tab.0.bottom" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.0.center" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.0.left" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.0.right" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.1.bottom" timestamp="1596099415737">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415737" />
-    <state width="1315" height="838" key="GridCell.Tab.1.center" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.1.left" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state width="1315" height="838" key="GridCell.Tab.1.right" timestamp="1596099415736">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state width="1892" height="356" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593262986633" />
-    <state width="1315" height="838" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596099415736" />
-    <state x="-1262" y="168" key="RollbackChangesDialog" timestamp="1591157685962">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1262" y="168" key="RollbackChangesDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1591157685962" />
-    <state x="-1828" y="54" key="SettingsEditor" timestamp="1592484039008">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1828" y="54" key="SettingsEditor/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592484039008" />
-    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2" timestamp="1592709056714">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592709056714" />
-    <state width="971" height="551" key="XDebugger.FullValuePopup" timestamp="1592882643556">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state width="971" height="551" key="XDebugger.FullValuePopup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1592882643556" />
-    <state x="956" y="114" width="1189" height="1192" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1596073653524">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state x="956" y="114" width="1189" height="1192" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596073653524" />
-    <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog" timestamp="1593057744301">
-      <screen x="-1920" y="0" width="1920" height="1080" />
-    </state>
-    <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593057744301" />
-    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup" timestamp="1596031544713">
-      <screen x="0" y="0" width="2560" height="1392" />
-    </state>
-    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" timestamp="1593316620950" />
-    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" timestamp="1596031544713" />
+    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog" />
+    <state x="-1679" y="186" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="321" y="240" key="#com.intellij.execution.impl.EditConfigurationsDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="1274" y="444" width="710" height="592" key="#xdebugger.evaluate" />
+    <state x="164" y="141" width="710" height="592" key="#xdebugger.evaluate/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="1274" y="444" key="#xdebugger.evaluate/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="-1462" y="14" key="CommitChangelistDialog2" />
+    <state x="-1462" y="14" key="CommitChangelistDialog2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="2227" height="751" key="DebuggerActiveHint" />
+    <state width="1411" height="582" key="DebuggerActiveHint/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="2227" height="751" key="DebuggerActiveHint/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="100" y="101" width="1189" height="1192" key="DiffContextDialog" />
+    <state x="100" y="101" width="1189" height="1192" key="DiffContextDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="-1234" y="233" key="FileChooserDialogImpl" />
+    <state x="-1234" y="233" key="FileChooserDialogImpl/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.0.bottom" />
+    <state width="1892" height="356" key="GridCell.Tab.0.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.0.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.0.center" />
+    <state width="1892" height="356" key="GridCell.Tab.0.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.0.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.0.left" />
+    <state width="1892" height="356" key="GridCell.Tab.0.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.0.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.0.right" />
+    <state width="1892" height="356" key="GridCell.Tab.0.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.0.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.1.bottom" />
+    <state width="1892" height="356" key="GridCell.Tab.1.bottom/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.1.bottom/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.1.center" />
+    <state width="1892" height="356" key="GridCell.Tab.1.center/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.1.center/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.1.left" />
+    <state width="1892" height="356" key="GridCell.Tab.1.left/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.1.left/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state width="1315" height="838" key="GridCell.Tab.1.right" />
+    <state width="1892" height="356" key="GridCell.Tab.1.right/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="1315" height="838" key="GridCell.Tab.1.right/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="-1262" y="168" key="RollbackChangesDialog" />
+    <state x="-1262" y="168" key="RollbackChangesDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="-1828" y="54" key="SettingsEditor" />
+    <state x="-1828" y="54" key="SettingsEditor/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2" />
+    <state x="-1469" y="205" key="Vcs.Push.Dialog.v2/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state width="971" height="551" key="XDebugger.FullValuePopup" />
+    <state width="971" height="551" key="XDebugger.FullValuePopup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="956" y="114" width="1189" height="1192" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" />
+    <state x="956" y="114" width="1189" height="1192" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
+    <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog" />
+    <state x="-1008" y="394" key="refactoring.ChangeSignatureDialog/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup" />
+    <state x="-1466" y="439" width="840" height="1032" key="search.everywhere.popup/0.0.1920.1032/-1920.0.1920.1080@-1920.0.1920.1080" />
+    <state x="605" y="566" width="1120" height="1331" key="search.everywhere.popup/2560.360.1920.1032/0.0.2560.1392@0.0.2560.1392" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1456,13 +1444,8 @@
           <option name="timeStamp" value="85" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
-          <line>943</line>
-          <option name="timeStamp" value="136" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>660</line>
+          <line>769</line>
           <option name="timeStamp" value="144" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1492,7 +1475,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
-          <line>644</line>
+          <line>753</line>
           <option name="timeStamp" value="174" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -1556,14 +1539,44 @@
           <option name="timeStamp" value="356" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/learning/xx.py</url>
-          <line>4</line>
-          <option name="timeStamp" value="357" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://D:/Program Files/python376/Lib/site-packages/gym/envs/atari/atari_env.py</url>
           <line>55</line>
           <option name="timeStamp" value="358" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
+          <line>925</line>
+          <option name="timeStamp" value="365" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/learning/my_tool.py</url>
+          <line>31</line>
+          <option name="timeStamp" value="368" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/learning/np_hash_test.py</url>
+          <line>14</line>
+          <option name="timeStamp" value="369" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
+          <line>917</line>
+          <option name="timeStamp" value="373" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/ENV/H3_battle.py</url>
+          <line>672</line>
+          <option name="timeStamp" value="389" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/go_explore/P1.py</url>
+          <line>163</line>
+          <option name="timeStamp" value="397" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PG_model/h3_ppo.py</url>
+          <line>581</line>
+          <option name="timeStamp" value="408" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
@@ -1576,9 +1589,14 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="360" />
+      <option name="time" value="415" />
     </breakpoint-manager>
-    <watches-manager />
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="battle_action" />
+        <watch expression="orig_battle_action" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
@@ -1698,124 +1716,58 @@ s4 = torch.max(s3,5.0)</expression-string>
     </expressions>
     <expressions id="evaluateExpression">
       <expression>
-        <expression-string>FEATURES</expression-string>
+        <expression-string>(cur_stack.by_AI == 0 and (bf[h.hex_i, h.hex_j] == 201 or 0 &lt;= bf[h.hex_i, h.hex_j]) &lt; 50)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>target_embs[7,4]</expression-string>
+        <expression-string>cur_stack.by_AI &gt; 0</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>target_embs[7,5]</expression-string>
+        <expression-string>bf[h.hex_i, h.hex_j] == 201 or 0 &lt;= bf[h.hex_i, h.hex_j]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>target_embs[7,3]</expression-string>
+        <expression-string>bf[h.hex_i, h.hex_j]</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>target_embs[7]</expression-string>
+        <expression-string>bf[h.hex_i, h.hex_j]1</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>mask</expression-string>
+        <expression-string>bf[h.hex_i, h.hex_j] == 201</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>act_prob[0,act_id.item()].item()</expression-string>
+        <expression-string>legal_move / legal_move.sum()</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>act_prob[0,act_id.item()]</expression-string>
+        <expression-string>sha1(self.view(dtype=int8))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>stack_emb[]</expression-string>
+        <expression-string>sha1(self.view(int8))</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>sha1(self.view(uint8))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/remote_sources/-2053871490/-1543310232/torch/nn/modules/module.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="587">
-          <caret line="549" column="0" lean-forward="false" selection-start-line="549" selection-start-column="0" selection-end-line="549" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/sanke_dice.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/python376/Lib/site-packages/scipy/optimize/minpack.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/python376/Lib/site-packages/matplotlib/artist.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="995" column="0" lean-forward="false" selection-start-line="995" selection-start-column="0" selection-end-line="995" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/maxlikelihood.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="644">
-          <caret line="42" column="10" lean-forward="true" selection-start-line="42" selection-start-column="10" selection-end-line="42" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../DNN/muzero-general/self_play.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="14" column="7" lean-forward="false" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../DNN/muzero-general/muzero.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/debug2.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/debug3.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="4" column="17" lean-forward="false" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/debug1.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="126" column="0" lean-forward="false" selection-start-line="126" selection-start-column="0" selection-end-line="126" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ENV/debug.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2898">
@@ -1852,13 +1804,6 @@ s4 = torch.max(s3,5.0)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="80" column="23" lean-forward="false" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/learning/cross_entropy.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
@@ -1888,13 +1833,6 @@ s4 = torch.max(s3,5.0)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/python_stubs/143473126/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="488" column="12" lean-forward="true" selection-start-line="488" selection-start-column="12" selection-end-line="488" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/Program Files/python376/Lib/site-packages/torch/nn/__init__.pyi">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1910,13 +1848,6 @@ s4 = torch.max(s3,5.0)</expression-string>
       </provider>
     </entry>
     <entry file="file://D:/Program Files/python376/Lib/site-packages/tensorflow/python/platform/app.py" />
-    <entry file="file://$PROJECT_DIR$/learning/my_tool.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="50" column="6" lean-forward="false" selection-start-line="50" selection-start-column="6" selection-end-line="50" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://D:/Program Files/python376/Lib/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="265">
@@ -1939,21 +1870,6 @@ s4 = torch.max(s3,5.0)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/learning/qlearning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="529">
-          <caret line="23" column="13" lean-forward="false" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/np_hash_test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="23" column="18" lean-forward="false" selection-start-line="23" selection-start-column="18" selection-end-line="23" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/learning/Elo.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="690">
@@ -1965,21 +1881,6 @@ s4 = torch.max(s3,5.0)</expression-string>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="160">
           <caret line="596" column="8" lean-forward="false" selection-start-line="596" selection-start-column="8" selection-end-line="596" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/mcts_q.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4646">
-          <caret line="233" column="30" lean-forward="false" selection-start-line="233" selection-start-column="30" selection-end-line="233" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-            <element signature="e#297#1002#0" expanded="false" />
-            <element signature="e#5225#5743#0" expanded="false" />
-            <element signature="e#9211#9875#0" expanded="false" />
-            <element signature="e#9901#10778#0" expanded="false" />
-            <element signature="e#10801#11689#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2021,16 +1922,6 @@ s4 = torch.max(s3,5.0)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PG_model/discrete_net.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4104">
-          <caret line="152" column="74" lean-forward="false" selection-start-line="152" selection-start-column="74" selection-end-line="152" selection-end-column="74" />
-          <folding>
-            <element signature="e#0#12#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/learning/counter_example.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2673">
@@ -2046,9 +1937,6 @@ s4 = torch.max(s3,5.0)</expression-string>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="729">
           <caret line="32" column="21" lean-forward="false" selection-start-line="32" selection-start-column="21" selection-end-line="32" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2063,7 +1951,6 @@ s4 = torch.max(s3,5.0)</expression-string>
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="506">
           <caret line="72" column="32" lean-forward="true" selection-start-line="72" selection-start-column="32" selection-end-line="72" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2074,14 +1961,6 @@ s4 = torch.max(s3,5.0)</expression-string>
           <folding>
             <element signature="e#3312#3875#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/learning/xx.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="5" column="4" lean-forward="false" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2100,38 +1979,186 @@ s4 = torch.max(s3,5.0)</expression-string>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
+    <entry file="file://$PROJECT_DIR$/old/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="396" column="0" lean-forward="false" selection-start-line="396" selection-start-column="0" selection-end-line="422" selection-end-column="16" />
+        <state relative-caret-position="1377">
+          <caret line="61" column="51" lean-forward="false" selection-start-line="61" selection-start-column="51" selection-end-line="61" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python376/Lib/random.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="753" column="0" lean-forward="false" selection-start-line="753" selection-start-column="0" selection-end-line="753" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/go_explore/P1.py">
+    <entry file="file://D:/Program Files/python376/Lib/dataclasses.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="567">
-          <caret line="21" column="55" lean-forward="true" selection-start-line="21" selection-start-column="55" selection-end-line="21" selection-end-column="55" />
+        <state relative-caret-position="306">
+          <caret line="986" column="4" lean-forward="false" selection-start-line="986" selection-start-column="4" selection-end-line="986" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/python-skeletons/collections.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="694">
+          <caret line="42" column="17" lean-forward="false" selection-start-line="42" selection-start-column="6" selection-end-line="42" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
+    <entry file="file://$PROJECT_DIR$/learning/qlearning.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="443" column="40" lean-forward="false" selection-start-line="443" selection-start-column="35" selection-end-line="443" selection-end-column="40" />
+        <state relative-caret-position="555">
+          <caret line="23" column="13" lean-forward="false" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/mcts_q.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="491">
+          <caret line="123" column="14" lean-forward="true" selection-start-line="123" selection-start-column="14" selection-end-line="123" selection-end-column="14" />
           <folding>
-            <element signature="e#1321#1935#0" expanded="false" />
-            <element signature="e#24213#24235#0" expanded="false" />
+            <element signature="e#5225#5743#0" expanded="false" />
+            <element signature="e#9211#9875#0" expanded="false" />
+            <element signature="e#9901#10778#0" expanded="false" />
+            <element signature="e#10801#11689#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/python_stubs/143473126/numpy/core/_multiarray_umath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="837">
+          <caret line="11222" column="26" lean-forward="true" selection-start-line="11222" selection-start-column="26" selection-end-line="11222" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/python_stubs/143473126/_sha1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="25" column="8" lean-forward="false" selection-start-line="25" selection-start-column="8" selection-end-line="25" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/my_tool.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="729">
+          <caret line="53" column="0" lean-forward="false" selection-start-line="53" selection-start-column="0" selection-end-line="53" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/python_stubs/143473126/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="207" column="4" lean-forward="false" selection-start-line="207" selection-start-column="4" selection-end-line="207" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/np_hash_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="2" column="20" lean-forward="false" selection-start-line="2" selection-start-column="20" selection-end-line="2" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2017.3/system/python_stubs/143473126/numpy/random/mtrand.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="2223" column="4" lean-forward="false" selection-start-line="2223" selection-start-column="4" selection-end-line="2223" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python376/Lib/site-packages/pygame/sysfont.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="242" column="0" lean-forward="false" selection-start-line="242" selection-start-column="0" selection-end-line="242" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://D:/Program Files/python376/Lib/site-packages/numpy/core/fromnumeric.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="3131" column="7" lean-forward="true" selection-start-line="3131" selection-start-column="7" selection-end-line="3131" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/creatureData.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="80" column="23" lean-forward="false" selection-start-line="80" selection-start-column="23" selection-end-line="80" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/imgs/cursor/move/3.bmp">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning/xx.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="10" column="21" lean-forward="false" selection-start-line="10" selection-start-column="21" selection-end-line="10" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PG_model/discrete_net.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="128" column="80" lean-forward="false" selection-start-line="128" selection-start-column="73" selection-end-line="128" selection-end-column="80" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PG_model/h3_ppo.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="402">
-          <caret line="30" column="8" lean-forward="false" selection-start-line="30" selection-start-column="8" selection-end-line="30" selection-end-column="8" />
-          <folding />
+        <state relative-caret-position="405">
+          <caret line="15" column="9" lean-forward="false" selection-start-line="15" selection-start-column="9" selection-end-line="15" selection-end-column="9" />
+          <folding>
+            <element signature="e#12578#17649#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go_explore/P1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="76" column="30" lean-forward="true" selection-start-line="76" selection-start-column="30" selection-end-line="76" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/H3_battle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="854" column="32" lean-forward="true" selection-start-line="854" selection-start-column="32" selection-end-line="854" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#1307#1921#0" expanded="false" />
+            <element signature="e#3250#4515#0" expanded="false" />
+            <element signature="e#22656#22678#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ENV/H3_battleInterface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="268" column="56" lean-forward="false" selection-start-line="268" selection-start-column="56" selection-end-line="268" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

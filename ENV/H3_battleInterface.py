@@ -269,9 +269,18 @@ class BattleInterface:
                 self.handleMouseMotion(mouse_x, mouse_y)
             elif event.type == pygame.MOUSEBUTTONUP:
                 cur_stack = self.battle_engine.cur_stack
-                if cur_stack.by_AI == 0:
+                bf = cur_stack.get_global_state()
+                h = self.current_hex
+                if cur_stack.by_AI > 0:
+                    return True
+                elif cur_stack.by_AI == 0 and (bf[h.hex_i, h.hex_j] == 201 or 0 <= bf[h.hex_i, h.hex_j] < 50):
+                    if not self.next_act:
+                        mouse_x, mouse_y = event.pos
+                        self.handleMouseMotion(mouse_x, mouse_y)
+                    return True
+                else:
                     self.cursor = self.cursor_move[3]
-                return True
+                return False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     self.battle_engine.dump_battle(self.dump_dir)
@@ -394,15 +403,20 @@ class BattleInterface:
         x,y = bh.getHexXY()
         y += 42 - img.get_height() + offset
         return x,y
-def start_game():
+def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "ENV/battles/6.json", shuffle_postion=False,load_ai_side=False):
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    battle = Battle(by_AI = [0,1])
-    battle.load_battle("ENV/battles/6.json", shuffle_postion=False,load_ai_side=False)
+    if not battle:
+        battle = Battle(by_AI = by_AI,agent=agent)
+        battle.load_battle(file=file, shuffle_postion=shuffle_postion,load_ai_side=load_ai_side)
     # battle.loadFile("ENV/debug.json",load_ai_side=False)
     battle.checkNewRound()
-    bi = BattleInterface(battle)
+    if not battle_int:
+        bi = BattleInterface(battle)
+    else:
+        bi = battle_int
+        bi.init_battle(battle)
     bi.next_act = battle.cur_stack.active_stack()
     # 事件循环(main loop)
     while bi.running:
@@ -414,11 +428,12 @@ def start_game():
             if done:
                 logger.debug("battle end~")
                 bi.running = False
-                pygame.quit()
+                if not battle_int:
+                    pygame.quit()
             else:
                 bi.next_act = battle.cur_stack.active_stack()
         bi.renderFrame()
 
 if __name__ == '__main__':
-    start_game()
+    start_game_gui(by_AI = [0,1],file = "ENV/battles/8.json")
 
