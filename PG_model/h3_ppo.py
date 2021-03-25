@@ -539,8 +539,8 @@ def init_stack_position(battle):
         mask[st.y,st.x] = 1
 #@profile
 def start_train():
-    lrate = 0.00005
-    sample_num = 50
+    lrate = 0.0005
+    sample_num = 100
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
@@ -554,6 +554,14 @@ def start_train():
     # expert = load_episo("ENV/episode")
     # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
     file_list = ['ENV/battles/6.json']
+    file_list_cache = []
+    '''cache json'''
+    for file in file_list:
+        arena = Battle()
+        arena.load_battle(file)
+        arena.checkNewRound()
+        start = arena.current_state_feature(curriculum=True)
+        file_list_cache.append((start,arena.round))
     #TODO 7 SAC算法
     while True:
         agent.eval()
@@ -562,7 +570,7 @@ def start_train():
         # agent.process_gae(expert,single_batch=False)
         # bats.append(expert)
         for ii in range(sample_num):
-            file = random.choice(file_list)
+            file = random.choice(file_list_cache)
             print_act = False
             # if ii < 3 :
             #     print_act = True
@@ -630,7 +638,7 @@ def start_train():
                 sys.exit(1)
         else:
             ok = five_done
-        if count == 500:
+        if count == 50000:
             sys.exit(-1)
         count += 1
         logger.info(f'count={count}')

@@ -617,9 +617,8 @@ class Battle(object):
                     self.by_AI[agent_side] = 2
         else:
             curr,self.round = file
-        slot0,slot1 = 0,0
         for i in range(14):
-            py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots = curr[i]
+            py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots,slotID = curr[i]
             if px == 0:
                 break
             assert bf[py,px] != 1
@@ -633,12 +632,7 @@ class Battle(object):
             st.health = health
             st.first_HP_Left = first_HP_Left
             st.id = id
-            if side == 0:
-                st.slotId = slot0
-                slot0 += 1
-            else:
-                st.slotId = slot1
-                slot1 += 1
+            st.slotId = slotID
             st.side = side
             st.by_AI = self.by_AI[side]
             st.luck = luck
@@ -760,7 +754,7 @@ class Battle(object):
         pass
     def current_state_feature(self,curriculum = False):
         planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
-        attri_stack = np.zeros((14,14),dtype=int) if not curriculum else np.zeros((14,20),dtype=int)
+        attri_stack = np.zeros((14,14),dtype=int) if not curriculum else np.zeros((14,21),dtype=int)
         ind = np.array([122] * 14,dtype=int)
         for i,st in enumerate(self.stackQueue):
             bf = st.get_global_state()
@@ -773,7 +767,7 @@ class Battle(object):
                 attri_stack[i] = np.array(
                     [st.y, st.x, st.id, st.side, st.amount, st.amount_base, st.first_HP_Left, st.health, st.attack, st.defense, st.max_damage, st.min_damage,
                      int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
-                     st.shots])
+                     st.shots,st.slotId])
             else:
                 attri_stack[i] = np.array(
                     [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,

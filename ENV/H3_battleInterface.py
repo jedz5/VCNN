@@ -435,5 +435,9 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
         bi.renderFrame()
 
 if __name__ == '__main__':
-    start_game_gui(by_AI = [0,1],file = "ENV/battles/6.json")
+    arena = Battle()
+    arena.load_battle("ENV/battles/6.json")
+    arena.checkNewRound()
+    start = arena.current_state_feature(curriculum=True)
+    start_game_gui(by_AI = [0,1],file = (start,arena.round))
 
