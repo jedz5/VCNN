@@ -426,9 +426,8 @@ class BStack(BHex):
     def active_stack(self,ret_obs = False,print_act = False,action_known:tuple=None):
         if self.by_AI == 1:
             attackable, unreach = self.potential_target() #type: Tuple[List[Tuple[BStack,int]],List]
-            if not self.in_battle.debug:
-                if (self.in_battle.round == 0 and not self.had_waited and len(attackable) == 0):
-                    return BAction(action_type.wait)
+            if not self.had_waited and len(attackable) == 0:
+                return BAction(action_type.wait)
             if (len(attackable) > 0):
                 att = [(self.do_attack(target, stand, estimate=True) + (-target.is_shooter,-target.had_retaliated,idx)) for idx,(target, stand) in enumerate(attackable)]
                 dmgs = [(is_shooter,had_retaliated,-delt,idx) for delt, get,kd,kg,is_shooter,had_retaliated,idx in att]

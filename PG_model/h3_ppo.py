@@ -41,7 +41,7 @@ class H3_policy(PGPolicy):
                  vf_coef: float = .5,
                  ent_coef: float = .01,
                  action_range: Optional[Tuple[float, float]] = None,
-                 gae_lambda: float = 0.92,
+                 gae_lambda: float = 1.,
                  dual_clip: float = None,
                  value_clip: bool = False,
                  reward_normalization: bool = False,
@@ -291,7 +291,7 @@ class H3_policy(PGPolicy):
                 #     vf2 = (returns - v_clip).pow(2)
                 #     vf_loss = .5 * torch.max(vf1, vf2).mean()
                 # else:
-                vf_loss = .5 * (returns - value).pow(2).mean()
+                vf_loss = .5 * (returns - value.squeeze(-1)).pow(2).mean()
                 # vf_losses.append(vf_loss.item())
                 e_loss = dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean()
                 # ent_losses.append(e_loss.item())
@@ -539,22 +539,22 @@ def init_stack_position(battle):
         mask[st.y,st.x] = 1
 #@profile
 def start_train():
-    lrate = 0.001
-    sample_num = 20
+    lrate = 0.00005
+    sample_num = 50
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
-    actor_critic.act_ids.weight.register_hook(hook_me)
+    # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.)
     # agent.load_state_dict(torch.load("model_param.pkl"))
     count = 0
     five_done = 5
     ok = five_done
     # expert = load_episo("ENV/episode")
-    file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
+    # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
+    file_list = ['ENV/battles/6.json']
     #TODO 7 SAC算法
-    batch_data = Batch()
     while True:
         agent.eval()
         agent.in_train = True
@@ -579,8 +579,7 @@ def start_train():
             bats.append(batch1)
             if win == 0 and ii < 50:
                 logger.info(f"win {file}")
-        batch_data1 = Batch.cat(bats)
-        batch_data = Batch.cat([batch_data,batch_data1])
+        batch_data = Batch.cat(bats)
         logger.info(len(batch_data.rew))
         agent.train()
         agent.in_train = True
@@ -594,10 +593,14 @@ def start_train():
         # print(v_)
         # print("returns - v")
         # print(batch_data.returns - v_)
-        # print("act_logp")
-        # print(batch_data.policy.logps.act_logp)
-        # print(batch_data.done.astype(np.float) * 1.11)
-        # print(batch_data.act.act_id.astype(np.float) )
+        print("act_logp")
+        # idx = np.random.choice(range(len(batch_data.rew)),size=20)
+        print(batch_data.policy.logps.act_logp[:35])
+        print(batch_data.act.act_id.astype(np.float)[:35] )
+        print("adv")
+        print(batch_data.adv[:35])
+        print(batch_data.policy.value[:35])
+        print(batch_data.done.astype(np.float)[:35] * 1.11)
         if Linux:
             to_dev(agent, "cuda")
             #TODO 7 batch size?
