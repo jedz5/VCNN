@@ -540,13 +540,13 @@ def init_stack_position(battle):
 #@profile
 def start_train():
     lrate = 0.0005
-    sample_num = 100
+    sample_num = 500
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=1.)
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
     # agent.load_state_dict(torch.load("model_param.pkl"))
     count = 0
     five_done = 5
@@ -562,6 +562,7 @@ def start_train():
         arena.checkNewRound()
         start = arena.current_state_feature(curriculum=True)
         file_list_cache.append((start,arena.round))
+    cache_idx = range(len(file_list))
     #TODO 7 SAC算法
     while True:
         agent.eval()
@@ -570,7 +571,7 @@ def start_train():
         # agent.process_gae(expert,single_batch=False)
         # bats.append(expert)
         for ii in range(sample_num):
-            file = random.choice(file_list_cache)
+            file_idx = random.choice(cache_idx)
             print_act = False
             # if ii < 3 :
             #     print_act = True
@@ -580,13 +581,13 @@ def start_train():
             # agent.process_gae(batch_data)
             # bats.append(batch_data)
             '''both sides'''
-            win, batch0,batch1 = collect_eps_both_sides(agent, file, print_act=print_act)
+            win, batch0,batch1 = collect_eps_both_sides(agent, file_list_cache[file_idx], print_act=print_act)
             agent.process_gae(batch0)
             bats.append(batch0)
             agent.process_gae(batch1)
             bats.append(batch1)
             if win == 0 and ii < 50:
-                logger.info(f"win {file}")
+                logger.info(f"win {file_list[file_idx]}")
         batch_data = Batch.cat(bats)
         logger.info(len(batch_data.rew))
         agent.train()
@@ -601,14 +602,21 @@ def start_train():
         # print(v_)
         # print("returns - v")
         # print(batch_data.returns - v_)
+
+        print(batch_data.done.astype(np.float)[:35] * 1.11)
         print("act_logp")
         # idx = np.random.choice(range(len(batch_data.rew)),size=20)
         print(batch_data.policy.logps.act_logp[:35])
         print(batch_data.act.act_id.astype(np.float)[:35] )
+        print("position_logp")
+        print(batch_data.policy.logps.position_logp[:35])
+        print(batch_data.act.position_id.astype(np.float)[:35] //17)
+        print(batch_data.act.position_id.astype(np.float)[:35] % 17 - 9)
+        print("target")
+        print(batch_data.act.target_id.astype(np.float)[:35])
         print("adv")
         print(batch_data.adv[:35])
         print(batch_data.policy.value[:35])
-        print(batch_data.done.astype(np.float)[:35] * 1.11)
         if Linux:
             to_dev(agent, "cuda")
             #TODO 7 batch size?
@@ -624,9 +632,9 @@ def start_train():
 
         #no GUI five done
         win_rate = 0
-        for test_file in file_list:
-            ct = start_game_noGUI(test_file, agent=agent)
-            logger.info(f"test-{count}-{test_file} win rate = {ct}")
+        for file_idx in cache_idx:
+            ct = start_game_noGUI(file_list_cache[file_idx], agent=agent)
+            logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
             win_rate += ct
         win_rate /= len(file_list)
         logger.info(f"win rate at all = {win_rate}")
