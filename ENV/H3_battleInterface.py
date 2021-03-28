@@ -435,9 +435,20 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
         bi.renderFrame()
 
 if __name__ == '__main__':
-    arena = Battle()
-    arena.load_battle("ENV/battles/6.json")
+    arena = Battle(by_AI = [0,1])
+    arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
+    arena.split_army()
     arena.checkNewRound()
-    start = arena.current_state_feature(curriculum=True)
-    start_game_gui(by_AI = [0,1],file = (start,arena.round))
+    # start = arena.current_state_feature(curriculum=True)
+    start_game_gui(battle=arena)
+    att = arena.attacker_stacks
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
+    for st in att:
+        st.reset()
+        st.in_battle = arena
+    arena.attacker_stacks = att
+    arena.split_army()
+    arena.checkNewRound()
+    start_game_gui(battle=arena, by_AI=[0, 1])
 

@@ -14,7 +14,27 @@ from collections import defaultdict
 # return self.__hash
 # b = np.random.choice(list(range(len(a))),p=a/a.sum())
 
-a = (1,2,3,4) +(5,)
-b = True
-c = -b
-
+b = {}
+a = [[0,5],[1,3],[0,3],[1,2],[1,1]]
+a1 = [[6,5],[1,3],[2,3],[2,2],[1,1]]
+aa = []
+i = 0
+while i != len(a):
+    print(i)
+    st = a[i]
+    if st[0] in b:
+        a[b[st[0]]][1] += st[1]
+        a.pop(i)
+        print("pop")
+    else:
+        b[st[0]] = i
+        i += 1
+print(a)
+c = a + a1
+print(c)
+a1.sort()
+print(c)
+a1[2][1] = 9
+print(c)
+a1.pop(4)
+print(c)

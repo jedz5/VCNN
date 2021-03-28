@@ -33,7 +33,22 @@ def get_logger():
     return log_gui_on,logger
 set_logger(False,std_logger)
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
-
+battle_start_pos_att = \
+[[ 86 ],
+ [ 35, 137 ],
+ [ 35, 86, 137 ],
+ [ 1, 69, 103, 171 ],
+ [ 1, 35, 86, 137, 171 ],
+ [ 1, 35, 69, 103, 137, 171 ],
+ [ 1, 35, 69, 86, 103, 137, 171 ]]
+battle_start_pos_def = \
+[[ 100 ],
+ [ 49, 151 ],
+ [ 49, 100, 151 ],
+ [ 15, 83, 117, 185 ],
+ [ 15, 49, 100, 151, 185 ],
+ [ 15, 49, 83, 117, 151, 185 ],
+ [ 15, 49, 83, 100, 117, 151, 185 ]]
 class action_type(Enum):
     wait = 0
     defend = 1
@@ -89,8 +104,9 @@ def neb_id(self, nb):
 #         return self.y * Battle.bFieldHeight + self.x
 class BStack(BHex):
     def __init__(self):
-        BHex.__init__(self)
+        super().__init__()
         self.amount = 0
+        self.amount_base = 0
         self.attack = 0
         self.defense = 0
         self.max_damage = 0
@@ -107,11 +123,11 @@ class BStack(BHex):
         self.morale = 0
         self.id = 0
         self.shots = 10
+        self.slotId = 0
         # self.hex_type = hexType.creature
         #辅助参数
         self.by_AI = 1
         self.name = 'unKnown'
-        self.slotId = 0
         self.is_wide = False
         self.is_fly = False
         self.is_shooter = False
@@ -120,11 +136,11 @@ class BStack(BHex):
         self.wide_breath = False
         self.infinite_retaliate = False
         self.attack_twice = False
-        self.amount_base = 0
-        self.in_battle = 0  #Battle()
+        self.in_battle = None #type:Battle
     def __copy__(self):
         cp = BStack()
         cp.amount = self.amount
+        cp.amount_base = self.amount_base
         cp.attack = self.attack
         cp.defense = self.defense
         cp.max_damage = self.max_damage
@@ -141,13 +157,13 @@ class BStack(BHex):
         cp.morale = self.morale
         cp.id = self.id
         cp.shots = self.shots
+        cp.slotId = self.slotId
         # self.hex_type = hexType.creature
         # 辅助参数
         cp.x = self.x
         cp.y = self.y
         cp.by_AI = self.by_AI
-        cp.name = 'unKnown'
-        cp.slotId = self.slotId
+        cp.name = self.name
         cp.is_wide = self.is_wide
         cp.is_fly = self.is_fly
         cp.is_shooter = self.is_shooter
@@ -156,13 +172,26 @@ class BStack(BHex):
         cp.wide_breath = self.wide_breath
         cp.infinite_retaliate = self.infinite_retaliate
         cp.attack_twice = self.attack_twice
-        cp.amount_base = self.amount_base
-        cp.in_battle = self.in_battle  # Battle()
+        cp.in_battle = self.in_battle
         return cp
     def __repr__(self):
         w = 'w'if self.had_waited else ''
         m = 'm'if self.had_moved else ''
         return f'{self.name}_{self.amount}_{w}{m} at ({self.y},{self.x})'
+    def __eq__(self, other):
+        if isinstance(other,BStack):
+            return other.id == self.id and other.amount == other.amount and super(BStack, self).__eq__(other)
+        return super(BStack, self).__eq__(other)
+    def reset(self):
+        self.amount_base = self.amount
+        self.first_HP_Left = self.health
+        self.y,self.x,self.slotId = 0,0,0
+        self.had_waited = False
+        self.had_moved = False
+        self.had_retaliated = False
+        self.had_defended = False
+        self.shots = 16
+        self.in_battle = None
     def get_global_state(self, query_type = -1, exclude_me = True):
         return vb.get_global_state(self,self.in_battle.stacks,query_type,exclude_me)
         # bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
@@ -470,8 +499,8 @@ class BObstacleInfo:
 
 batId = 0
 #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
-creature_ability = {1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
-                    41: [0, 0, 0, 0, 0, 0, 0],50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],112:[0,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
+creature_ability = {0:[0,0,0,0,0,0,0],1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
+                    41: [0, 0, 0, 0, 0, 0, 0],50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],85:[0,0,0,0,0,0,0],99:[0,0,0,0,0,0,0],112:[0,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
                             121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
 class Battle(object):
     bFieldWidth = 17
@@ -483,16 +512,16 @@ class Battle(object):
     bTotalFieldSize = 2 + 8*bFieldSize
     def __init__(self,by_AI = [2,1], gui = None , load_file = None,agent = None,debug = False,cur_stack:BStack=None,last_stack:BStack=None):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
-        self.stacks = []
-        self.defender_stacks = []
-        self.attacker_stacks = []
+        self.stacks = [] #type:List[BStack]
+        self.defender_stacks = [] #type:List[BStack]
+        self.attacker_stacks = [] #type:List[BStack]
         self.round = 0
         self.obstacles = []
         self.obsinfo = []
         self.toMove = []
         self.waited = []
         self.moved = []
-        self.stackQueue = []
+        self.stackQueue = [] #type:List[BStack]
         self.cur_stack = cur_stack
         self.last_stack = last_stack
         self.batId = 0
@@ -506,6 +535,58 @@ class Battle(object):
         if(load_file):
             self.loadFile(load_file)
             self.checkNewRound()
+    def split_army(self,side=0):
+        cmap = {}
+        if side == 0:
+            i = 0
+            stacks = list(filter(lambda elem: elem.is_alive(),self.attacker_stacks)) #list(filter(lambda elem: elem.is_alive() and elem.had_moved, self.stacks))
+            assert len(stacks) > 0,"your army is gone..."
+            '''merge stacks'''
+            while i != len(stacks):
+                st = stacks[i]
+                assert st.amount == st.amount_base,f"{st.amount} != {st.amount_base}"
+                if st.id in cmap:
+                    st_0 = stacks[cmap[st.id]]
+                    st_0.amount += st.amount
+                    st_0.amount_base = st_0.amount
+                    stacks.pop(i)
+                else:
+                    cmap[st.id] = i
+                    i += 1
+            '''shooter first'''
+            stacks.sort(key=lambda elem:(-elem.is_shooter))
+            st_to_split = stacks[-1]
+            if st_to_split.amount_base >= 7 - len(stacks):
+                num_st = 7 - len(stacks)
+                st_to_split.amount_base -= num_st
+                st_to_split.amount = st_to_split.amount_base
+                for i in range(num_st):
+                    new_st = copy.copy(st_to_split)
+                    new_st.amount_base, new_st.amount = 1, 1
+                    stacks.append(new_st)
+            else:
+                num_st = st_to_split.amount_base - 1
+                st_to_split.amount_base -= num_st
+                st_to_split.amount = st_to_split.amount_base
+                for i in range(num_st):
+                    new_st = copy.copy(st_to_split)
+                    new_st.amount_base, new_st.amount = 1, 1
+                    stacks.append(new_st)
+            sl = len(stacks)
+            '''shooter and pikeman'''
+            if not st_to_split.is_shooter:
+                stacks.remove(st_to_split)
+                stacks.insert(sl//2,st_to_split)
+            sp = battle_start_pos_att[sl - 1]
+            for i in range(sl):
+                stacks[i].y = sp[i] // Battle.bFieldWidth
+                stacks[i].x = sp[i] % Battle.bFieldWidth
+                stacks[i].slotId = i
+            self.attacker_stacks = stacks
+            # self.defender_stacks = list(filter(lambda elem: elem.is_alive(), self.defender_stacks))
+            self.stacks = self.attacker_stacks + self.defender_stacks
+
+
     def getCopy(self):
         global batId
         batId += 1
@@ -601,7 +682,7 @@ class Battle(object):
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
 
-    def load_battle(self,file,load_ai_side = True, shuffle_postion=False):
+    def load_battle(self,file,load_ai_side = True, shuffle_postion=False,format_postion = False):
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -621,8 +702,9 @@ class Battle(object):
             py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots,slotID = curr[i]
             if px == 0:
                 break
-            assert bf[py,px] != 1
-            bf[py, px] = 1
+            if not (shuffle_postion or format_postion):
+                assert bf[py,px] != 1
+                bf[py, px] = 1
             x = crList[id]
             st = BStack()
             st.attack = attack
@@ -667,6 +749,15 @@ class Battle(object):
                 self.attacker_stacks.append(st)
         if shuffle_postion:
             self.init_stack_position()
+        if format_postion:
+            for stacks,pos in [(self.attacker_stacks,battle_start_pos_att),(self.defender_stacks,battle_start_pos_def)]:
+                sl = len(stacks)
+                sp = pos[sl - 1]
+                for i in range(sl):
+                    stacks[i].y = sp[i] // Battle.bFieldWidth
+                    stacks[i].x = sp[i] % Battle.bFieldWidth
+                    stacks[i].slotId = i
+
     def dump_battle(self,dir):
         files = []
         for f in os.listdir(dir):
