@@ -395,9 +395,10 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 global_buffer = ReplayBuffer(500,ignore_obs_next=True)
 global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
-def collect_eps(agent,file,n_step = 200,print_act = False):
-    battle = Battle(agent=agent)
-    battle.load_battle(file)
+def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False):
+    if not battle:
+        battle = Battle(agent=agent)
+        battle.load_battle(file)
     battle.checkNewRound()
     had_acted = False
     win = False
@@ -518,6 +519,7 @@ def collect_eps_both_sides(agent,file,n_step = 200,print_act = False):
     global_buffer_defender.reset()
     return win,bat0,bat1
 
+
 def hook_me(grad):
     print(grad.abs().sum(dim=-1))
 def init_stack_position(battle):
@@ -537,119 +539,7 @@ def init_stack_position(battle):
         st.x = pos%17
         st.y = int(pos/17)
         mask[st.y,st.x] = 1
-#@profile
-def start_train():
-    lrate = 0.0005
-    sample_num = 500
-    # 初始化 agent
-    actor_critic = H3_net(dev)
-    optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
-    # actor_critic.act_ids.weight.register_hook(hook_me)
-    dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
-    # agent.load_state_dict(torch.load("model_param.pkl"))
-    count = 0
-    five_done = 5
-    ok = five_done
-    # expert = load_episo("ENV/episode")
-    # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
-    file_list = ['ENV/battles/6.json']
-    file_list_cache = []
-    '''cache json'''
-    for file in file_list:
-        arena = Battle()
-        arena.load_battle(file)
-        arena.checkNewRound()
-        start = arena.current_state_feature(curriculum=True)
-        file_list_cache.append((start,arena.round))
-    cache_idx = range(len(file_list))
-    #TODO 7 SAC算法
-    while True:
-        agent.eval()
-        agent.in_train = True
-        bats = []
-        # agent.process_gae(expert,single_batch=False)
-        # bats.append(expert)
-        for ii in range(sample_num):
-            file_idx = random.choice(cache_idx)
-            print_act = False
-            # if ii < 3 :
-            #     print_act = True
-            #     logger.info(f"------------------------{fn}.json")
-            '''single side '''
-            # win,batch_data = collect_eps(agent,file,print_act=print_act)
-            # agent.process_gae(batch_data)
-            # bats.append(batch_data)
-            '''both sides'''
-            win, batch0,batch1 = collect_eps_both_sides(agent, file_list_cache[file_idx], print_act=print_act)
-            agent.process_gae(batch0)
-            bats.append(batch0)
-            agent.process_gae(batch1)
-            bats.append(batch1)
-            if win == 0 and ii < 50:
-                logger.info(f"win {file_list[file_idx]}")
-        batch_data = Batch.cat(bats)
-        logger.info(len(batch_data.rew))
-        agent.train()
-        agent.in_train = True
-        # batch_data = agent.process_gae(batch_data)
-        # v_ = []
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print(batch_data.returns)
-        # v_ = v_.squeeze().detach().numpy()
-        # print("predict v")
-        # print(v_)
-        # print("returns - v")
-        # print(batch_data.returns - v_)
 
-        logger.info(batch_data.done.astype(np.float)[:35] * 1.11)
-        logger.info("act_logp")
-        # idx = np.random.choice(range(len(batch_data.rew)),size=20)
-        logger.info(batch_data.policy.logps.act_logp[:35])
-        logger.info(batch_data.act.act_id.astype(np.float)[:35] )
-        logger.info("position_logp")
-        logger.info(batch_data.policy.logps.position_logp[:35])
-        logger.info(batch_data.act.position_id.astype(np.float)[:35] //17)
-        logger.info(batch_data.act.position_id.astype(np.float)[:35] % 17 - 9)
-        logger.info("target")
-        logger.info(batch_data.act.target_id.astype(np.float)[:35])
-        logger.info("adv")
-        logger.info(batch_data.adv[:35])
-        logger.info(batch_data.policy.value[:35])
-        if Linux:
-            to_dev(agent, "cuda")
-            #TODO 7 batch size?
-        loss = agent.learn(batch_data,batch_size=2000)
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print("learned v")
-        # print(v_.squeeze().detach().numpy())
-        if Linux:
-            to_dev(agent, "cpu")
-        agent.eval()
-        agent.in_train = False
-
-        #no GUI five done
-        win_rate = 0
-        for file_idx in cache_idx:
-            ct = start_game_noGUI(file_list_cache[file_idx], agent=agent)
-            logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
-            win_rate += ct
-        win_rate /= len(file_list)
-        logger.info(f"win rate at all = {win_rate}")
-        if win_rate > 0.9:
-            ok -= 1
-            if ok == 0:
-                torch.save(agent.state_dict(),"model_param.pkl")
-                logger.info("model saved")
-                sys.exit(1)
-        else:
-            ok = five_done
-        if count == 50000:
-            sys.exit(-1)
-        count += 1
-        logger.info(f'count={count}')
 def to_dev(agent,dev):
     agent.to(dev)
     agent.device = dev
@@ -845,11 +735,154 @@ def start_test():
     agent.eval()
     agent.in_train = False
     start_game("ENV/battles/6.json", by_AI=[2, 1],agent=agent)
+#@profile
+def start_train():
+    lrate = 0.0005
+    sample_num = 500
+    # 初始化 agent
+    actor_critic = H3_net(dev)
+    optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
+    # actor_critic.act_ids.weight.register_hook(hook_me)
+    dist = torch.distributions.Categorical
+    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
+    # agent.load_state_dict(torch.load("model_param.pkl"))
+    count = 0
+    five_done = 5
+    ok = five_done
+    # expert = load_episo("ENV/episode")
+    # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
+    file_list = ['ENV/battles/6.json']
+    file_list_cache = []
+    '''cache json'''
+    for file in file_list:
+        arena = Battle()
+        arena.load_battle(file)
+        arena.checkNewRound()
+        start = arena.current_state_feature(curriculum=True)
+        file_list_cache.append((start,arena.round))
+    cache_idx = range(len(file_list))
+    #TODO 7 SAC算法
+    while True:
+        agent.eval()
+        agent.in_train = True
+        bats = []
+        # agent.process_gae(expert,single_batch=False)
+        # bats.append(expert)
+        for ii in range(sample_num):
+            file_idx = random.choice(cache_idx)
+            print_act = False
+            # if ii < 3 :
+            #     print_act = True
+            #     logger.info(f"------------------------{fn}.json")
+            '''single side '''
+            # win,batch_data = collect_eps(agent,file,print_act=print_act)
+            # agent.process_gae(batch_data)
+            # bats.append(batch_data)
+            '''both sides'''
+            # win, batch0,batch1 = collect_eps_both_sides(agent, file_list_cache[file_idx], print_act=print_act)
+            # agent.process_gae(batch0)
+            # bats.append(batch0)
+            # agent.process_gae(batch1)
+            # bats.append(batch1)
+            # if win == 0 and ii < 50:
+            #     logger.info(f"win {file_list[file_idx]}")
+            '''single side Wheel fight'''
+            arena = Battle(by_AI=[2, 1])
+            arena.load_battle("ENV/battles/5.json", load_ai_side=False, format_postion=True)
+            for r in range(10):
+                arena.split_army()
+                win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
+                agent.process_gae(batch_data)
+                bats.append(batch_data)
+                if win:
+                    reset_battle(arena)
+                else:
+                    break
 
+        batch_data = Batch.cat(bats)
+        logger.info(len(batch_data.rew))
+        agent.train()
+        agent.in_train = True
+        batch_data = agent.process_gae(batch_data,single_batch=False)
+        # v_ = []
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # print(batch_data.returns)
+        # v_ = v_.squeeze().detach().numpy()
+        # print("predict v")
+        # print(v_)
+        # print("returns - v")
+        # print(batch_data.returns - v_)
+
+        logger.info(batch_data.done.astype(np.float)[:35] * 1.11)
+        logger.info("act_logp")
+        # idx = np.random.choice(range(len(batch_data.rew)),size=20)
+        logger.info(batch_data.policy.logps.act_logp[:35])
+        logger.info(batch_data.act.act_id.astype(np.float)[:35] )
+        logger.info("position_logp")
+        logger.info(batch_data.policy.logps.position_logp[:35])
+        logger.info(batch_data.act.position_id.astype(np.float)[:35] //17)
+        logger.info(batch_data.act.position_id.astype(np.float)[:35] % 17 - 9)
+        logger.info("target")
+        logger.info(batch_data.act.target_id.astype(np.float)[:35])
+        logger.info("adv")
+        logger.info(batch_data.adv[:35])
+        logger.info(batch_data.policy.value[:35])
+        if Linux:
+            to_dev(agent, "cuda")
+            #TODO 7 batch size?
+        loss = agent.learn(batch_data,batch_size=2000)
+        # with torch.no_grad():
+        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
+        # print("learned v")
+        # print(v_.squeeze().detach().numpy())
+        if Linux:
+            to_dev(agent, "cpu")
+        agent.eval()
+        agent.in_train = False
+
+        #no GUI five done
+        win_rate = 0
+        for file_idx in cache_idx:
+            ct = start_game_noGUI(file_list_cache[file_idx], agent=agent)
+            logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
+            win_rate += ct
+        win_rate /= len(file_list)
+        logger.info(f"win rate at all = {win_rate}")
+        if win_rate > 0.9:
+            ok -= 1
+            if ok == 0:
+                torch.save(agent.state_dict(),"model_param.pkl")
+                logger.info("model saved")
+                sys.exit(1)
+        else:
+            ok = five_done
+        if count == 50000:
+            sys.exit(-1)
+        count += 1
+        logger.info(f'count={count}')
 def main():
     # start_game_record()
     start_train()
     # start_test()
-
+M=0
 if __name__ == '__main__':
-    main()
+    from ENV.H3_battleInterface import start_game_gui
+    from ENV.H3_battleInterface import reset_battle
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/5.json", load_ai_side=False, format_postion=True)
+    arena.split_army()
+    arena.checkNewRound()
+    # start = arena.current_state_feature(curriculum=True)
+    start_game_gui(battle=arena)
+    # att = arena.attacker_stacks
+    # for st in att:
+    #     st.reset()
+    #     st.in_battle =
+    # arena = Battle(by_AI=[0, 1])
+    # arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
+    # arena.attacker_stacks = att
+    reset_battle(arena)
+    arena.split_army()
+    arena.checkNewRound()
+    start_game_gui(battle=arena)

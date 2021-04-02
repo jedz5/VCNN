@@ -182,16 +182,6 @@ class BStack(BHex):
         if isinstance(other,BStack):
             return other.id == self.id and other.amount == other.amount and super(BStack, self).__eq__(other)
         return super(BStack, self).__eq__(other)
-    def reset(self):
-        self.amount_base = self.amount
-        self.first_HP_Left = self.health
-        self.y,self.x,self.slotId = 0,0,0
-        self.had_waited = False
-        self.had_moved = False
-        self.had_retaliated = False
-        self.had_defended = False
-        self.shots = 16
-        self.in_battle = None
     def get_global_state(self, query_type = -1, exclude_me = True):
         return vb.get_global_state(self,self.in_battle.stacks,query_type,exclude_me)
         # bf = np.ones((self.in_battle.bFieldHeight, self.in_battle.bFieldWidth))
@@ -577,14 +567,9 @@ class Battle(object):
             if not st_to_split.is_shooter:
                 stacks.remove(st_to_split)
                 stacks.insert(sl//2,st_to_split)
-            sp = battle_start_pos_att[sl - 1]
-            for i in range(sl):
-                stacks[i].y = sp[i] // Battle.bFieldWidth
-                stacks[i].x = sp[i] % Battle.bFieldWidth
-                stacks[i].slotId = i
             self.attacker_stacks = stacks
-            # self.defender_stacks = list(filter(lambda elem: elem.is_alive(), self.defender_stacks))
             self.stacks = self.attacker_stacks + self.defender_stacks
+            self.format_postions()
 
 
     def getCopy(self):
@@ -750,14 +735,15 @@ class Battle(object):
         if shuffle_postion:
             self.init_stack_position()
         if format_postion:
-            for stacks,pos in [(self.attacker_stacks,battle_start_pos_att),(self.defender_stacks,battle_start_pos_def)]:
-                sl = len(stacks)
-                sp = pos[sl - 1]
-                for i in range(sl):
-                    stacks[i].y = sp[i] // Battle.bFieldWidth
-                    stacks[i].x = sp[i] % Battle.bFieldWidth
-                    stacks[i].slotId = i
-
+            self.format_postions()
+    def format_postions(self):
+        for stacks, pos in [(self.attacker_stacks, battle_start_pos_att), (self.defender_stacks, battle_start_pos_def)]:
+            sl = len(stacks)
+            sp = pos[sl - 1]
+            for i in range(sl):
+                stacks[i].y = sp[i] // Battle.bFieldWidth
+                stacks[i].x = sp[i] % Battle.bFieldWidth
+                stacks[i].slotId = i
     def dump_battle(self,dir):
         files = []
         for f in os.listdir(dir):
