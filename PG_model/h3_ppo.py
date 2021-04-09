@@ -227,7 +227,6 @@ class H3_policy(PGPolicy):
                 'value': value}
 
     #@profile
-    #TODO 5 mcts结构有何优势
     #批量输入训练
     def learn(self, batch, batch_size=None, repeat=4, **kwargs):
         pcount = 0
@@ -343,7 +342,7 @@ class H3_policy(PGPolicy):
         logps = {'act_logp': result['act_logp'], 'position_logp': result['position_logp'],
                  'target_logp': result['target_logp'], 'spell_logp': result['spell_logp']}
         return next_act, obs, acts, mask, logps, result['value']
-            
+reward_def = 5
 r_cum = 0
 def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=True):
     global r_cum
@@ -362,7 +361,7 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                 reward = 1. + reward
             else:
                 reward = -1. + reward
-        reward *= 5
+        reward *= reward_def
         if done or acting_stack.by_AI == operator:
             #TODO 初始分兵
             tmp= r_cum
@@ -383,13 +382,13 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
     else:
         if acting_stack.by_AI == operator:
             if done:
-                buffer.add(obs=obs, act=acts, rew=5., done=True, info=mask, policy={"value": value, "logps": logps})
+                buffer.add(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps})
             else:
                 buffer.add(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps})
         else:
             if done:
                 if bl:
-                    buffer.rew[bl - 1] = -5.
+                    buffer.rew[bl - 1] = -reward_def
                     buffer.done[bl - 1] = True
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
@@ -491,23 +490,23 @@ def collect_eps_both_sides(agent,file,n_step = 200,print_act = False):
             win = battle.get_winner()
             if win == 0:
                 if bla > 0:
-                    global_buffer.rew[bla - 1] = 5
+                    global_buffer.rew[bla - 1] = reward_def
                     global_buffer.done[bla - 1] = 1
                 else:
                     logger.info("玩家0还没出手就赢了~")
                 if bld > 0:
-                    global_buffer_defender.rew[bld - 1] = -5
+                    global_buffer_defender.rew[bld - 1] = -reward_def
                     global_buffer_defender.done[bld - 1] = 1
                 else:
                     logger.info("玩家1还没出手就输了~")
             else:
                 if bla > 0:
-                    global_buffer.rew[bla - 1] = -5
+                    global_buffer.rew[bla - 1] = -reward_def
                     global_buffer.done[bla - 1] = 1
                 else:
                     logger.info("玩家0还没出手就输了~")
                 if bld > 0:
-                    global_buffer_defender.rew[bld - 1] = 5
+                    global_buffer_defender.rew[bld - 1] = reward_def
                     global_buffer_defender.done[bld - 1] = 1
                 else:
                     logger.info("玩家1还没出手就赢了~")
@@ -581,7 +580,7 @@ def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
     print("game end")
     # pygame.quit()
     return 0
-def start_game_noGUI(file,agent = None,by_AI = [2,1]):
+def test_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
     iter_N = 3
@@ -668,7 +667,7 @@ def start_game_record(battle:Battle=None):
             if had_acted:
                 record_sar(buffer, 0, battle, acting_stack, bi.next_act, obs, acts, mask, logps, value, done,
                           killed_dealt,
-                          killed_get)
+                          killed_get,td=False)
             battle.checkNewRound()
             if done:
                 logger.debug("battle end~")
@@ -680,7 +679,7 @@ def start_game_record(battle:Battle=None):
                 bi.next_act = acting_stack.active_stack()
         bi.renderFrame()
     data, indice = buffer.sample(0)
-    dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
+    return data
     # np.save("d:/xxx.npy", [data.obs, data.act, data.rew,data.done,data.info])
 def dump_episo(ep,dir):
     files = []
@@ -752,7 +751,7 @@ def start_train():
     ok = five_done
     # expert = load_episo("ENV/episode")
     # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
-    file_list = ['ENV/battles/6.json']
+    file_list = ['ENV/battles/7.json']
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -789,17 +788,15 @@ def start_train():
             #     logger.info(f"win {file_list[file_idx]}")
             '''single side Wheel fight'''
             arena = Battle(by_AI=[2, 1])
-            arena.load_battle("ENV/battles/5.json", load_ai_side=False, format_postion=True)
+            arena.load_battle(file_list_cache[file_idx], load_ai_side=False, format_postion=True)
             for r in range(10):
                 arena.split_army()
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
-                agent.process_gae(batch_data)
                 bats.append(batch_data)
                 if win:
                     reset_battle(arena)
                 else:
                     break
-
         batch_data = Batch.cat(bats)
         logger.info(len(batch_data.rew))
         agent.train()
@@ -845,7 +842,7 @@ def start_train():
         #no GUI five done
         win_rate = 0
         for file_idx in cache_idx:
-            ct = start_game_noGUI(file_list_cache[file_idx], agent=agent)
+            ct = test_game_noGUI(file_list_cache[file_idx], agent=agent)
             logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
             win_rate += ct
         win_rate /= len(file_list)
@@ -862,28 +859,54 @@ def start_train():
             sys.exit(-1)
         count += 1
         logger.info(f'count={count}')
+def reset_battle(battle: Battle):
+    for att in battle.attacker_stacks:
+        att.amount_base = att.amount
+        att.first_HP_Left = att.health
+        att.y, att.x, att.slotId = 0, 0, 0
+        att.had_waited = False
+        att.had_moved = False
+        att.had_retaliated = False
+        att.had_defended = False
+        att.shots = 16
+    for deff in battle.defender_stacks:
+        deff.amount = deff.amount_base
+        deff.first_HP_Left = deff.health
+        deff.y, deff.x, deff.slotId = 0, 0, 0
+        deff.had_waited = False
+        deff.had_moved = False
+        deff.had_retaliated = False
+        deff.had_defended = False
+        deff.shots = 16
+    battle.round = 0
+    battle.toMove.clear()
+    battle.waited.clear()
+    battle.moved.clear()
+    battle.stackQueue.clear()
+    battle.cur_stack = None
+    battle.last_stack = None
+def cumulate_reward(batch:Batch):
+    a = batch.rew
+    s = a.sum()
+    lk = np.array(range(s - reward_def, -1, -reward_def))
+    a[batch.done > 0.5] += lk
 def main():
     # start_game_record()
     start_train()
     # start_test()
 M=0
 if __name__ == '__main__':
-    from ENV.H3_battleInterface import start_game_gui
-    from ENV.H3_battleInterface import reset_battle
     arena = Battle(by_AI=[0, 1])
     arena.load_battle("ENV/battles/7.json", load_ai_side=False, format_postion=True)
     arena.split_army()
     arena.checkNewRound()
-    # start = arena.current_state_feature(curriculum=True)
-    start_game_record(battle=arena)
-    # att = arena.attacker_stacks
-    # for st in att:
-    #     st.reset()
-    #     st.in_battle =
-    # arena = Battle(by_AI=[0, 1])
-    # arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
-    # arena.attacker_stacks = att
+    data1 = start_game_record(battle=arena)
+
     reset_battle(arena)
     arena.split_army()
     arena.checkNewRound()
-    start_game_record(battle=arena)
+    data2 = start_game_record(battle=arena)
+    data = Batch.cat([data1,data2])
+    dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
+    # data = load_episo("ENV/episode")
+    # cumulate_reward(data)

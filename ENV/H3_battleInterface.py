@@ -436,32 +436,7 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
 M=0
 
 
-def reset_battle(battle: Battle):
-    for att in battle.attacker_stacks:
-        att.amount_base = att.amount
-        att.first_HP_Left = att.health
-        att.y, att.x, att.slotId = 0, 0, 0
-        att.had_waited = False
-        att.had_moved = False
-        att.had_retaliated = False
-        att.had_defended = False
-        att.shots = 16
-    for deff in battle.defender_stacks:
-        deff.amount = deff.amount_base
-        deff.first_HP_Left = deff.health
-        deff.y, deff.x, deff.slotId = 0, 0, 0
-        deff.had_waited = False
-        deff.had_moved = False
-        deff.had_retaliated = False
-        deff.had_defended = False
-        deff.shots = 16
-    battle.round = 0
-    battle.toMove.clear()
-    battle.waited.clear()
-    battle.moved.clear()
-    battle.stackQueue.clear()
-    battle.cur_stack = None
-    battle.last_stack = None
+
 if __name__ == '__main__':
     arena = Battle(by_AI = [0,1])
     arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)

@@ -473,7 +473,6 @@ class BStack(BHex):
             logger.error("no way to contrl the stack!!")
             sys.exit(-1)
 
-
 class BObstacle(object):
     def __init__(self,kind = 0):
         self.kind = kind
@@ -804,7 +803,7 @@ class Battle(object):
             mask[st.y, st.x] = 1
     #TODO get_act_masks
     def get_act_masks(self,act):
-        mask_targets = np.zeros((7,))
+        mask_targets = np.zeros((14,))
         mask_position = np.zeros((self.bFieldHeight * self.bFieldWidth,))
         mask_spell = np.zeros((10,))
         mask_acts = self.legal_act(level=0)
