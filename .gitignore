@@ -1,4 +1,4 @@
-
+*.pkl
 *.pyc
 *.log
 *.npy
@@ -16,3 +16,6 @@ VCCC/VCBattle/cm_build
 VCCC/x64
 *.db
 VCCC/.vs
+.idea/
+.vs/
+*.pyperf

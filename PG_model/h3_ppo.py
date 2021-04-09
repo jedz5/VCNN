@@ -634,7 +634,7 @@ def get_act_info(battle,act):
     mask = {'mask_acts': mask_acts, 'mask_spell': mask_spell,
             'mask_targets': mask_targets, 'mask_position': mask_position}
     return obs,acts,mask
-def start_game_record():
+def start_game_record(battle:Battle=None):
     from tianshou.data import ReplayBuffer
     from ENV import H3_battleInterface
     import pygame
@@ -642,8 +642,9 @@ def start_game_record():
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    battle = Battle(by_AI = [0,1])
-    battle.load_battle("ENV/battles/1.json", shuffle_postion=False,load_ai_side=False)
+    if not battle:
+        battle = Battle(by_AI = [0,1])
+        battle.load_battle("ENV/battles/1.json", shuffle_postion=False,load_ai_side=False)
     battle.checkNewRound()
     bi = H3_battleInterface.BattleInterface(battle)
     logps, value = None,0
@@ -870,11 +871,11 @@ if __name__ == '__main__':
     from ENV.H3_battleInterface import start_game_gui
     from ENV.H3_battleInterface import reset_battle
     arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/5.json", load_ai_side=False, format_postion=True)
+    arena.load_battle("ENV/battles/7.json", load_ai_side=False, format_postion=True)
     arena.split_army()
     arena.checkNewRound()
     # start = arena.current_state_feature(curriculum=True)
-    start_game_gui(battle=arena)
+    start_game_record(battle=arena)
     # att = arena.attacker_stacks
     # for st in att:
     #     st.reset()
@@ -885,4 +886,4 @@ if __name__ == '__main__':
     reset_battle(arena)
     arena.split_army()
     arena.checkNewRound()
-    start_game_gui(battle=arena)
+    start_game_record(battle=arena)

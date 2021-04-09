@@ -173,6 +173,8 @@ class BStack(BHex):
         cp.infinite_retaliate = self.infinite_retaliate
         cp.attack_twice = self.attack_twice
         cp.in_battle = self.in_battle
+        cp.ai_value = self.ai_value
+        cp.fight_value = self.fight_value
         return cp
     def __repr__(self):
         w = 'w'if self.had_waited else ''
