@@ -285,6 +285,9 @@ class BattleInterface:
                 if event.key == pygame.K_d:
                     self.battle_engine.dump_battle(self.dump_dir)
                     return False
+                if event.key == pygame.K_q:
+                    self.running = False
+                    return False
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
                     if event.key == pygame.K_SPACE:
@@ -404,20 +407,21 @@ class BattleInterface:
         y += 42 - img.get_height() + offset
         return x,y
 def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "ENV/battles/6.json", shuffle_postion=False,load_ai_side=False):
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
     if not battle:
         battle = Battle(by_AI = by_AI,agent=agent)
         battle.load_battle(file=file, shuffle_postion=shuffle_postion,load_ai_side=load_ai_side)
     # battle.loadFile("ENV/debug.json",load_ai_side=False)
     battle.checkNewRound()
     if not battle_int:
+        # 初始化游戏
+        pygame.init()  # 初始化pygame
+        pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
         bi = BattleInterface(battle)
     else:
         bi = battle_int
         bi.init_battle(battle)
     bi.next_act = battle.cur_stack.active_stack()
+    bi.running = True
     # 事件循环(main loop)
     while bi.running:
         do_act = bi.handleEvents()
@@ -428,24 +432,33 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
             if done:
                 logger.debug("battle end~")
                 bi.running = False
-                if not battle_int:
-                    pygame.quit()
             else:
                 bi.next_act = battle.cur_stack.active_stack()
         bi.renderFrame()
+    return bi
 M=0
-
-
-
-if __name__ == '__main__':
+def start_game_s_gui():
     arena = Battle(by_AI=[0, 1])
     arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
     arena.split_army()
     arena.checkNewRound()
-    data1 = start_game_gui(battle=arena)
-    #
+    bi = start_game_gui(battle=arena)
+    if arena.check_battle_end():
+        bi.running = True
     arena.reset()
-    arena.split_army()
-    arena.checkNewRound()
-    data2 = start_game_gui(battle=arena)
+    count = 1
+    while bi.running:
+        arena.split_army()
+        arena.checkNewRound()
+        start_game_gui(battle_int=bi, battle=arena)
+        if arena.check_battle_end():
+            bi.running = True
+        else:
+            bi.running = False
+        arena.reset()
+        count += 1
+    print(f"battle count = {count}")
+if __name__ == '__main__':
+    start_game_s_gui()
+
 

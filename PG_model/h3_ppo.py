@@ -704,8 +704,8 @@ def start_game_record(battle:Battle=None):
             if done:
                 logger.debug("battle end~")
                 bi.running = False
-                pygame.quit()
-                break
+                # pygame.quit()
+                # break
             else:
                 acting_stack = battle.cur_stack
                 bi.next_act = acting_stack.active_stack()
@@ -880,24 +880,40 @@ def start_train():
         agent.eval()
         agent.in_train = False
 
-        #no GUI five done
-        win_rate = 0
+        '''no GUI five done'''
+        # win_rate = 0
+        # for file_idx in cache_idx:
+        #     ct = test_game_noGUI(file_list_cache[file_idx], agent=agent)
+        #     logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
+        #     win_rate += ct
+        # win_rate /= len(file_list)
+        # logger.info(f"win rate at all = {win_rate}")
+        # if win_rate > 0.9:
+        #     ok -= 1
+        #     if ok == 0:
+        #         torch.save(agent.state_dict(),"model_param.pkl")
+        #         logger.info("model saved")
+        #         sys.exit(1)
+        # else:
+        #     ok = five_done
+        # if count == 50000:
+        #     sys.exit(-1)
+        '''test how many times agent can win'''
+        win_count = []
         for file_idx in cache_idx:
-            ct = test_game_noGUI(file_list_cache[file_idx], agent=agent)
-            logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
-            win_rate += ct
-        win_rate /= len(file_list)
-        logger.info(f"win rate at all = {win_rate}")
-        if win_rate > 0.9:
-            ok -= 1
-            if ok == 0:
-                torch.save(agent.state_dict(),"model_param.pkl")
-                logger.info("model saved")
-                sys.exit(1)
-        else:
-            ok = five_done
-        if count == 50000:
-            sys.exit(-1)
+            arena = Battle(by_AI=[2, 1], agent=agent)
+            arena.load_battle(file_list_cache[file_idx], load_ai_side=False, format_postion=True)
+            ct = 0
+            for r in range(10):
+                arena.split_army()
+                win, batch_data = collect_eps(agent, battle=arena, print_act=print_act)
+                if win:
+                    ct += 1
+                    arena.reset()
+                else:
+                    win_count.append(ct)
+                    logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
+                    break
         count += 1
         logger.info(f'count={count}')
 
@@ -909,20 +925,20 @@ def cumulate_reward(batch:Batch):
 M=0
 if __name__ == '__main__':
     # start_game_record()
-    # start_train()
+    start_train()
     # start_test()
 
-    arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/6.json", load_ai_side=False, format_postion=True)
-    arena.split_army()
-    arena.checkNewRound()
-    data1 = start_game_record(battle=arena)
-    #
-    arena.reset()
-    arena.split_army()
-    arena.checkNewRound()
-    data2 = start_game_record(battle=arena)
-    data = Batch.cat([data1,data2])
-    dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
-    data = load_episo("ENV/episode")
-    cumulate_reward(data)
+    # arena = Battle(by_AI=[0, 1])
+    # arena.load_battle("ENV/battles/6.json", load_ai_side=False, format_postion=True)
+    # arena.split_army()
+    # arena.checkNewRound()
+    # data1 = start_game_record(battle=arena)
+    # #
+    # arena.reset()
+    # arena.split_army()
+    # arena.checkNewRound()
+    # data2 = start_game_record(battle=arena)
+    # data = Batch.cat([data1,data2])
+    # dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
+    # data = load_episo("ENV/episode")
+    # cumulate_reward(data)
