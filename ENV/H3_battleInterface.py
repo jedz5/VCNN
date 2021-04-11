@@ -438,21 +438,14 @@ M=0
 
 
 if __name__ == '__main__':
-    arena = Battle(by_AI = [0,1])
-    arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
     arena.split_army()
     arena.checkNewRound()
-    # start = arena.current_state_feature(curriculum=True)
-    start_game_gui(battle=arena)
-    # att = arena.attacker_stacks
-    # for st in att:
-    #     st.reset()
-    #     st.in_battle =
-    # arena = Battle(by_AI=[0, 1])
-    # arena.load_battle("ENV/battles/5.json",load_ai_side=False,format_postion=True)
-    # arena.attacker_stacks = att
-    reset_battle(arena)
+    data1 = start_game_gui(battle=arena)
+    #
+    arena.reset()
     arena.split_army()
     arena.checkNewRound()
-    start_game_gui(battle=arena, by_AI=[0, 1])
+    data2 = start_game_gui(battle=arena)
 

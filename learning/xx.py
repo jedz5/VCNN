@@ -13,7 +13,10 @@ from collections import defaultdict
 # print(m == list(m2) and n == list(n2))
 
 
-a = np.array([0,0,0,1,0,0,1])
-s = a.sum()
-lk = np.array(range(s-1,-1,-1))
-a[a == 1] += lk
+# a = np.array([0,0,0,1,0,0,1])
+# s = a.sum()
+# lk = np.array(range(s-1,-1,-1))
+# a[a == 1] += lk
+a = [1]
+b = []
+a.append(*b)

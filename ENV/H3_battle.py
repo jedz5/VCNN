@@ -526,6 +526,33 @@ class Battle(object):
         if(load_file):
             self.loadFile(load_file)
             self.checkNewRound()
+
+    def reset(self):
+        for att in self.attacker_stacks:
+            att.amount_base = att.amount
+            att.first_HP_Left = att.health
+            att.y, att.x, att.slotId = 0, 0, 0
+            att.had_waited = False
+            att.had_moved = False
+            att.had_retaliated = False
+            att.had_defended = False
+            att.shots = 16
+        for deff in self.defender_stacks:
+            deff.amount = deff.amount_base
+            deff.first_HP_Left = deff.health
+            deff.y, deff.x, deff.slotId = 0, 0, 0
+            deff.had_waited = False
+            deff.had_moved = False
+            deff.had_retaliated = False
+            deff.had_defended = False
+            deff.shots = 16
+        self.round = 0
+        self.toMove.clear()
+        self.waited.clear()
+        self.moved.clear()
+        self.stackQueue.clear()
+        self.cur_stack = None
+        self.last_stack = None
     def split_army(self,side=0):
         cmap = {}
         if side == 0:

@@ -35,7 +35,7 @@ class H3_policy(PGPolicy):
                  optim: torch.optim.Optimizer,
                  dist_fn: torch.distributions.Distribution,
                  device,
-                 discount_factor: float = 0.9,
+                 discount_factor: float = 0.95,
                  max_grad_norm: Optional[float] = 0.5,
                  eps_clip: float = .2,
                  vf_coef: float = .5,
@@ -66,7 +66,7 @@ class H3_policy(PGPolicy):
         self.dist_fn = dist_fn
         self.device = device
 
-    def process_gae(self, batch: Batch, single_batch=True) -> Batch:
+    def process_gae(self, batch: Batch, single_batch=False,sil=False) -> Batch:
         # if self._rew_norm:
         #     mean, std = batch.rew.mean(), batch.rew.std()
         #     if std > self.__eps:
@@ -80,13 +80,7 @@ class H3_policy(PGPolicy):
         gamma = self._gamma
         gae_lambda = self._lambda
 
-        if single_batch:
-            rr = np.append(batch.rew, 0)
-            vv = np.append(batch.policy.value, 0)
-            delta = rr[:-1] + vv[1:] * gamma - vv[:-1]
-            batch.adv = scipy.signal.lfilter([1], [1, -gamma * gae_lambda], delta[::-1], axis=0)[::-1]
-            batch.returns = scipy.signal.lfilter([1], [1, -gamma], batch.rew[::-1], axis=0)[::-1]
-        else:
+        if sil:
             v_ = []
             old_prob_act = []
             old_prob_position = []
@@ -136,6 +130,36 @@ class H3_policy(PGPolicy):
                 returns[i] = ret
             batch.adv = adv
             batch.returns = returns
+        else:
+            if single_batch:
+                rr = np.append(batch.rew, 0)
+                vv = np.append(batch.policy.value, 0)
+                delta = rr[:-1] + vv[1:] * gamma - vv[:-1]
+                batch.adv = scipy.signal.lfilter([1], [1, -gamma * gae_lambda], delta[::-1], axis=0)[::-1]
+                batch.returns = scipy.signal.lfilter([1], [1, -gamma], batch.rew[::-1], axis=0)[::-1]
+            else:
+                v_ = []
+                with torch.no_grad():
+                    for b in batch.split(self._batch_size, shuffle=False):
+                        value = self.ppo_net(
+                            **b.obs,critic_only=True)
+                        v_.append(value.squeeze(-1))
+
+                m = (1. - batch.done) * gamma
+                rr = np.append(batch.rew, 0)
+                vv = np.append(batch.policy.value, 0)
+                deltas = rr[:-1] + m * vv[1:] - vv[:-1]
+                mm = m * gae_lambda
+                gae, ret = 0, 0
+                adv = np.zeros_like(batch.rew, dtype=np.float32)
+                returns = np.zeros_like(batch.rew, dtype=np.float32)
+                for i in range(len(batch.rew) - 1, -1, -1):
+                    gae = deltas[i] + mm[i] * gae
+                    ret = batch.rew[i] + m[i] * ret
+                    adv[i] = gae
+                    returns[i] = ret
+                batch.adv = adv
+                batch.returns = returns
 
 
     #单次输入 obs->act,mask
@@ -351,6 +375,7 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
     tmp = 0.
     bl = len(buffer)
     if td:
+        #TODO 是否需要判断win！！！！？？？
         if battle_action.type == action_type.attack:
             reward = killed_dealt * battle_action.target.ai_value / battle.ai_value[
                 ~acting_stack.side] - killed_get * acting_stack.ai_value / battle.ai_value[acting_stack.side]
@@ -363,7 +388,6 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                 reward = -1. + reward
         reward *= reward_def
         if done or acting_stack.by_AI == operator:
-            #TODO 初始分兵
             tmp= r_cum
             r_cum = 0.
         else:
@@ -382,19 +406,27 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
     else:
         if acting_stack.by_AI == operator:
             if done:
-                buffer.add(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps})
+                if acting_stack.side == battle.get_winner():
+                    buffer.add(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps})
+                else:
+                    buffer.add(obs=obs, act=acts, rew=-reward_def, done=True, info=mask,
+                               policy={"value": value, "logps": logps})
             else:
                 buffer.add(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps})
         else:
             if done:
                 if bl:
-                    buffer.rew[bl - 1] = -reward_def
-                    buffer.done[bl - 1] = True
+                    if acting_stack.side == battle.get_winner():
+                        buffer.rew[bl - 1] = -reward_def
+                        buffer.done[bl - 1] = True
+                    else:
+                        buffer.rew[bl - 1] = reward_def
+                        buffer.done[bl - 1] = True
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 global_buffer = ReplayBuffer(500,ignore_obs_next=True)
 global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
-def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False):
+def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
     if not battle:
         battle = Battle(agent=agent)
         battle.load_battle(file)
@@ -419,7 +451,7 @@ def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = Fals
         done = battle.check_battle_end()
         #buffer sar
         if had_acted:
-            record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=False)
+            record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=td)
         #next act
         if done:
             win = (battle.by_AI[battle.get_winner()] == 2)
@@ -738,7 +770,7 @@ def start_test():
 #@profile
 def start_train():
     lrate = 0.0005
-    sample_num = 500
+    sample_num = 100
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
@@ -749,14 +781,15 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
-    # expert = load_episo("ENV/episode")
-    # file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json']
-    file_list = ['ENV/battles/7.json']
+    expert = load_episo("ENV/episode")
+    cumulate_reward(expert)
+    file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json','ENV/battles/5.json']
+    # file_list = ['ENV/battles/7.json']
     file_list_cache = []
     '''cache json'''
     for file in file_list:
         arena = Battle()
-        arena.load_battle(file)
+        arena.load_battle(file,load_ai_side=False,format_postion=True)
         arena.checkNewRound()
         start = arena.current_state_feature(curriculum=True)
         file_list_cache.append((start,arena.round))
@@ -766,8 +799,8 @@ def start_train():
         agent.eval()
         agent.in_train = True
         bats = []
-        # agent.process_gae(expert,single_batch=False)
-        # bats.append(expert)
+        agent.process_gae(expert,single_batch=False,sil=True)
+        bats.append(expert)
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
@@ -787,21 +820,29 @@ def start_train():
             # if win == 0 and ii < 50:
             #     logger.info(f"win {file_list[file_idx]}")
             '''single side Wheel fight'''
-            arena = Battle(by_AI=[2, 1])
+            arena = Battle(by_AI=[2, 1],agent=agent)
             arena.load_battle(file_list_cache[file_idx], load_ai_side=False, format_postion=True)
+            wins = []
             for r in range(10):
                 arena.split_army()
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
-                bats.append(batch_data)
                 if win:
-                    reset_battle(arena)
+                    wins.append(batch_data)
+                    arena.reset()
                 else:
+                    bats.append(batch_data)
                     break
+            if len(wins):
+                wins_batch = Batch.cat(wins)
+                cumulate_reward(wins_batch)
+                bats.append(wins_batch)
+
+
         batch_data = Batch.cat(bats)
         logger.info(len(batch_data.rew))
         agent.train()
         agent.in_train = True
-        batch_data = agent.process_gae(batch_data,single_batch=False)
+        agent.process_gae(batch_data,single_batch=False)
         # v_ = []
         # with torch.no_grad():
         #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
@@ -859,54 +900,29 @@ def start_train():
             sys.exit(-1)
         count += 1
         logger.info(f'count={count}')
-def reset_battle(battle: Battle):
-    for att in battle.attacker_stacks:
-        att.amount_base = att.amount
-        att.first_HP_Left = att.health
-        att.y, att.x, att.slotId = 0, 0, 0
-        att.had_waited = False
-        att.had_moved = False
-        att.had_retaliated = False
-        att.had_defended = False
-        att.shots = 16
-    for deff in battle.defender_stacks:
-        deff.amount = deff.amount_base
-        deff.first_HP_Left = deff.health
-        deff.y, deff.x, deff.slotId = 0, 0, 0
-        deff.had_waited = False
-        deff.had_moved = False
-        deff.had_retaliated = False
-        deff.had_defended = False
-        deff.shots = 16
-    battle.round = 0
-    battle.toMove.clear()
-    battle.waited.clear()
-    battle.moved.clear()
-    battle.stackQueue.clear()
-    battle.cur_stack = None
-    battle.last_stack = None
+
 def cumulate_reward(batch:Batch):
     a = batch.rew
     s = a.sum()
     lk = np.array(range(s - reward_def, -1, -reward_def))
     a[batch.done > 0.5] += lk
-def main():
-    # start_game_record()
-    start_train()
-    # start_test()
 M=0
 if __name__ == '__main__':
+    # start_game_record()
+    # start_train()
+    # start_test()
+
     arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/7.json", load_ai_side=False, format_postion=True)
+    arena.load_battle("ENV/battles/6.json", load_ai_side=False, format_postion=True)
     arena.split_army()
     arena.checkNewRound()
     data1 = start_game_record(battle=arena)
-
-    reset_battle(arena)
+    #
+    arena.reset()
     arena.split_army()
     arena.checkNewRound()
     data2 = start_game_record(battle=arena)
     data = Batch.cat([data1,data2])
     dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
-    # data = load_episo("ENV/episode")
-    # cumulate_reward(data)
+    data = load_episo("ENV/episode")
+    cumulate_reward(data)
