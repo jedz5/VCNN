@@ -7,7 +7,8 @@ from enum import Enum
 import logging
 import os
 import json
-import pprint
+from ENV.python_json_numpy_print import save_formatted
+np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 std_logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log','w')
@@ -712,7 +713,7 @@ class Battle(object):
         else:
             curr,self.round = file
         for i in range(14):
-            py, px, id,side, amount, amount_base, first_HP_Left, health, attack, defense, max_damage, min_damage, had_moved, had_defended, had_retaliated, had_waited, speed, luck, morale, shots,slotID = curr[i]
+            side, slotId, id, amount, amount_base, first_HP_Left, health, luck, attack, defense, max_damage, min_damage,speed, morale,shots,py, px, had_moved, had_waited, had_retaliated, had_defended= curr[i]
             if px == 0:
                 break
             if not (shuffle_postion or format_postion):
@@ -727,7 +728,7 @@ class Battle(object):
             st.health = health
             st.first_HP_Left = first_HP_Left
             st.id = id
-            st.slotId = slotID
+            st.slotId = slotId
             st.side = side
             st.by_AI = self.by_AI[side]
             st.luck = luck
@@ -786,8 +787,10 @@ class Battle(object):
             nmax = 0
         dump_in = os.path.join(dir, f'{nmax}.json')
         attri_stack = self.current_state_feature(curriculum=True)
-        with open(dump_in,'w', encoding='utf-8') as JsonFile:
-            JsonFile.write(pprint.pformat({'stacks':attri_stack.tolist(),'round':self.round},indent=1,width=256).replace('\'','"'))
+        # with open(dump_in,'w', encoding='utf-8') as JsonFile:
+            # JsonFile.write(pprint.pformat({'stacks':attri_stack.tolist(),'round':self.round},indent=1,width=256).replace('\'','"'))
+        '''formated'''
+        save_formatted(dump_in,{'stacks':attri_stack,'round':self.round})
         print(f"states dumped in {dump_in}")
     def canReach(self,bFrom,bTo,bAtt = None):
         curSt = bFrom
@@ -857,9 +860,9 @@ class Battle(object):
 
     def currentState(self):
         pass
-    def current_state_feature(self,curriculum = False):
+    def current_state_feature(self,curriculum = True):
         planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
-        attri_stack = np.zeros((14,14),dtype=int) if not curriculum else np.zeros((14,21),dtype=int)
+        attri_stack = np.zeros((14,21),dtype=int)
         ind = np.array([122] * 14,dtype=int)
         for i,st in enumerate(self.stackQueue):
             bf = st.get_global_state()
@@ -868,16 +871,16 @@ class Battle(object):
             planes_stack[i, 2] = (bf == 201)
             #
             ind[i] = st.id
-            if curriculum:
-                attri_stack[i] = np.array(
-                    [st.y, st.x, st.id, st.side, st.amount, st.amount_base, st.first_HP_Left, st.health, st.attack, st.defense, st.max_damage, st.min_damage,
-                     int(st.had_moved), int(st.had_defended), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
-                     st.shots,st.slotId])
-            else:
-                attri_stack[i] = np.array(
-                    [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
-                     int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
-                     st.shots])
+            # if curriculum:
+            attri_stack[i] = np.array(
+                [st.side,st.slotId, st.id , st.amount, st.amount_base, st.first_HP_Left, st.health, st.luck,st.attack, st.defense, st.max_damage, st.min_damage,
+                  st.speed,  st.morale,
+                 st.shots,st.y, st.x,int(st.had_moved), int(st.had_waited), int(st.had_retaliated), int(st.had_defended)])
+            # else:
+            #     attri_stack[i] = np.array(
+            #         [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
+            #          int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
+            #          st.shots])
         if curriculum:
             return attri_stack
         plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)

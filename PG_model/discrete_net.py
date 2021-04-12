@@ -25,7 +25,7 @@ class in_pipe(nn.Module):
         self.device = device
         self.id_emb = nn.Embedding(150, 64, padding_idx=122)
         self.act_emb = nn.Embedding(10, 64, padding_idx=8)
-        self.stack_emb = nn.Sequential(nn.Linear(14 + 64, 64),
+        self.stack_emb = nn.Sequential(nn.Linear(21 + 64, 64),
                                        nn.ReLU(inplace=True),
                                        nn.Linear(64, 64)
                                        )

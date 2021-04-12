@@ -330,7 +330,7 @@ class H3_policy(PGPolicy):
                     self._max_grad_norm)
                 self.optim.step()
     def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False,action_known:tuple=None):
-        ind, attri_stack, planes_stack, plane_glb = in_battle.current_state_feature()
+        ind, attri_stack, planes_stack, plane_glb = in_battle.current_state_feature(curriculum=False)
         with torch.no_grad():
             result = self.forward(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], in_battle,
                            can_shoot=in_battle.cur_stack.can_shoot(), print_act=print_act,action_known=action_known)
@@ -640,7 +640,7 @@ def get_act_info(battle,act):
     position_id = -1
     act_id = act.type.value
     mask_acts, mask_spell, mask_targets, mask_position = battle.get_act_masks(act)
-    ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature()
+    ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature(curriculum=False)
     if act.type == action_type.attack:
         if not battle.cur_stack.can_shoot():
             position_id = act.dest.to_position_id()
@@ -731,6 +731,8 @@ def dump_episo(ep,dir):
     np.save(dump_in,ep)
     print(f"episode dumped in {dump_in}")
 def load_episo(dir):
+    if len(os.listdir(dir)) == 0:
+        return
     obss,obs_nexts,acts,masks,rews,dones =[],[],[],[],[],[]
     for f in os.listdir(dir):
         tmp_f = os.path.join(dir,f)
@@ -772,7 +774,7 @@ def start_test():
 #@profile
 def start_train():
     lrate = 0.0005
-    sample_num = 100
+    sample_num = 10
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
@@ -784,9 +786,10 @@ def start_train():
     five_done = 5
     ok = five_done
     expert = load_episo("ENV/episode")
-    cumulate_reward(expert)
-    file_list = ['ENV/battles/8.json','ENV/battles/7.json','ENV/battles/6.json','ENV/battles/5.json']
-    # file_list = ['ENV/battles/7.json']
+    if expert:
+        cumulate_reward(expert)
+    file_list = ['ENV/battles/0.json','ENV/battles/1.json','ENV/battles/2.json','ENV/battles/3.json']
+    best_sar = []
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -801,8 +804,9 @@ def start_train():
         agent.eval()
         agent.in_train = True
         bats = []
-        agent.process_gae(expert,single_batch=False,sil=True)
-        bats.append(expert)
+        if expert:
+            agent.process_gae(expert,single_batch=False,sil=True)
+            bats.append(expert)
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
