@@ -437,28 +437,46 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
         bi.renderFrame()
     return bi
 M=0
-def start_game_s_gui():
-    arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
+def start_game_s_gui(battle:Battle):
+    if not battle:
+        arena = Battle(by_AI=[0, 1])
+        arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
+    else:
+        arena = battle
     arena.split_army()
     arena.checkNewRound()
     bi = start_game_gui(battle=arena)
     if arena.check_battle_end():
         bi.running = True
     arena.reset()
+    '''my army is all gone~~'''
+    if arena.check_battle_end():
+        bi.running = False
     count = 1
     while bi.running:
         arena.split_army()
         arena.checkNewRound()
         start_game_gui(battle_int=bi, battle=arena)
+        '''q = quit'''
         if arena.check_battle_end():
             bi.running = True
         else:
             bi.running = False
         arena.reset()
+        '''my army is all gone~~'''
+        if arena.check_battle_end():
+            bi.running = False
         count += 1
     print(f"battle count = {count}")
 if __name__ == '__main__':
-    start_game_s_gui()
+    from PG_model.h3_ppo import H3_policy,H3_net
+    import torch
+    actor_critic = H3_net("cpu")
+    agent = H3_policy(actor_critic)
+    agent.load_state_dict(torch.load("model_param.pkl"))
+    agent.in_train = False
+    arena = Battle(by_AI=[2, 1],agent=agent)
+    arena.load_battle("ENV/battles/6.json", load_ai_side=False, format_postion=True)
+    start_game_s_gui(battle=arena)
 
 

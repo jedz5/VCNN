@@ -32,9 +32,9 @@ class H3_policy(PGPolicy):
 
     def __init__(self,
                  net: torch.nn.Module,
-                 optim: torch.optim.Optimizer,
-                 dist_fn: torch.distributions.Distribution,
-                 device,
+                 optim: torch.optim.Optimizer=None,
+                 dist_fn: torch.distributions.Distribution=None,
+                 device="cpu",
                  discount_factor: float = 0.95,
                  max_grad_norm: Optional[float] = 0.5,
                  eps_clip: float = .2,
@@ -441,9 +441,11 @@ def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = Fals
         obs, acts, mask, logps, value = None, None, None, None, 0
     for ii in range(n_step):
         if acting_stack.by_AI == 2:
-            if not had_acted:  # clear reward cumullated by hand craft AI
-                for st in battle.stacks:
-                    battle.ai_value[st.side] += st.ai_value * st.amount
+            if not had_acted:
+                '''by now hand craft AI value is not needed'''
+                # clear reward cumullated by hand craft AI
+                # for st in battle.stacks:
+                #     battle.ai_value[st.side] += st.ai_value * st.amount
                 had_acted = True
         damage_dealt, damage_get, killed_dealt, killed_get = battle.doAction(battle_action)
         battle.checkNewRound()
@@ -794,7 +796,7 @@ def start_train():
         start = arena.current_state_feature(curriculum=True)
         file_list_cache.append((start,arena.round))
     cache_idx = range(len(file_list))
-    #TODO 7 SAC算法
+    max_win_count = len(file_list)
     while True:
         agent.eval()
         agent.in_train = True
@@ -871,16 +873,12 @@ def start_train():
             to_dev(agent, "cuda")
             #TODO 7 batch size?
         loss = agent.learn(batch_data,batch_size=2000)
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print("learned v")
-        # print(v_.squeeze().detach().numpy())
         if Linux:
             to_dev(agent, "cpu")
         agent.eval()
         agent.in_train = False
 
-        '''no GUI five done'''
+        '''test by win rate'''
         # win_rate = 0
         # for file_idx in cache_idx:
         #     ct = test_game_noGUI(file_list_cache[file_idx], agent=agent)
@@ -914,6 +912,10 @@ def start_train():
                     win_count.append(ct)
                     logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
                     break
+        if sum(win_count) > max_win_count:
+            logger.info("model saved")
+            torch.save(agent.state_dict(), "model_param.pkl")
+            max_win_count = sum(win_count)
         count += 1
         logger.info(f'count={count}')
 
