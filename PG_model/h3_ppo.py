@@ -774,7 +774,7 @@ def start_test():
 #@profile
 def start_train():
     lrate = 0.0005
-    sample_num = 10
+    sample_num = 100
     # 初始化 agent
     actor_critic = H3_net(dev)
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
@@ -785,11 +785,13 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
+    max_sar = [None] * 4 #type:List[Batch]
     expert = load_episo("ENV/episode")
     if expert:
+        max_sar[0] = Batch(expert)
         cumulate_reward(expert)
     file_list = ['ENV/battles/0.json','ENV/battles/1.json','ENV/battles/2.json','ENV/battles/3.json']
-    best_sar = []
+
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -799,14 +801,28 @@ def start_train():
         start = arena.current_state_feature(curriculum=True)
         file_list_cache.append((start,arena.round))
     cache_idx = range(len(file_list))
+
+    def choose_start(idx):
+        if not max_sar[idx] or np.random.binomial(1,0.2):
+            return -1,file_list_cache[idx] #RL
+        else:
+            obs_idx = random.choice(range(len(max_sar[idx].obs)))  # SIL
+            return obs_idx,(max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
+    def update_max(idx,obs_idx,data:Batch):
+        if (not max_sar[idx]):
+            max_sar[idx] = Batch(data)
+        elif (sum(max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
+            max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch(data)])
     max_win_count = len(file_list)
     while True:
         agent.eval()
         agent.in_train = True
         bats = []
-        if expert:
-            agent.process_gae(expert,single_batch=False,sil=True)
-            bats.append(expert)
+        for exp in max_sar:
+            if exp:
+                exp_copy = Batch(exp)
+                agent.process_gae(exp_copy, single_batch=False, sil=True)
+                bats.append(exp_copy)
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
@@ -827,19 +843,21 @@ def start_train():
             #     logger.info(f"win {file_list[file_idx]}")
             '''single side Wheel fight'''
             arena = Battle(by_AI=[2, 1],agent=agent)
-            arena.load_battle(file_list_cache[file_idx], load_ai_side=False, format_postion=True)
+            obs_idx,obs = choose_start(file_idx)
+            arena.load_battle(obs, load_ai_side=False, format_postion=True)
             wins = []
             for r in range(10):
-                arena.split_army()
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
                 if win:
                     wins.append(batch_data)
                     arena.reset()
+                    arena.split_army()
                 else:
                     bats.append(batch_data)
                     break
             if len(wins):
                 wins_batch = Batch.cat(wins)
+                update_max(file_idx,obs_idx,wins_batch)
                 cumulate_reward(wins_batch)
                 bats.append(wins_batch)
 
@@ -875,7 +893,6 @@ def start_train():
         logger.info(batch_data.policy.value[:35])
         if Linux:
             to_dev(agent, "cuda")
-            #TODO 7 batch size?
         loss = agent.learn(batch_data,batch_size=2000)
         if Linux:
             to_dev(agent, "cpu")
@@ -935,7 +952,7 @@ if __name__ == '__main__':
     # start_test()
 
     # arena = Battle(by_AI=[0, 1])
-    # arena.load_battle("ENV/battles/6.json", load_ai_side=False, format_postion=True)
+    # arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     # arena.split_army()
     # arena.checkNewRound()
     # data1 = start_game_record(battle=arena)
