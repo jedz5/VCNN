@@ -756,7 +756,8 @@ def load_episo(dir):
     mask2 = Batch.cat(masks)
     rew2 = np.concatenate(rews)
     done2 = np.concatenate(dones)
-    expert = Batch(obs=obs2,obs_next = obs_next2,act=act2, rew=rew2, done=done2,info=mask2,policy = Batch())
+    '''empty policy will results in batch length = 0'''
+    expert = Batch(obs=obs2,obs_next = obs_next2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
     return expert
 def start_test():
     import pygame
@@ -773,10 +774,9 @@ def start_test():
     start_game("ENV/battles/6.json", by_AI=[2, 1],agent=agent)
 #@profile
 def start_train():
-    lrate = 0.0005
-    sample_num = 100
     # 初始化 agent
     actor_critic = H3_net(dev)
+    lrate = 0.0005
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
@@ -791,6 +791,9 @@ def start_train():
     if expert:
         max_sar[0] = Batch.cat([expert])
         cumulate_reward(expert)
+        agent.process_gae(expert, single_batch=False, sil=True)
+        '''fill in policy'''
+        max_sar[0].policy = expert.policy
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -808,11 +811,15 @@ def start_train():
             obs_idx = random.choice(range(len(max_sar[idx].obs)))  # SIL
             return obs_idx,(max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
     def update_max(idx,obs_idx,data:Batch):
-        if obs_idx < 0 or (not max_sar[idx]):
-            max_sar[idx] = Batch.cat([data])
+        if obs_idx < 0:
+            if (not max_sar[idx]):
+                max_sar[idx] = Batch.cat([data])
+            elif (sum(max_sar[idx].rew) < sum(data.rew)):
+                max_sar[idx] = Batch.cat([data])
         elif (sum(max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
             max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch.cat([data])])
     max_win_count = len(file_list)
+    sample_num = 100
     while True:
         agent.eval()
         agent.in_train = True

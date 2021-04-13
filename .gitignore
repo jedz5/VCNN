@@ -2,6 +2,8 @@
 *.pyc
 *.log
 *.npy
+!0.npy
+!1.npy
 *.JPG
 *.bmp
 imgs

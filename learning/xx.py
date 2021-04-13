@@ -18,8 +18,8 @@ from tianshou.data import Batch
 # s = a.sum()
 # lk = np.array(range(s-1,-1,-1))
 # a[a == 1] += lk
-a = Batch(rew = [1,2,3,4],act = [11,21,31,41])
+a = Batch(rew = [1,2,3,4])
 b = Batch(rew = [3,4,5,6],act = [11,21,31,41])
-c = Batch.cat([a[:0],Batch(b)])
+c = Batch.cat([a[:2],Batch(b)])
 b.rew[0] = 111
 print(np.random.binomial(1,0.2))
