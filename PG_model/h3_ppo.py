@@ -785,13 +785,12 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
-    max_sar = [None] * 4 #type:List[Batch]
+    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json']
+    max_sar = [None] * len(file_list) #type:List[Batch]
     expert = load_episo("ENV/episode")
     if expert:
         max_sar[0] = Batch(expert)
         cumulate_reward(expert)
-    file_list = ['ENV/battles/0.json','ENV/battles/1.json','ENV/battles/2.json','ENV/battles/3.json']
-
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -809,7 +808,7 @@ def start_train():
             obs_idx = random.choice(range(len(max_sar[idx].obs)))  # SIL
             return obs_idx,(max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
     def update_max(idx,obs_idx,data:Batch):
-        if (not max_sar[idx]):
+        if obs_idx < 0 or (not max_sar[idx]):
             max_sar[idx] = Batch(data)
         elif (sum(max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
             max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch(data)])

@@ -15,7 +15,7 @@ np.set_printoptions(threshold=np.inf,
 # Modified version of Adam Hughes's https://stackoverflow.com/a/27948073/1429402
 def save_formatted(fname,data):
 
-    class NumpyEncoder(json.JSONEncoder):
+    class my_numpy_encoder(json.JSONEncoder):
         def default(self, obj):
             if isinstance(obj, np.ndarray):
                 return '__ndarray__'+self.numpy_to_string(obj)
@@ -43,7 +43,7 @@ def save_formatted(fname,data):
     # so we look for the problematic numpy print syntax and correct
     # it to be readable natively by JSON, in this case: [0.0, 0.0, 0.0]
     with open(fname,'w') as io:
-        for line in json.dumps(data, sort_keys=False, indent=4, cls=NumpyEncoder).splitlines():
+        for line in json.dumps(data, sort_keys=False, indent=4, cls=my_numpy_encoder).splitlines():
             if '__ndarray__' in line:
                 index = line.index('"__ndarray__')
                 lines = line.replace('"__ndarray__','') #remove '__ndarray__' at the end of the last array

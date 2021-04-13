@@ -7,7 +7,7 @@ from enum import Enum
 import logging
 import os
 import json
-from ENV.python_json_numpy_print import save_formatted
+# from ENV.python_json_numpy_print import save_formatted
 np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 std_logger = logging.getLogger('train')
