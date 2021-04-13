@@ -830,6 +830,7 @@ def start_train():
                 cumulate_reward(exp_copy)
                 agent.process_gae(exp_copy, single_batch=False, sil=True)
                 bats.append(exp_copy)
+                logger.info(f"exp.rew={sum(exp.rew)}")
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
