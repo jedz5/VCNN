@@ -789,7 +789,7 @@ def start_train():
     max_sar = [None] * len(file_list) #type:List[Batch]
     expert = load_episo("ENV/episode")
     if expert:
-        max_sar[0] = Batch(expert)
+        max_sar[0] = Batch.cat([expert])
         cumulate_reward(expert)
     file_list_cache = []
     '''cache json'''
@@ -809,9 +809,9 @@ def start_train():
             return obs_idx,(max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
     def update_max(idx,obs_idx,data:Batch):
         if obs_idx < 0 or (not max_sar[idx]):
-            max_sar[idx] = Batch(data)
+            max_sar[idx] = Batch.cat([data])
         elif (sum(max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch(data)])
+            max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch.cat([data])])
     max_win_count = len(file_list)
     while True:
         agent.eval()
@@ -819,7 +819,8 @@ def start_train():
         bats = []
         for exp in max_sar:
             if exp:
-                exp_copy = Batch(exp)
+                exp_copy = Batch.cat([exp])
+                cumulate_reward(exp_copy)
                 agent.process_gae(exp_copy, single_batch=False, sil=True)
                 bats.append(exp_copy)
         for ii in range(sample_num):
