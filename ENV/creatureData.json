@@ -17,7 +17,7 @@
 			"speed" : 4
 		},
 		{
-			"ai_value" : 115,
+			"ai_value" : 100,
 			"attack" : 6,
 			"defense" : 5,
 			"fight_value" : 115,
@@ -49,7 +49,7 @@
 			"speed" : 4
 		},
 		{
-			"ai_value" : 184,
+			"ai_value" : 200,
 			"attack" : 6,
 			"defense" : 3,
 			"fight_value" : 115,
@@ -1905,7 +1905,7 @@
 			"speed" : 7
 		},
 		{
-			"ai_value" : 95,
+			"ai_value" : 90,
 			"attack" : 2,
 			"defense" : 2,
 			"fight_value" : 70,

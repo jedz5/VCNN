@@ -8,15 +8,14 @@ An implementation of the training pipeline of AlphaZero for Gomoku
 from __future__ import print_function
 import random
 import numpy as np
-from collections import defaultdict, deque
-import H3_battle as bat
-from mcts_alpha import MCTSPlayer
+from collections import deque
+from ENV import H3_battle as bat
+from old.mcts_alpha import MCTSPlayer
 import traceback
 #from policy_value_net import PolicyValueNet  # Theano and Lasagne
 # from policy_value_net_pytorch import PolicyValueNet  # Pytorch
-from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
-import logging
-from H3_battle import logger
+from old.policy_value_net_tensorflow import PolicyValueNet # Tensorflow
+from ENV.H3_battle import logger
 class TrainPipeline():
     def __init__(self, init_model=None):
         # params of the board and the game
@@ -42,7 +41,7 @@ class TrainPipeline():
         # num of simulations used for the pure mcts, which is used as
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = 1000
-        self.tmp_battle = bat.Battle("./train/selfplay1.json")
+        self.tmp_battle = bat.Battle(load_file="./train/selfplay1.json")
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(bat.Battle.bFieldWidth - 2, bat.Battle.bFieldHeight,
@@ -60,7 +59,7 @@ class TrainPipeline():
         if take_control:
             self.mcts_player = bat.BPlayer()
         for i in range(n_games):
-            self.tmp_battle = bat.Battle("./train/selfplay1.json")
+            self.tmp_battle = bat.Battle(load_file="./train/selfplay1.json")
             if take_control:
                 play_data = np.load('play_data.npy')
             else:

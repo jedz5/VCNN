@@ -1,11 +1,8 @@
-
 import pygame  # 导入pygame库
-from pygame.locals import *  # 导入pygame库中的一些常量
-import sys # 导入sys库中的exit函数
-import H3_battle
-from H3_battle import *
+from ENV.H3_battle import *
 import math
-from enum import Enum
+# import VCCC.x64.Release.VCbattle  as vb
+from VCbattle import BHex
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 
@@ -21,6 +18,11 @@ class log_with_gui(object):
     def debug(self,text,to_gui = False):
         # pass
         self.logger.debug(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def error(self,text,to_gui = False):
+        # pass
+        self.logger.error(text)
         if(to_gui):
             self.log_text.append(text)
 
@@ -65,15 +67,13 @@ class CClickableHex:
             self.pixels_y = 86 + 42 * self.hex_i
         return self.pixels_x,self.pixels_y
 class BattleInterface:
-    def __init__(self, battle_engine):
+    def __init__(self, battle_engine = None):
         # 定义窗口的分辨率
         self.SCREEN_WIDTH = 1000
         self.SCREEN_HEIGHT = 600
         self.BFIELD_WIDTH = 17
         self.BFIELD_HEIGHT = 11
         self.running = True
-        battle_engine.bat_interface = self
-        self.battle_engine = battle_engine
         self.current_hex = CClickableHex()
         self.hoveredStack = None
         self.transColor = pygame.Color(255, 0, 255)
@@ -84,64 +84,71 @@ class BattleInterface:
         self.cursor_attack = [None] * 6
         self.cursor_move = [None] * 5
         self.cursor_shoot = [None] * 2
-        self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont("Arial", 11)
-        self.font.set_bold(True)
         self.loadIMGs()
+        if battle_engine:
+            self.init_battle(battle_engine)
+        else:
+            self.battle_engine = None
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.SysFont("Arial", 16)
+        self.font.set_bold(True)
         self.next_act = None
-        self.act = None
-        self.dump_dir = "./ENV/curriculum"
+        self.dump_dir = "ENV/battles"
         pygame.mouse.set_visible(False)
     def loadIMGs(self):
         self.screen = pygame.display.set_mode([self.SCREEN_WIDTH, self.SCREEN_HEIGHT])  # 初始化一个用于显示的窗口
-        stacks = self.battle_engine.stacks
-        background = pygame.image.load("imgs/bgrd.bmp")
+        background = pygame.image.load("ENV/imgs/bgrd.bmp")
         self.background = background
-        self.hex_shader = pygame.image.load("imgs/CCellShd_gray.bmp")
+        self.hex_shader = pygame.image.load("ENV/imgs/CCellShd_gray.bmp")
         self.hex_shader.set_colorkey(self.transColor)
         self.hex_shader.set_alpha(100)
-        self.shader_cur_stack = pygame.image.load("imgs/CCellShd_green.bmp")
+        self.shader_cur_stack = pygame.image.load("ENV/imgs/CCellShd_green.bmp")
         self.shader_cur_stack.set_colorkey(self.transColor)
-        self.shader_cur_target = pygame.image.load("imgs/CCellShd_red.bmp")
+        self.shader_cur_target = pygame.image.load("ENV/imgs/CCellShd_red.bmp")
         self.shader_cur_target.set_colorkey(self.transColor)
-        self.amout_backgrd = pygame.image.load("imgs/CmNumWin_purple.bmp").convert_alpha()
-        self.amout_backgrd_enemy = pygame.image.load("imgs/CmNumWin_blue.bmp").convert_alpha()
-        for st in stacks:
+        self.amout_backgrd = pygame.image.load("ENV/imgs/CmNumWin_purple.bmp").convert_alpha()
+        self.amout_backgrd_enemy = pygame.image.load("ENV/imgs/CmNumWin_blue.bmp").convert_alpha()
+
+        for idx in range(6):
+            img = pygame.image.load("ENV/imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_attack[idx] = img
+        for idx in range(5):
+            img = pygame.image.load("ENV/imgs/cursor/move/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_move[idx] = img
+        for idx in range(2):
+            img = pygame.image.load("ENV/imgs/cursor/shoot/" + str(idx) + ".bmp")#.convert_alpha()
+            # img.set_colorkey((0, 255, 255))
+            self.cursor_shoot[idx] = img
+        self.cursor = self.cursor_move[0]
+    def init_battle(self,battle):
+        self.running = True
+        battle.bat_interface = self
+        self.battle_engine = battle
+        for st in battle.stacks:
             if st.name not in self.stimgs:
-                img = pygame.image.load("imgs/creatures/"+st.name+".bmp").convert_alpha()
+                img = pygame.image.load("ENV/imgs/creatures/"+st.name+".bmp").convert_alpha()
                 imgback = pygame.Surface(img.get_size())
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16,16,16))
                 self.stimgs[st.name] = imgback
                 #dead
-                img = pygame.image.load("imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
+                img = pygame.image.load("ENV/imgs/creatures/dead/" + st.name + ".bmp").convert_alpha()
                 imgback = pygame.Surface(img.get_size())
                 imgback.blit(img, (0, 0))
                 imgback.set_colorkey((16, 16, 16))
                 self.stimgs_dead[st.name] = imgback
-        for oi in self.battle_engine.obsinfo:
-            if oi.imname not in self.stimgs:
-                img = pygame.image.load("imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
-                imgback = pygame.Surface(img.get_size())
-                imgback.blit(img, (0, 0))
-                if oi.isabs:
-                    imgback.set_colorkey((0, 255, 255))
-                else:
-                    imgback.set_colorkey((0, 0, 0))
-                self.stimgs[oi.imname] = imgback
-        for idx in range(6):
-            img = pygame.image.load("imgs/cursor/attack/" + str(idx) + ".bmp")#.convert_alpha()
-            # img.set_colorkey((0, 255, 255))
-            self.cursor_attack[idx] = img
-        for idx in range(5):
-            img = pygame.image.load("imgs/cursor/move/" + str(idx) + ".bmp")#.convert_alpha()
-            # img.set_colorkey((0, 255, 255))
-            self.cursor_move[idx] = img
-        for idx in range(2):
-            img = pygame.image.load("imgs/cursor/shoot/" + str(idx) + ".bmp")#.convert_alpha()
-            # img.set_colorkey((0, 255, 255))
-            self.cursor_shoot[idx] = img
-        self.cursor = self.cursor_move[0]
+        # for oi in self.battle_engine.obsinfo:
+        #     if oi.imname not in self.stimgs:
+        #         img = pygame.image.load("ENV/imgs/obstacles/" + oi.imname + ".bmp").convert_alpha()
+        #         imgback = pygame.Surface(img.get_size())
+        #         imgback.blit(img, (0, 0))
+        #         if oi.isabs:
+        #             imgback.set_colorkey((0, 255, 255))
+        #         else:
+        #             imgback.set_colorkey((0, 0, 0))
+        #         self.stimgs[oi.imname] = imgback
     def renderFrame(self):
         if self.running:
             self.clock.tick(60)
@@ -174,13 +181,14 @@ class BattleInterface:
                 self.screen.blit(self.shader_cur_target,
                                  CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
             elif (self.next_act.type == action_type.attack):
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
-            if (self.next_act.type == action_type.shoot):
-                self.screen.blit(self.shader_cur_target,
-                                 CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+                if not self.battle_engine.cur_stack.can_shoot():
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.dest.y, self.next_act.dest.x).getHexXY())
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
+                else:
+                    self.screen.blit(self.shader_cur_target,
+                                     CClickableHex(self.next_act.target.y, self.next_act.target.x).getHexXY())
         # show obstacles
         for oi in self.battle_engine.obsinfo:
             img = self.stimgs[oi.imname]
@@ -261,26 +269,37 @@ class BattleInterface:
                 self.handleMouseMotion(mouse_x, mouse_y)
             elif event.type == pygame.MOUSEBUTTONUP:
                 cur_stack = self.battle_engine.cur_stack
-                if cur_stack.by_AI == 0:
-                    act = self.act
-                    self.cursor = self.cursor_move[3]
-                    self.act = None
-                    return act
+                bf = cur_stack.get_global_state()
+                h = self.current_hex
+                if cur_stack.by_AI > 0:
+                    return True
+                elif cur_stack.by_AI == 0 and (bf[h.hex_i, h.hex_j] == 201 or 0 <= bf[h.hex_i, h.hex_j] < 50):
+                    if not self.next_act:
+                        mouse_x, mouse_y = event.pos
+                        self.handleMouseMotion(mouse_x, mouse_y)
+                    return True
                 else:
-                    return self.next_act
+                    self.cursor = self.cursor_move[3]
+                return False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_d:
                     self.battle_engine.dump_battle(self.dump_dir)
-                    return
+                    return False
+                if event.key == pygame.K_q:
+                    self.running = False
+                    return False
                 cur_stack = self.battle_engine.cur_stack
                 if cur_stack.by_AI == 0:
                     if event.key == pygame.K_SPACE:
-                        return BAction(action_type.defend)
+                        self.next_act = BAction(action_type.defend)
+                        return True
                     if event.key == pygame.K_w:
                         if cur_stack.had_waited:
-                            logger.info("can't wait any more!",True)
+                            logger.error("can't wait any more!",True)
+                            return False
                         else:
-                            return BAction(action_type.wait)
+                            self.next_act = BAction(action_type.wait)
+                            return True
 
     def shift_attack_pointer(self,sector,mouse_x, mouse_y):
         x = mouse_x - 16
@@ -324,6 +343,9 @@ class BattleInterface:
                 self.hoveredStack = stack
         #cursor and action
         cur_stack = self.battle_engine.cur_stack
+        if cur_stack.by_AI != 0:
+            self.cursor = self.cursor_move[0]
+            return
         bf = cur_stack.get_global_state()
         h = self.current_hex
         if bf[h.hex_i, h.hex_j] == 201:
@@ -332,7 +354,7 @@ class BattleInterface:
                     self.cursor = self.cursor_shoot[1]
                 else:
                     self.cursor = self.cursor_shoot[0]
-                self.act = BAction(action_type.shoot, target=self.hoveredStack)
+                self.next_act = BAction(action_type.attack, target=self.hoveredStack)
             else:
                 bf[cur_stack.y,cur_stack.x] = cur_stack.speed
                 subdividingAngle = 2.0 * np.pi / 6.0 # Divide hex in 6 directions
@@ -346,37 +368,33 @@ class BattleInterface:
                 if 0 <= bf[from_dest.y,from_dest.x] < 50:
                     self.cursor = self.cursor_attack[sector]
                     self.shift_attack_pointer(sector,mouse_x,mouse_y)
-                    self.act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
+                    self.next_act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
                 else:
                     self.cursor = self.cursor_move[3]
-                    self.act = None
         elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
             self.cursor = self.cursor_move[4]
-            self.act = None
         elif bf[h.hex_i, h.hex_j] == 800 or bf[h.hex_i, h.hex_j] == 100:
             self.cursor = self.cursor_move[3]
-            self.act = None
         elif 0 <= bf[h.hex_i, h.hex_j] < 50:
             if cur_stack.is_fly:
                 self.cursor = self.cursor_move[2]
-                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
+                self.next_act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
             else:
                 self.cursor = self.cursor_move[1]
-                self.act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
+                self.next_act = BAction(action_type.move, dest=BHex(h.hex_j, h.hex_i))
         elif bf[h.hex_i, h.hex_j] < 0:
             self.cursor = self.cursor_move[3]
-            self.act = None
         # print("hovered on pixels{},{} location{},{} repixels{},{}".format(mouse_x,mouse_y,i,j,self.current_hex.pixels_x,self.current_hex.pixels_y))
 
-    def handleBattle(self,act,print_act=True):
-        if not act:
-            return
-        battle = self.battle_engine
-        battle.doAction(act)
-        battle.checkNewRound()
-        if battle.check_battle_end():
-            return
-        self.next_act = battle.cur_stack.active_stack(print_act = print_act)
+    # def handleBattle(self,act,print_act=True):
+    #     if not act:
+    #         return
+    #     battle = self.battle_engine
+    #     battle.doAction(act)
+    #     battle.checkNewRound()
+    #     if battle.check_battle_end():
+    #         return
+    #     self.next_act = battle.cur_stack.active_stack(print_act = print_act)
 
     def getObstaclePosition(self,img, obinfo):
         if obinfo.isabs:
@@ -388,29 +406,78 @@ class BattleInterface:
         x,y = bh.getHexXY()
         y += 42 - img.get_height() + offset
         return x,y
-def start_game():
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    debug = False
-    battle = Battle(debug=debug,by_AI=[0,1])
-    # if debug:
-    #     battle.loadFile("ENV/selfplay.json",shuffle_postion=True)
-    # else:
-    #     battle.loadFile("ENV/battles/debug1.json", shuffle_postion=True)
-    battle.load_battle("ENV/battles/1.json")
+def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "ENV/battles/6.json", shuffle_postion=False,load_ai_side=False):
+    if not battle:
+        battle = Battle(by_AI = by_AI,agent=agent)
+        battle.load_battle(file=file, shuffle_postion=shuffle_postion,load_ai_side=load_ai_side)
+    # battle.loadFile("ENV/debug.json",load_ai_side=False)
     battle.checkNewRound()
-    bi = BattleInterface(battle)
+    if not battle_int:
+        # 初始化游戏
+        pygame.init()  # 初始化pygame
+        pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+        bi = BattleInterface(battle)
+    else:
+        bi = battle_int
+        bi.init_battle(battle)
     bi.next_act = battle.cur_stack.active_stack()
+    bi.running = True
     # 事件循环(main loop)
     while bi.running:
-        act = bi.handleEvents()
-        bi.handleBattle(act)
-        if battle.check_battle_end():
-            logger.info("battle end~")
-            return
+        do_act = bi.handleEvents()
+        if do_act:
+            battle.doAction(bi.next_act)
+            battle.checkNewRound()
+            done = battle.check_battle_end()
+            if done:
+                logger.debug("battle end~")
+                bi.running = False
+            else:
+                bi.next_act = battle.cur_stack.active_stack()
         bi.renderFrame()
-    pygame.quit()
+    return bi
+M=0
+def start_game_s_gui(battle:Battle):
+    if not battle:
+        arena = Battle(by_AI=[0, 1])
+        arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
+    else:
+        arena = battle
+    arena.split_army()
+    arena.checkNewRound()
+    bi = start_game_gui(battle=arena)
+    if arena.check_battle_end():
+        bi.running = True
+    arena.reset()
+    '''my army is all gone~~'''
+    if arena.check_battle_end():
+        bi.running = False
+    count = 1
+    while bi.running:
+        arena.split_army()
+        arena.checkNewRound()
+        start_game_gui(battle_int=bi, battle=arena)
+        '''q = quit'''
+        if arena.check_battle_end():
+            bi.running = True
+        else:
+            bi.running = False
+        arena.reset()
+        '''my army is all gone~~'''
+        if arena.check_battle_end():
+            bi.running = False
+        count += 1
+    print(f"battle count = {count}")
 if __name__ == '__main__':
-    start_game()
+    from PG_model.h3_ppo import H3_policy,H3_net
+    import torch
+    actor_critic = H3_net("cpu")
+    agent = H3_policy(actor_critic)
+    agent.load_state_dict(torch.load("model_param.pkl"))
+    agent.in_train = False
+    arena = Battle(by_AI=[2, 1],agent=agent)
+    # arena = Battle(by_AI=[2, 1])
+    arena.load_battle("ENV/battles/3.json", load_ai_side=False, format_postion=True)
+    start_game_s_gui(battle=arena)
+
 

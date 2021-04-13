@@ -1,22 +1,25 @@
-import torch
-import time
+import gym
 import numpy as np
-from tianshou.data import ReplayBuffer
+from collections import defaultdict
 from tianshou.data import Batch
-from pstats import SortKey
 
-
-# import pstats
-# pcpu=pstats.Stats(r"D:\doc\pstats\cpu4w.pstat")
-# pcuda=pstats.Stats(r"D:\doc\pstats\local_cpu.pstat")
-# pcpu.sort_stats("cumulative")
-# pcuda.sort_stats("cumulative")
-# pcpu.print_stats("h3_ppo","forward")  #("h3_ppo","__call__")
-# pcuda.print_stats("h3_ppo","forward")  #("h3_ppo","__call__")
+# m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+# n = [[2, 2, 2], [3, 3, 3], [4, 4, 4]]
 #
-# pcpu.print_callees("h3_ppo","forward")  #("h3_ppo","__call__")  # 可以显示哪个函数调用了哪些函数
-# pcuda.print_callees("h3_ppo","forward")  #("h3_ppo","__call__")
+# print('list(zip(m,n)):\n', list(zip(m, n)))
+# print("*zip(m, n):\n", *zip(m, n))
+# print("*zip(*zip(m, n)):\n", *zip(*zip(m, n)))
+#
+# m2, n2 = zip(*zip(m, n))
+# print(m == list(m2) and n == list(n2))
 
 
-a = torch.tensor([[1,2],[3,4]])
-b = torch.argmax(a,dim=-1)[0].item()
+# a = np.array([0,0,0,1,0,0,1])
+# s = a.sum()
+# lk = np.array(range(s-1,-1,-1))
+# a[a == 1] += lk
+a = Batch(rew = [1,2,3,4])
+b = Batch(rew = [3,4,5,6],act = [11,21,31,41])
+c = Batch.cat([a[:2],Batch(b)])
+b.rew[0] = 111
+print(np.random.binomial(1,0.2))

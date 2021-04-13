@@ -4,10 +4,10 @@ import json
 import numpy as np
 from enum import IntEnum
 import random
-from creatureEmbedding import load_json
-from creatureEmbedding import run_remote_server
-from creatureEmbedding import runServer
-from creatureEmbedding import runClient
+from old.creatureEmbedding import load_json
+from old.creatureEmbedding import run_remote_server
+from old.creatureEmbedding import runServer
+from old.creatureEmbedding import runClient
 import multiprocessing
 import glob
 import time
@@ -142,21 +142,21 @@ def count_loss(army,p):
         print("win: ",1-p)
     return army
 if __name__ == '__main__':
-    # genJsons(1)
-    # my_army = [[3, 22],[0,1],[0, 1],[0, 1],[0,11],[0,1],[7,12]] #
-    # my_enemy = [[23, 5], [23, 5],[23, 5]]
-    # start_one_battle("192.168.3.14",8000,False,genJsons_one_vs_one(my_army,my_enemy),'')
-    # win_rate =  start_many_battles(genJsons_one_vs_one(my_army))
-    # count_loss(my_army,1-win_rate)
-    # print("battle1 ",win_rate)
-    # print(my_army)
-    #
-    # win_rate = start_many_battles(genJsons_one_vs_one(my_army))
-    # count_loss(my_army, 1 - win_rate)
-    # print("battle2 ", win_rate)
-    # print(my_army)
-    #
-    # win_rate = start_many_battles(genJsons_one_vs_one(my_army))
-    # count_loss(my_army, 1 - win_rate)
-    # print("battle3 ", win_rate)
-    # print(my_army)
+    genJsons(1)
+    my_army = [[3, 22],[0,1],[0, 1],[0, 1],[0,11],[0,1],[7,12]] #
+    my_enemy = [[23, 5], [23, 5],[23, 5]]
+    start_one_battle("192.168.3.14",8000,False,genJsons_one_vs_one(my_army,my_enemy),'')
+    win_rate =  start_many_battles(genJsons_one_vs_one(my_army))
+    count_loss(my_army,1-win_rate)
+    print("battle1 ",win_rate)
+    print(my_army)
+
+    win_rate = start_many_battles(genJsons_one_vs_one(my_army))
+    count_loss(my_army, 1 - win_rate)
+    print("battle2 ", win_rate)
+    print(my_army)
+
+    win_rate = start_many_battles(genJsons_one_vs_one(my_army))
+    count_loss(my_army, 1 - win_rate)
+    print("battle3 ", win_rate)
+    print(my_army)
