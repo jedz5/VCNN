@@ -529,7 +529,10 @@ class Battle(object):
             self.checkNewRound()
 
     def reset(self):
-        for att in self.attacker_stacks:
+        attackers = self.attacker_stacks
+        defenders = self.defender_stacks
+        self.clear()
+        for att in attackers:
             att.amount_base = att.amount
             att.first_HP_Left = att.health
             att.y, att.x, att.slotId = 0, 0, 0
@@ -538,7 +541,7 @@ class Battle(object):
             att.had_retaliated = False
             att.had_defended = False
             att.shots = 16
-        for deff in self.defender_stacks:
+        for deff in defenders:
             deff.amount = deff.amount_base
             deff.first_HP_Left = deff.health
             deff.y, deff.x, deff.slotId = 0, 0, 0
@@ -547,11 +550,17 @@ class Battle(object):
             deff.had_retaliated = False
             deff.had_defended = False
             deff.shots = 16
+        self.attacker_stacks = attackers
+        self.defender_stacks = defenders
+    def clear(self):
         self.round = 0
-        self.toMove.clear()
-        self.waited.clear()
-        self.moved.clear()
-        self.stackQueue.clear()
+        self.stacks = []
+        self.toMove = []
+        self.waited = []
+        self.moved = []
+        self.toMove = []
+        self.attacker_stacks = []
+        self.defender_stacks = []
         self.cur_stack = None
         self.last_stack = None
     def merge_stacks(self):
@@ -619,7 +628,7 @@ class Battle(object):
         cp.batId = batId
         cp.round = self.round
         cp.obstacles = copy.deepcopy(self.obstacles)
-        def copyStack(st,newBat):
+        def copyStack(st:BStack,newBat):
             newSt = copy.copy(st)
             newSt.in_battle = newBat
             return newSt
@@ -629,6 +638,7 @@ class Battle(object):
         cp.sortStack()
         return cp
     def loadFile(self,file,shuffle_postion = True,load_ai_side = True):
+        self.clear()
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -707,7 +717,8 @@ class Battle(object):
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
 
-    def load_battle(self,file,load_ai_side = True, shuffle_postion=False,format_postion = False):
+    def load_battle(self,file,load_ai_side = False, shuffle_postion=False,format_postion = False):
+        self.clear()
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -1102,6 +1113,24 @@ class BAction:
         self.dest = dest
         self.target = target
         self.spell = spell
+    @staticmethod
+    def idx_to_action(act_id,position_id,target_id,spell_id,in_battle):
+        if act_id == action_type.wait.value:
+            next_act = BAction(action_type.wait)
+        elif act_id == action_type.defend.value:
+            next_act = BAction(action_type.defend)
+        elif act_id == action_type.move.value:
+            next_act = BAction(action_type.move,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
+        elif act_id == action_type.attack.value:
+            t = in_battle.stackQueue[target_id]
+            next_act = BAction(action_type.attack,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)),
+                               target=t)
+        else:
+            logger.error("not implemented action!!", True)
+            sys.exit(-1)
+        return next_act
     def __repr__(self):
         if self.type == action_type.wait:
             return f'action wait'

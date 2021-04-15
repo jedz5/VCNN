@@ -4,6 +4,7 @@
 *.npy
 !0.npy
 !1.npy
+!max_data_0.npy
 *.JPG
 *.bmp
 imgs

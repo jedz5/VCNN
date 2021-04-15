@@ -338,21 +338,7 @@ class H3_policy(PGPolicy):
         position_id = result['position_id']
         target_id = result['target_id']
         spell_id = result['spell_id']
-        if act_id == action_type.wait.value:
-            next_act = BAction(action_type.wait)
-        elif act_id == action_type.defend.value:
-            next_act = BAction(action_type.defend)
-        elif act_id == action_type.move.value:
-            next_act = BAction(action_type.move,
-                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
-        elif act_id == action_type.attack.value:
-            t = in_battle.stackQueue[target_id]
-            next_act = BAction(action_type.attack,
-                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)),
-                               target=t)
-        else:
-            logger.error("not implemented action!!", True)
-            sys.exit(-1)
+        next_act = BAction.idx_to_action((act_id,position_id,target_id,spell_id),in_battle)
         if not ret_obs:
             return next_act
         act_id = 0 if act_id < 0 else act_id
@@ -424,8 +410,8 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                         buffer.done[bl - 1] = True
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-global_buffer = ReplayBuffer(500,ignore_obs_next=True)
-global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
+global_buffer = ReplayBuffer(500)
+global_buffer_defender = ReplayBuffer(500)
 def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
     if not battle:
         battle = Battle(agent=agent)
@@ -646,9 +632,10 @@ def get_act_info(battle,act):
             position_id = act.dest.to_position_id()
         else:
             position_id = 0
-        tgt_stacks = battle.attacker_stacks if battle.cur_stack.side else battle.defender_stacks
+        tgt_stacks = battle.stackQueue
         for i, st in enumerate(tgt_stacks):
-            if st.is_alive() and st == act.target:
+            assert st.is_alive(),f"{st} is dead?"
+            if st == act.target:
                 target_id = i
         if target_id < 0:
             logger.error("no target found")
@@ -671,7 +658,7 @@ def start_game_record(battle:Battle=None):
     from tianshou.data import ReplayBuffer
     from ENV import H3_battleInterface
     import pygame
-    buffer = ReplayBuffer(500,ignore_obs_next=True)
+    buffer = ReplayBuffer(500)
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
@@ -736,31 +723,28 @@ def dump_episo(ep,dir,file=None):
 def load_episo(dir):
     if len(os.listdir(dir)) == 0:
         return
-    obss,obs_nexts,acts,masks,rews,dones =[],[],[],[],[],[]
+    obss,acts,masks,rews,dones =[],[],[],[],[]
     for f in os.listdir(dir):
         tmp_f = os.path.join(dir,f)
         if os.path.isdir(tmp_f):
             continue
         else:
-            obs,obs_next, act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
+            obs,xxx,act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
             obs = Batch.stack(obs)
-            obs_next = Batch.stack(obs_next)
             act = Batch.stack(act)
             mask = Batch.stack(mask)
             obss.append(obs)
-            obs_nexts.append(obs_next)
             acts.append(act)
             masks.append(mask)
             rews.append(rew)
             dones.append(done)
     obs2 = Batch.cat(obss)
-    obs_next2 = Batch.cat(obs_nexts)
     act2 = Batch.cat(acts)
     mask2 = Batch.cat(masks)
     rew2 = np.concatenate(rews)
     done2 = np.concatenate(dones)
     '''empty policy will results in batch length = 0'''
-    expert = Batch(obs=obs2,obs_next = obs_next2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
+    expert = Batch(obs=obs2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
     return expert
 def start_test():
     import pygame
@@ -811,7 +795,7 @@ class replay_manager:
             # save_formatted(dump_in, {'stacks': attri_stack, 'round': self.round})
             self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
             max_data = self.max_sar[idx]
-            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/episode",f'max_data_{idx}.npy')
+            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
             logger.info(f"states dumped in max_data_{idx}.npy")
     def get_sars(self):
         bats = []
@@ -849,7 +833,8 @@ def start_train():
         file_list_cache.append((start,arena.round))
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
-    sample_num = 10
+    sample_num = 100
+    logger.info(f"start training sample eps/epoch = {sample_num}")
     while True:
         agent.eval()
         agent.in_train = True
@@ -1000,12 +985,15 @@ def start_game_record_s():
     arena.checkNewRound()
     data2 = start_game_record(battle=arena)
     data = Batch.cat([data1, data2])
-    dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
-    data = load_episo("ENV/episode")
-    cumulate_reward(data)
+    dump_episo([data.obs, data.act, data.rew, data.done, data.info], "ENV/episode",file='0.npy')
+
 M=0
 if __name__ == '__main__':
     # start_game_record()
     # start_game_record_s()
-    start_train()
+    # start_train()
     # start_test()
+
+    from ENV.H3_battleInterface import start_replay
+    data = load_episo("ENV/max_sars")
+    start_replay(data)
