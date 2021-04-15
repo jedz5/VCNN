@@ -729,7 +729,7 @@ def load_episo(dir):
         if os.path.isdir(tmp_f):
             continue
         else:
-            obs,xxx,act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
+            obs,act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
             obs = Batch.stack(obs)
             act = Batch.stack(act)
             mask = Batch.stack(mask)
