@@ -338,7 +338,7 @@ class H3_policy(PGPolicy):
         position_id = result['position_id']
         target_id = result['target_id']
         spell_id = result['spell_id']
-        next_act = BAction.idx_to_action((act_id,position_id,target_id,spell_id),in_battle)
+        next_act = BAction.idx_to_action(act_id,position_id,target_id,spell_id,in_battle)
         if not ret_obs:
             return next_act
         act_id = 0 if act_id < 0 else act_id
@@ -991,9 +991,9 @@ M=0
 if __name__ == '__main__':
     # start_game_record()
     # start_game_record_s()
-    # start_train()
+    start_train()
     # start_test()
 
-    from ENV.H3_battleInterface import start_replay
-    data = load_episo("ENV/max_sars")
-    start_replay(data)
+    # from ENV.H3_battleInterface import start_replay
+    # data = load_episo("ENV/max_sars")
+    # start_replay(data)
