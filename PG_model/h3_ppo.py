@@ -715,19 +715,22 @@ def start_game_record(battle:Battle=None):
     data, indice = buffer.sample(0)
     return data
     # np.save("d:/xxx.npy", [data.obs, data.act, data.rew,data.done,data.info])
-def dump_episo(ep,dir):
-    files = []
-    for f in os.listdir(dir):
-        tmp_f = os.path.join(dir,f)
-        if os.path.isdir(tmp_f):
-            continue
+def dump_episo(ep,dir,file=None):
+    if not file:
+        files = []
+        for f in os.listdir(dir):
+            tmp_f = os.path.join(dir,f)
+            if os.path.isdir(tmp_f):
+                continue
+            else:
+                files.append(int(os.path.splitext(f)[0]))
+        if len(files):
+            nmax = max(files) + 1
         else:
-            files.append(int(os.path.splitext(f)[0]))
-    if len(files):
-        nmax = max(files) + 1
+            nmax = 0
+        dump_in = os.path.join(dir, f'{nmax}.npy')
     else:
-        nmax = 0
-    dump_in = os.path.join(dir, f'{nmax}.npy')
+        dump_in = os.path.join(dir, file)
     np.save(dump_in,ep)
     print(f"episode dumped in {dump_in}")
 def load_episo(dir):
@@ -772,6 +775,54 @@ def start_test():
     agent.eval()
     agent.in_train = False
     start_game("ENV/battles/6.json", by_AI=[2, 1],agent=agent)
+class replay_manager:
+    def __init__(self,file_list_cache,agent,p_start_from_scratch = 0.2):
+        fl = len(file_list_cache)
+        self.win_rate = [0] * fl
+        self.start_point = [0] * fl
+        self.max_sar = [None] * fl #type:List[Batch]
+        self.file_list_cache = file_list_cache
+        self.agent = agent
+        self.init_expert_data()
+        self.p_start_from_scratch = p_start_from_scratch
+    def init_expert_data(self):
+        expert = load_episo("ENV/episode")
+        if expert:
+            self.start_point[0] = len(expert) - 1
+            self.max_sar[0] = Batch.cat([expert])
+            cumulate_reward(expert)
+            self.agent.process_gae(expert, single_batch=False, sil=True)
+            '''fill in policy'''
+            self.max_sar[0].policy = expert.policy
+    def choose_start(self,idx):
+        if not self.max_sar[idx] or np.random.binomial(1,0.2):
+            return -1,self.file_list_cache[idx] #RL
+        else:
+            obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
+            return obs_idx,(self.max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
+    def update_max(self,idx,obs_idx,data:Batch):
+        if obs_idx < 0:
+            if (not self.max_sar[idx]):
+                self.max_sar[idx] = Batch.cat([data])
+            # elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
+            #     self.max_sar[idx] = Batch.cat([data])
+        elif (sum(self.max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
+            # '''formated'''
+            # save_formatted(dump_in, {'stacks': attri_stack, 'round': self.round})
+            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
+            max_data = self.max_sar[idx]
+            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/episode",f'max_data_{idx}.npy')
+            logger.info(f"states dumped in max_data_{idx}.npy")
+    def get_sars(self):
+        bats = []
+        for exp in self.max_sar:
+            if exp:
+                exp_copy = Batch.cat([exp])
+                cumulate_reward(exp_copy)
+                self.agent.process_gae(exp_copy, single_batch=False, sil=True)
+                bats.append(exp_copy)
+                logger.info(f"exp.rew={sum(exp.rew)}")
+        return bats
 #@profile
 def start_train():
     # 初始化 agent
@@ -785,15 +836,9 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
-    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json']
-    max_sar = [None] * len(file_list) #type:List[Batch]
-    expert = load_episo("ENV/episode")
-    if expert:
-        max_sar[0] = Batch.cat([expert])
-        cumulate_reward(expert)
-        agent.process_gae(expert, single_batch=False, sil=True)
-        '''fill in policy'''
-        max_sar[0].policy = expert.policy
+    # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json']
+    file_list = ['ENV/battles/0.json']
+    sar_manager = replay_manager(file_list,agent)
     file_list_cache = []
     '''cache json'''
     for file in file_list:
@@ -803,34 +848,12 @@ def start_train():
         start = arena.current_state_feature(curriculum=True)
         file_list_cache.append((start,arena.round))
     cache_idx = range(len(file_list))
-
-    def choose_start(idx):
-        if not max_sar[idx] or np.random.binomial(1,0.2):
-            return -1,file_list_cache[idx] #RL
-        else:
-            obs_idx = random.choice(range(len(max_sar[idx].obs)))  # SIL
-            return obs_idx,(max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
-    def update_max(idx,obs_idx,data:Batch):
-        if obs_idx < 0:
-            if (not max_sar[idx]):
-                max_sar[idx] = Batch.cat([data])
-            elif (sum(max_sar[idx].rew) < sum(data.rew)):
-                max_sar[idx] = Batch.cat([data])
-        elif (sum(max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            max_sar[idx] = Batch.cat([max_sar[idx][:obs_idx],Batch.cat([data])])
     max_win_count = len(file_list)
-    sample_num = 100
+    sample_num = 10
     while True:
         agent.eval()
         agent.in_train = True
         bats = []
-        for exp in max_sar:
-            if exp:
-                exp_copy = Batch.cat([exp])
-                cumulate_reward(exp_copy)
-                agent.process_gae(exp_copy, single_batch=False, sil=True)
-                bats.append(exp_copy)
-                logger.info(f"exp.rew={sum(exp.rew)}")
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
@@ -851,21 +874,26 @@ def start_train():
             #     logger.info(f"win {file_list[file_idx]}")
             '''single side Wheel fight'''
             arena = Battle(by_AI=[2, 1],agent=agent)
-            obs_idx,obs = choose_start(file_idx)
+            obs_idx,obs = sar_manager.choose_start(file_idx)
             arena.load_battle(obs, load_ai_side=False, format_postion=True)
             wins = []
             for r in range(10):
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
                 if win:
-                    wins.append(batch_data)
                     arena.reset()
-                    arena.split_army()
+                    if arena.should_continue():
+                        wins.append(batch_data)
+                        arena.split_army()
+                    else:
+                        '''one troop of our army is all gone'''
+                        wins.append(batch_data)
+                        break
                 else:
                     bats.append(batch_data)
                     break
             if len(wins):
                 wins_batch = Batch.cat(wins)
-                update_max(file_idx,obs_idx,wins_batch)
+                sar_manager.update_max(file_idx,obs_idx,wins_batch)
                 cumulate_reward(wins_batch)
                 bats.append(wins_batch)
 
@@ -902,6 +930,13 @@ def start_train():
         if Linux:
             to_dev(agent, "cuda")
         loss = agent.learn(batch_data,batch_size=2000)
+        sil_sars = sar_manager.get_sars()
+        if len(sil_sars):
+            sil_sars = Batch.cat(sil_sars)
+            logger.info("sil adv")
+            logger.info(sil_sars.adv[:35])
+            logger.info(sil_sars.policy.value[:35])
+            loss = agent.learn(sil_sars, batch_size=2000)
         if Linux:
             to_dev(agent, "cpu")
         agent.eval()
@@ -953,23 +988,24 @@ def cumulate_reward(batch:Batch):
     s = a.sum()
     lk = np.array(range(s - reward_def, -1, -reward_def))
     a[batch.done > 0.5] += lk
+def start_game_record_s():
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
+    arena.split_army()
+    arena.checkNewRound()
+    data1 = start_game_record(battle=arena)
+    #
+    arena.reset()
+    arena.split_army()
+    arena.checkNewRound()
+    data2 = start_game_record(battle=arena)
+    data = Batch.cat([data1, data2])
+    dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
+    data = load_episo("ENV/episode")
+    cumulate_reward(data)
 M=0
 if __name__ == '__main__':
     # start_game_record()
+    # start_game_record_s()
     start_train()
     # start_test()
-
-    # arena = Battle(by_AI=[0, 1])
-    # arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
-    # arena.split_army()
-    # arena.checkNewRound()
-    # data1 = start_game_record(battle=arena)
-    # #
-    # arena.reset()
-    # arena.split_army()
-    # arena.checkNewRound()
-    # data2 = start_game_record(battle=arena)
-    # data = Batch.cat([data1,data2])
-    # dump_episo([data.obs, data.obs_next, data.act, data.rew, data.done, data.info], "ENV/episode")
-    # data = load_episo("ENV/episode")
-    # cumulate_reward(data)

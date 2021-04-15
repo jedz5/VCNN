@@ -554,24 +554,35 @@ class Battle(object):
         self.stackQueue.clear()
         self.cur_stack = None
         self.last_stack = None
-    def split_army(self,side=0):
+    def merge_stacks(self):
         cmap = {}
+        i = 0
+        stacks = list(filter(lambda elem: elem.is_alive(),
+                             self.attacker_stacks))  # list(filter(lambda elem: elem.is_alive() and elem.had_moved, self.stacks))
+        assert len(stacks) > 0, "your army is gone..."
+        '''merge stacks'''
+        while i != len(stacks):
+            st = stacks[i]
+            assert st.amount == st.amount_base, f"{st.amount} != {st.amount_base}"
+            if st.id in cmap:
+                st_0 = stacks[cmap[st.id]]
+                st_0.amount += st.amount
+                st_0.amount_base = st_0.amount
+                stacks.pop(i)
+            else:
+                cmap[st.id] = i
+                i += 1
+        self.attacker_stacks = stacks
+
+    def should_continue(self):
+        self.merge_stacks()
+        if len(self.attacker_stacks) < 2: #FIXME
+            return False
+        return True
+    def split_army(self,side=0):
         if side == 0:
-            i = 0
-            stacks = list(filter(lambda elem: elem.is_alive(),self.attacker_stacks)) #list(filter(lambda elem: elem.is_alive() and elem.had_moved, self.stacks))
-            assert len(stacks) > 0,"your army is gone..."
-            '''merge stacks'''
-            while i != len(stacks):
-                st = stacks[i]
-                assert st.amount == st.amount_base,f"{st.amount} != {st.amount_base}"
-                if st.id in cmap:
-                    st_0 = stacks[cmap[st.id]]
-                    st_0.amount += st.amount
-                    st_0.amount_base = st_0.amount
-                    stacks.pop(i)
-                else:
-                    cmap[st.id] = i
-                    i += 1
+            self.merge_stacks()
+            stacks = self.attacker_stacks
             '''shooter first'''
             stacks.sort(key=lambda elem:(-elem.is_shooter))
             st_to_split = stacks[-1]
