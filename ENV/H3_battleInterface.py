@@ -464,7 +464,7 @@ def start_game_s_gui(battle:Battle):
             bi.running = False
         arena.reset()
         '''my army is all gone~~'''
-        if not arena.should_continue() or arena.check_battle_end():
+        if arena.check_battle_end() or (not arena.should_continue()):
             bi.running = False
         count += 1
     print(f"battle count = {count}")
@@ -508,11 +508,11 @@ if __name__ == '__main__':
     import torch
     actor_critic = H3_net("cpu")
     agent = H3_policy(actor_critic)
-    # agent.load_state_dict(torch.load("model_param.pkl"))
-    # arena = Battle(by_AI=[2, 1],agent=agent)
+    agent.load_state_dict(torch.load("model_param.pkl"))
+    arena = Battle(by_AI=[2, 1],agent=agent)
     agent.in_train = False
-    arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/3.json", load_ai_side=False, format_postion=True)
+    # arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/4.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)
 
 

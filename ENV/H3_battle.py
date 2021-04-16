@@ -1037,11 +1037,11 @@ class Battle(object):
         elif(action.type == action_type.attack):
             targets = self.findStack(action.target,True)
             if(len(targets) == 0):
-                logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
+                logger.error(f"wrong attack {action.target.name} at ({action.target.y},{action.target.x})")
                 sys.exit()
             target = targets[0]
             if target.side == self.cur_stack.side:
-                logging.error(f"target {dest.name}is in your side!")
+                logging.error(f"target {action.dest.name}is in your side!")
                 sys.exit()
             if self.cur_stack.can_shoot():
                 damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.shoot(target)

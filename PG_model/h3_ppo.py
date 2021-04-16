@@ -709,7 +709,7 @@ def dump_episo(ep,dir,file=None):
     else:
         dump_in = os.path.join(dir, file)
     np.save(dump_in,ep)
-    print(f"episode dumped in {dump_in}")
+    logger.info(f"episode dumped in {dump_in}")
 def load_episo(dir):
     if len(os.listdir(dir)) == 0:
         return
@@ -754,6 +754,7 @@ class replay_manager:
         fl = len(file_list)
         self.win_rate = [0] * fl
         self.start_point = [0] * fl
+        self.defender_states = [] * fl #type:List[BStack]
         self.max_sar = [None] * fl #type:List[Batch]
         file_list_cache = []
         '''cache json'''
@@ -763,6 +764,7 @@ class replay_manager:
             arena.checkNewRound()
             start = arena.current_state_feature(curriculum=True)
             file_list_cache.append((start, arena.round))
+            self.defender_states.append(arena.defender_stacks)
         self.file_list_cache = file_list_cache
         self.agent = agent
         self.init_expert_data()
@@ -777,20 +779,18 @@ class replay_manager:
             '''fill in policy'''
             self.max_sar[0].policy = expert.policy
     def choose_start(self,idx,from_start=False):
-        if not self.max_sar[idx] or from_start or np.random.binomial(1,0.2):
-            return -1,self.file_list_cache[idx] #RL
+        if not self.max_sar[idx] or from_start or np.random.binomial(1,self.p_start_from_scratch):
+            return -1,self.file_list_cache[idx],None #RL
         else:
             obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
-            return obs_idx,(self.max_sar[idx].obs[obs_idx].attri_stack,0) #FIXME round = 0
+            return obs_idx,(self.max_sar[idx].obs[obs_idx].attri_stack,0),[copy.copy(st) for st in self.defender_states[idx]] #FIXME round = 0
     def update_max(self,idx,obs_idx,data:Batch):
         if obs_idx < 0:
             if (not self.max_sar[idx]):
                 self.max_sar[idx] = Batch.cat([data])
-            # elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
-            #     self.max_sar[idx] = Batch.cat([data])
+            elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
+                self.max_sar[idx] = Batch.cat([data])
         elif (sum(self.max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            # '''formated'''
-            # save_formatted(dump_in, {'stacks': attri_stack, 'round': self.round})
             self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
             max_data = self.max_sar[idx]
             dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
@@ -818,8 +818,8 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
-    # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json']
-    file_list = ['ENV/battles/0.json']
+    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
+    # file_list = ['ENV/battles/0.json']
     sar_manager = replay_manager(file_list,agent)
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
@@ -852,20 +852,19 @@ def start_train():
             #     logger.info(f"win {file_list[file_idx]}")
             '''[single side Wheel fight]'''
             arena = Battle(by_AI=[2, 1],agent=agent)
-            '''save defenders cause we'll start from middle states'''
-            obs_idx, obs = sar_manager.choose_start(file_idx,from_start=True)
-            arena.load_battle(obs, load_ai_side=False, format_postion=False)
-            saved_def = arena.defender_stacks
-            '''middle start'''
-            obs_idx,obs = sar_manager.choose_start(file_idx)
+            obs_idx,obs,defender_stacks = sar_manager.choose_start(file_idx)
             arena.load_battle(obs, load_ai_side=False, format_postion=False)
             wins = []
             for r in range(10):
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
                 if win:
-                    if r == 0:
-                        '''normal start after middle start'''
-                        arena.defender_stacks = saved_def
+                    if r == 0 and obs_idx > 0:
+                        '''normal start after middle start
+                        need refresh inner states of stacks
+                        '''
+                        for st in defender_stacks:
+                            st.in_battle = arena
+                        arena.defender_stacks = defender_stacks
                     arena.reset()
                     if arena.should_continue():
                         wins.append(batch_data)
@@ -998,7 +997,7 @@ if __name__ == '__main__':
     else:
         # start_game_record_s()
         start_train()
-        # start_replay_m("ENV/episode")  #"ENV/max_sars"
+        # start_replay_m("ENV/max_sars")  #"ENV/max_sars"
 
         # start_test()
 
