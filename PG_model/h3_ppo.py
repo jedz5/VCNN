@@ -410,8 +410,8 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
                         buffer.done[bl - 1] = True
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-global_buffer = ReplayBuffer(500)
-global_buffer_defender = ReplayBuffer(500)
+global_buffer = ReplayBuffer(500,ignore_obs_next=True)
+global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
 def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
     if not battle:
         battle = Battle(agent=agent)
@@ -658,7 +658,7 @@ def start_game_record(battle:Battle=None):
     from tianshou.data import ReplayBuffer
     from ENV import H3_battleInterface
     import pygame
-    buffer = ReplayBuffer(500)
+    buffer = ReplayBuffer(500,ignore_obs_next=True)
     # 初始化游戏
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
@@ -760,11 +760,19 @@ def start_test():
     agent.in_train = False
     start_game("ENV/battles/6.json", by_AI=[2, 1],agent=agent)
 class replay_manager:
-    def __init__(self,file_list_cache,agent,p_start_from_scratch = 0.2):
-        fl = len(file_list_cache)
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.2):
+        fl = len(file_list)
         self.win_rate = [0] * fl
         self.start_point = [0] * fl
         self.max_sar = [None] * fl #type:List[Batch]
+        file_list_cache = []
+        '''cache json'''
+        for file in file_list:
+            arena = Battle()
+            arena.load_battle(file, load_ai_side=False, format_postion=True)
+            arena.checkNewRound()
+            start = arena.current_state_feature(curriculum=True)
+            file_list_cache.append((start, arena.round))
         self.file_list_cache = file_list_cache
         self.agent = agent
         self.init_expert_data()
@@ -778,8 +786,8 @@ class replay_manager:
             self.agent.process_gae(expert, single_batch=False, sil=True)
             '''fill in policy'''
             self.max_sar[0].policy = expert.policy
-    def choose_start(self,idx):
-        if not self.max_sar[idx] or np.random.binomial(1,0.2):
+    def choose_start(self,idx,from_start=False):
+        if not self.max_sar[idx] or from_start or np.random.binomial(1,0.2):
             return -1,self.file_list_cache[idx] #RL
         else:
             obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
@@ -823,17 +831,12 @@ def start_train():
     # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json']
     file_list = ['ENV/battles/0.json']
     sar_manager = replay_manager(file_list,agent)
-    file_list_cache = []
-    '''cache json'''
-    for file in file_list:
-        arena = Battle()
-        arena.load_battle(file,load_ai_side=False,format_postion=True)
-        arena.checkNewRound()
-        start = arena.current_state_feature(curriculum=True)
-        file_list_cache.append((start,arena.round))
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
-    sample_num = 100
+    if Linux:
+        sample_num = 100
+    else:
+        sample_num = 10 #debug
     logger.info(f"start training sample eps/epoch = {sample_num}")
     while True:
         agent.eval()
@@ -845,11 +848,11 @@ def start_train():
             # if ii < 3 :
             #     print_act = True
             #     logger.info(f"------------------------{fn}.json")
-            '''single side '''
+            '''[single side] '''
             # win,batch_data = collect_eps(agent,file,print_act=print_act)
             # agent.process_gae(batch_data)
             # bats.append(batch_data)
-            '''both sides'''
+            '''[both sides]'''
             # win, batch0,batch1 = collect_eps_both_sides(agent, file_list_cache[file_idx], print_act=print_act)
             # agent.process_gae(batch0)
             # bats.append(batch0)
@@ -857,14 +860,22 @@ def start_train():
             # bats.append(batch1)
             # if win == 0 and ii < 50:
             #     logger.info(f"win {file_list[file_idx]}")
-            '''single side Wheel fight'''
+            '''[single side Wheel fight]'''
             arena = Battle(by_AI=[2, 1],agent=agent)
+            '''save defenders cause we'll start from middle states'''
+            obs_idx, obs = sar_manager.choose_start(file_idx,from_start=True)
+            arena.load_battle(obs, load_ai_side=False, format_postion=False)
+            saved_def = arena.defender_stacks
+            '''middle start'''
             obs_idx,obs = sar_manager.choose_start(file_idx)
-            arena.load_battle(obs, load_ai_side=False, format_postion=True)
+            arena.load_battle(obs, load_ai_side=False, format_postion=False)
             wins = []
             for r in range(10):
                 win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
                 if win:
+                    if r == 0:
+                        '''normal start after middle start'''
+                        arena.defender_stacks = saved_def
                     arena.reset()
                     if arena.should_continue():
                         wins.append(batch_data)
@@ -949,7 +960,7 @@ def start_train():
         win_count = []
         for file_idx in cache_idx:
             arena = Battle(by_AI=[2, 1], agent=agent)
-            arena.load_battle(file_list_cache[file_idx], load_ai_side=False, format_postion=True)
+            arena.load_battle(sar_manager.choose_start(file_idx,from_start=True)[1], load_ai_side=False, format_postion=True)
             ct = 0
             for r in range(10):
                 arena.split_army()
@@ -986,14 +997,18 @@ def start_game_record_s():
     data2 = start_game_record(battle=arena)
     data = Batch.cat([data1, data2])
     dump_episo([data.obs, data.act, data.rew, data.done, data.info], "ENV/episode",file='0.npy')
-
+def start_replay_m(file):
+    from ENV.H3_battleInterface import start_replay
+    data = load_episo(file)
+    start_replay(data)
 M=0
 if __name__ == '__main__':
-    # start_game_record()
-    # start_game_record_s()
-    start_train()
-    # start_test()
+    if Linux:
+        start_train()
+    else:
+        # start_game_record_s()
+        start_train()
+        # start_replay_m("ENV/episode")  #"ENV/max_sars"
 
-    # from ENV.H3_battleInterface import start_replay
-    # data = load_episo("ENV/max_sars")
-    # start_replay(data)
+        # start_test()
+
