@@ -67,16 +67,6 @@ class H3_policy(PGPolicy):
         self.device = device
 
     def process_gae(self, batch: Batch, single_batch=False,sil=False) -> Batch:
-        # if self._rew_norm:
-        #     mean, std = batch.rew.mean(), batch.rew.std()
-        #     if std > self.__eps:
-        #         batch.rew = (batch.rew - mean) / std
-        # if self._lambda in [0, 1]:
-        #     return self.compute_episodic_return(
-        #         batch, None, gamma=self._gamma, gae_lambda=self._lambda)
-
-        # return self.compute_episodic_return(
-        #     batch, v_, gamma=self._gamma, gae_lambda=self._lambda)
         gamma = self._gamma
         gae_lambda = self._lambda
 
@@ -744,7 +734,7 @@ def load_episo(dir):
     rew2 = np.concatenate(rews)
     done2 = np.concatenate(dones)
     '''empty policy will results in batch length = 0'''
-    expert = Batch(obs=obs2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
+    expert = Batch(obs=obs2,obs_next=obs2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
     return expert
 def start_test():
     import pygame
