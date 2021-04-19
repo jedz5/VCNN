@@ -20,5 +20,6 @@ np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={
 # a[a == 1] += lk
 
 
-a = np.array(range(140)) / 140
-print(a)
+a = Batch(aa=np.zeros((3,4)),bb=np.zeros((3,5)))
+b = Batch(c=np.zeros((3,)))
+np.save("test.npy",[a,b],allow_pickle=True)

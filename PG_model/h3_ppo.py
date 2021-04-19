@@ -372,7 +372,7 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
         if acting_stack.by_AI == operator:
             if bl:
                 buffer.rew[bl - 1] += tmp
-            buffer.add(obs=obs, act=acts, rew=reward, done=done, info=mask, policy={"value": value, "logps": logps})
+            buffer.add(Batch(obs=obs, act=acts, rew=reward, done=done, info=mask, policy={"value": value, "logps": logps}))
         elif done:
             if bl:
                 buffer.rew[bl - 1] += reward
@@ -383,12 +383,11 @@ def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mas
         if acting_stack.by_AI == operator:
             if done:
                 if acting_stack.side == battle.get_winner():
-                    buffer.add(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps})
+                    buffer.add(Batch(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps}))
                 else:
-                    buffer.add(obs=obs, act=acts, rew=-reward_def, done=True, info=mask,
-                               policy={"value": value, "logps": logps})
+                    buffer.add(Batch(obs=obs, act=acts, rew=-reward_def, done=True, info=mask,policy={"value": value, "logps": logps}))
             else:
-                buffer.add(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps})
+                buffer.add(Batch(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps}))
         else:
             if done:
                 if bl:
@@ -784,7 +783,7 @@ class replay_manager:
         expert = load_episo("ENV/episode")
         if expert:
             self.start_point[0] = len(expert) - 1
-            self.max_sar[0] = Batch.cat([expert])
+            self.max_sar[0] = Batch(expert,copy=True)
             cumulate_reward(expert)
             self.agent.process_gae(expert, single_batch=False, sil=True)
             '''fill in policy'''
@@ -798,15 +797,11 @@ class replay_manager:
     def update_max(self,idx,obs_idx,data:Batch):
         if obs_idx < 0:
             if (not self.max_sar[idx]):
-                self.max_sar[idx] = Batch.cat([data])
+                self.max_sar[idx] = Batch(data,copy=True)
             elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
-                self.max_sar[idx] = Batch.cat([data])
+                self.max_sar[idx] = Batch(data,copy=True)
         elif (sum(self.max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            # try:
-            #     self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
-            # except Exception as e:
-            #     print(e)
-            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], Batch.cat([data])])
+            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], Batch(data,copy=True)])
             max_data = self.max_sar[idx]
             dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
             logger.info(f"states dumped in max_data_{idx}.npy")
@@ -814,7 +809,7 @@ class replay_manager:
         bats = []
         for exp in self.max_sar:
             if exp:
-                exp_copy = Batch.cat([exp])
+                exp_copy = Batch(exp,copy=True)
                 cumulate_reward(exp_copy)
                 self.agent.process_gae(exp_copy, single_batch=False, sil=True)
                 bats.append(exp_copy)
@@ -976,7 +971,7 @@ def start_train():
 
 def cumulate_reward(batch:Batch):
     a = batch.rew
-    s = a.sum()
+    s = int(a.sum())
     lk = np.array(range(s - reward_def, -1, -reward_def))
     a[batch.done > 0.5] += lk
 def start_game_record_s():
@@ -1002,7 +997,7 @@ if __name__ == '__main__':
     else:
         # start_game_record_s()
         # start_train()
-        start_replay_m("ENV/max_sars")  #"ENV/max_sars"
+        start_replay_m("ENV/episode")  #"ENV/max_sars" episode
 
         # start_test()
 
