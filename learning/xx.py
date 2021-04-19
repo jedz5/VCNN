@@ -2,7 +2,7 @@ import gym
 import numpy as np
 from collections import defaultdict
 from tianshou.data import Batch,ReplayBuffer
-
+np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 # m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 # n = [[2, 2, 2], [3, 3, 3], [4, 4, 4]]
 #
@@ -20,14 +20,5 @@ from tianshou.data import Batch,ReplayBuffer
 # a[a == 1] += lk
 
 
-# a = Batch(rew = [1,2,3,4])
-# b = Batch(rew = [3,4,5,6],act = [11,21,31,41])
-# c = Batch.cat([a[:2],Batch(b)])
-# b.rew[0] = 111
-# print(np.random.binomial(1,0.2))
-global_buffer = ReplayBuffer(500,ignore_obs_next=True)
-global_buffer.add(obs=1, act=2, rew=1, done=1)
-global_buffer.add(obs=1, act=2, rew=1, done=2)
-a = global_buffer.sample(0)[0]
-b = Batch(rew = [3,4,5,6],act = [11,21,31,41])
-c = Batch.cat([a,b])
+a = np.array(range(140)) / 140
+print(a)

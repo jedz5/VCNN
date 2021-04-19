@@ -426,13 +426,24 @@ def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = Fals
         damage_dealt, damage_get, killed_dealt, killed_get = battle.doAction(battle_action)
         battle.checkNewRound()
         #battle.curStack had updated
+
+        #check done
         done = battle.check_battle_end()
+        '''single troop get killed over 40%'''
+        over_killed = False
+        for st in battle.merge_stacks(copy_stack=True):  #FIXME only considered side 0
+            if st.amount < st.amount_base * 0.6:
+                done = True
+                over_killed = True
+                break
         #buffer sar
         if had_acted:
             record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=td)
         #next act
         if done:
             win = (battle.by_AI[battle.get_winner()] == 2)
+            if over_killed:
+                win = False
             break
         else:
             acting_stack = battle.cur_stack
@@ -791,7 +802,11 @@ class replay_manager:
             elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
                 self.max_sar[idx] = Batch.cat([data])
         elif (sum(self.max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
+            # try:
+            #     self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx],Batch.cat([data])])
+            # except Exception as e:
+            #     print(e)
+            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], Batch.cat([data])])
             max_data = self.max_sar[idx]
             dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
             logger.info(f"states dumped in max_data_{idx}.npy")
@@ -865,7 +880,6 @@ def start_train():
                         for st in defender_stacks:
                             st.in_battle = arena
                         arena.defender_stacks = defender_stacks
-                    arena.reset()
                     if arena.should_continue():
                         wins.append(batch_data)
                         arena.split_army()
@@ -888,19 +902,9 @@ def start_train():
         agent.train()
         agent.in_train = True
         agent.process_gae(batch_data,single_batch=False)
-        # v_ = []
-        # with torch.no_grad():
-        #     v_ = agent.ppo_net(**batch_data.obs, critic_only=True)
-        # print(batch_data.returns)
-        # v_ = v_.squeeze().detach().numpy()
-        # print("predict v")
-        # print(v_)
-        # print("returns - v")
-        # print(batch_data.returns - v_)
 
         logger.info(batch_data.done.astype(np.float)[:35] * 1.11)
         logger.info("act_logp")
-        # idx = np.random.choice(range(len(batch_data.rew)),size=20)
         logger.info(batch_data.policy.logps.act_logp[:35])
         logger.info(batch_data.act.act_id.astype(np.float)[:35] )
         logger.info("position_logp")
@@ -919,6 +923,9 @@ def start_train():
         if len(sil_sars):
             sil_sars = Batch.cat(sil_sars)
             logger.info("sil adv")
+            logger.info(sil_sars.policy.logps.act_logp[:35])
+            logger.info(sil_sars.act.act_id.astype(np.float)[:35])
+            logger.info("act_logp")
             logger.info(sil_sars.adv[:35])
             logger.info(sil_sars.policy.value[:35])
             loss = agent.learn(sil_sars, batch_size=2000)
@@ -956,7 +963,6 @@ def start_train():
                 win, batch_data = collect_eps(agent, battle=arena, print_act=print_act)
                 if win:
                     ct += 1
-                    arena.reset()
                 else:
                     win_count.append(ct)
                     logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
@@ -980,7 +986,6 @@ def start_game_record_s():
     arena.checkNewRound()
     data1 = start_game_record(battle=arena)
     #
-    arena.reset()
     arena.split_army()
     arena.checkNewRound()
     data2 = start_game_record(battle=arena)
@@ -996,8 +1001,8 @@ if __name__ == '__main__':
         start_train()
     else:
         # start_game_record_s()
-        start_train()
-        # start_replay_m("ENV/max_sars")  #"ENV/max_sars"
+        # start_train()
+        start_replay_m("ENV/max_sars")  #"ENV/max_sars"
 
         # start_test()
 

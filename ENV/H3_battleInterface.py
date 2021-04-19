@@ -448,7 +448,6 @@ def start_game_s_gui(battle:Battle):
     bi = start_game_gui(battle=arena)
     if arena.check_battle_end():
         bi.running = True
-    arena.reset()
     '''my army is all gone~~'''
     if not arena.should_continue() or arena.check_battle_end():
         bi.running = False
@@ -462,7 +461,6 @@ def start_game_s_gui(battle:Battle):
             bi.running = True
         else:
             bi.running = False
-        arena.reset()
         '''my army is all gone~~'''
         if arena.check_battle_end() or (not arena.should_continue()):
             bi.running = False
@@ -505,14 +503,13 @@ def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=Non
     return bi
 if __name__ == '__main__':
     from PG_model.h3_ppo import H3_policy,H3_net
-    import torch
-    actor_critic = H3_net("cpu")
-    agent = H3_policy(actor_critic)
-    agent.load_state_dict(torch.load("model_param.pkl"))
-    arena = Battle(by_AI=[2, 1],agent=agent)
-    agent.in_train = False
-    # arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/4.json", load_ai_side=False, format_postion=True)
+    # actor_critic = H3_net("cpu")
+    # agent = H3_policy(actor_critic)
+    # agent.load_state_dict(torch.load("model_param.pkl"))
+    # arena = Battle(by_AI=[2, 1],agent=agent)
+    # agent.in_train = False
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)
 
 

@@ -563,34 +563,48 @@ class Battle(object):
         self.defender_stacks = []
         self.cur_stack = None
         self.last_stack = None
-    def merge_stacks(self):
+    def merge_stacks(self,copy_stack=False):
         cmap = {}
         i = 0
-        stacks = list(filter(lambda elem: elem.is_alive(),
-                             self.attacker_stacks))  # list(filter(lambda elem: elem.is_alive() and elem.had_moved, self.stacks))
+        # stacks = list(filter(lambda elem: elem.is_alive(),
+        #                      self.attacker_stacks))
+        stacks = list(self.attacker_stacks)
         assert len(stacks) > 0, "your army is gone..."
+        copy_list = []
         '''merge stacks'''
         while i != len(stacks):
             st = stacks[i]
-            assert st.amount == st.amount_base, f"{st.amount} != {st.amount_base}"
             if st.id in cmap:
-                st_0 = stacks[cmap[st.id]]
+                st_0 = cmap[st.id]
                 st_0.amount += st.amount
-                st_0.amount_base = st_0.amount
+                st_0.amount_base += st.amount_base
                 stacks.pop(i)
             else:
-                cmap[st.id] = i
+                if copy_stack:
+                    st_1 = BStack()
+                    st_1.amount = st.amount
+                    st_1.amount_base = st.amount_base
+                    copy_list.append(st_1)
+                    cmap[st.id] = st_1
+                else:
+                    cmap[st.id] = st
                 i += 1
-        self.attacker_stacks = stacks
+        if copy_list:
+            '''we need all killed stacks'''
+            return copy_list
+        else:
+            '''filter all killed stacks'''
+            self.attacker_stacks = list(filter(lambda elem: elem.is_alive(),stacks))
 
     def should_continue(self):
         self.merge_stacks()
-        if len(self.attacker_stacks) < 2: #FIXME
+        if len(self.attacker_stacks) < 2: #FIXME only attacker and only 2
             return False
         return True
     def split_army(self,side=0):
         if side == 0:
             self.merge_stacks()
+            self.reset()
             stacks = self.attacker_stacks
             '''shooter first'''
             stacks.sort(key=lambda elem:(-elem.is_shooter))
