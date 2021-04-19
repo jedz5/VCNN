@@ -415,7 +415,7 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
     if not battle_int:
         # 初始化游戏
         pygame.init()  # 初始化pygame
-        pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+        pygame.display.set_caption('This is H3 with RL')  # 设置窗口标题
         bi = BattleInterface(battle)
     else:
         bi = battle_int
@@ -448,9 +448,8 @@ def start_game_s_gui(battle:Battle):
     bi = start_game_gui(battle=arena)
     if arena.check_battle_end():
         bi.running = True
-    arena.reset()
     '''my army is all gone~~'''
-    if arena.check_battle_end():
+    if not arena.should_continue() or arena.check_battle_end():
         bi.running = False
     count = 1
     while bi.running:
@@ -462,22 +461,55 @@ def start_game_s_gui(battle:Battle):
             bi.running = True
         else:
             bi.running = False
-        arena.reset()
         '''my army is all gone~~'''
-        if arena.check_battle_end():
+        if arena.check_battle_end() or (not arena.should_continue()):
             bi.running = False
         count += 1
     print(f"battle count = {count}")
+def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=None, shuffle_postion=False,load_ai_side=False):
+    game_states = game_frames.obs.attri_stack
+    game_acts = game_frames.act
+    if not battle:
+        battle = Battle(by_AI = by_AI,agent=agent)
+        battle.load_battle(file=(game_states[0],0), shuffle_postion=shuffle_postion,load_ai_side=load_ai_side)
+    # battle.loadFile("ENV/debug.json",load_ai_side=False)
+    battle.checkNewRound()
+    if not battle_int:
+        # 初始化游戏
+        pygame.init()  # 初始化pygame
+        pygame.display.set_caption('This is H3 with RL')  # 设置窗口标题
+        bi = BattleInterface(battle)
+    else:
+        bi = battle_int
+        bi.init_battle(battle)
+    act_batch = game_acts[0]
+    bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id, act_batch.spell_id,battle)
+    bi.running = True
+    frame_count = 0
+    # 事件循环(main loop)
+    while bi.running:
+        do_act = bi.handleEvents()
+        if do_act:
+            frame_count += 1
+            if len(game_states) == frame_count:
+                bi.running = False
+                break
+            battle.load_battle((game_states[frame_count],0))
+            battle.checkNewRound()
+            act_batch = game_acts[frame_count]
+            bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id,act_batch.spell_id, battle)
+
+        bi.renderFrame()
+    return bi
 if __name__ == '__main__':
     from PG_model.h3_ppo import H3_policy,H3_net
-    import torch
-    actor_critic = H3_net("cpu")
-    agent = H3_policy(actor_critic)
-    agent.load_state_dict(torch.load("model_param.pkl"))
-    agent.in_train = False
-    arena = Battle(by_AI=[2, 1],agent=agent)
-    # arena = Battle(by_AI=[2, 1])
-    arena.load_battle("ENV/battles/3.json", load_ai_side=False, format_postion=True)
+    # actor_critic = H3_net("cpu")
+    # agent = H3_policy(actor_critic)
+    # agent.load_state_dict(torch.load("model_param.pkl"))
+    # arena = Battle(by_AI=[2, 1],agent=agent)
+    # agent.in_train = False
+    arena = Battle(by_AI=[0, 1])
+    arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)
 
 

@@ -529,7 +529,10 @@ class Battle(object):
             self.checkNewRound()
 
     def reset(self):
-        for att in self.attacker_stacks:
+        attackers = self.attacker_stacks
+        defenders = self.defender_stacks
+        self.clear()
+        for att in attackers:
             att.amount_base = att.amount
             att.first_HP_Left = att.health
             att.y, att.x, att.slotId = 0, 0, 0
@@ -538,7 +541,7 @@ class Battle(object):
             att.had_retaliated = False
             att.had_defended = False
             att.shots = 16
-        for deff in self.defender_stacks:
+        for deff in defenders:
             deff.amount = deff.amount_base
             deff.first_HP_Left = deff.health
             deff.y, deff.x, deff.slotId = 0, 0, 0
@@ -547,31 +550,62 @@ class Battle(object):
             deff.had_retaliated = False
             deff.had_defended = False
             deff.shots = 16
+        self.attacker_stacks = attackers
+        self.defender_stacks = defenders
+    def clear(self):
         self.round = 0
-        self.toMove.clear()
-        self.waited.clear()
-        self.moved.clear()
-        self.stackQueue.clear()
+        self.stacks = []
+        self.toMove = []
+        self.waited = []
+        self.moved = []
+        self.toMove = []
+        self.attacker_stacks = []
+        self.defender_stacks = []
         self.cur_stack = None
         self.last_stack = None
-    def split_army(self,side=0):
+    def merge_stacks(self,copy_stack=False):
         cmap = {}
-        if side == 0:
-            i = 0
-            stacks = list(filter(lambda elem: elem.is_alive(),self.attacker_stacks)) #list(filter(lambda elem: elem.is_alive() and elem.had_moved, self.stacks))
-            assert len(stacks) > 0,"your army is gone..."
-            '''merge stacks'''
-            while i != len(stacks):
-                st = stacks[i]
-                assert st.amount == st.amount_base,f"{st.amount} != {st.amount_base}"
-                if st.id in cmap:
-                    st_0 = stacks[cmap[st.id]]
-                    st_0.amount += st.amount
-                    st_0.amount_base = st_0.amount
-                    stacks.pop(i)
+        i = 0
+        # stacks = list(filter(lambda elem: elem.is_alive(),
+        #                      self.attacker_stacks))
+        stacks = list(self.attacker_stacks)
+        assert len(stacks) > 0, "your army is gone..."
+        copy_list = []
+        '''merge stacks'''
+        while i != len(stacks):
+            st = stacks[i]
+            if st.id in cmap:
+                st_0 = cmap[st.id]
+                st_0.amount += st.amount
+                st_0.amount_base += st.amount_base
+                stacks.pop(i)
+            else:
+                if copy_stack:
+                    st_1 = BStack()
+                    st_1.amount = st.amount
+                    st_1.amount_base = st.amount_base
+                    copy_list.append(st_1)
+                    cmap[st.id] = st_1
                 else:
-                    cmap[st.id] = i
-                    i += 1
+                    cmap[st.id] = st
+                i += 1
+        if copy_list:
+            '''we need all killed stacks'''
+            return copy_list
+        else:
+            '''filter all killed stacks'''
+            self.attacker_stacks = list(filter(lambda elem: elem.is_alive(),stacks))
+
+    def should_continue(self):
+        self.merge_stacks()
+        if len(self.attacker_stacks) < 2: #FIXME only attacker and only 2
+            return False
+        return True
+    def split_army(self,side=0):
+        if side == 0:
+            self.merge_stacks()
+            self.reset()
+            stacks = self.attacker_stacks
             '''shooter first'''
             stacks.sort(key=lambda elem:(-elem.is_shooter))
             st_to_split = stacks[-1]
@@ -608,7 +642,7 @@ class Battle(object):
         cp.batId = batId
         cp.round = self.round
         cp.obstacles = copy.deepcopy(self.obstacles)
-        def copyStack(st,newBat):
+        def copyStack(st:BStack,newBat):
             newSt = copy.copy(st)
             newSt.in_battle = newBat
             return newSt
@@ -618,6 +652,7 @@ class Battle(object):
         cp.sortStack()
         return cp
     def loadFile(self,file,shuffle_postion = True,load_ai_side = True):
+        self.clear()
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -696,7 +731,8 @@ class Battle(object):
             #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
             #     self.obsinfo.append(oi)
 
-    def load_battle(self,file,load_ai_side = True, shuffle_postion=False,format_postion = False):
+    def load_battle(self,file,load_ai_side = False, shuffle_postion=False,format_postion = False):
+        self.clear()
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
         with open("ENV/creatureData.json") as JsonFile:
             crList = json.load(JsonFile)["creatures"]
@@ -1015,11 +1051,11 @@ class Battle(object):
         elif(action.type == action_type.attack):
             targets = self.findStack(action.target,True)
             if(len(targets) == 0):
-                logger.error("wrong attack dist ({},{})".format(action.target.y,action.target.x))
+                logger.error(f"wrong attack {action.target.name} at ({action.target.y},{action.target.x})")
                 sys.exit()
             target = targets[0]
             if target.side == self.cur_stack.side:
-                logging.error(f"target {dest.name}is in your side!")
+                logging.error(f"target {action.dest.name}is in your side!")
                 sys.exit()
             if self.cur_stack.can_shoot():
                 damage_dealt, damage_get, killed_dealt, killed_get = self.cur_stack.shoot(target)
@@ -1091,6 +1127,24 @@ class BAction:
         self.dest = dest
         self.target = target
         self.spell = spell
+    @staticmethod
+    def idx_to_action(act_id,position_id,target_id,spell_id,in_battle):
+        if act_id == action_type.wait.value:
+            next_act = BAction(action_type.wait)
+        elif act_id == action_type.defend.value:
+            next_act = BAction(action_type.defend)
+        elif act_id == action_type.move.value:
+            next_act = BAction(action_type.move,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)))
+        elif act_id == action_type.attack.value:
+            t = in_battle.stackQueue[target_id]
+            next_act = BAction(action_type.attack,
+                               dest=BHex(position_id % Battle.bFieldWidth, int(position_id / Battle.bFieldWidth)),
+                               target=t)
+        else:
+            logger.error("not implemented action!!", True)
+            sys.exit(-1)
+        return next_act
     def __repr__(self):
         if self.type == action_type.wait:
             return f'action wait'

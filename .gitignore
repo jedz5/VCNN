@@ -19,5 +19,6 @@ VCCC/x64
 *.db
 VCCC/.vs
 .idea/
+bak.idea/
 .vs/
 *.pyperf

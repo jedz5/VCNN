@@ -1,8 +1,8 @@
 import gym
 import numpy as np
 from collections import defaultdict
-from tianshou.data import Batch
-
+from tianshou.data import Batch,ReplayBuffer
+np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 # m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 # n = [[2, 2, 2], [3, 3, 3], [4, 4, 4]]
 #
@@ -18,8 +18,8 @@ from tianshou.data import Batch
 # s = a.sum()
 # lk = np.array(range(s-1,-1,-1))
 # a[a == 1] += lk
-a = Batch(rew = [1,2,3,4])
-b = Batch(rew = [3,4,5,6],act = [11,21,31,41])
-c = Batch.cat([a[:2],Batch(b)])
-b.rew[0] = 111
-print(np.random.binomial(1,0.2))
+
+
+a = Batch(aa=np.zeros((3,4)),bb=np.zeros((3,5)))
+b = Batch(c=np.zeros((3,)))
+np.save("test.npy",[a,b],allow_pickle=True)
