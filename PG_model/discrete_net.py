@@ -191,17 +191,17 @@ class H3_Q_net(nn.Module):
         planes_stack_t = torch.tensor(planes_stack, device=self.device, dtype=torch.float32)
         plane_glb_t = torch.tensor(plane_glb, device=self.device, dtype=torch.float32)
         h,stack_emb = self.inpipe(ind_t,attri_stack_t,planes_stack_t,plane_glb_t)
-        act_logits = self.act_ids(h)
+        act_q = self.act_ids(h)
         act_imt = self.act_imt(h)
         targets_logits = self.targets_h(h)
         position_logits = self.position_h(h)
         spell_logits = self.spells(h)
-        return act_logits,act_imt,targets_logits,stack_emb,position_logits,spell_logits
+        return act_q,act_imt,targets_logits,stack_emb,position_logits,spell_logits
 
     def get_act_emb(self,act_id):
         act_emb = self.inpipe.act_emb(act_id)
         return act_emb
-    def get_target_loggits(self,act_id,target_h,single_batch=False):
+    def get_target_q(self,act_id,target_h,single_batch=False):
         if single_batch:
             '''single mode xxx_id is int
               after act emb ->(1,) -> (1,embbeding) 
@@ -213,14 +213,14 @@ class H3_Q_net(nn.Module):
            '''
             act_emb = self.inpipe.act_emb(act_id).squeeze(1)
         target_h = torch.cat([target_h,act_emb],dim=-1)
-        target_logits = self.targets(target_h)
+        target_q = self.targets(target_h)
         target_imt =self.targets_imt(target_h)
         '''target attention, not tested'''
         # act_emb = torch.sigmoid(act_emb)
         # target_h *= act_emb
         # target_logits = torch.mm(target_h.unsqueeze(dim=-2),target_emb.permute(0,2,1))
-        return target_logits,target_imt
-    def get_position_loggits(self,act_id,target_id,target_embs,mask_orig,position_h,single_batch=False):
+        return target_q,target_imt
+    def get_position_q(self,act_id,target_id,target_embs,mask_orig,position_h,single_batch=False):
         if single_batch:
             '''single mode xxx_id is int -> (1,) -> act emb -> (1,embbeding)
               target emb=(1,14,embbeding)[:,target_id] -> (1,embbeding)
@@ -232,7 +232,7 @@ class H3_Q_net(nn.Module):
             else:
                 target_emb = torch.zeros((1,target_embs.shape[-1]))
             position_h = torch.cat([position_h, act_emb, target_emb], dim=-1)
-            position_logits = self.position(position_h)
+            position_q = self.position(position_h)
             position_imt = self.position_imt(position_h)
         else:
             '''batch mode xxx_id is pre_processed like shape = (batch,1) -> act emb -> (batch,1,embbeding) -> (batch,embbeding)
@@ -246,9 +246,9 @@ class H3_Q_net(nn.Module):
             '''target_id (batch,1) -> (batch,1,1) -> (batch,1,embbeding)'''
             target_emb = target_embs.gather(dim=1,index=target_id.unsqueeze(-1).expand(expande_shape)).squeeze(1)
             position_h = torch.cat([position_h,act_emb,target_emb],dim=-1)
-            position_logits = self.position(position_h)
+            position_q = self.position(position_h)
             position_imt = self.position_imt(position_h)
-        return position_logits,position_imt
+        return position_q,position_imt
 
 
 

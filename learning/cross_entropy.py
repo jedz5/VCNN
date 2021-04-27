@@ -21,16 +21,16 @@ p = torch.tensor([0.2,0.3,0.5])
 '''单样本不能使用adam？？'''
 
 '''batch constrained Q learning'''
-p1 = torch.tensor([[0.,0.,0.],[0.,0.,0.],[0.,0.,0.]],requires_grad=True)
-label_imt = torch.tensor([[1,1,1],[2,2,2],[1,1,1],[0,0,0]])
+p1 = torch.tensor([[0.,0.,0.]],requires_grad=True)
+label_imt = torch.tensor([[1],[2],[1],[0],[1],[0],[1],[0]])
 # label_imt = torch.tensor([[1,0,0],[0,1,0],[1,0,0],[1,0,0]])
 # p1 = torch.tensor([0.1,0.1,0.1],requires_grad=True)
-op = torch.optim.SGD([p1],lr=0.02)
+op = torch.optim.Adam([p1],lr=0.0001)
 op.zero_grad()
 op.step()
 def hook_me(grad):
     print("grad ",grad)
-p1.register_hook(hook_me)
+# p1.register_hook(hook_me)
 for i in range(len(label_imt)):
     p_sigmod = p1.sigmoid()
     loss = F.nll_loss(p_sigmod,label_imt[i])
@@ -38,4 +38,4 @@ for i in range(len(label_imt)):
     op.zero_grad()
     loss.backward()
     op.step()
-    print(p1)
+    print(p1.sigmoid() > 0.5)

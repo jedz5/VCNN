@@ -290,8 +290,7 @@ class H3_policy(PGPolicy):
                 ratio = (prob_act / old_prob_act) * (prob_target / old_prob_target) * (prob_position / old_prob_position) * (prob_spell / old_prob_spell)
 
                 surr1 = ratio * adv
-                surr2 = ratio.clamp(
-                    1. - self._eps_clip, 1. + self._eps_clip) * adv
+                surr2 = ratio.clamp(1. - self._eps_clip, 1. + self._eps_clip) * adv
                 if self._dual_clip:
                     clip_loss = -torch.max(torch.min(surr1, surr2),
                                            self._dual_clip * adv).mean()
@@ -361,6 +360,7 @@ class H3_Q_agent(nn.Module):
         self.threshold = threshold
         self.discount_factor = discount_factor
         self.net = H3_Q_net()
+        self.target_net = self.net.clone()
         self.optim = optim
         self._batch_size = 512
         self.p_explore = p_explore
@@ -374,7 +374,7 @@ class H3_Q_agent(nn.Module):
         act_id = int((imt * act_q + (1. - imt) * -1e8).argmax(1))
         return act_id
     def f_target(self,act_id, targets_logits_h,mask_targets, single_batch=True):
-        targets_q, targets_imt = self.net.get_target_loggits(act_id, targets_logits_h, single_batch=True)
+        targets_q, targets_imt = self.net.get_target_q(act_id, targets_logits_h, single_batch=single_batch)
         targets_imt = targets_imt.softmax(dim=-1)  # shape(1,5)
         imt = targets_imt / targets_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
         imt = torch.logical_and(imt,torch.tensor(mask_targets, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
@@ -383,8 +383,8 @@ class H3_Q_agent(nn.Module):
         return target_id
     def f_position(self,act_id, target_id, target_embs, mask_targets,position_logits_h,mask_position, single_batch=True):
         '''target id is -1 mask_targets = all 0'''
-        position_q, position_imt = self.net.get_position_loggits(act_id, target_id, target_embs, mask_targets,
-                                                                 position_logits_h, single_batch=True)
+        position_q, position_imt = self.net.get_position_q(act_id, target_id, target_embs, mask_targets,
+                                                                 position_logits_h, single_batch=single_batch)
         position_imt = position_imt.softmax(dim=-1)  # shape(1,5)
         imt = position_imt / position_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
         imt = torch.logical_and(imt, torch.tensor(mask_position, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
@@ -457,67 +457,23 @@ class H3_Q_agent(nn.Module):
         for _ in range(repeat):
             for b in batch.split(batch_size,shuffle=True):
                 mask_acts = b.info.mask_acts
-                mask_spell = b.info.mask_spell
                 mask_targets = b.info.mask_targets
                 mask_position = b.info.mask_position
-                act_q, act_imt, targets_logits_h, target_embs, position_logits_h, spell_logits = self.net(**b.obs)
                 act_index = torch.tensor(b.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
                 targets_index = torch.tensor(b.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
 
-                '''act gather softmax (batch,act_kinds) by (batch,1) -> (batch,1)'''
-                act_logits = softmax(act_logits, mask_acts, self.device,add_little=True)
-                prob_act = act_logits.gather(dim=1,index=act_index).squeeze(-1)
-                dist_act = self.dist_fn(act_logits)
-                # prob_act = dist_act.log_prob(torch.tensor(b.act.act_id, device=self.device)) * torch.tensor(mask_acts, device=self.device)
+                current_act_q, current_act_imt, targets_logits_h, target_embs, position_logits_h, spell_logits = self.net(**b.obs)
+                # target_act_id = self.f_act(current_act_q, current_act_imt,mask_acts)
+                current_targets_q, current_targets_imt = self.net.get_target_q(act_index, targets_logits_h, single_batch=False)
+                target_targets_id = self.f_target(act_index,)
+                target_targets_q, target_targets_imt = self.target_net.get_target_q(act_index, targets_logits_h, single_batch=False)
+                current_position_q, current_position_imt = self.net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
+                target_position_q, target_position_imt = self.target_net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
+                with torch.no_grad():
+                    target_act_q_next, target_act_imt_next, targets_logits_h_next, target_embs_next, position_logits_h_next, spell_logits_next = self.net(**b.obs_next)
 
-                '''target'''
-                targets_logits = self.net.get_target_loggits(act_index, targets_logits_h, single_batch=False)
-                targets_logits = softmax(targets_logits, mask_targets, self.device,add_little=True)
-                prob_target = targets_logits.gather(dim=1,index=targets_index).squeeze(-1)
-                dist_targets = self.dist_fn(targets_logits)
-                # prob_target = dist_targets.log_prob(torch.tensor(b.act.target_id, device=self.device)) * torch.tensor(mask_targets, device=self.device)
 
-                '''position'''
-                position_logits = self.net.get_position_loggits(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
-                position_logits = softmax(position_logits, mask_position, self.device,add_little=True)
-                prob_position = position_logits.gather(dim=1,index=torch.tensor(b.act.position_id, device=self.device,dtype=torch.long).unsqueeze(dim=-1)).squeeze(-1)
-                dist_position = self.dist_fn(position_logits)
-                # prob_position = dist_position.log_prob(torch.tensor(b.act.position_id, device=self.device)) * torch.tensor(mask_position, device=self.device)
 
-                '''spell'''
-                spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
-                prob_spell = spell_logits.gather(dim=1,index=torch.tensor(b.act.spell_id, device=self.device,dtype=torch.long).unsqueeze(dim=-1)).squeeze(-1)
-                dist_spell = self.dist_fn(spell_logits)
-                # prob_spell = dist_spell.log_prob(torch.tensor(b.act.spell_id, device=self.device)) * torch.tensor(mask_spell, device=self.device)
-                #TODO 如果old_prob太小？？？
-                old_prob_act = torch.tensor(b.policy.logps.act_logp, device=self.device)
-                old_prob_target = torch.tensor(b.policy.logps.target_logp, device=self.device)
-                old_prob_position = torch.tensor(b.policy.logps.position_logp, device=self.device)
-                old_prob_spell = torch.tensor(b.policy.logps.spell_logp, device=self.device)
-                adv = torch.tensor(b.adv, device=self.device)
-                returns = torch.tensor(b.returns, device=self.device)
-                ratio = (prob_act / old_prob_act) * (prob_target / old_prob_target) * (prob_position / old_prob_position) * (prob_spell / old_prob_spell)
-
-                surr1 = ratio * adv
-                surr2 = ratio.clamp(
-                    1. - self._eps_clip, 1. + self._eps_clip) * adv
-                if self._dual_clip:
-                    clip_loss = -torch.max(torch.min(surr1, surr2),
-                                           self._dual_clip * adv).mean()
-                else:
-                    clip_loss = -torch.min(surr1, surr2).mean()
-                # clip_losses.append(clip_loss.item())
-                # if self._value_clip:
-                #     v_clip = b.v + (value - b.v).clamp(
-                #         -self._eps_clip, self._eps_clip)
-                #     vf1 = (returns - value).pow(2)
-                #     vf2 = (returns - v_clip).pow(2)
-                #     vf_loss = .5 * torch.max(vf1, vf2).mean()
-                # else:
-                vf_loss = .5 * (returns - value.squeeze(-1)).pow(2).mean()
-                # vf_losses.append(vf_loss.item())
-                e_loss = dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean()
-                # ent_losses.append(e_loss.item())
                 #TODO 9 reward 设计 32位 vs 64
                 loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
                 if pcount < 5:
