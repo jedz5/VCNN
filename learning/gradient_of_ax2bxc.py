@@ -1,22 +1,23 @@
 import torch
 import numpy as np
-x = torch.arange(-100,100)
+import torch.nn.functional as F
+torch.set_printoptions(precision=3)
+x = torch.arange(-10,10,dtype=float)
 
-a = torch.tensor(0.05,requires_grad=True)
-b = torch.tensor(-0.03,requires_grad=True)
-c = torch.tensor(-0.02,requires_grad=True)
+param = torch.tensor([0.,0.,0.],requires_grad=True)
 def hk(gr):
-        print("grad=",gr)
-a.register_hook(hk),b.register_hook(hk),c.register_hook(hk)
-opt = torch.optim.Adam([a,b,c],lr=0.01)
+        print("梯度=",gr)
+param.register_hook(hk)
+lrate = 0.2
+opt = torch.optim.Adam([param],lr=lrate)
 for i in range(3):
     xx = torch.tensor(np.random.choice(x,32))
-    # xx = torch.tensor([0.5,0.4,0.5,0.4,0.5,0.4,0.5,0.4,0.5,0.4])
+    param_before = param.clone()
     yy = 3 * xx * xx + 8 * xx + 5
     opt.zero_grad()
-    loss = a*xx*xx + b*xx + c - yy
-    loss = loss * loss
-    loss = loss.mean()
+    y_pred = param[0]*xx*xx + param[1]*xx + param[2]
+    loss = F.smooth_l1_loss(y_pred,yy)
     loss.backward()
     opt.step()
-    print(f"{a}  {b}  {c}")
+    # print(f"更新[{param_before[0]} {param_before[1]} {param_before[2]}] + {lrate}*grad = {param[0]}  {param[1]}  {param[2]}")
+    print(f"更新{param_before} - {lrate}*grad = {param}")

@@ -509,7 +509,7 @@ if __name__ == '__main__':
     # arena = Battle(by_AI=[2, 1],agent=agent)
     # agent.in_train = False
     arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
+    arena.load_battle("ENV/battles/3.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)
 
 
