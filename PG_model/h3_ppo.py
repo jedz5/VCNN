@@ -721,23 +721,21 @@ def dump_episo(ep,dir,file=None):
     np.save(dump_in,ep)
     logger.info(f"episode dumped in {dump_in}")
 def load_episo(dir):
-    if len(os.listdir(dir)) == 0:
+    npys = [f for f in os.listdir(dir) if f.endswith(".npy")]
+    if len(npys) == 0:
         return
     obss,acts,masks,rews,dones =[],[],[],[],[]
-    for f in os.listdir(dir):
+    for f in npys:
         tmp_f = os.path.join(dir,f)
-        if os.path.isdir(tmp_f):
-            continue
-        else:
-            obs,act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
-            obs = Batch.stack(obs)
-            act = Batch.stack(act)
-            mask = Batch.stack(mask)
-            obss.append(obs)
-            acts.append(act)
-            masks.append(mask)
-            rews.append(rew)
-            dones.append(done)
+        obs,act, rew, done, mask = np.load(tmp_f, allow_pickle=True)
+        obs = Batch.stack(obs)
+        act = Batch.stack(act)
+        mask = Batch.stack(mask)
+        obss.append(obs)
+        acts.append(act)
+        masks.append(mask)
+        rews.append(rew)
+        dones.append(done)
     obs2 = Batch.cat(obss)
     act2 = Batch.cat(acts)
     mask2 = Batch.cat(masks)
@@ -816,7 +814,7 @@ class replay_manager:
                 logger.info(f"exp.rew={sum(exp.rew)}")
         return bats
 #@profile
-def start_train():
+def start_train(use_expert_data=False):
     # 初始化 agent
     actor_critic = H3_net(dev)
     lrate = 0.0005
@@ -828,8 +826,8 @@ def start_train():
     count = 0
     five_done = 5
     ok = five_done
-    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
-    # file_list = ['ENV/battles/0.json']
+    # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
+    file_list = ['ENV/battles/0.json']
     sar_manager = replay_manager(file_list,agent)
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
@@ -837,6 +835,7 @@ def start_train():
         sample_num = 100
     else:
         sample_num = 10 #debug
+    print_len = 60
     logger.info(f"start training sample eps/epoch = {sample_num}")
     while True:
         agent.eval()
@@ -897,32 +896,36 @@ def start_train():
         agent.train()
         agent.in_train = True
         agent.process_gae(batch_data,single_batch=False)
-
-        logger.info(batch_data.done.astype(np.float)[:35] * 1.11)
+        amount_idx = np.logical_and(batch_data.obs.attri_stack[:print_len, :, 3] > 1,batch_data.obs.attri_stack[:print_len, :,0] == 0)
+        amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(np.float) / 100
+        logger.info(batch_data.done.astype(np.float)[:print_len] * 1.11)
+        logger.info("amount")
+        logger.info(amount_array[0])
+        logger.info(amount_array[1])
         logger.info("act_logp")
-        logger.info(batch_data.policy.logps.act_logp[:35])
-        logger.info(batch_data.act.act_id.astype(np.float)[:35] )
+        logger.info(batch_data.policy.logps.act_logp[:print_len])
+        logger.info(batch_data.act.act_id.astype(np.float)[:print_len] )
         logger.info("position_logp")
-        logger.info(batch_data.policy.logps.position_logp[:35])
-        logger.info(batch_data.act.position_id.astype(np.float)[:35] //17)
-        logger.info(batch_data.act.position_id.astype(np.float)[:35] % 17 - 9)
+        logger.info(batch_data.policy.logps.position_logp[:print_len])
+        logger.info(batch_data.act.position_id.astype(np.float)[:print_len] //17)
+        logger.info(batch_data.act.position_id.astype(np.float)[:print_len] % 17 - 9)
         logger.info("target")
-        logger.info(batch_data.act.target_id.astype(np.float)[:35])
+        logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
         logger.info("adv")
-        logger.info(batch_data.adv[:35])
-        logger.info(batch_data.policy.value[:35])
+        logger.info(batch_data.rew.astype(np.float)[:print_len] / 5)
+        logger.info(batch_data.adv[:print_len] / 5)
         if Linux:
             to_dev(agent, "cuda")
         loss = agent.learn(batch_data,batch_size=2000)
         sil_sars = sar_manager.get_sars()
         if len(sil_sars):
             sil_sars = Batch.cat(sil_sars)
+            logger.info("sil act_logp")
+            logger.info(sil_sars.policy.logps.act_logp[:print_len])
+            logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])
             logger.info("sil adv")
-            logger.info(sil_sars.policy.logps.act_logp[:35])
-            logger.info(sil_sars.act.act_id.astype(np.float)[:35])
-            logger.info("act_logp")
-            logger.info(sil_sars.adv[:35])
-            logger.info(sil_sars.policy.value[:35])
+            logger.info(sil_sars.rew.astype(np.float)[:print_len] /5)
+            logger.info(sil_sars.policy.value[:print_len] /5)
             loss = agent.learn(sil_sars, batch_size=2000)
         if Linux:
             to_dev(agent, "cpu")
@@ -996,8 +999,8 @@ if __name__ == '__main__':
         start_train()
     else:
         # start_game_record_s()
-        # start_train()
-        start_replay_m("ENV/episode")  #"ENV/max_sars" episode
+        start_train()
+        # start_replay_m("ENV/max_sars")  #"ENV/max_sars" episode
 
         # start_test()
 
