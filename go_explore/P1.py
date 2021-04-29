@@ -4,7 +4,7 @@ from ENV.H3_battle import *
 from VCbattle import BHex
 import pygame
 
-import loky
+# import loky
 from contextlib import contextmanager
 import multiprocessing
 
@@ -64,12 +64,12 @@ def seed_pool_wrapper(pool_class):
         return SeedPoolWrap(pool_class(*args, **kwargs))
     return f
 go_explorer = defaultdict(cell)
-POOL = seed_pool_wrapper(LPool)(multiprocessing.cpu_count() * 2) # multiprocessing.get_context("spawn").Pool
+# POOL = seed_pool_wrapper(LPool)(multiprocessing.cpu_count() * 2) # multiprocessing.get_context("spawn").Pool
 # POOL = pool_class(multiprocessing.cpu_count() * 2)
 class explore_agent:
     def __init__(self,side):
         self.side = side
-    def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False):
+    def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False,action_known=None):
         cur = in_battle.cur_stack
         assert self.side == cur.side,"wrong side?"
         legal_act = in_battle.legal_act(level=0)

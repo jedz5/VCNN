@@ -14,34 +14,30 @@ np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={
 # m2, n2 = zip(*zip(m, n))
 # print(m == list(m2) and n == list(n2))
 
-buf = ReplayBuffer(10,ignore_obs_next=True)
-a = Batch(obs=1,act=2,rew=0,done=0)
-buf.add(a)
-buf.add(a)
-b = Batch(obs=1,act=2,rew=1,done=1)
-buf.add(b)
-batch1= buf.sample(0)[0]
-start = buf._index
-buf.add(a)
-buf.add(a)
-buf.add(b)
-buf.add(a)
-buf.add(a)
-buf.add(b)
-end = buf._index
-# cur = buf.rew[list(range(start,len(buf)))+list(range(end))]
-# cur = buf.rew[list(range(start,end))]
-cur = buf.rew[start:end]
-def cumulate_reward(batch):
-    a = batch
-    s = int(a.sum())
-    lk = np.array(range(s - 1, -1, -1))
-    a[a > 0.5] += lk
-cumulate_reward(cur)
-# batch2= buf.sample(0)[0]
-# d = Batch.cat([batch1,batch2])
-# a = Batch(obs=[1,1],act=[2,2],rew=[2,3],done=[0,1])
-# c = buf.prev(np.array([0,1,3]))
-# s = a.sum()
-# lk = np.array(range(s-1,-1,-1))
-# a[a == 1] += lk
+# buf = ReplayBuffer(10,ignore_obs_next=True)
+# a = Batch(obs=1,act=2,rew=0,done=0)
+# buf.add(a)
+# buf.add(a)
+# b = Batch(obs=1,act=2,rew=1,done=1)
+# buf.add(b)
+# batch1= buf.sample(0)[0]
+# start = buf._index
+# buf.add(a)
+# buf.add(a)
+# buf.add(b)
+# buf.add(a)
+# buf.add(a)
+# buf.add(b)
+# end = buf._index
+# # cur = buf.rew[list(range(start,len(buf)))+list(range(end))]
+# # cur = buf.rew[list(range(start,end))]
+# cur = buf.rew[start:end]
+# def cumulate_reward(batch):
+#     a = batch
+#     s = int(a.sum())
+#     lk = np.array(range(s - 1, -1, -1))
+#     a[a > 0.5] += lk
+# cumulate_reward(cur)
+
+a = {"abc":1}
+a["c"] = 1

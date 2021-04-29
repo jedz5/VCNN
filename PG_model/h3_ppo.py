@@ -29,7 +29,228 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
     else:
         logits3 = (logits.sub(logits.min(dim=-1,keepdim=True)[0]) + 1)* mask
     return logits3
-class H3_policy(PGPolicy):
+class H3AgentQ(nn.Module):
+
+    def __init__(self,
+                 optim: torch.optim.Optimizer=None,
+                 device="cpu",
+                 discount_factor: float = 0.95,
+                 threshold = 0.3,
+                 eps_clip: float = .2,
+                 vf_coef: float = .5,
+                 p_explore = 0.3,
+                 **kwargs) -> None:
+        super().__init__()
+        self._eps_clip = eps_clip
+        self._w_vf = vf_coef
+        self.threshold = threshold
+        self.discount_factor = discount_factor
+        self.net = H3_Q_net()
+        self.target_net = self.net.clone()
+        self.optim = optim
+        self._batch_size = 512
+        self.p_explore = p_explore
+        self.device = device
+    def f_act(self,act_q,act_imt,mask_acts):
+        act_imt = act_imt.softmax(dim=-1)  # shape(1,5)
+        imt = act_imt / act_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
+        imt = torch.logical_and(imt,
+                                torch.tensor(mask_acts, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
+        # Use large negative number to mask actions from argmax
+        act_id = int((imt * act_q + (1. - imt) * -1e8).argmax(1))
+        return act_id
+    def f_target(self,act_id, targets_logits_h,mask_targets, single_batch=True):
+        targets_q, targets_imt = self.net.get_target_q(act_id, targets_logits_h, single_batch=single_batch)
+        targets_imt = targets_imt.softmax(dim=-1)  # shape(1,5)
+        imt = targets_imt / targets_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
+        imt = torch.logical_and(imt,torch.tensor(mask_targets, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
+        # Use large negative number to mask actions from argmax
+        target_id = int((imt * targets_q + (1. - imt) * -1e8).argmax(1))
+        return target_id
+    def f_position(self,act_id, target_id, target_embs, mask_targets,position_logits_h,mask_position, single_batch=True):
+        '''target id is -1 mask_targets = all 0'''
+        position_q, position_imt = self.net.get_position_q(act_id, target_id, target_embs, mask_targets,
+                                                                 position_logits_h, single_batch=single_batch)
+        position_imt = position_imt.softmax(dim=-1)  # shape(1,5)
+        imt = position_imt / position_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
+        imt = torch.logical_and(imt, torch.tensor(mask_position, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
+        position_id = int((imt * position_q + (1. - imt) * -1e8).argmax(1))
+        return position_id
+    #单次输入 obs->act,mask
+    def forward(self, ind,attri_stack,planes_stack,plane_glb,env,can_shoot = False,print_act = False) -> Batch:
+        act_q, act_imt, targets_logits_h,target_embs, position_logits_h, spell_logits = self.net(ind,attri_stack,planes_stack,plane_glb)
+        '''ind,attri_stack,planes_stack,plane_glb shape like (batch,...) or (1,...) when inference'''
+
+        if self.in_train:
+            mask_acts = env.legal_act(level=0)
+            if np.random.binomial(1,self.p_explore):
+                act_id = np.random.choice(list(range(len(mask_acts))), p=mask_acts / mask_acts.sum())
+            else:
+                act_id = self.f_act(act_q,act_imt,mask_acts)
+            if act_id == action_type.move.value:
+                '''no target'''
+                mask_targets = np.zeros(14, dtype=bool)
+                target_id = -1
+                '''position only'''
+                mask_position = env.legal_act(level=1, act_id=act_id)
+                if np.random.binomial(1, self.p_explore):
+                    position_id = np.random.choice(list(range(len(mask_position))), p=mask_position / mask_position.sum())
+                else:
+                    position_id = self.f_position(act_id, target_id, target_embs, mask_targets,position_logits_h,mask_position, single_batch=True)
+            elif act_id == action_type.attack.value:
+                mask_targets = env.legal_act(level=1, act_id=act_id)
+                if np.random.binomial(1, self.p_explore):
+                    target_id = np.random.choice(list(range(len(mask_targets))), p=mask_targets / mask_targets.sum())
+                else:
+                    target_id = self.f_target(act_id, targets_logits_h, mask_targets, single_batch=True)
+                if can_shoot:
+                    '''no position'''
+                    mask_position = np.zeros(11 * 17, dtype=bool)
+                    position_id  = -1
+                else:
+                    mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
+                    if np.random.binomial(1, self.p_explore):
+                        position_id = np.random.choice(list(range(len(mask_position))),p=mask_position / mask_position.sum())
+                    else:
+                        position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
+        else:
+            mask_acts = env.legal_act(level=0)
+            act_id = self.f_act(act_q, act_imt, mask_acts)
+            if act_id == action_type.move.value:
+                '''no target'''
+                mask_targets = np.zeros(14, dtype=bool)
+                target_id = -1
+                '''position only'''
+                mask_position = env.legal_act(level=1, act_id=act_id)
+                position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
+            elif act_id == action_type.attack.value:
+                mask_targets = env.legal_act(level=1, act_id=act_id)
+                target_id = self.f_target(act_id, targets_logits_h, mask_targets, single_batch=True)
+                if can_shoot:
+                    '''no position'''
+                    mask_position = np.zeros(11 * 17, dtype=bool)
+                    position_id = -1
+                else:
+                    mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
+                    position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
+        return {'act_id': act_id, 'spell_id': -1, 'target_id': target_id, 'position_id': position_id,
+                'mask_acts': mask_acts, 'mask_targets': mask_targets,'mask_position': mask_position}
+
+    #@profile
+    #批量输入训练
+    def learn(self, batch, batch_size=None, repeat=4, **kwargs):
+        pcount = 0
+        for _ in range(repeat):
+            for b in batch.split(batch_size,shuffle=True):
+                mask_acts = b.info.mask_acts
+                mask_targets = b.info.mask_targets
+                mask_position = b.info.mask_position
+                act_index = torch.tensor(b.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
+                targets_index = torch.tensor(b.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
+
+                current_act_q, current_act_imt, targets_logits_h, target_embs, position_logits_h, spell_logits = self.net(**b.obs)
+                # target_act_id = self.f_act(current_act_q, current_act_imt,mask_acts)
+                current_targets_q, current_targets_imt = self.net.get_target_q(act_index, targets_logits_h, single_batch=False)
+                target_targets_id = self.f_target(act_index,)
+                target_targets_q, target_targets_imt = self.target_net.get_target_q(act_index, targets_logits_h, single_batch=False)
+                current_position_q, current_position_imt = self.net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
+                target_position_q, target_position_imt = self.target_net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
+                # with torch.no_grad():
+                #     target_act_q_next, target_act_imt_next, targets_logits_h_next, target_embs_next, position_logits_h_next, spell_logits_next = self.net(**b.obs_next)
+                #
+                #
+                #
+                # #TODO 9 reward 设计 32位 vs 64
+                # loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
+                # if pcount < 5:
+                #     logger.info("clip_loss={:.4f} vf_loss={:.4f} e_loss={:.4f}".format(clip_loss,vf_loss,e_loss))
+                # pcount += 1
+                # # losses.append(loss.item())
+                # self.optim.zero_grad()
+                # loss.backward()
+                # nn.utils.clip_grad_norm_(self.net.parameters(),
+                #     self._max_grad_norm)
+                # self.optim.step()
+    def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False,action_known:tuple=None):
+        ind, attri_stack, planes_stack, plane_glb = in_battle.current_state_feature(curriculum=False)
+        with torch.no_grad():
+            result = self.forward(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], in_battle,
+                           can_shoot=in_battle.cur_stack.can_shoot(), print_act=print_act)
+        act_id = result['act_id']
+        position_id = result['position_id']
+        target_id = result['target_id']
+        spell_id = result['spell_id']
+        next_act = BAction.idx_to_action(act_id,position_id,target_id,spell_id,in_battle)
+        if not ret_obs:
+            return next_act
+        act_id = 0 if act_id < 0 else act_id
+        position_id = 0 if position_id < 0 else position_id
+        target_id = 0 if target_id < 0 else target_id
+        spell_id = 0 if spell_id < 0 else spell_id
+        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
+        acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
+        mask = {'mask_acts': result['mask_acts'], 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
+        return next_act,{"act":acts,"obs":obs,"mask":mask}
+class H3ReplayManager:
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False):
+        fl = len(file_list)
+        self.win_rate = [0] * fl
+        self.start_point = [0] * fl
+        self.defender_states = [] * fl #type:List[BStack]
+        self.max_sar = [None] * fl #type:List[Batch]
+        file_list_cache = []
+        '''cache json'''
+        for file in file_list:
+            arena = Battle()
+            arena.load_battle(file, load_ai_side=False, format_postion=True)
+            arena.checkNewRound()
+            start = arena.current_state_feature(curriculum=True)
+            file_list_cache.append((start, arena.round))
+            self.defender_states.append(arena.defender_stacks)
+        self.file_list = file_list
+        self.file_list_cache = file_list_cache
+        self.agent = agent
+        self.use_expert_data = use_expert_data
+        if use_expert_data:
+            self.init_expert_data()
+        self.p_start_from_scratch = p_start_from_scratch
+    def init_expert_data(self):
+        expert = load_episo("ENV/episode")
+        if expert:
+            self.start_point[0] = len(expert) - 1
+            self.max_sar[0] = Batch(expert,copy=True)
+            H3SampleCollector.cumulate_reward(expert.rew)
+            self.agent.process_gae(expert, single_batch=False, sil=True)
+            '''fill in policy'''
+            self.max_sar[0].policy = expert.policy
+    def choose_start(self,idx,from_start=False):
+        if not self.max_sar[idx] or from_start or np.random.binomial(1,self.p_start_from_scratch):
+            return -1,self.file_list_cache[idx],None #RL
+        else:
+            obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
+            return obs_idx,(self.max_sar[idx].obs[obs_idx].attri_stack,0),[copy.copy(st) for st in self.defender_states[idx]] #FIXME round = 0
+    def update_max(self,idx,obs_idx,data:ReplayBuffer,data_rew,indice):
+        if obs_idx < 0:
+            if (not self.max_sar[idx] and data_rew > 0):
+                self.max_sar[idx] = data[indice]
+            elif self.max_sar[idx] and (sum(self.max_sar[idx].rew) < data_rew):
+                self.max_sar[idx] = data[indice]
+        elif (sum(self.max_sar[idx].rew[obs_idx:]) < data_rew):
+            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], data[indice]])
+            max_data = self.max_sar[idx]
+            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
+            logger.info(f"states dumped in max_data_{idx}.npy")
+    def get_sars(self):
+        bats = []
+        for exp in self.max_sar:
+            if exp:
+                exp_copy = Batch(exp,copy=True)
+                H3SampleCollector.cumulate_reward(exp_copy.rew)
+                self.agent.process_gae(exp_copy, single_batch=False, sil=True)
+                bats.append(exp_copy)
+                logger.info(f"exp.rew={sum(exp.rew)}")
+        return bats
+class H3Agent(PGPolicy):
 
     def __init__(self,
                  net: torch.nn.Module,
@@ -341,170 +562,9 @@ class H3_policy(PGPolicy):
                 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
         logps = {'act_logp': result['act_logp'], 'position_logp': result['position_logp'],
                  'target_logp': result['target_logp'], 'spell_logp': result['spell_logp']}
-        return next_act, obs, acts, mask, logps, result['value']
-
-class H3_Q_agent(nn.Module):
-
-    def __init__(self,
-                 optim: torch.optim.Optimizer=None,
-                 device="cpu",
-                 discount_factor: float = 0.95,
-                 threshold = 0.3,
-                 eps_clip: float = .2,
-                 vf_coef: float = .5,
-                 p_explore = 0.3,
-                 **kwargs) -> None:
-        super().__init__()
-        self._eps_clip = eps_clip
-        self._w_vf = vf_coef
-        self.threshold = threshold
-        self.discount_factor = discount_factor
-        self.net = H3_Q_net()
-        self.target_net = self.net.clone()
-        self.optim = optim
-        self._batch_size = 512
-        self.p_explore = p_explore
-        self.device = device
-    def f_act(self,act_q,act_imt,mask_acts):
-        act_imt = act_imt.softmax(dim=-1)  # shape(1,5)
-        imt = act_imt / act_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
-        imt = torch.logical_and(imt,
-                                torch.tensor(mask_acts, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
-        # Use large negative number to mask actions from argmax
-        act_id = int((imt * act_q + (1. - imt) * -1e8).argmax(1))
-        return act_id
-    def f_target(self,act_id, targets_logits_h,mask_targets, single_batch=True):
-        targets_q, targets_imt = self.net.get_target_q(act_id, targets_logits_h, single_batch=single_batch)
-        targets_imt = targets_imt.softmax(dim=-1)  # shape(1,5)
-        imt = targets_imt / targets_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
-        imt = torch.logical_and(imt,torch.tensor(mask_targets, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
-        # Use large negative number to mask actions from argmax
-        target_id = int((imt * targets_q + (1. - imt) * -1e8).argmax(1))
-        return target_id
-    def f_position(self,act_id, target_id, target_embs, mask_targets,position_logits_h,mask_position, single_batch=True):
-        '''target id is -1 mask_targets = all 0'''
-        position_q, position_imt = self.net.get_position_q(act_id, target_id, target_embs, mask_targets,
-                                                                 position_logits_h, single_batch=single_batch)
-        position_imt = position_imt.softmax(dim=-1)  # shape(1,5)
-        imt = position_imt / position_imt.max(1, keepdim=True)[0] > self.threshold  # shape(1,5)
-        imt = torch.logical_and(imt, torch.tensor(mask_position, dtype=bool).unsqueeze(0)).float()  # shape(1,5) && shape(1,5)
-        position_id = int((imt * position_q + (1. - imt) * -1e8).argmax(1))
-        return position_id
-    #单次输入 obs->act,mask
-    def forward(self, ind,attri_stack,planes_stack,plane_glb,env,can_shoot = False,print_act = False) -> Batch:
-        act_q, act_imt, targets_logits_h,target_embs, position_logits_h, spell_logits = self.net(ind,attri_stack,planes_stack,plane_glb)
-        '''ind,attri_stack,planes_stack,plane_glb shape like (batch,...) or (1,...) when inference'''
-
-        if self.in_train:
-            mask_acts = env.legal_act(level=0)
-            if np.random.binomial(1,self.p_explore):
-                act_id = np.random.choice(list(range(len(mask_acts))), p=mask_acts / mask_acts.sum())
-            else:
-                act_id = self.f_act(act_q,act_imt,mask_acts)
-            if act_id == action_type.move.value:
-                '''no target'''
-                mask_targets = np.zeros(14, dtype=bool)
-                target_id = -1
-                '''position only'''
-                mask_position = env.legal_act(level=1, act_id=act_id)
-                if np.random.binomial(1, self.p_explore):
-                    position_id = np.random.choice(list(range(len(mask_position))), p=mask_position / mask_position.sum())
-                else:
-                    position_id = self.f_position(act_id, target_id, target_embs, mask_targets,position_logits_h,mask_position, single_batch=True)
-            elif act_id == action_type.attack.value:
-                mask_targets = env.legal_act(level=1, act_id=act_id)
-                if np.random.binomial(1, self.p_explore):
-                    target_id = np.random.choice(list(range(len(mask_targets))), p=mask_targets / mask_targets.sum())
-                else:
-                    target_id = self.f_target(act_id, targets_logits_h, mask_targets, single_batch=True)
-                if can_shoot:
-                    '''no position'''
-                    mask_position = np.zeros(11 * 17, dtype=bool)
-                    position_id  = -1
-                else:
-                    mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-                    if np.random.binomial(1, self.p_explore):
-                        position_id = np.random.choice(list(range(len(mask_position))),p=mask_position / mask_position.sum())
-                    else:
-                        position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
-        else:
-            mask_acts = env.legal_act(level=0)
-            act_id = self.f_act(act_q, act_imt, mask_acts)
-            if act_id == action_type.move.value:
-                '''no target'''
-                mask_targets = np.zeros(14, dtype=bool)
-                target_id = -1
-                '''position only'''
-                mask_position = env.legal_act(level=1, act_id=act_id)
-                position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
-            elif act_id == action_type.attack.value:
-                mask_targets = env.legal_act(level=1, act_id=act_id)
-                target_id = self.f_target(act_id, targets_logits_h, mask_targets, single_batch=True)
-                if can_shoot:
-                    '''no position'''
-                    mask_position = np.zeros(11 * 17, dtype=bool)
-                    position_id = -1
-                else:
-                    mask_position = env.legal_act(level=2, act_id=act_id, target_id=target_id)
-                    position_id = self.f_position(act_id, target_id, target_embs, mask_targets, position_logits_h,mask_position, single_batch=True)
-        return {'act_id': act_id, 'spell_id': -1, 'target_id': target_id, 'position_id': position_id,
-                'mask_acts': mask_acts, 'mask_targets': mask_targets,'mask_position': mask_position}
-
-    #@profile
-    #批量输入训练
-    def learn(self, batch, batch_size=None, repeat=4, **kwargs):
-        pcount = 0
-        for _ in range(repeat):
-            for b in batch.split(batch_size,shuffle=True):
-                mask_acts = b.info.mask_acts
-                mask_targets = b.info.mask_targets
-                mask_position = b.info.mask_position
-                act_index = torch.tensor(b.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
-                targets_index = torch.tensor(b.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
-
-                current_act_q, current_act_imt, targets_logits_h, target_embs, position_logits_h, spell_logits = self.net(**b.obs)
-                # target_act_id = self.f_act(current_act_q, current_act_imt,mask_acts)
-                current_targets_q, current_targets_imt = self.net.get_target_q(act_index, targets_logits_h, single_batch=False)
-                target_targets_id = self.f_target(act_index,)
-                target_targets_q, target_targets_imt = self.target_net.get_target_q(act_index, targets_logits_h, single_batch=False)
-                current_position_q, current_position_imt = self.net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
-                target_position_q, target_position_imt = self.target_net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h, single_batch=False)
-                with torch.no_grad():
-                    target_act_q_next, target_act_imt_next, targets_logits_h_next, target_embs_next, position_logits_h_next, spell_logits_next = self.net(**b.obs_next)
+        return next_act, {"act":acts,"obs":obs,"mask":mask,"logps":logps,"value":result['value']}
 
 
-
-                #TODO 9 reward 设计 32位 vs 64
-                loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
-                if pcount < 5:
-                    logger.info("clip_loss={:.4f} vf_loss={:.4f} e_loss={:.4f}".format(clip_loss,vf_loss,e_loss))
-                pcount += 1
-                # losses.append(loss.item())
-                self.optim.zero_grad()
-                loss.backward()
-                nn.utils.clip_grad_norm_(self.net.parameters(),
-                    self._max_grad_norm)
-                self.optim.step()
-    def choose_action(self,in_battle:Battle,ret_obs = False,print_act=False,action_known:tuple=None):
-        ind, attri_stack, planes_stack, plane_glb = in_battle.current_state_feature(curriculum=False)
-        with torch.no_grad():
-            result = self.forward(ind[None], attri_stack[None], planes_stack[None], plane_glb[None], in_battle,
-                           can_shoot=in_battle.cur_stack.can_shoot(), print_act=print_act)
-        act_id = result['act_id']
-        position_id = result['position_id']
-        target_id = result['target_id']
-        spell_id = result['spell_id']
-        next_act = BAction.idx_to_action(act_id,position_id,target_id,spell_id,in_battle)
-        if not ret_obs:
-            return next_act
-        act_id = 0 if act_id < 0 else act_id
-        position_id = 0 if position_id < 0 else position_id
-        target_id = 0 if target_id < 0 else target_id
-        spell_id = 0 if spell_id < 0 else spell_id
-        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
-        acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
-        mask = {'mask_acts': result['mask_acts'], 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
-        return next_act, obs, acts, mask
 reward_def = 5
 r_cum = 0
 # def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=True):
@@ -623,11 +683,10 @@ r_cum = 0
 #     bat,indice = global_buffer.sample(0)
 #     global_buffer.reset()
 #     return win,bat
-class sample_collector_Q:
-    def __init__(self,agent:H3_Q_agent,full_buffer:ReplayBuffer,max_sar_manager):
+class H3SampleCollector:
+    def __init__(self,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager):
         self.agent = agent
-        self.buffer = ReplayBuffer(500,ignore_obs_next=True)
-        self.full_buffer = full_buffer
+        self.buffer = full_buffer
         self.max_sar_manager = max_sar_manager
         self.acted = False
     def collect_1_ep(self,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
@@ -637,13 +696,14 @@ class sample_collector_Q:
         battle.checkNewRound()
         had_acted = False
         win = False
-        acting_stack = battle.cur_stack
-        if acting_stack.by_AI == 2:
-            battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True, print_act=print_act)
-        else:
-            battle_action = acting_stack.active_stack()
-            obs, acts, mask, logps, value = None, None, None, None, 0
         for ii in range(n_step):
+            acting_stack = battle.cur_stack
+            if acting_stack.by_AI == 2:
+                print_act = print_act and ii < 5
+                battle_action, sars = acting_stack.active_stack(ret_obs=True, print_act=print_act)
+            else:
+                battle_action = acting_stack.active_stack()
+                sars = {}  # sars = {"act":None,"obs":None,"mask":None,"logps":None,"value":0}
             if acting_stack.by_AI == 2:
                 if not had_acted:
                     '''by now hand craft AI value is not needed'''
@@ -670,21 +730,14 @@ class sample_collector_Q:
                     break
             #buffer sar
             if had_acted:
-                self.record_sar(2,battle,acting_stack,battle_action, obs, acts, mask,done,killed_dealt, killed_get,td=td)
-            #next act
+                sars["done"] = done
+                self.record_sar(2,battle,acting_stack,sars)
+            #check done
             if done:
                 win = (battle.by_AI[battle.get_winner()] == 2)
                 if over_killed:
                     win = False
                 break
-            else:
-                acting_stack = battle.cur_stack
-                if acting_stack.by_AI == 2:
-                    print_act = print_act and ii < 5
-                    battle_action, obs, acts, mask = acting_stack.active_stack(ret_obs=True,print_act=print_act)
-                else:
-                    battle_action = acting_stack.active_stack()
-                    obs, acts, mask = None, None, None
         return win
 
     '''[single side Wheel fight]'''
@@ -716,35 +769,51 @@ class sample_collector_Q:
                 idx = list(range(buf_start,last_buf_start))
                 self.max_sar_manager.update_max(file_idx, obs_idx,self.buffer, sum(self.buffer.rew[buf_start:last_buf_start]),idx )
                 batch_rew = self.buffer.rew[buf_start:last_buf_start]
-                cumulate_reward(batch_rew)
+                self.cumulate_reward(batch_rew)
             else:
                 idx = list(range(buf_start, len(self.buffer))) + list(range(last_buf_start))
                 self.max_sar_manager.update_max(file_idx, obs_idx,self.buffer, sum(self.buffer.rew[idx]), idx)
                 batch_rew = self.buffer.rew[idx]
-                cumulate_reward(batch_rew)
+                self.cumulate_reward(batch_rew)
                 self.buffer.rew[idx] = batch_rew
-    def record_sar(self,operator, battle, acting_stack, battle_action, obs, acts, mask, done, killed_dealt, killed_get):
+        '''win count'''
+        return r
+    def record_sar(self,operator, battle, acting_stack, sars):
         if acting_stack.by_AI == operator:
             self.acted = True
+            obs = sars["obs"]
+            acts = sars["act"]
+            done = sars["done"]
+            mask = sars["mask"]
+            logps = sars["logps"]
+            value = sars["value"]
             if done:
                 if acting_stack.side == battle.get_winner():
-                    self.buffer.add(Batch(obs=obs, act=acts, rew=reward_def, done=1, info=mask))
+                    self.buffer.add(Batch(obs=obs, act=acts, rew=reward_def, done=1, info=mask,policy={"value": value, "logps": logps}))
                 else:
-                    self.buffer.add(Batch(obs=obs, act=acts, rew=-reward_def, done=1, info=mask))
+                    self.buffer.add(Batch(obs=obs, act=acts, rew=-reward_def, done=1, info=mask,policy={"value": value, "logps": logps}))
             else:
-                self.buffer.add(Batch(obs=obs, act=acts, rew=0, done=0, info=mask))
+                self.buffer.add(Batch(obs=obs, act=acts, rew=0, done=0, info=mask,policy={"value": value, "logps": logps}))
         else:
-                if done:
-                    if self.acted:
-                        last_idx = self.buffer.last_index
-                        if acting_stack.side == battle.get_winner():
-                            self.buffer.rew[last_idx] = -reward_def
-                            self.buffer.done[last_idx] = 1
-                        else:
-                            self.buffer.rew[last_idx] = reward_def
-                            self.buffer.done[last_idx] = 1
+            done = sars["done"]
+            if done:
+                if self.acted:
+                    last_idx = self.buffer.last_index
+                    if acting_stack.side == battle.get_winner():
+                        self.buffer.rew[last_idx] = -reward_def
+                        self.buffer.done[last_idx] = 1
                     else:
-                        logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+                        self.buffer.rew[last_idx] = reward_def
+                        self.buffer.done[last_idx] = 1
+                else:
+                    logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+    @staticmethod
+    def cumulate_reward(batch):
+        a = batch
+        s = int(a.sum())
+        lk = np.array(range(s - reward_def, -1, -reward_def))
+        a[a > 0.5] += lk
+
 def to_action_tuple(action:BAction,battle:Battle):
     act_id = action.type.value
     dest_id = -1
@@ -764,69 +833,6 @@ def to_action_tuple(action:BAction,battle:Battle):
         if not battle.cur_stack.can_shoot():
             dest_id = action.dest.y * Battle.bFieldWidth + action.dest.x
     return (act_id,dest_id,target_id)
-def collect_eps_both_sides(agent,file,n_step = 200,print_act = False):
-    battle = Battle(agent=agent)
-    battle.load_battle(file)
-    battle.checkNewRound()
-    win = -1
-    for ii in range(n_step):
-        acting_stack = battle.cur_stack
-        if acting_stack.by_AI == 2:
-            battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True, print_act=print_act)
-        else:
-            orig_battle_action = acting_stack.active_stack()
-            action_tuple = to_action_tuple(orig_battle_action,battle)
-            '''just give me logp '''
-            acting_stack.by_AI = 2
-            battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True, print_act=print_act,
-                                                                                     action_known=action_tuple)
-            acting_stack.by_AI = 1
-            '''gotcha'''
-        battle.doAction(battle_action)
-        battle.checkNewRound()
-        #battle.curStack had updated
-        done = battle.check_battle_end()
-        #buffer sar
-            # record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=False)
-        if acting_stack.side == 0:
-            global_buffer.add(obs=obs, act=acts, rew=int(done), done=int(done), info=mask, policy={"value": value, "logps": logps})
-        else:
-            global_buffer_defender.add(obs=obs, act=acts, rew=int(done), done=int(done), info=mask, policy={"value": value, "logps": logps})
-        #next act
-        if done:
-            bla = len(global_buffer)
-            bld = len(global_buffer_defender)
-            win = battle.get_winner()
-            if win == 0:
-                if bla > 0:
-                    global_buffer.rew[bla - 1] = reward_def
-                    global_buffer.done[bla - 1] = 1
-                else:
-                    logger.info("玩家0还没出手就赢了~")
-                if bld > 0:
-                    global_buffer_defender.rew[bld - 1] = -reward_def
-                    global_buffer_defender.done[bld - 1] = 1
-                else:
-                    logger.info("玩家1还没出手就输了~")
-            else:
-                if bla > 0:
-                    global_buffer.rew[bla - 1] = -reward_def
-                    global_buffer.done[bla - 1] = 1
-                else:
-                    logger.info("玩家0还没出手就输了~")
-                if bld > 0:
-                    global_buffer_defender.rew[bld - 1] = reward_def
-                    global_buffer_defender.done[bld - 1] = 1
-                else:
-                    logger.info("玩家1还没出手就赢了~")
-            break
-
-    bat0,indice = global_buffer.sample(0)
-    bat1,indice = global_buffer_defender.sample(0)
-    global_buffer.reset()
-    global_buffer_defender.reset()
-    return win,bat0,bat1
-
 
 def hook_me(grad):
     print(grad.abs().sum(dim=-1))
@@ -897,9 +903,9 @@ def test_game_noGUI(file,agent = None,by_AI = [2,1]):
         battle = Battle(agent=agent)
         battle.load_battle(file)
         battle.checkNewRound()
-        next_act = battle.cur_stack.active_stack()
         # 事件循环(main loop)
         while True:
+            next_act = battle.cur_stack.active_stack()
             battle.doAction(next_act)
             battle.checkNewRound()
             if battle.check_battle_end():
@@ -908,7 +914,6 @@ def test_game_noGUI(file,agent = None,by_AI = [2,1]):
                 if battle.by_AI[winner] == 2:
                     test_win += 1
                 break
-            next_act = battle.cur_stack.active_stack()
     return test_win/iter_N
 def get_act_info(battle,act):
     target_id = -1
@@ -1046,84 +1051,8 @@ def start_test():
     agent.eval()
     agent.in_train = False
     start_game("ENV/battles/6.json", by_AI=[2, 1],agent=agent)
-class replay_manager:
-    def __init__(self,file_list,agent,p_start_from_scratch = 0.2):
-        fl = len(file_list)
-        self.win_rate = [0] * fl
-        self.start_point = [0] * fl
-        self.defender_states = [] * fl #type:List[BStack]
-        self.max_sar = [None] * fl #type:List[Batch]
-        file_list_cache = []
-        '''cache json'''
-        for file in file_list:
-            arena = Battle()
-            arena.load_battle(file, load_ai_side=False, format_postion=True)
-            arena.checkNewRound()
-            start = arena.current_state_feature(curriculum=True)
-            file_list_cache.append((start, arena.round))
-            self.defender_states.append(arena.defender_stacks)
-        self.file_list = file_list
-        self.file_list_cache = file_list_cache
-        self.agent = agent
-        self.init_expert_data()
-        self.p_start_from_scratch = p_start_from_scratch
-    def init_expert_data(self):
-        expert = load_episo("ENV/episode")
-        if expert:
-            self.start_point[0] = len(expert) - 1
-            self.max_sar[0] = Batch(expert,copy=True)
-            cumulate_reward(expert)
-            self.agent.process_gae(expert, single_batch=False, sil=True)
-            '''fill in policy'''
-            self.max_sar[0].policy = expert.policy
-    def choose_start(self,idx,from_start=False):
-        if not self.max_sar[idx] or from_start or np.random.binomial(1,self.p_start_from_scratch):
-            return -1,self.file_list_cache[idx],None #RL
-        else:
-            obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
-            return obs_idx,(self.max_sar[idx].obs[obs_idx].attri_stack,0),[copy.copy(st) for st in self.defender_states[idx]] #FIXME round = 0
-    def update_max(self,idx,obs_idx,data:Batch):
-        if obs_idx < 0:
-            if (not self.max_sar[idx]):
-                self.max_sar[idx] = Batch(data,copy=True)
-            elif (sum(self.max_sar[idx].rew) < sum(data.rew)):
-                self.max_sar[idx] = Batch(data,copy=True)
-        elif (sum(self.max_sar[idx].rew[obs_idx:]) < sum(data.rew)):
-            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], Batch(data,copy=True)])
-            max_data = self.max_sar[idx]
-            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
-            logger.info(f"states dumped in max_data_{idx}.npy")
-    def get_sars(self):
-        bats = []
-        for exp in self.max_sar:
-            if exp:
-                exp_copy = Batch(exp,copy=True)
-                cumulate_reward(exp_copy)
-                self.agent.process_gae(exp_copy, single_batch=False, sil=True)
-                bats.append(exp_copy)
-                logger.info(f"exp.rew={sum(exp.rew)}")
-        return bats
-class replay_manager_Q(replay_manager):
-    def choose_start(self,idx,from_start=False):
-        return -1, self.file_list_cache[idx], None  # RL
 
-    def update_max(self,idx,obs_idx,data:ReplayBuffer,data_rew,indice):
-        if obs_idx < 0:
-            if (not self.max_sar[idx] and data_rew > 0):
-                self.max_sar[idx] = data[indice]
-            elif self.max_sar[idx] and (sum(self.max_sar[idx].rew) < data_rew):
-                self.max_sar[idx] = data[indice]
-        elif (sum(self.max_sar[idx].rew[obs_idx:]) < data_rew):
-            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], data[indice]])
-            max_data = self.max_sar[idx]
-            dump_episo([max_data.obs,max_data.obs_next, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
-            logger.info(f"states dumped in max_data_{idx}.npy")
-    def init_expert_data(self):
-        pass
-        # expert = load_episo("ENV/episode")
-        # if expert:
-        #     self.start_point[0] = len(expert) - 1
-        #     self.max_sar[0] = expert
+
 #@profile
 def start_train(use_expert_data=False):
     # 初始化 agent
@@ -1132,77 +1061,32 @@ def start_train(use_expert_data=False):
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
+    agent = H3Agent(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
     # agent.load_state_dict(torch.load("model_param.pkl"))
     count = 0
-    five_done = 5
-    ok = five_done
     # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
     file_list = ['ENV/battles/0.json']
-    sar_manager = replay_manager(file_list,agent)
+    replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
+    max_sar_manager = H3ReplayManager(file_list,agent,use_expert_data=use_expert_data)
+    collector = H3SampleCollector(agent, replay_buffer, max_sar_manager)
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
     if Linux:
         sample_num = 100
     else:
-        sample_num = 10 #debug
+        sample_num = 10
     print_len = 60
     logger.info(f"start training sample eps/epoch = {sample_num}")
     while True:
         agent.eval()
         agent.in_train = True
-        bats = []
+        collector.buffer.reset()
         for ii in range(sample_num):
             file_idx = random.choice(cache_idx)
             print_act = False
-            # if ii < 3 :
-            #     print_act = True
-            #     logger.info(f"------------------------{fn}.json")
-            '''[single side] '''
-            # win,batch_data = collect_eps(agent,file,print_act=print_act)
-            # agent.process_gae(batch_data)
-            # bats.append(batch_data)
-            '''[both sides]'''
-            # win, batch0,batch1 = collect_eps_both_sides(agent, file_list_cache[file_idx], print_act=print_act)
-            # agent.process_gae(batch0)
-            # bats.append(batch0)
-            # agent.process_gae(batch1)
-            # bats.append(batch1)
-            # if win == 0 and ii < 50:
-            #     logger.info(f"win {file_list[file_idx]}")
-            '''[single side Wheel fight]'''
-            arena = Battle(by_AI=[2, 1],agent=agent)
-            obs_idx,obs,defender_stacks = sar_manager.choose_start(file_idx)
-            arena.load_battle(obs, load_ai_side=False, format_postion=False)
-            wins = []
-            for r in range(10):
-                win,batch_data = collect_eps(agent,battle=arena,print_act=print_act)
-                if win:
-                    if r == 0 and obs_idx > 0:
-                        '''normal start after middle start
-                        need refresh inner states of stacks
-                        '''
-                        for st in defender_stacks:
-                            st.in_battle = arena
-                        arena.defender_stacks = defender_stacks
-                    if arena.should_continue():
-                        wins.append(batch_data)
-                        arena.split_army()
-                    else:
-                        '''one troop of our army is all gone'''
-                        wins.append(batch_data)
-                        break
-                else:
-                    bats.append(batch_data)
-                    break
-            if len(wins):
-                wins_batch = Batch.cat(wins)
-                sar_manager.update_max(file_idx,obs_idx,wins_batch)
-                cumulate_reward(wins_batch)
-                bats.append(wins_batch)
+            collector.collect_eps(file_idx)
 
-
-        batch_data = Batch.cat(bats)
+        batch_data = collector.buffer.sample(0)[0]
         logger.info(len(batch_data.rew))
         agent.train()
         agent.in_train = True
@@ -1211,6 +1095,15 @@ def start_train(use_expert_data=False):
         amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(np.float) / 100
         logger.info(batch_data.done.astype(np.float)[:print_len] * 1.11)
         logger.info("amount")
+        #FIXME
+        '''
+        2.00  3.00  4.00  3.00  2.00  1.00
+        0.29  0.29  0.29  0.29  0.13  0.13
+        0.13  0.13  0.13  0.13  0.29  0.29
+        0.00  0.00  3.00  3.00  3.00  3.00
+        stackQueue排列是否有问题？
+        '''
+        logger.info(batch_data.obs.attri_stack[:print_len, 0, 1].astype(np.float))
         logger.info(amount_array[0])
         logger.info(amount_array[1])
         logger.info("act_logp")
@@ -1228,7 +1121,7 @@ def start_train(use_expert_data=False):
         if Linux:
             to_dev(agent, "cuda")
         loss = agent.learn(batch_data,batch_size=2000)
-        sil_sars = sar_manager.get_sars()
+        sil_sars = max_sar_manager.get_sars()
         if len(sil_sars):
             sil_sars = Batch.cat(sil_sars)
             logger.info("sil act_logp")
@@ -1242,40 +1135,14 @@ def start_train(use_expert_data=False):
             to_dev(agent, "cpu")
         agent.eval()
         agent.in_train = False
-
-        '''test by win rate'''
-        # win_rate = 0
-        # for file_idx in cache_idx:
-        #     ct = test_game_noGUI(file_list_cache[file_idx], agent=agent)
-        #     logger.info(f"test-{count}-{file_list[file_idx]} win rate = {ct}")
-        #     win_rate += ct
-        # win_rate /= len(file_list)
-        # logger.info(f"win rate at all = {win_rate}")
-        # if win_rate > 0.9:
-        #     ok -= 1
-        #     if ok == 0:
-        #         torch.save(agent.state_dict(),"model_param.pkl")
-        #         logger.info("model saved")
-        #         sys.exit(1)
-        # else:
-        #     ok = five_done
-        # if count == 50000:
-        #     sys.exit(-1)
         '''test how many times agent can win'''
         win_count = []
         for file_idx in cache_idx:
-            arena = Battle(by_AI=[2, 1], agent=agent)
-            arena.load_battle(sar_manager.choose_start(file_idx,from_start=True)[1], load_ai_side=False, format_postion=True)
-            ct = 0
-            for r in range(10):
-                arena.split_army()
-                win, batch_data = collect_eps(agent, battle=arena, print_act=print_act)
-                if win:
-                    ct += 1
-                else:
-                    win_count.append(ct)
-                    logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
-                    break
+            collector.buffer.reset()
+            ct = collector.collect_eps(file_idx)
+            win_count.append(ct)
+            logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
+            break
         if sum(win_count) > max_win_count:
             logger.info("model saved")
             torch.save(agent.state_dict(), "model_param.pkl")
@@ -1284,7 +1151,7 @@ def start_train(use_expert_data=False):
         logger.info(f'count={count}')
 def start_train_Q():
     # 初始化 ag
-    agent = H3_Q_agent()
+    agent = H3AgentQ()
     lrate = 0.0005
     optim = torch.optim.Adam(agent.net.parameters(), lr=lrate)
     agent.optim = optim
@@ -1294,8 +1161,8 @@ def start_train_Q():
     file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
     # file_list = ['ENV/battles/0.json']
     Q_replay_buffer = ReplayBuffer(200000, ignore_obs_next=True)
-    max_sar_manager = replay_manager_Q(file_list,agent)
-    collector = sample_collector_Q(agent,Q_replay_buffer,max_sar_manager)
+    max_sar_manager = H3ReplayManagerQ(file_list,agent)
+    collector = H3SampleCollector(agent,Q_replay_buffer,max_sar_manager)
     cache_idx = range(len(file_list))
     max_win_count = len(file_list)
     if Linux:
@@ -1345,11 +1212,7 @@ def start_train_Q():
         agent.eval()
         agent.in_train = False
 
-def cumulate_reward(batch):
-    a = batch
-    s = int(a.sum())
-    lk = np.array(range(s - reward_def, -1, -reward_def))
-    a[a > 0.5] += lk
+
 def start_game_record_s():
     arena = Battle(by_AI=[0, 1])
     arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
@@ -1369,11 +1232,14 @@ def start_replay_m(file):
 M=0
 if __name__ == '__main__':
     if Linux:
-        start_train()
+        start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        start_train()
+        start_train(use_expert_data=False)
         # start_replay_m("ENV/max_sars")  #"ENV/max_sars" episode
-
         # start_test()
+        # from go_explore.P1 import explore_agent
+        #
+        # agent = explore_agent(side=0)
+        # test_game_noGUI("ENV/battles/0.json",agent=agent)
 
