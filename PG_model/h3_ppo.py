@@ -13,7 +13,7 @@ from tianshou.data import Batch, ReplayBuffer
 import scipy.signal
 # import pdb
 
-np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
+np.set_printoptions(precision=1,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.1f}'.format})
 logger = get_logger()[1]
 dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
@@ -859,42 +859,6 @@ def to_dev(agent,dev):
     agent.device = dev
     agent.net.device = dev
     agent.net.inpipe.device = dev
-def start_game(file,battle_int=None,agent = None,by_AI = [2,1]):
-    #初始化 agent
-    if not agent:
-        actor_critic = H3_net(dev)
-        optim = None #torch.optim.Adam(actor_critic.parameters(), lr=1E-3)
-        dist = torch.distributions.Categorical
-        agent = H3_policy(actor_critic, optim, dist, device=dev)
-        agent.in_train = True
-    # debug = True
-    battle = Battle(agent=agent,by_AI=by_AI)
-    battle.load_battle(file,shuffle_postion=False)
-    # if random.randint(0, 1):
-    #     init_stack_position(battle)
-    # init_stack_position(battle)
-    battle.checkNewRound()
-    if not battle_int:
-        from ENV import H3_battleInterface
-        battle_int = H3_battleInterface.BattleInterface(battle)
-    else:
-        battle_int.init_battle(battle)
-    battle_int.next_act = battle.cur_stack.active_stack(print_act=True)
-    i = 0
-    while battle_int.running:
-        act = battle_int.handleEvents()
-        if act:
-            i += 1
-            if battle.check_battle_end():
-                print("battle end")
-                battle_int.running = False
-                # pygame.quit()
-                return 1 if battle.by_AI[battle.get_winner()] == 2 else 0
-        battle_int.handleBattle(act,print_act = True)
-        battle_int.renderFrame()
-    print("game end")
-    # pygame.quit()
-    return 0
 def test_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
@@ -964,6 +928,7 @@ def start_game_record(battle:Battle=None):
     logps, value = None,0
     had_acted = False
     acting_stack = battle.cur_stack
+    #FIXME fake act at first
     bi.next_act = acting_stack.active_stack()
     # 事件循环(main loop)
     while bi.running:
@@ -1046,7 +1011,7 @@ def start_test():
     actor_critic = H3_net(dev)
     optim = None #torch.optim.Adam(actor_critic.parameters(), lr=0.005)
     dist = torch.distributions.Categorical
-    agent = H3_policy(actor_critic, optim, dist, device=dev)
+    agent = H3Agent(actor_critic, optim, dist, device=dev)
     agent.load_state_dict(torch.load("model_param.pkl"))
     agent.eval()
     agent.in_train = False
@@ -1092,17 +1057,9 @@ def start_train(use_expert_data=False):
         agent.in_train = True
         agent.process_gae(batch_data,single_batch=False)
         amount_idx = np.logical_and(batch_data.obs.attri_stack[:print_len, :, 3] > 1,batch_data.obs.attri_stack[:print_len, :,0] == 0)
-        amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(np.float) / 100
-        logger.info(batch_data.done.astype(np.float)[:print_len] * 1.11)
+        amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(np.float) / 10
+        logger.info(batch_data.done.astype(np.float)[:print_len] * 1.1)
         logger.info("amount")
-        #FIXME
-        '''
-        2.00  3.00  4.00  3.00  2.00  1.00
-        0.29  0.29  0.29  0.29  0.13  0.13
-        0.13  0.13  0.13  0.13  0.29  0.29
-        0.00  0.00  3.00  3.00  3.00  3.00
-        stackQueue排列是否有问题？
-        '''
         logger.info(batch_data.obs.attri_stack[:print_len, 0, 1].astype(np.float))
         logger.info(amount_array[0])
         logger.info(amount_array[1])
@@ -1112,7 +1069,7 @@ def start_train(use_expert_data=False):
         logger.info("position_logp")
         logger.info(batch_data.policy.logps.position_logp[:print_len])
         logger.info(batch_data.act.position_id.astype(np.float)[:print_len] //17)
-        logger.info(batch_data.act.position_id.astype(np.float)[:print_len] % 17 - 9)
+        logger.info((batch_data.act.position_id.astype(np.float)[:print_len] % 17)/10 )
         logger.info("target")
         logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
         logger.info("adv")
