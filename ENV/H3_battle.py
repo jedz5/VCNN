@@ -366,12 +366,12 @@ class BStack(BHex):
     def wait(self):
         self.had_waited = True
     def defend(self):
-        self.defense += 2
+        self.defense += 5
         self.had_defended = True
         self.had_moved = True
     def newRound(self):
         if self.had_defended:
-            self.defense -= 2
+            self.defense -= 5
         self.had_moved = False
         self.had_retaliated = False
         self.had_waited = False
