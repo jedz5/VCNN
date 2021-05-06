@@ -366,12 +366,12 @@ class BStack(BHex):
     def wait(self):
         self.had_waited = True
     def defend(self):
-        self.defense += 2
+        self.defense += 5
         self.had_defended = True
         self.had_moved = True
     def newRound(self):
         if self.had_defended:
-            self.defense -= 2
+            self.defense -= 5
         self.had_moved = False
         self.had_retaliated = False
         self.had_waited = False
@@ -581,9 +581,7 @@ class Battle(object):
                 stacks.pop(i)
             else:
                 if copy_stack:
-                    st_1 = BStack()
-                    st_1.amount = st.amount
-                    st_1.amount_base = st.amount_base
+                    st_1 = copy.copy(st)
                     copy_list.append(st_1)
                     cmap[st.id] = st_1
                 else:
@@ -907,16 +905,10 @@ class Battle(object):
             planes_stack[i, 2] = (bf == 201)
             #
             ind[i] = st.id
-            # if curriculum:
             attri_stack[i] = np.array(
                 [st.side,st.slotId, st.id , st.amount, st.amount_base, st.first_HP_Left, st.health, st.luck,st.attack, st.defense, st.max_damage, st.min_damage,
-                  st.speed,  st.morale,
-                 st.shots,st.y, st.x,int(st.had_moved), int(st.had_waited), int(st.had_retaliated), int(st.had_defended)])
-            # else:
-            #     attri_stack[i] = np.array(
-            #         [st.side, st.amount, st.first_HP_Left, st.attack, st.defense, st.max_damage, st.min_damage,
-            #          int(st.had_moved), int(st.had_retaliated), int(st.had_waited), st.speed, st.luck, st.morale,
-            #          st.shots])
+                  st.speed,  st.morale,st.shots,st.y, st.x,int(st.had_moved), int(st.had_waited), int(st.had_retaliated), int(st.had_defended)])
+
         if curriculum:
             return attri_stack
         plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)

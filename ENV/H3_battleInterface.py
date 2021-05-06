@@ -440,30 +440,23 @@ M=0
 def start_game_s_gui(battle:Battle):
     if not battle:
         arena = Battle(by_AI=[0, 1])
-        arena.load_battle("ENV/battles/8.json", load_ai_side=False, format_postion=True)
+        arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     else:
         arena = battle
     arena.split_army()
     arena.checkNewRound()
     bi = start_game_gui(battle=arena)
-    if arena.check_battle_end():
+    '''true win'''
+    if arena.check_battle_end() and arena.should_continue():
         bi.running = True
-    '''my army is all gone~~'''
-    if not arena.should_continue() or arena.check_battle_end():
-        bi.running = False
     count = 1
     while bi.running:
         arena.split_army()
         arena.checkNewRound()
         start_game_gui(battle_int=bi, battle=arena)
-        '''q = quit'''
-        if arena.check_battle_end():
+        '''true win'''
+        if arena.check_battle_end() and arena.should_continue():
             bi.running = True
-        else:
-            bi.running = False
-        '''my army is all gone~~'''
-        if arena.check_battle_end() or (not arena.should_continue()):
-            bi.running = False
         count += 1
     print(f"battle count = {count}")
 def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=None, shuffle_postion=False,load_ai_side=False):
@@ -502,7 +495,7 @@ def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=Non
         bi.renderFrame()
     return bi
 if __name__ == '__main__':
-    from PG_model.h3_ppo import H3_policy,H3_net
+    # from PG_model.h3_ppo import H3_policy,H3_net
     # actor_critic = H3_net("cpu")
     # agent = H3_policy(actor_critic)
     # agent.load_state_dict(torch.load("model_param.pkl"))
