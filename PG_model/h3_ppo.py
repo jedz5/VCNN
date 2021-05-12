@@ -192,6 +192,52 @@ class H3AgentQ(nn.Module):
         acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': spell_id}
         mask = {'mask_acts': result['mask_acts'], 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
         return next_act,{"act":acts,"obs":obs,"mask":mask}
+
+    def start_train(self):
+        # 初始化 ag
+        agent = self
+        lrate = 0.0005
+        optim = torch.optim.Adam(agent.net.parameters(), lr=lrate)
+        agent.optim = optim
+        # actor_critic.act_ids.weight.register_hook(hook_me)
+        # agent.load_state_dict(torch.load("model_param.pkl"))
+        count = 0
+        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json',
+                     'ENV/battles/4.json']
+        # file_list = ['ENV/battles/0.json']
+        Q_replay_buffer = ReplayBuffer(200000, ignore_obs_next=True)
+        max_sar_manager = H3ReplayManager(file_list, agent)
+        collector = H3SampleCollector(agent, Q_replay_buffer, max_sar_manager)
+        cache_idx = range(len(file_list))
+        max_win_count = len(file_list)
+        if Linux:
+            sample_num = 100
+        else:
+            sample_num = 10
+        logger.info(f"start training sample eps/epoch = {sample_num}")
+        while True:
+            agent.eval()
+            agent.in_train = True
+            for ii in range(sample_num):
+                file_idx = random.choice(cache_idx)
+                print_act = False
+                collector.collect_eps(file_idx)
+
+            batch_data = collector.buffer.sample(0)[0]
+            agent.train()
+            agent.in_train = True
+            if Linux:
+                self.to_dev(agent, "cuda")
+            loss = agent.learn(batch_data, batch_size=512)
+            sil_sars = max_sar_manager.get_sars()
+            if len(sil_sars):
+                sil_sars = Batch.cat(sil_sars)
+                logger.info("sil learning")
+                loss = agent.learn(sil_sars, batch_size=512)
+            if Linux:
+                self.to_dev(agent, "cpu")
+            agent.eval()
+            agent.in_train = False
 class H3ReplayManager:
     def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False, format_postion=False):
         fl = len(file_list)
@@ -207,7 +253,6 @@ class H3ReplayManager:
             self.defender_states.append(arena.defender_stacks)
         self.file_list = file_list
         self.file_list_cache = file_list_cache
-        self.start_point = [0] * fl
         self.max_sar = [None] * fl #type:List[Batch]
         self.agent = agent
         self.use_expert_data = use_expert_data
@@ -217,9 +262,8 @@ class H3ReplayManager:
     def init_expert_data(self):
         expert = load_episo("ENV/episode")
         if expert:
-            self.start_point[0] = len(expert) - 1
+            compute_reward_from_episodes(expert,0,len(expert))
             self.max_sar[0] = Batch(expert,copy=True)
-            H3SampleCollector.cumulate_reward(expert.rew)
             self.agent.process_gae(expert, single_batch=False, sil=True)
             '''fill in policy'''
             self.max_sar[0].policy = expert.policy
@@ -245,56 +289,79 @@ class H3ReplayManager:
         for exp in self.max_sar:
             if exp:
                 exp_copy = Batch(exp,copy=True)
-                H3SampleCollector.cumulate_reward(exp_copy.rew)
+                cumulate_reward(exp_copy,0,len(exp_copy))
                 self.agent.process_gae(exp_copy, single_batch=False, sil=True)
                 bats.append(exp_copy)
                 logger.info(f"exp.rew={sum(exp.rew)}")
         return bats
 class H3ReplayManager_SIL(H3ReplayManager):
-    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False,format_postion=False):
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False,format_postion=False,il_threshold_c = 20,il_threshold_wr = 0.4):
         super(H3ReplayManager_SIL, self).__init__(file_list,agent,p_start_from_scratch,use_expert_data,format_postion)
         fl = len(file_list)
         self.win_count = np.zeros((fl,))
         self.count = np.ones((fl,))
+        self.il_done = False
+        self.il_threshold_c = il_threshold_c
+        self.il_threshold_wr = il_threshold_wr
     def choose_start(self,idx=-1,from_start=False):
         if idx < 0:
-            if self.il_done():
+            if self.il_done:
                 idx = random.choice(range(len(self.max_sar)))
             else:
                 idx = 0
         obs_idx, obs, defs = super(H3ReplayManager_SIL, self).choose_start(idx)
         return idx, obs_idx, obs, defs
-    def update_max(self,idx,obs_idx,data:ReplayBuffer,data_rew,indice):
-        self.count[idx] += 1
+    def update_max(self,idx,obs_idx,data:ReplayBuffer,start,end):
+        if end == start:
+            logger.info(f"end == start == {end}???")
+            return
+        if end > start:
+            data_rew = data.rew[start:end]
+            indice = range(start,end)
+        else:
+            indice = list(range(start, len(data))) + list(range(end))
+            data_rew = data.rew[idx]
+        data_rew = sum(data_rew)
         if not self.max_sar[idx]:
             if data_rew > 0:
                 self.max_sar[idx] = data[indice]
-                self.update_count(idx)
+                max_data = self.max_sar[idx]
+                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",
+                           f'max_data_{idx}.npy')
+                logger.info(f"states dumped in max_data_{idx}.npy")
+                self.reset_count(idx)
         else:
             record_rew = sum(self.max_sar[idx].rew)
             if record_rew < data_rew:
                 if obs_idx <= 0:
-                    self.max_sar[idx] = data[indice]
                     logger.info(f"idx-{idx} get new traj from scratch")
                 else:
-                    self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], data[indice]])
                     logger.info(f"idx-{idx} get new traj")
-                self.update_count(idx)
-            elif record_rew == data_rew:
-                self.win_count[idx] += 1
-    def update_count(self,idx):
-        max_data = self.max_sar[idx]
-        dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",
-                   f'max_data_{idx}.npy')
-        logger.info(f"states dumped in max_data_{idx}.npy")
-        self.win_count[idx] = 1
+                self.max_sar[idx] = data[indice]
+                max_data = self.max_sar[idx]
+                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
+                logger.info(f"states dumped in max_data_{idx}.npy")
+                self.reset_count(idx)
+            else:
+                record_done = int(sum(self.max_sar[idx].done))
+                data_done = int(sum(data.done[indice]))
+                assert record_done >= data_done
+                if  record_done == data_done:
+                    self.win_count[idx] += 1
+
+    def reset_count(self,idx):
+        self.win_count[idx] = 0
         self.count[idx] = 1
+    def reset_counts(self):
+        for i in range(len(self.count)):
+            self.reset_count(i)
     def get_win_rate(self,idx):
         return self.win_count[idx] / self.count[idx],self.count[idx]
     def get_win_rates(self):
         return self.win_count / self.count , self.count
-    def il_done(self):
-        return self.count[0] > 20 and (self.win_count[0] / self.count[0] > 0.3)
+    def update_il_flag(self):
+        if not self.il_done:
+            self.il_done = self.count[0] > self.il_threshold_c and (self.win_count[0] / self.count[0] > self.il_threshold_wr)
 class H3Agent(PGPolicy):
 
     def __init__(self,
@@ -537,18 +604,18 @@ class H3Agent(PGPolicy):
                 # prob_position = dist_position.log_prob(torch.tensor(b.act.position_id, device=self.device)) * torch.tensor(mask_position, device=self.device)
 
                 '''spell'''
-                spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
-                prob_spell = spell_logits.gather(dim=1,index=torch.tensor(b.act.spell_id, device=self.device,dtype=torch.long).unsqueeze(dim=-1)).squeeze(-1)
-                dist_spell = self.dist_fn(spell_logits)
+                # spell_logits = softmax(spell_logits, mask_spell, self.device,add_little=True)
+                # prob_spell = spell_logits.gather(dim=1,index=torch.tensor(b.act.spell_id, device=self.device,dtype=torch.long).unsqueeze(dim=-1)).squeeze(-1)
+                # dist_spell = self.dist_fn(spell_logits)
                 # prob_spell = dist_spell.log_prob(torch.tensor(b.act.spell_id, device=self.device)) * torch.tensor(mask_spell, device=self.device)
-                #TODO 如果old_prob太小？？？
+
                 old_prob_act = torch.tensor(b.policy.logps.act_logp, device=self.device)
                 old_prob_target = torch.tensor(b.policy.logps.target_logp, device=self.device)
                 old_prob_position = torch.tensor(b.policy.logps.position_logp, device=self.device)
-                old_prob_spell = torch.tensor(b.policy.logps.spell_logp, device=self.device)
+                # old_prob_spell = torch.tensor(b.policy.logps.spell_logp, device=self.device)
                 adv = torch.tensor(b.adv, device=self.device)
                 returns = torch.tensor(b.returns, device=self.device)
-                ratio = (prob_act / old_prob_act) * (prob_target / old_prob_target) * (prob_position / old_prob_position) * (prob_spell / old_prob_spell)
+                ratio = (prob_act / old_prob_act) * (prob_target / old_prob_target) * (prob_position / old_prob_position)
 
                 surr1 = ratio * adv
                 surr2 = ratio.clamp(1. - self._eps_clip, 1. + self._eps_clip) * adv
@@ -568,7 +635,7 @@ class H3Agent(PGPolicy):
                 # vf_loss = .5 * (returns - value.squeeze(-1)).pow(2).mean()
                 vf_loss = F.smooth_l1_loss(returns,value.squeeze(-1))
                 # vf_losses.append(vf_loss.item())
-                e_loss = dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() + dist_spell.entropy().mean()
+                e_loss = dist_act.entropy().mean() + dist_position.entropy().mean() + dist_targets.entropy().mean() # dist_spell.entropy().mean()
                 # ent_losses.append(e_loss.item())
                 #TODO 9 reward 设计 32位 vs 64
                 loss = clip_loss + self._w_vf * vf_loss - self._w_ent * e_loss
@@ -605,125 +672,134 @@ class H3Agent(PGPolicy):
                  'target_logp': result['target_logp'], 'spell_logp': result['spell_logp']}
         return next_act, {"act":acts,"obs":obs,"mask":mask,"logps":logps,"value":result['value']}
 
+    def to_dev(self, dev):
+        self.to(dev)
+        self.device = dev
+        self.net.device = dev
+        self.net.inpipe.device = dev
+
+
+class H3Agent_rewarded(H3Agent):
+
+    def start_train(self,use_expert_data=False):
+        H3SampleCollector.check_done = check_done_2
+        H3SampleCollector_SIL.record_sar = record_sar_2
+        cumulate_reward = cumulate_reward_2
+        # agent.load_state_dict(torch.load("model_param.pkl"))
+        count = 0
+        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json',
+                     'ENV/battles/4.json']
+        # file_list = ['ENV/battles/5.json']
+        format_postion = False
+        replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
+        max_sar_manager = H3ReplayManager_SIL(file_list, self, use_expert_data=use_expert_data,
+                                              format_postion=format_postion)
+
+        collector = H3SampleCollector_SIL(file_list, self, replay_buffer, max_sar_manager,
+                                          format_postion=format_postion)
+        cache_idx = range(len(file_list))
+        max_win_count = len(file_list)
+        if Linux:
+            sample_num = 200
+        else:
+            sample_num = 20
+        print_len = 60
+        logger.info(f"start training sample eps/epoch = {sample_num}")
+        while True:
+            self.eval()
+            self.in_train = True
+            collector.buffer.reset()
+            collector.max_sar_manager.reset_counts()
+            for ii in range(sample_num):
+                # file_idx = random.choice(cache_idx)
+                # print_act = False
+                collector.collect_eps(-1)
+            collector.max_sar_manager.update_il_flag()
+            batch_data = collector.buffer.sample(0)[0]
+            logger.info(len(batch_data.rew))
+            self.train()
+            self.in_train = True
+            self.process_gae(batch_data, single_batch=False)
+
+            # amount_idx = np.logical_and(batch_data.obs.attri_stack[:print_len, :, 3] > 1,
+            #                             batch_data.obs.attri_stack[:print_len, :, 0] == 0)
+            # amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(
+            #     np.float) / 10
+            me_amount = np.zeros((print_len, 2))
+            enemy_amount = np.zeros((print_len, 3))
+            for i in range(print_len):
+                stacks = batch_data.obs.attri_stack[i]
+                mask = np.logical_and(stacks[:, 0] == 0,stacks[:,3] > 1)
+                me_am = stacks[mask][:, 3]
+                me_amount[i, :len(me_am)] = me_am
+
+                mask = stacks[:, 0] == 1
+                enemy_am = stacks[mask][:, 3]
+                enemy_amount[i, :len(enemy_am)] = enemy_am
+
+            me_amount = me_amount.transpose().astype(np.float) / 10
+            enemy_amount = enemy_amount.transpose().astype(np.float) / 10
+            logger.info(batch_data.done.astype(np.float)[:print_len] * 1.1)
+            logger.info("amount")
+            logger.info(-batch_data.obs.attri_stack[:print_len, 0, 1].astype(np.float))
+            logger.info(me_amount[0])
+            logger.info(me_amount[1])
+            logger.info("enemy_amount")
+            logger.info(enemy_amount[0])
+            logger.info(enemy_amount[1])
+            logger.info(enemy_amount[2])
+            logger.info("act_logp")
+            logger.info(batch_data.policy.logps.act_logp[:print_len])
+            logger.info(batch_data.act.act_id.astype(np.float)[:print_len])
+            logger.info("position_logp")
+            logger.info(batch_data.policy.logps.position_logp[:print_len])
+            logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] // 17) / 10)
+            logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] % 17) / 10)
+            logger.info("target")
+            logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
+            logger.info("adv")
+            logger.info(batch_data.rew.astype(np.float)[:print_len] / 5)
+            logger.info(batch_data.adv[:print_len] / 5)
+            if Linux:
+                self.to_dev("cuda")
+            loss = self.learn(batch_data, batch_size=2000)
+            sil_sars = max_sar_manager.get_sars()
+            if len(sil_sars):
+                sil_sars = Batch.cat(sil_sars)
+                logger.info("sil act_logp")
+                logger.info(sil_sars.policy.logps.act_logp[:print_len])
+                logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])
+                logger.info("sil adv")
+                logger.info(sil_sars.rew.astype(np.float)[:print_len] / 5)
+                logger.info(sil_sars.policy.value[:print_len] / 5)
+                loss = self.learn(sil_sars, batch_size=2000)
+            if Linux:
+                self.to_dev("cpu")
+            self.eval()
+            self.in_train = False
+            '''test how many times agent can win'''
+            wr, wc = max_sar_manager.get_win_rates()
+            logger.info(f'win rate = {wr}')
+            logger.info(f'win cont = {wc}')
+            if max_sar_manager.il_done:
+                test_battle_idx = cache_idx
+            else:
+                test_battle_idx = [0]
+            win_count = []
+            for file_idx in test_battle_idx:
+                collector.buffer.reset()
+                ct = collector.collect_eps(file_idx)
+                win_count.append(ct)
+                logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
+            if sum(win_count) > max_win_count:
+                logger.info("model saved")
+                torch.save(self.state_dict(), "model_param.pkl")
+                max_win_count = sum(win_count)
+            count += 1
+            logger.info(f'count={count}')
 
 reward_def = 5
 r_cum = 0
-# def record_sar(buffer,operator,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=True):
-#     global r_cum
-#     """compute reward"""
-#     reward = 0.
-#     tmp = 0.
-#     bl = len(buffer)
-#     if td:
-#         #TODO 在overkill条件下是否需要判断win！！！！？？？
-#         if battle_action.type == action_type.attack:
-#             reward = killed_dealt * battle_action.target.ai_value / battle.ai_value[
-#                 ~acting_stack.side] - killed_get * acting_stack.ai_value / battle.ai_value[acting_stack.side]
-#             if acting_stack.by_AI != operator:
-#                 reward = -reward
-#         if done:
-#             if battle.by_AI[battle.get_winner()] == operator:  # winner is operator
-#                 reward = 1. + reward
-#             else:
-#                 reward = -1. + reward
-#         reward *= reward_def
-#         if done or acting_stack.by_AI == operator:
-#             tmp= r_cum
-#             r_cum = 0.
-#         else:
-#             r_cum += reward
-#         """buffer sar"""
-#         if acting_stack.by_AI == operator:
-#             if bl:
-#                 buffer.rew[bl - 1] += tmp
-#             buffer.add(Batch(obs=obs, act=acts, rew=reward, done=done, info=mask, policy={"value": value, "logps": logps}))
-#         elif done:
-#             if bl:
-#                 buffer.rew[bl - 1] += reward
-#                 buffer.done[bl - 1] = done
-#             else:
-#                 logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-#     else:
-#         if acting_stack.by_AI == operator:
-#             if done:
-#                 if acting_stack.side == battle.get_winner():
-#                     buffer.add(Batch(obs=obs, act=acts, rew=reward_def, done=True, info=mask, policy={"value": value, "logps": logps}))
-#                 else:
-#                     buffer.add(Batch(obs=obs, act=acts, rew=-reward_def, done=True, info=mask,policy={"value": value, "logps": logps}))
-#             else:
-#                 buffer.add(Batch(obs=obs, act=acts, rew=0, done=False, info=mask, policy={"value": value, "logps": logps}))
-#         else:
-#             if done:
-#                 if bl:
-#                     if acting_stack.side == battle.get_winner():
-#                         buffer.rew[bl - 1] = -reward_def
-#                         buffer.done[bl - 1] = True
-#                     else:
-#                         buffer.rew[bl - 1] = reward_def
-#                         buffer.done[bl - 1] = True
-#                 else:
-#                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-# global_buffer = ReplayBuffer(500,ignore_obs_next=True)
-# global_buffer_defender = ReplayBuffer(500,ignore_obs_next=True)
-# def collect_eps(agent,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
-#     if not battle:
-#         battle = Battle(agent=agent)
-#         battle.load_battle(file)
-#     battle.checkNewRound()
-#     had_acted = False
-#     win = False
-#     acting_stack = battle.cur_stack
-#     if acting_stack.by_AI == 2:
-#         battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True, print_act=print_act)
-#     else:
-#         battle_action = acting_stack.active_stack()
-#         obs, acts, mask, logps, value = None, None, None, None, 0
-#     for ii in range(n_step):
-#         if acting_stack.by_AI == 2:
-#             if not had_acted:
-#                 '''by now hand craft AI value is not needed'''
-#                 # clear reward cumullated by hand craft AI
-#                 # for st in battle.stacks:
-#                 #     battle.ai_value[st.side] += st.ai_value * st.amount
-#                 had_acted = True
-#         damage_dealt, damage_get, killed_dealt, killed_get = battle.doAction(battle_action)
-#         battle.checkNewRound()
-#         #battle.curStack had updated
-#
-#         #check done
-#         done = battle.check_battle_end()
-#         '''single troop get killed over 40% or shooter killed over 10%'''
-#         over_killed = False
-#         for st in battle.merge_stacks(copy_stack=True):  #FIXME only considered side 0
-#             if st.is_shooter and st.amount < st.amount_base * 0.9:
-#                 done = True
-#                 over_killed = True
-#                 break
-#             elif st.amount < st.amount_base * 0.6:
-#                 done = True
-#                 over_killed = True
-#                 break
-#         #buffer sar
-#         if had_acted:
-#             record_sar(global_buffer,2,battle,acting_stack,battle_action, obs, acts, mask, logps, value,done,killed_dealt, killed_get,td=td)
-#         #next act
-#         if done:
-#             win = (battle.by_AI[battle.get_winner()] == 2)
-#             if over_killed:
-#                 win = False
-#             break
-#         else:
-#             acting_stack = battle.cur_stack
-#             if acting_stack.by_AI == 2:
-#                 print_act = print_act and ii < 5
-#                 battle_action, obs, acts, mask, logps, value = acting_stack.active_stack(ret_obs=True,print_act=print_act)
-#             else:
-#                 battle_action = acting_stack.active_stack()
-#                 obs, acts, mask, logps, value = None, None, None, None, 0
-#
-#     bat,indice = global_buffer.sample(0)
-#     global_buffer.reset()
-#     return win,bat
 class H3SampleCollector:
     def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,format_postion=False):
         self.agent = agent
@@ -751,13 +827,13 @@ class H3SampleCollector:
         win = False
         for ii in range(n_step):
             acting_stack = battle.cur_stack
-            if acting_stack.by_AI == 2:
+            if acting_stack.side == 0:
                 print_act = print_act and ii < 5
                 battle_action, sars = acting_stack.active_stack(ret_obs=True, print_act=print_act)
             else:
                 battle_action = acting_stack.active_stack()
                 sars = {}  # sars = {"act":None,"obs":None,"mask":None,"logps":None,"value":0}
-            if acting_stack.by_AI == 2:
+            if acting_stack.side == 0:
                 if not had_acted:
                     '''by now hand craft AI value is not needed'''
                     # clear reward cumullated by hand craft AI
@@ -769,27 +845,13 @@ class H3SampleCollector:
             #battle.curStack had updated
 
             #check done
-            done = battle.check_battle_end()
-            '''single troop get killed over 40% or shooter killed over 10%'''
-            over_killed = False
-            for st in battle.merge_stacks(copy_stack=True):  #FIXME only considered side 0
-                if st.is_shooter and st.amount < st.amount_base * 0.9:
-                    done = True
-                    over_killed = True
-                    break
-                elif st.amount < st.amount_base * 0.6:
-                    done = True
-                    over_killed = True
-                    break
+            done,win = self.check_done(battle)
             #buffer sar
             if had_acted:
                 sars["done"] = done
-                self.record_sar(2,battle,acting_stack,sars)
-            #check done
+                self.record_sar(0,battle,acting_stack,sars)
+            #get winner
             if done:
-                win = (battle.by_AI[battle.get_winner()] == 2)
-                if over_killed:
-                    win = False
                 break
         return win
 
@@ -798,8 +860,8 @@ class H3SampleCollector:
         arena = Battle(by_AI=[2, 1], agent=self.agent)
         obs_idx, obs, defender_stacks = self.choose_start(file_idx)
         arena.load_battle(obs, load_ai_side=False, format_postion=False)
-        buf_start = self.buffer._index
         win = False
+        buf_start = self.buffer._index
         for r in range(10):
             last_buf_start = self.buffer._index
             win = self.collect_1_ep(battle=arena)
@@ -818,18 +880,11 @@ class H3SampleCollector:
         if win:
             last_buf_start = self.buffer._index
         if r > 0:
-            if last_buf_start > buf_start:
-                batch_rew = self.buffer.rew[buf_start:last_buf_start]
-                self.cumulate_reward(batch_rew)
-            else:
-                idx = list(range(buf_start, len(self.buffer))) + list(range(last_buf_start))
-                batch_rew = self.buffer.rew[idx]
-                self.cumulate_reward(batch_rew)
-                self.buffer.rew[idx] = batch_rew
+            cumulate_reward(self.buffer,buf_start,last_buf_start)
         '''win count'''
         return r
     def record_sar(self,operator, battle, acting_stack, sars):
-        if acting_stack.by_AI == operator:
+        if acting_stack.side == 0:
             self.acted = True
             obs = sars["obs"]
             acts = sars["act"]
@@ -850,36 +905,56 @@ class H3SampleCollector:
                 if self.acted:
                     last_idx = self.buffer.last_index
                     if acting_stack.side == battle.get_winner():
-                        self.buffer.rew[last_idx] = -reward_def
+                        self.buffer.rew[last_idx] = reward_def
                         self.buffer.done[last_idx] = 1
                     else:
-                        self.buffer.rew[last_idx] = reward_def
+                        self.buffer.rew[last_idx] = -reward_def
                         self.buffer.done[last_idx] = 1
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
-    @staticmethod
-    def cumulate_reward(batch):
-        a = batch
-        s = int(a.sum())
-        lk = np.array(range(s - reward_def, -1, -reward_def))
-        a[a > 0.5] += lk
 
     def choose_start(self, idx, from_start=False):
         return -1, self.file_list_cache[idx], None  # RL
+    def check_done(self,battle:Battle):
+        '''single troop get killed over 40% or shooter killed over 10%'''
+        over_killed = False
+        done = False
+        win = False
+        for st in battle.merge_stacks(copy_stack=True):
+            if st.is_shooter and st.amount < st.amount_base * 0.9:
+                done = True
+                over_killed = True
+                break
+            elif st.amount < st.amount_base * 0.6:
+                done = True
+                over_killed = True
+                break
+        if not over_killed:
+            done = battle.check_battle_end()
+            if done:
+                win = True
+        return done,win
 
 
 class H3SampleCollector_SIL(H3SampleCollector):
-    def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager,format_postion=False):
+    def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager:H3ReplayManager_SIL,format_postion=False):
         super(H3SampleCollector_SIL, self).__init__(file_list,agent,full_buffer,format_postion)
         self.max_sar_manager = max_sar_manager
+        self.start_HP = None
     def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False):
         arena = Battle(by_AI=[2, 1], agent=self.agent)
         file_idx,obs_idx, obs, defender_stacks = self.choose_start(file_idx)
-        if obs_idx > 0:
-            for i in range(obs_idx):
-                self.buffer.add()
-        arena.load_battle(obs, load_ai_side=False, format_postion=False)
+        '''record start point'''
         buf_start = self.buffer._index
+        if obs_idx > 0:
+            self.start_HP = self.get_start_HP(self.max_sar_manager.max_sar[file_idx][0])
+            traj = self.max_sar_manager.max_sar[file_idx][:obs_idx]
+            self.agent.process_gae(traj, single_batch=False, sil=True)
+            for i in range(obs_idx):
+                step = traj[i]
+                self.buffer.add(Batch(obs=step.obs, act=step.act, rew=step.rew, done=step.done, info=step.info,
+                                      policy={"value": step.policy.value, "logps": step.policy.logps}))
+        arena.load_battle(obs, load_ai_side=False, format_postion=False)
         win = False
         for r in range(10):
             last_buf_start = self.buffer._index
@@ -892,28 +967,127 @@ class H3SampleCollector_SIL(H3SampleCollector):
                     arena.defender_stacks = defender_stacks
                 arena.split_army()
             else:
-                # if r > 0:
-                #     self.buffer.
                 break
         '''win all'''
         if win:
             last_buf_start = self.buffer._index
+
+        self.max_sar_manager.count[file_idx] += 1
         if r > 0:
-            if last_buf_start > buf_start:
-                idx = list(range(buf_start,last_buf_start))
-                self.max_sar_manager.update_max(file_idx, obs_idx,self.buffer, sum(self.buffer.rew[buf_start:last_buf_start]),idx )
-                batch_rew = self.buffer.rew[buf_start:last_buf_start]
-                self.cumulate_reward(batch_rew)
-            else:
-                idx = list(range(buf_start, len(self.buffer))) + list(range(last_buf_start))
-                self.max_sar_manager.update_max(file_idx, obs_idx,self.buffer, sum(self.buffer.rew[idx]), idx)
-                batch_rew = self.buffer.rew[idx]
-                self.cumulate_reward(batch_rew)
-                self.buffer.rew[idx] = batch_rew
+            self.max_sar_manager.update_max(file_idx,obs_idx,self.buffer,buf_start,last_buf_start)
+            cumulate_reward(self.buffer,buf_start,last_buf_start)
         '''win count'''
         return r
     def choose_start(self, idx = -1, from_start=False):
         return self.max_sar_manager.choose_start(idx)
+    def get_start_HP(self,sar):
+        ep = sar.obs.attri_stack
+        start_mask = np.logical_and(ep[:, 0] == 0,ep[:, 3] > 0)
+        start_stack = ep[start_mask]
+        start_HP_att = ((start_stack[:, 3] - 1) * start_stack[:, 6] + start_stack[:, 5]).sum()
+        start_mask = ep[:, 0] == 1
+        start_stack = ep[start_mask]
+        start_HP_def = ((start_stack[:, 3] - 1) * start_stack[:, 6] + start_stack[:, 5]).sum()
+        return (start_HP_att,start_HP_def)
+
+class H3SampleCollector_expert(H3SampleCollector):
+    def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager:H3ReplayManager_SIL=None,format_postion=False):
+        super(H3SampleCollector_expert, self).__init__(file_list,agent,full_buffer,format_postion)
+        # self.max_sar_manager = max_sar_manager
+
+    def collect_1_ep(self, file=None, battle: Battle = None, n_step=200, print_act=False, td=False):
+        from ENV import H3_battleInterface
+        import pygame
+        # 初始化游戏
+        pygame.init()  # 初始化pygame
+        pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
+        if not battle:
+            battle = Battle(by_AI=[0, 1])
+            battle.load_battle("ENV/battles/0.json", shuffle_postion=False, load_ai_side=False)
+        battle.checkNewRound()
+        bi = H3_battleInterface.BattleInterface(battle)
+        logps, value = None, 0
+        had_acted = False
+        acting_stack = battle.cur_stack
+        # FIXME fake act at first
+        bi.next_act = acting_stack.active_stack()
+        # 事件循环(main loop)
+        while bi.running:
+            do_act = bi.handleEvents()
+            if do_act:
+                if acting_stack.side == 0:
+                    if not had_acted:
+                        # for st in battle.stacks:
+                        #     battle.ai_value[st.side] += st.ai_value * st.amount
+                        had_acted = True
+                    obs, acts, mask = self.get_act_info(battle, bi.next_act)
+                else:
+                    obs, acts, mask = None, None, None
+                damage_dealt, damage_get, killed_dealt, killed_get = battle.doAction(bi.next_act)
+                done = battle.check_battle_end()
+                if had_acted:
+                    self.record_sar(0, battle, acting_stack, {"act":acts,"obs":obs,"mask":mask,"value": value, "logps": logps,"done": done})
+                battle.checkNewRound()
+                if done:
+                    logger.debug("battle end~")
+                    bi.running = False
+                    # pygame.quit()
+                    # break
+                else:
+                    acting_stack = battle.cur_stack
+                    bi.next_act = acting_stack.active_stack()
+            bi.renderFrame()
+    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False):
+        arena = Battle(by_AI=[0, 1])
+        arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=False)
+        arena.split_army()
+        arena.checkNewRound()
+        self.collect_1_ep(battle=arena)
+        #
+        arena.split_army()
+        arena.checkNewRound()
+        self.collect_1_ep(battle=arena)
+
+        arena.split_army()
+        arena.checkNewRound()
+        self.collect_1_ep(battle=arena)
+        batch_rew = self.buffer.rew[:self.buffer._index]
+        data = self.buffer.sample(0)[0]
+        dump_episo([data.obs, data.act, data.rew, data.done, data.info], "ENV/episode", file='0.npy')
+    @staticmethod
+    def get_act_info(battle, act):
+        target_id = -1
+        position_id = -1
+        act_id = act.type.value
+        mask_acts, mask_spell, mask_targets, mask_position = battle.get_act_masks(act)
+        ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature(curriculum=False)
+        if act.type == action_type.attack:
+            if not battle.cur_stack.can_shoot():
+                position_id = act.dest.to_position_id()
+            else:
+                position_id = 0
+            tgt_stacks = battle.stackQueue
+            for i, st in enumerate(tgt_stacks):
+                assert st.is_alive(), f"{st} is dead?"
+                if st == act.target:
+                    target_id = i
+            if target_id < 0:
+                logger.error("no target found")
+                sys.exit(-1)
+        if act.type == action_type.move:
+            target_id = 0
+            position_id = act.dest.to_position_id()
+        if act.type == action_type.wait:
+            target_id = 0
+            position_id = 0
+        if act.type == action_type.defend:
+            target_id = 0
+            position_id = 0
+        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
+        acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': 0}
+        mask = {'mask_acts': mask_acts, 'mask_spell': mask_spell,
+                'mask_targets': mask_targets, 'mask_position': mask_position}
+        return obs, acts, mask
 def to_action_tuple(action:BAction,battle:Battle):
     act_id = action.type.value
     dest_id = -1
@@ -936,29 +1110,8 @@ def to_action_tuple(action:BAction,battle:Battle):
 
 def hook_me(grad):
     print(grad.abs().sum(dim=-1))
-def init_stack_position(battle):
-    mask = np.zeros([11,17])
-    mask[:,0] = 1
-    mask[:, 16] = 1
-    for st in battle.stacks:
-        # base1 = random.random() * 2 + 0.1
-        # st.amount_base = int(st.amount_base * base1)
-        # st.amount = st.amount_base
-        pos = random.randint(1,11*17 - 1)
-        while True:
-            if mask[int(pos/17),pos%17]:
-                pos = random.randint(1, 11 * 17 - 1)
-            else:
-                break
-        st.x = pos%17
-        st.y = int(pos/17)
-        mask[st.y,st.x] = 1
 
-def to_dev(agent,dev):
-    agent.to(dev)
-    agent.device = dev
-    agent.net.device = dev
-    agent.net.inpipe.device = dev
+
 def test_game_noGUI(file,agent = None,by_AI = [2,1]):
     #初始化 agent
     test_win = 0
@@ -975,92 +1128,12 @@ def test_game_noGUI(file,agent = None,by_AI = [2,1]):
             if battle.check_battle_end():
                 winner = battle.get_winner()
                 logger.debug(f"battle end, winner is {winner}")
-                if battle.by_AI[winner] == 2:
+                if winner == 0:
                     test_win += 1
                 break
     return test_win/iter_N
-def get_act_info(battle,act):
-    target_id = -1
-    position_id = -1
-    act_id = act.type.value
-    mask_acts, mask_spell, mask_targets, mask_position = battle.get_act_masks(act)
-    ind, attri_stack, planes_stack, plane_glb = battle.current_state_feature(curriculum=False)
-    if act.type == action_type.attack:
-        if not battle.cur_stack.can_shoot():
-            position_id = act.dest.to_position_id()
-        else:
-            position_id = 0
-        tgt_stacks = battle.stackQueue
-        for i, st in enumerate(tgt_stacks):
-            assert st.is_alive(),f"{st} is dead?"
-            if st == act.target:
-                target_id = i
-        if target_id < 0:
-            logger.error("no target found")
-            sys.exit(-1)
-    if act.type == action_type.move:
-        target_id = 0
-        position_id = act.dest.to_position_id()
-    if act.type == action_type.wait:
-        target_id = 0
-        position_id = 0
-    if act.type == action_type.defend:
-        target_id = 0
-        position_id = 0
-    obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb}
-    acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id, 'spell_id': 0}
-    mask = {'mask_acts': mask_acts, 'mask_spell': mask_spell,
-            'mask_targets': mask_targets, 'mask_position': mask_position}
-    return obs,acts,mask
-def start_game_record(battle:Battle=None):
-    from tianshou.data import ReplayBuffer
-    from ENV import H3_battleInterface
-    import pygame
-    buffer = ReplayBuffer(500,ignore_obs_next=True)
-    # 初始化游戏
-    pygame.init()  # 初始化pygame
-    pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
-    if not battle:
-        battle = Battle(by_AI = [0,1])
-        battle.load_battle("ENV/battles/1.json", shuffle_postion=False,load_ai_side=False)
-    battle.checkNewRound()
-    bi = H3_battleInterface.BattleInterface(battle)
-    logps, value = None,0
-    had_acted = False
-    acting_stack = battle.cur_stack
-    #FIXME fake act at first
-    bi.next_act = acting_stack.active_stack()
-    # 事件循环(main loop)
-    while bi.running:
-        do_act = bi.handleEvents()
-        if do_act:
-            if acting_stack.by_AI == 0:
-                if not had_acted:
-                    for st in battle.stacks:
-                        battle.ai_value[st.side] += st.ai_value * st.amount
-                    had_acted = True
-                obs, acts, mask = get_act_info(battle, bi.next_act)
-            else:
-                obs, acts, mask = None, None, None
-            damage_dealt, damage_get, killed_dealt, killed_get = battle.doAction(bi.next_act)
-            done = battle.check_battle_end()
-            if had_acted:
-                record_sar(buffer, 0, battle, acting_stack, bi.next_act, obs, acts, mask, logps, value, done,
-                          killed_dealt,
-                          killed_get,td=False)
-            battle.checkNewRound()
-            if done:
-                logger.debug("battle end~")
-                bi.running = False
-                # pygame.quit()
-                # break
-            else:
-                acting_stack = battle.cur_stack
-                bi.next_act = acting_stack.active_stack()
-        bi.renderFrame()
-    data, indice = buffer.sample(0)
-    return data
-    # np.save("d:/xxx.npy", [data.obs, data.act, data.rew,data.done,data.info])
+
+
 def dump_episo(ep,dir,file=None):
     if not file:
         files = []
@@ -1079,8 +1152,11 @@ def dump_episo(ep,dir,file=None):
         dump_in = os.path.join(dir, file)
     np.save(dump_in,ep)
     logger.info(f"episode dumped in {dump_in}")
-def load_episo(dir):
-    npys = [f for f in os.listdir(dir) if f.endswith(".npy")]
+def load_episo(dir,file=None):
+    if file:
+        npys = [file]
+    else:
+        npys = [f for f in os.listdir(dir) if f.endswith(".npy")]
     if len(npys) == 0:
         return
     obss,acts,masks,rews,dones =[],[],[],[],[]
@@ -1117,10 +1193,141 @@ def start_test():
     agent.in_train = False
     from ENV.H3_battleInterface import start_game_s_gui
     battle = Battle(agent=agent)
-    battle.load_battle(file="ENV/battles/3.json")
+    battle.load_battle(file="ENV/battles/0.json")
     start_game_s_gui(battle=battle)
 
+def check_done_2(self,battle):
+    done = battle.check_battle_end()
+    win = None
+    if done:
+        win = battle.get_winner() == 0
+    return done,win
 
+def record_sar_2(self: H3SampleCollector_SIL, operator, battle: Battle, acting_stack, sars):
+    if acting_stack.side == 0:
+        self.acted = True
+        obs = sars["obs"]
+        acts = sars["act"]
+        done = sars["done"]
+        mask = sars["mask"]
+        logps = sars["logps"]
+        value = sars["value"]
+        if done:
+            if self.start_HP:
+                att_HP = [self.start_HP[0]]
+                def_HP = [self.start_HP[1]]
+                self.start_HP = None
+            else:
+                att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+                def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+            att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                           st.amount > 0]
+            def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                           st.amount > 0]
+            reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+            self.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
+                                  policy={"value": value, "logps": logps}))
+        else:
+            self.buffer.add(
+                Batch(obs=obs, act=acts, rew=0, done=0, info=mask, policy={"value": value, "logps": logps}))
+    else:
+        done = sars["done"]
+        if done:
+            if self.acted:
+                last_idx = self.buffer.last_index
+                if self.start_HP:
+                    att_HP = [self.start_HP[0]]
+                    def_HP = [self.start_HP[1]]
+                    self.start_HP = None
+                else:
+                    att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+                    def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+                att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                               st.amount > 0]
+                def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                               st.amount > 0]
+                reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+                self.buffer.rew[last_idx] = reward
+                self.buffer.done[last_idx] = 1
+            else:
+                logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+
+def cumulate_reward(buffer,start,end):
+    if end == start:
+        logger.info(f"end == start == {end}???")
+        return
+    if end > start:
+        batch_rew = buffer.rew[start:end]
+        batch_done = buffer.done[start:end]
+        acc_rewards = np.add.accumulate(batch_rew[batch_done > 0][::-1])
+        batch_rew[batch_done > 0] = acc_rewards[::-1]
+    else:
+        idx = list(range(start, len(buffer))) + list(range(end))
+        batch_rew = buffer.rew[idx]
+        batch_done = buffer.done[idx]
+        acc_rewards = np.add.accumulate(batch_rew[batch_done > 0][::-1])
+        batch_rew[batch_done > 0] = acc_rewards[::-1]
+        buffer.rew[idx] = batch_rew
+def cumulate_reward_2(buffer, start, end):
+    if end > start:
+        batch_rew = buffer.rew[start:end]
+    else:
+        idx = list(range(start, len(buffer))) + list(range(end))
+        batch_rew = buffer.rew[idx]
+    s = int(batch_rew.sum())
+    lk = np.array(range(s - reward_def, -1, -reward_def))
+    batch_rew[batch_rew > 0] += lk
+    if end < start:
+        idx = list(range(start, len(buffer))) + list(range(end))
+        buffer.rew[idx] = batch_rew
+#TODO done state needs next state....
+def compute_reward_from_episodes(buffer, start, end):
+    if end == start:
+        logger.info(f"end == start == {end}???")
+        return
+    if end > start:
+        batch_rew = buffer.rew[start:end]
+        batch_done = buffer.done[start:end]
+        batch_obs = buffer.obs.attri_stack[start:end]
+        done_index = np.argwhere(batch_done> 0).squeeze()
+    else:
+        idx = list(range(start, len(buffer))) + list(range(end))
+        batch_rew = buffer.rew[idx]
+        batch_done = buffer.done[idx]
+        done_index = np.argwhere(batch_done> 0).squeeze()
+    if len(done_index) == 1:
+        start_index = np.array([0])
+        end_index = done_index
+    else:
+        start_index = np.append(0,(done_index+ 1)[:-1])
+        end_index = np.append((done_index+ 1)[:-1],done_index[-1])
+    start_obs = batch_obs[start_index]
+    end_obs = batch_obs[end_index]
+    start_HP_att = np.zeros((len(done_index),))
+    start_HP_def = np.zeros((len(done_index),))
+    end_HP_att = np.zeros((len(done_index),))
+    end_HP_def = np.zeros((len(done_index),))
+    for i,ep in enumerate(start_obs):
+        start_mask = ep[:,0] == 0
+        start_stack = ep[start_mask]
+        start_HP_att[i] = ((start_stack[:,3] - 1) * start_stack[:,6] + start_stack[:,5]).sum()
+        start_mask = ep[:, 0] == 1
+        start_stack = ep[start_mask]
+        start_HP_def[i] = ((start_stack[:,3] - 1) * start_stack[:,6] + start_stack[:,5]).sum()
+    for i,ep in enumerate(end_obs):
+        end_mask = ep[:,0] == 0
+        end_stack = ep[end_mask]
+        end_HP_att[i] = ((end_stack[:,3] - 1) * end_stack[:,6] + end_stack[:,5]).sum()
+        end_mask = ep[:, 0] == 1
+        end_stack = ep[end_mask]
+        end_HP_def[i] = 0.
+
+    HP_reward = reward_def * (end_HP_att / start_HP_att - end_HP_def / start_HP_def)
+    # HP_reward = np.add.accumulate(HP_reward[::-1])
+    batch_rew[done_index] = HP_reward
+    if end < start:
+        idx = list(range(start, len(buffer))) + list(range(end))
+        buffer.rew[idx] = batch_rew
 #@profile
 def start_train(use_expert_data=False):
     # 初始化 agent
@@ -1129,191 +1336,27 @@ def start_train(use_expert_data=False):
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3Agent(actor_critic,optim,dist,device=dev,gae_lambda=0.95)
-    # agent.load_state_dict(torch.load("model_param.pkl"))
-    count = 0
-    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
-    # file_list = ['ENV/battles/5.json']
-    format_postion = False
-    replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
-    max_sar_manager = H3ReplayManager_SIL(file_list,agent,use_expert_data=use_expert_data,format_postion = format_postion)
-    collector = H3SampleCollector_SIL(file_list,agent,replay_buffer,max_sar_manager,format_postion = format_postion)
-    cache_idx = range(len(file_list))
-    max_win_count = len(file_list)
-    if Linux:
-        sample_num = 200
-    else:
-        sample_num = 20
-    print_len = 60
-    logger.info(f"start training sample eps/epoch = {sample_num}")
-    while True:
-        agent.eval()
-        agent.in_train = True
-        collector.buffer.reset()
-        for ii in range(sample_num):
-            # file_idx = random.choice(cache_idx)
-            # print_act = False
-            collector.collect_eps(-1)
-        batch_data = collector.buffer.sample(0)[0]
-        logger.info(len(batch_data.rew))
-        agent.train()
-        agent.in_train = True
-        agent.process_gae(batch_data,single_batch=False)
+    agent = H3Agent_rewarded(actor_critic,optim,dist,device=dev,gae_lambda=1.0,discount_factor=1.0)
+    agent.start_train(use_expert_data=use_expert_data)
 
-        amount_idx = np.logical_and(batch_data.obs.attri_stack[:print_len, :, 3] > 1,batch_data.obs.attri_stack[:print_len, :,0] == 0)
-        amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(np.float) / 10
-        enemy_amount = np.zeros((print_len,3))
-        for i in range(print_len):
-            enemy = batch_data.obs.attri_stack[i]
-            mask = enemy[:,0] == 1
-            enemy_am = enemy[mask][:,3]
-            enemy_amount[i,:len(enemy_am)] = enemy_am
-        enemy_amount = enemy_amount.transpose().astype(np.float) / 10
-        logger.info(batch_data.done.astype(np.float)[:print_len] * 1.1)
-        logger.info("amount")
-        logger.info(-batch_data.obs.attri_stack[:print_len, 0, 1].astype(np.float))
-        logger.info(amount_array[0])
-        logger.info(amount_array[1])
-        logger.info("enemy_amount")
-        logger.info(enemy_amount[0])
-        logger.info(enemy_amount[1])
-        logger.info(enemy_amount[2])
-        logger.info("act_logp")
-        logger.info(batch_data.policy.logps.act_logp[:print_len])
-        logger.info(batch_data.act.act_id.astype(np.float)[:print_len] )
-        logger.info("position_logp")
-        logger.info(batch_data.policy.logps.position_logp[:print_len])
-        logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] //17) / 10)
-        logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] % 17) / 10 )
-        logger.info("target")
-        logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
-        logger.info("adv")
-        logger.info(batch_data.rew.astype(np.float)[:print_len] / 5)
-        logger.info(batch_data.adv[:print_len] / 5)
-        if Linux:
-            to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=2000)
-        sil_sars = max_sar_manager.get_sars()
-        if len(sil_sars):
-            sil_sars = Batch.cat(sil_sars)
-            logger.info("sil act_logp")
-            logger.info(sil_sars.policy.logps.act_logp[:print_len])
-            logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])
-            logger.info("sil adv")
-            logger.info(sil_sars.rew.astype(np.float)[:print_len] /5)
-            logger.info(sil_sars.policy.value[:print_len] /5)
-            loss = agent.learn(sil_sars, batch_size=2000)
-        if Linux:
-            to_dev(agent, "cpu")
-        agent.eval()
-        agent.in_train = False
-        '''test how many times agent can win'''
-        wr,wc = max_sar_manager.get_win_rates()
-        logger.info(f'win rate = {wr}')
-        logger.info(f'win cont = {wc}')
-        if max_sar_manager.il_done():
-            test_battle_idx = cache_idx
-        else:
-            test_battle_idx = [0]
-        win_count = []
-        for file_idx in test_battle_idx:
-            collector.buffer.reset()
-            ct = collector.collect_eps(file_idx)
-            win_count.append(ct)
-            logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
-        if sum(win_count) > max_win_count:
-            logger.info("model saved")
-            torch.save(agent.state_dict(), "model_param.pkl")
-            max_win_count = sum(win_count)
-        count += 1
-        logger.info(f'count={count}')
-def start_train_Q():
-    # 初始化 ag
-    agent = H3AgentQ()
-    lrate = 0.0005
-    optim = torch.optim.Adam(agent.net.parameters(), lr=lrate)
-    agent.optim = optim
-    # actor_critic.act_ids.weight.register_hook(hook_me)
-    # agent.load_state_dict(torch.load("model_param.pkl"))
-    count = 0
-    file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json', 'ENV/battles/4.json']
-    # file_list = ['ENV/battles/0.json']
-    Q_replay_buffer = ReplayBuffer(200000, ignore_obs_next=True)
-    max_sar_manager = H3ReplayManager(file_list,agent)
-    collector = H3SampleCollector(agent,Q_replay_buffer,max_sar_manager)
-    cache_idx = range(len(file_list))
-    max_win_count = len(file_list)
-    if Linux:
-        sample_num = 100
-    else:
-        sample_num = 10
-    logger.info(f"start training sample eps/epoch = {sample_num}")
-    while True:
-        agent.eval()
-        agent.in_train = True
-        for ii in range(sample_num):
-            file_idx = random.choice(cache_idx)
-            print_act = False
-            collector.collect_eps(file_idx)
-
-        batch_data = collector.buffer.sample(0)[0]
-        agent.train()
-        agent.in_train = True
-        # logger.info(batch_data.done.astype(np.float)[:35] * 1.11)
-        # logger.info("act_Q")
-        # logger.info(batch_data.policy.logps.act_logp[:35])
-        # logger.info(batch_data.act.act_id.astype(np.float)[:35] )
-        # logger.info("position_logp")
-        # logger.info(batch_data.policy.logps.position_logp[:35])
-        # logger.info(batch_data.act.position_id.astype(np.float)[:35] //17)
-        # logger.info(batch_data.act.position_id.astype(np.float)[:35] % 17 - 9)
-        # logger.info("target")
-        # logger.info(batch_data.act.target_id.astype(np.float)[:35])
-        # logger.info("adv")
-        # logger.info(batch_data.adv[:35])
-        # logger.info(batch_data.policy.value[:35])
-        if Linux:
-            to_dev(agent, "cuda")
-        loss = agent.learn(batch_data,batch_size=512)
-        sil_sars = max_sar_manager.get_sars()
-        if len(sil_sars):
-            sil_sars = Batch.cat(sil_sars)
-            logger.info("sil learning")
-            # logger.info(sil_sars.policy.logps.act_logp[:35])
-            # logger.info(sil_sars.act.act_id.astype(np.float)[:35])
-            # logger.info("act_logp")
-            # logger.info(sil_sars.adv[:35])
-            # logger.info(sil_sars.policy.value[:35])
-            loss = agent.learn(sil_sars, batch_size=512)
-        if Linux:
-            to_dev(agent, "cpu")
-        agent.eval()
-        agent.in_train = False
 
 
 def start_game_record_s():
-    arena = Battle(by_AI=[0, 1])
-    arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
-    arena.split_army()
-    arena.checkNewRound()
-    data1 = start_game_record(battle=arena)
-    #
-    arena.split_army()
-    arena.checkNewRound()
-    data2 = start_game_record(battle=arena)
-    data = Batch.cat([data1, data2])
-    dump_episo([data.obs, data.act, data.rew, data.done, data.info], "ENV/episode",file='0.npy')
-def start_replay_m(file):
+    replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
+    file_list = ['ENV/battles/0.json']
+    collector = H3SampleCollector_expert(file_list, None, replay_buffer)
+    collector.collect_eps(0)
+def start_replay_m(dir,file=None):
     from ENV.H3_battleInterface import start_replay
-    data = load_episo(file)
-    start_replay(data)
+    data = load_episo(dir,file)
+    start_replay(data[100:])
 M=0
 if __name__ == '__main__':
     if Linux:
         start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        # start_replay_m("ENV/max_sars")  #"ENV/max_sars" episode
+        # start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
         start_train(use_expert_data=True)
         # start_test()
 

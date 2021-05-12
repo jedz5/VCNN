@@ -939,7 +939,7 @@ class Battle(object):
             logger.error('wrong direction {}'.format(dirct))
             sys.exit()
         if(dirct == 0):
-            return BHex(mySelf.x - 1,mySelf.y)
+            return BHex(mySelf.x - 1,mySelf.y) #max(a,1)
         if(dirct == 1):
             return BHex(mySelf.x - 1 + zigzagCorrection,mySelf.y - 1)
         if(dirct == 2):
@@ -973,7 +973,7 @@ class Battle(object):
         live = {0:False,1:False}
         for st in self.stacks:
             live[st.side] = live[st.side] or st.is_alive()
-        if self.round > 20:
+        if self.round > 50: #FIXME round
             return True,0
         return not (live[0] and live[1]),self.currentPlayer()
 

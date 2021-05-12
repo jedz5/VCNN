@@ -365,12 +365,15 @@ class BattleInterface:
                 # zigzagCorrection =0 if (self.current_hex.hex_i % 2) else 1
                 from_dest = self.battle_engine.direction_to_hex(BHex(self.current_hex.hex_j,self.current_hex.hex_i),sector)
 
-                if 0 <= bf[from_dest.y,from_dest.x] < 50:
-                    self.cursor = self.cursor_attack[sector]
-                    self.shift_attack_pointer(sector,mouse_x,mouse_y)
-                    self.next_act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
-                else:
+                if from_dest.y < 0 or from_dest.y > 10 or from_dest.x < 1 or from_dest.x > 15:
                     self.cursor = self.cursor_move[3]
+                else:
+                    if 0 <= bf[from_dest.y,from_dest.x] < 50:
+                        self.cursor = self.cursor_attack[sector]
+                        self.shift_attack_pointer(sector,mouse_x,mouse_y)
+                        self.next_act = BAction(action_type.attack, target=self.hoveredStack, dest=from_dest)
+                    else:
+                        self.cursor = self.cursor_move[3]
         elif bf[h.hex_i, h.hex_j] == 200 or bf[h.hex_i, h.hex_j] == 400 or bf[h.hex_i, h.hex_j] == 401:
             self.cursor = self.cursor_move[4]
         elif bf[h.hex_i, h.hex_j] == 800 or bf[h.hex_i, h.hex_j] == 100:

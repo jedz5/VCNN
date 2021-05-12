@@ -4,40 +4,51 @@ import torch
 from collections import defaultdict
 from tianshou.data import Batch,ReplayBuffer
 np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
-# m = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-# n = [[2, 2, 2], [3, 3, 3], [4, 4, 4]]
-#
-# print('list(zip(m,n)):\n', list(zip(m, n)))
-# print("*zip(m, n):\n", *zip(m, n))
-# print("*zip(*zip(m, n)):\n", *zip(*zip(m, n)))
-#
-# m2, n2 = zip(*zip(m, n))
-# print(m == list(m2) and n == list(n2))
 
-# buf = ReplayBuffer(10,ignore_obs_next=True)
-# a = Batch(obs=1,act=2,rew=0,done=0)
+# class A:
+#     def hh(self):
+#         print("hh")
+# class B(A):
+#     def __init__(self, hh_func=None):
+#         if hh_func:
+#             self.hh = self.hh2
+#     def hh2(self):
+#         hh2()
+#     def nn(self):
+#         pass
+# def hh2():
+#     print("??")
+# def hh3():
+#     print("**")
+#
+# hh2 = hh3
+# b = B()
+# b.hh2()
+# c = B(hh3)
+# c.hh()
+# b.hh()
+batch_rew = np.array([0,0,0.1,0,0,0.2,0,0,0.3])
+# a = np.argwhere(batch_rew> 0).squeeze()
+# b = np.append(0,(a + 1)[:-1])
+# # a = batch_rew[batch_rew > 0][::-1]
+# # batch_rew[batch_rew > 0] = np.add.accumulate(a)[::-1]
+#
+# buf = ReplayBuffer(10,ignore_obs_next=False)
+# a = Batch(obs=1,act=2,rew=0,done=False)
 # buf.add(a)
 # buf.add(a)
-# b = Batch(obs=1,act=2,rew=1,done=1)
+# b = Batch(obs=1,act=2,rew=1,done=True)
 # buf.add(b)
-# batch1= buf.sample(0)[0]
-# start = buf._index
 # buf.add(a)
+# start = buf._index
 # buf.add(a)
 # buf.add(b)
 # buf.add(a)
 # buf.add(a)
 # buf.add(b)
 # end = buf._index
-# # cur = buf.rew[list(range(start,len(buf)))+list(range(end))]
-# # cur = buf.rew[list(range(start,end))]
-# cur = buf.rew[start:end]
-# def cumulate_reward(batch):
-#     a = batch
-#     s = int(a.sum())
-#     lk = np.array(range(s - 1, -1, -1))
-#     a[a > 0.5] += lk
-# cumulate_reward(cur)
-
-a = {"abc":1}
-a["c"] = 1
+# buf.add(a)
+# buf.add(a)
+# buf.add(b)
+# import PG_model.h3_ppo
+# PG_model.h3_ppo.cumulate_reward_2(buf,start,end)
