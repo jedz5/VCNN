@@ -273,17 +273,42 @@ class H3ReplayManager:
         else:
             obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
             return obs_idx, (self.max_sar[idx].obs[obs_idx].attri_stack, 0), [copy.copy(st) for st in self.defender_states[idx]]  # FIXME round = 0
-    def update_max(self,idx,obs_idx,data:ReplayBuffer,data_rew,indice):
-        if obs_idx < 0:
-            if (not self.max_sar[idx] and data_rew > 0):
+    def update_max(self,idx,obs_idx,data:ReplayBuffer,start,end):
+        if end == start:
+            logger.info(f"end == start == {end}???")
+            return
+        if end > start:
+            data_rew = data.rew[start:end]
+            indice = range(start,end)
+        else:
+            indice = list(range(start, len(data))) + list(range(end))
+            data_rew = data.rew[idx]
+        data_rew = sum(data_rew)
+        if not self.max_sar[idx]:
+            if data_rew > 0:
                 self.max_sar[idx] = data[indice]
-            elif self.max_sar[idx] and (sum(self.max_sar[idx].rew) < data_rew):
+                max_data = self.max_sar[idx]
+                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",
+                           f'max_data_{idx}.npy')
+                logger.info(f"states dumped in max_data_{idx}.npy")
+                self.reset_count(idx)
+        else:
+            record_done = int(sum(self.max_sar[idx].done))
+            data_done = int(sum(data.done[indice]))
+            record_rew = sum(self.max_sar[idx].rew)
+            if record_rew < data_rew or record_done < data_done:
+                if obs_idx <= 0:
+                    logger.info(f"idx-{idx} get new traj from scratch")
+                else:
+                    logger.info(f"idx-{idx} get new traj")
                 self.max_sar[idx] = data[indice]
-        elif (sum(self.max_sar[idx].rew[obs_idx:]) < data_rew):
-            self.max_sar[idx] = Batch.cat([self.max_sar[idx][:obs_idx], data[indice]])
-            max_data = self.max_sar[idx]
-            dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
-            logger.info(f"states dumped in max_data_{idx}.npy")
+                max_data = self.max_sar[idx]
+                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
+                logger.info(f"states dumped in max_data_{idx}.npy")
+                self.reset_count(idx)
+            else:
+                if  record_done == data_done:
+                    self.win_count[idx] += 1
     def get_sars(self):
         bats = []
         for exp in self.max_sar:
@@ -305,49 +330,14 @@ class H3ReplayManager_SIL(H3ReplayManager):
         self.il_threshold_wr = il_threshold_wr
     def choose_start(self,idx=-1,from_start=False):
         if idx < 0:
-            if self.il_done:
-                idx = random.choice(range(len(self.max_sar)))
-            else:
-                idx = 0
-        obs_idx, obs, defs = super(H3ReplayManager_SIL, self).choose_start(idx)
+            # if self.il_done:
+            #     idx = random.choice(range(len(self.max_sar)))
+            # else:
+            #     idx = 0
+            idx = random.choice(range(len(self.max_sar)))
+        obs_idx, obs, defs = super(H3ReplayManager_SIL, self).choose_start(idx,from_start=from_start)
         return idx, obs_idx, obs, defs
-    def update_max(self,idx,obs_idx,data:ReplayBuffer,start,end):
-        if end == start:
-            logger.info(f"end == start == {end}???")
-            return
-        if end > start:
-            data_rew = data.rew[start:end]
-            indice = range(start,end)
-        else:
-            indice = list(range(start, len(data))) + list(range(end))
-            data_rew = data.rew[idx]
-        data_rew = sum(data_rew)
-        if not self.max_sar[idx]:
-            if data_rew > 0:
-                self.max_sar[idx] = data[indice]
-                max_data = self.max_sar[idx]
-                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",
-                           f'max_data_{idx}.npy')
-                logger.info(f"states dumped in max_data_{idx}.npy")
-                self.reset_count(idx)
-        else:
-            record_rew = sum(self.max_sar[idx].rew)
-            if record_rew < data_rew:
-                if obs_idx <= 0:
-                    logger.info(f"idx-{idx} get new traj from scratch")
-                else:
-                    logger.info(f"idx-{idx} get new traj")
-                self.max_sar[idx] = data[indice]
-                max_data = self.max_sar[idx]
-                dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
-                logger.info(f"states dumped in max_data_{idx}.npy")
-                self.reset_count(idx)
-            else:
-                record_done = int(sum(self.max_sar[idx].done))
-                data_done = int(sum(data.done[indice]))
-                assert record_done >= data_done
-                if  record_done == data_done:
-                    self.win_count[idx] += 1
+
 
     def reset_count(self,idx):
         self.win_count[idx] = 0
@@ -373,7 +363,7 @@ class H3Agent(PGPolicy):
                  max_grad_norm: Optional[float] = 0.5,
                  eps_clip: float = .2,
                  vf_coef: float = .5,
-                 ent_coef: float = .01,
+                 ent_coef: float = .1,
                  action_range: Optional[Tuple[float, float]] = None,
                  gae_lambda: float = 1.,
                  dual_clip: float = None,
@@ -682,28 +672,27 @@ class H3Agent(PGPolicy):
 class H3Agent_rewarded(H3Agent):
 
     def start_train(self,use_expert_data=False):
-        H3SampleCollector.check_done = check_done_2
+        '''
+        interfaces check
+        '''
+        # H3SampleCollector.check_done = check_done_2
         H3SampleCollector_SIL.record_sar = record_sar_2
-        cumulate_reward = cumulate_reward_2
+
         # agent.load_state_dict(torch.load("model_param.pkl"))
         count = 0
-        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json',
-                     'ENV/battles/4.json']
-        # file_list = ['ENV/battles/5.json']
+        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json','ENV/battles/4.json']
+        # file_list = ['ENV/battles/0.json']
         format_postion = False
-        replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
-        max_sar_manager = H3ReplayManager_SIL(file_list, self, use_expert_data=use_expert_data,
-                                              format_postion=format_postion)
-
-        collector = H3SampleCollector_SIL(file_list, self, replay_buffer, max_sar_manager,
-                                          format_postion=format_postion)
+        replay_buffer = ReplayBuffer(50000, ignore_obs_next=True)
+        max_sar_manager = H3ReplayManager_SIL(file_list, self, use_expert_data=use_expert_data,format_postion=format_postion)
+        collector = H3SampleCollector_SIL(file_list, self, replay_buffer, max_sar_manager,format_postion=format_postion)
         cache_idx = range(len(file_list))
         max_win_count = len(file_list)
         if Linux:
             sample_num = 200
         else:
             sample_num = 20
-        print_len = 60
+        print_len = 65
         logger.info(f"start training sample eps/epoch = {sample_num}")
         while True:
             self.eval()
@@ -713,7 +702,7 @@ class H3Agent_rewarded(H3Agent):
             for ii in range(sample_num):
                 # file_idx = random.choice(cache_idx)
                 # print_act = False
-                collector.collect_eps(-1)
+                collector.collect_eps(-1,from_start=False)
             collector.max_sar_manager.update_il_flag()
             batch_data = collector.buffer.sample(0)[0]
             logger.info(len(batch_data.rew))
@@ -721,10 +710,6 @@ class H3Agent_rewarded(H3Agent):
             self.in_train = True
             self.process_gae(batch_data, single_batch=False)
 
-            # amount_idx = np.logical_and(batch_data.obs.attri_stack[:print_len, :, 3] > 1,
-            #                             batch_data.obs.attri_stack[:print_len, :, 0] == 0)
-            # amount_array = batch_data.obs.attri_stack[:print_len, :, 3][amount_idx].reshape(-1, 2).transpose().astype(
-            #     np.float) / 10
             me_amount = np.zeros((print_len, 2))
             enemy_amount = np.zeros((print_len, 3))
             for i in range(print_len):
@@ -758,8 +743,8 @@ class H3Agent_rewarded(H3Agent):
             logger.info("target")
             logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
             logger.info("adv")
-            logger.info(batch_data.rew.astype(np.float)[:print_len] / 5)
-            logger.info(batch_data.adv[:print_len] / 5)
+            logger.info(batch_data.rew.astype(np.float)[:print_len])
+            logger.info(batch_data.adv[:print_len])
             if Linux:
                 self.to_dev("cuda")
             loss = self.learn(batch_data, batch_size=2000)
@@ -770,8 +755,8 @@ class H3Agent_rewarded(H3Agent):
                 logger.info(sil_sars.policy.logps.act_logp[:print_len])
                 logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])
                 logger.info("sil adv")
-                logger.info(sil_sars.rew.astype(np.float)[:print_len] / 5)
-                logger.info(sil_sars.policy.value[:print_len] / 5)
+                logger.info(sil_sars.rew.astype(np.float)[:print_len])
+                logger.info(sil_sars.policy.value[:print_len])
                 loss = self.learn(sil_sars, batch_size=2000)
             if Linux:
                 self.to_dev("cpu")
@@ -781,10 +766,11 @@ class H3Agent_rewarded(H3Agent):
             wr, wc = max_sar_manager.get_win_rates()
             logger.info(f'win rate = {wr}')
             logger.info(f'win cont = {wc}')
-            if max_sar_manager.il_done:
-                test_battle_idx = cache_idx
-            else:
-                test_battle_idx = [0]
+            # if max_sar_manager.il_done:
+            #     test_battle_idx = cache_idx
+            # else:
+            #     test_battle_idx = [0]
+            test_battle_idx = cache_idx
             win_count = []
             for file_idx in test_battle_idx:
                 collector.buffer.reset()
@@ -798,7 +784,126 @@ class H3Agent_rewarded(H3Agent):
             count += 1
             logger.info(f'count={count}')
 
-reward_def = 5
+class H3Agent_rewarded_no_sil(H3Agent):
+
+    def start_train(self,use_expert_data=False):
+        '''
+        interfaces check
+        '''
+        # H3SampleCollector.check_done = check_done_2
+        H3SampleCollector_SIL.record_sar = record_sar_2
+
+        # agent.load_state_dict(torch.load("model_param.pkl"))
+        count = 0
+        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json','ENV/battles/4.json']
+        # file_list = ['ENV/battles/0.json']
+        format_postion = False
+        replay_buffer = ReplayBuffer(50000, ignore_obs_next=True)
+        max_sar_manager = H3ReplayManager_SIL(file_list, self, use_expert_data=use_expert_data,format_postion=format_postion)
+        collector = H3SampleCollector_SIL(file_list, self, replay_buffer, max_sar_manager,format_postion=format_postion)
+        cache_idx = range(len(file_list))
+        max_win_count = len(file_list)
+        if Linux:
+            sample_num = 200
+        else:
+            sample_num = 5
+        print_len = 65
+        logger.info(f"start training sample eps/epoch = {sample_num}")
+        while True:
+            self.eval()
+            self.in_train = True
+            collector.buffer.reset()
+            collector.max_sar_manager.reset_counts()
+            for ii in range(sample_num):
+                # file_idx = random.choice(cache_idx)
+                # print_act = False
+                collector.collect_eps(-1,from_start=False)
+            collector.max_sar_manager.update_il_flag()
+            batch_data = collector.buffer.sample(0)[0]
+            sil_sars = max_sar_manager.get_sars()
+            if len(sil_sars):
+                sil_sars = Batch.cat(sil_sars)
+            batch_data = Batch.cat([batch_data,sil_sars])
+            logger.info(len(batch_data.rew))
+            self.train()
+            self.in_train = True
+            self.process_gae(batch_data, single_batch=False)
+
+            me_amount = np.zeros((print_len, 2))
+            enemy_amount = np.zeros((print_len, 3))
+            for i in range(print_len):
+                stacks = batch_data.obs.attri_stack[i]
+                mask = np.logical_and(stacks[:, 0] == 0,stacks[:,3] > 1)
+                me_am = stacks[mask][:, 3]
+                me_amount[i,:min(2,len(me_am))] = me_am[:2]
+
+                mask = stacks[:, 0] == 1
+                enemy_am = stacks[mask][:, 3]
+                enemy_amount[i,:min(3,len(enemy_am))] = enemy_am[:3]
+
+            me_amount = me_amount.transpose().astype(np.float) / 10
+            enemy_amount = enemy_amount.transpose().astype(np.float) / 10
+            logger.info(batch_data.done.astype(np.float)[:print_len] * 1.1)
+            logger.info("amount")
+            logger.info(-batch_data.obs.attri_stack[:print_len, 0, 1].astype(np.float))
+            logger.info(me_amount[0])
+            logger.info(me_amount[1])
+            logger.info("enemy_amount")
+            logger.info(enemy_amount[0])
+            logger.info(enemy_amount[1])
+            logger.info(enemy_amount[2])
+            logger.info("act_logp")
+            logger.info(batch_data.policy.logps.act_logp[:print_len])
+            logger.info(batch_data.act.act_id.astype(np.float)[:print_len])
+            logger.info("position_logp")
+            logger.info(batch_data.policy.logps.position_logp[:print_len])
+            logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] // 17) / 10)
+            logger.info(-(batch_data.act.position_id.astype(np.float)[:print_len] % 17) / 10)
+            logger.info("target")
+            logger.info(batch_data.act.target_id.astype(np.float)[:print_len])
+            logger.info("adv")
+            logger.info(batch_data.rew.astype(np.float)[:print_len])
+            logger.info(batch_data.adv[:print_len])
+            if Linux:
+                self.to_dev("cuda")
+            loss = self.learn(batch_data, batch_size=2000)
+            sil_sars = max_sar_manager.get_sars()
+            if len(sil_sars):
+                sil_sars = Batch.cat(sil_sars)
+                logger.info("sil act_logp")
+                logger.info(sil_sars.policy.logps.act_logp[:print_len])
+                logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])
+                logger.info("sil adv")
+                logger.info(sil_sars.rew.astype(np.float)[:print_len])
+                logger.info(sil_sars.policy.value[:print_len])
+                # loss = self.learn(sil_sars, batch_size=2000)
+            if Linux:
+                self.to_dev("cpu")
+            self.eval()
+            self.in_train = False
+            '''test how many times agent can win'''
+            wr, wc = max_sar_manager.get_win_rates()
+            logger.info(f'win rate = {wr}')
+            logger.info(f'win cont = {wc}')
+            # if max_sar_manager.il_done:
+            #     test_battle_idx = cache_idx
+            # else:
+            #     test_battle_idx = [0]
+            test_battle_idx = cache_idx
+            win_count = []
+            for file_idx in test_battle_idx:
+                collector.buffer.reset()
+                ct = collector.collect_eps(file_idx)
+                win_count.append(ct)
+                logger.info(f"test-{count}-{file_list[file_idx]} win count = {ct}")
+            if sum(win_count) > max_win_count:
+                logger.info("model saved")
+                torch.save(self.state_dict(), "model_param.pkl")
+                max_win_count = sum(win_count)
+            count += 1
+            logger.info(f'count={count}')
+
+reward_def = 1
 r_cum = 0
 class H3SampleCollector:
     def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,format_postion=False):
@@ -856,7 +961,7 @@ class H3SampleCollector:
         return win
 
     '''[single side Wheel fight]'''
-    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False):
+    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False,from_start=False):
         arena = Battle(by_AI=[2, 1], agent=self.agent)
         obs_idx, obs, defender_stacks = self.choose_start(file_idx)
         arena.load_battle(obs, load_ai_side=False, format_postion=False)
@@ -916,12 +1021,12 @@ class H3SampleCollector:
     def choose_start(self, idx, from_start=False):
         return -1, self.file_list_cache[idx], None  # RL
     def check_done(self,battle:Battle):
-        '''single troop get killed over 40% or shooter killed over 10%'''
+        '''single troop get killed over 40% or shooter killed over 20%'''
         over_killed = False
         done = False
         win = False
         for st in battle.merge_stacks(copy_stack=True):
-            if st.is_shooter and st.amount < st.amount_base * 0.9:
+            if st.is_shooter and st.amount < st.amount_base * 0.8:
                 done = True
                 over_killed = True
                 break
@@ -941,9 +1046,9 @@ class H3SampleCollector_SIL(H3SampleCollector):
         super(H3SampleCollector_SIL, self).__init__(file_list,agent,full_buffer,format_postion)
         self.max_sar_manager = max_sar_manager
         self.start_HP = None
-    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False):
+    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False,from_start=False):
         arena = Battle(by_AI=[2, 1], agent=self.agent)
-        file_idx,obs_idx, obs, defender_stacks = self.choose_start(file_idx)
+        file_idx,obs_idx, obs, defender_stacks = self.choose_start(file_idx,from_start=from_start)
         '''record start point'''
         buf_start = self.buffer._index
         if obs_idx > 0:
@@ -979,7 +1084,7 @@ class H3SampleCollector_SIL(H3SampleCollector):
         '''win count'''
         return r
     def choose_start(self, idx = -1, from_start=False):
-        return self.max_sar_manager.choose_start(idx)
+        return self.max_sar_manager.choose_start(idx,from_start=from_start)
     def get_start_HP(self,sar):
         ep = sar.obs.attri_stack
         start_mask = np.logical_and(ep[:, 0] == 0,ep[:, 3] > 0)
@@ -1039,8 +1144,8 @@ class H3SampleCollector_expert(H3SampleCollector):
             bi.renderFrame()
     def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False):
         arena = Battle(by_AI=[0, 1])
-        arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=False)
-        arena.split_army()
+        obs_idx, obs, defender_stacks = self.choose_start(file_idx)
+        arena.load_battle(obs, load_ai_side=False, format_postion=False)
         arena.checkNewRound()
         self.collect_1_ep(battle=arena)
         #
@@ -1268,18 +1373,6 @@ def cumulate_reward(buffer,start,end):
         acc_rewards = np.add.accumulate(batch_rew[batch_done > 0][::-1])
         batch_rew[batch_done > 0] = acc_rewards[::-1]
         buffer.rew[idx] = batch_rew
-def cumulate_reward_2(buffer, start, end):
-    if end > start:
-        batch_rew = buffer.rew[start:end]
-    else:
-        idx = list(range(start, len(buffer))) + list(range(end))
-        batch_rew = buffer.rew[idx]
-    s = int(batch_rew.sum())
-    lk = np.array(range(s - reward_def, -1, -reward_def))
-    batch_rew[batch_rew > 0] += lk
-    if end < start:
-        idx = list(range(start, len(buffer))) + list(range(end))
-        buffer.rew[idx] = batch_rew
 #TODO done state needs next state....
 def compute_reward_from_episodes(buffer, start, end):
     if end == start:
@@ -1317,10 +1410,8 @@ def compute_reward_from_episodes(buffer, start, end):
     for i,ep in enumerate(end_obs):
         end_mask = ep[:,0] == 0
         end_stack = ep[end_mask]
-        end_HP_att[i] = ((end_stack[:,3] - 1) * end_stack[:,6] + end_stack[:,5]).sum()
-        end_mask = ep[:, 0] == 1
-        end_stack = ep[end_mask]
         end_HP_def[i] = 0.
+        end_HP_att[i] = ((end_stack[:,3] - 1) * end_stack[:,6] + end_stack[:,5]).sum()
 
     HP_reward = reward_def * (end_HP_att / start_HP_att - end_HP_def / start_HP_def)
     # HP_reward = np.add.accumulate(HP_reward[::-1])
@@ -1332,31 +1423,31 @@ def compute_reward_from_episodes(buffer, start, end):
 def start_train(use_expert_data=False):
     # 初始化 agent
     actor_critic = H3_net(dev)
-    lrate = 0.0005
+    lrate = 0.0001
     optim = torch.optim.Adam(actor_critic.parameters(), lr=lrate)
     # actor_critic.act_ids.weight.register_hook(hook_me)
     dist = torch.distributions.Categorical
-    agent = H3Agent_rewarded(actor_critic,optim,dist,device=dev,gae_lambda=1.0,discount_factor=1.0)
+    agent = H3Agent_rewarded_no_sil(actor_critic,optim,dist,device=dev,gae_lambda=1.0,discount_factor=1.0)
     agent.start_train(use_expert_data=use_expert_data)
 
 
 
 def start_game_record_s():
     replay_buffer = ReplayBuffer(10000, ignore_obs_next=True)
-    file_list = ['ENV/battles/0.json']
-    collector = H3SampleCollector_expert(file_list, None, replay_buffer)
+    file_list = ['ENV/battles/4.json']
+    collector = H3SampleCollector_expert(file_list, None, replay_buffer,format_postion=False)
     collector.collect_eps(0)
 def start_replay_m(dir,file=None):
     from ENV.H3_battleInterface import start_replay
     data = load_episo(dir,file)
-    start_replay(data[100:])
+    start_replay(data)
 M=0
 if __name__ == '__main__':
     if Linux:
         start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        # start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
-        start_train(use_expert_data=True)
+        start_replay_m("ENV/max_sars",'max_data_4.npy')  #"ENV/max_sars" episode
+        # start_train(use_expert_data=True)
         # start_test()
 

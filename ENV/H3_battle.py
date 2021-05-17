@@ -7,7 +7,6 @@ from enum import Enum
 import logging
 import os
 import json
-# from ENV.python_json_numpy_print import save_formatted
 np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 std_logger = logging.getLogger('train')
@@ -19,10 +18,11 @@ std_logger.addHandler(handler)
 import platform
 Linux = "Linux" == platform.system()
 import sys
+'''game env'''
 if Linux:
-    sys.path.extend(['/home/enigma/work/project/VCNN/','/home/enigma/work/project/VCNN/VCCC/VCbattle/build'])
+    sys.path.extend(['/home/enigma/work/project/VCNN/','/home/enigma/work/project/VCNN/VCCC/lib/linux'])
 else:
-    sys.path.extend(['D:\\project\\VCNN', 'D:\\project\\VCNN\\VCCC\\x64\\Release'])
+    sys.path.extend(['D:/project/VCNN', 'D:/project/VCNN/VCCC/lib/win'])
 import VCbattle  as vb
 from VCbattle import BHex
 def set_logger(lg_on,lg):
@@ -492,7 +492,7 @@ class BObstacleInfo:
 batId = 0
 #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
 creature_ability = {0:[0,0,0,0,0,0,0],1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
-                    41: [0, 0, 0, 0, 0, 0, 0],50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],85:[0,0,0,0,0,0,0],99:[0,0,0,0,0,0,0],112:[0,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
+                    41: [0, 0, 0, 0, 0, 0, 0],50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],85:[0,0,0,0,0,0,0],99:[0,0,0,0,0,0,0],112:[0,0,0,0,0,0,0],118:[1,0,1,0,0,0,0],119:[1,0,1,0,0,0,0],
                             121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
 class Battle(object):
     bFieldWidth = 17
@@ -529,6 +529,8 @@ class Battle(object):
             self.checkNewRound()
 
     def reset(self):
+        self.attacker_stacks.sort(key=lambda elem: elem.slotId)
+        self.defender_stacks.sort(key=lambda elem: elem.slotId)
         attackers = self.attacker_stacks
         defenders = self.defender_stacks
         self.clear()
@@ -544,7 +546,7 @@ class Battle(object):
         for deff in defenders:
             deff.amount = deff.amount_base
             deff.first_HP_Left = deff.health
-            deff.y, deff.x, deff.slotId = 0, 0, 0
+            deff.y, deff.x ,deff.slotId= 0, 0 ,0
             deff.had_waited = False
             deff.had_moved = False
             deff.had_retaliated = False
@@ -594,11 +596,6 @@ class Battle(object):
             '''filter all killed stacks'''
             self.attacker_stacks = list(filter(lambda elem: elem.is_alive(),stacks))
 
-    def should_continue(self):
-        self.merge_stacks()
-        if len(self.attacker_stacks) < 2: #FIXME only attacker and only 2
-            return False
-        return True
     def split_army(self,side=0):
         if side == 0:
             self.merge_stacks()
@@ -632,6 +629,14 @@ class Battle(object):
             self.stacks = self.attacker_stacks + self.defender_stacks
             self.format_postions()
 
+    def format_postions(self):
+        for stacks, pos in [(self.attacker_stacks, battle_start_pos_att), (self.defender_stacks, battle_start_pos_def)]:
+            sl = len(stacks)
+            sp = pos[sl - 1]
+            for i in range(sl):
+                stacks[i].y = sp[i] // Battle.bFieldWidth
+                stacks[i].x = sp[i] % Battle.bFieldWidth
+                stacks[i].slotId = i
 
     def getCopy(self):
         global batId
@@ -799,14 +804,6 @@ class Battle(object):
             self.init_stack_position()
         if format_postion:
             self.format_postions()
-    def format_postions(self):
-        for stacks, pos in [(self.attacker_stacks, battle_start_pos_att), (self.defender_stacks, battle_start_pos_def)]:
-            sl = len(stacks)
-            sp = pos[sl - 1]
-            for i in range(sl):
-                stacks[i].y = sp[i] // Battle.bFieldWidth
-                stacks[i].x = sp[i] % Battle.bFieldWidth
-                stacks[i].slotId = i
     def dump_battle(self,dir):
         files = []
         for f in os.listdir(dir):
@@ -824,6 +821,7 @@ class Battle(object):
         # with open(dump_in,'w', encoding='utf-8') as JsonFile:
             # JsonFile.write(pprint.pformat({'stacks':attri_stack.tolist(),'round':self.round},indent=1,width=256).replace('\'','"'))
         '''formated'''
+        from ENV.python_json_numpy_print import save_formatted
         save_formatted(dump_in,{'stacks':attri_stack,'round':self.round})
         print(f"states dumped in {dump_in}")
     def canReach(self,bFrom,bTo,bAtt = None):

@@ -90,7 +90,7 @@ class BattleInterface:
         else:
             self.battle_engine = None
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.SysFont("Arial", 16)
+        self.font = pygame.font.SysFont("Arial", 11)
         self.font.set_bold(True)
         self.next_act = None
         self.dump_dir = "ENV/battles"
@@ -339,7 +339,7 @@ class BattleInterface:
         #hover on stack
         self.hoveredStack = None
         for stack in self.battle_engine.stacks:
-            if self.current_hex.hex_i == stack.y and self.current_hex.hex_j == stack.x:
+            if stack.is_alive() and self.current_hex.hex_i == stack.y and self.current_hex.hex_j == stack.x:
                 self.hoveredStack = stack
         #cursor and action
         cur_stack = self.battle_engine.cur_stack
@@ -450,16 +450,20 @@ def start_game_s_gui(battle:Battle):
     arena.checkNewRound()
     bi = start_game_gui(battle=arena)
     '''true win'''
-    if arena.check_battle_end() and arena.should_continue():
-        bi.running = True
+    if arena.check_battle_end():
+        arena.merge_stacks()
+        if len(arena.attacker_stacks) == 2:  # FIXME only attacker and only 2
+            bi.running = True
     count = 1
     while bi.running:
         arena.split_army()
         arena.checkNewRound()
         start_game_gui(battle_int=bi, battle=arena)
         '''true win'''
-        if arena.check_battle_end() and arena.should_continue():
-            bi.running = True
+        if arena.check_battle_end():
+            arena.merge_stacks()
+            if len(arena.attacker_stacks) == 2:  # FIXME only attacker and only 2
+                bi.running = True
         count += 1
     print(f"battle count = {count}")
 def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=None, shuffle_postion=False,load_ai_side=False):
