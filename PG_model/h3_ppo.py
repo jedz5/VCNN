@@ -241,7 +241,7 @@ class H3AgentQ(nn.Module):
 class H3ReplayManager:
     def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False, format_postion=False):
         fl = len(file_list)
-        self.defender_states = [] * fl  # type:List[BStack]
+        self.defender_states = []  # type:List[BStack]
         file_list_cache = []
         '''cache json'''
         for file in file_list:
@@ -274,9 +274,6 @@ class H3ReplayManager:
             obs_idx = random.choice(range(len(self.max_sar[idx].obs)))  # SIL
             return obs_idx, (self.max_sar[idx].obs[obs_idx].attri_stack, 0), [copy.copy(st) for st in self.defender_states[idx]]  # FIXME round = 0
     def update_max(self,idx,obs_idx,data:ReplayBuffer,start,end):
-        if end == start:
-            logger.info(f"end == start == {end}???")
-            return
         if end > start:
             data_rew = data.rew[start:end]
             indice = range(start,end)
@@ -291,7 +288,6 @@ class H3ReplayManager:
                 dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",
                            f'max_data_{idx}.npy')
                 logger.info(f"states dumped in max_data_{idx}.npy")
-                self.reset_count(idx)
         else:
             record_done = int(sum(self.max_sar[idx].done))
             data_done = int(sum(data.done[indice]))
@@ -305,10 +301,6 @@ class H3ReplayManager:
                 max_data = self.max_sar[idx]
                 dump_episo([max_data.obs, max_data.act, max_data.rew, max_data.done, max_data.info], "ENV/max_sars",f'max_data_{idx}.npy')
                 logger.info(f"states dumped in max_data_{idx}.npy")
-                self.reset_count(idx)
-            else:
-                if  record_done == data_done:
-                    self.win_count[idx] += 1
     def get_sars(self):
         bats = []
         for exp in self.max_sar:
@@ -320,38 +312,14 @@ class H3ReplayManager:
                 logger.info(f"exp.rew={sum(exp.rew)}")
         return bats
 class H3ReplayManager_SIL(H3ReplayManager):
-    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False,format_postion=False,il_threshold_c = 20,il_threshold_wr = 0.4):
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False,format_postion=False):
         super(H3ReplayManager_SIL, self).__init__(file_list,agent,p_start_from_scratch,use_expert_data,format_postion)
-        fl = len(file_list)
-        self.win_count = np.zeros((fl,))
-        self.count = np.ones((fl,))
-        self.il_done = False
-        self.il_threshold_c = il_threshold_c
-        self.il_threshold_wr = il_threshold_wr
     def choose_start(self,idx=-1,from_start=False):
         if idx < 0:
-            # if self.il_done:
-            #     idx = random.choice(range(len(self.max_sar)))
-            # else:
-            #     idx = 0
             idx = random.choice(range(len(self.max_sar)))
         obs_idx, obs, defs = super(H3ReplayManager_SIL, self).choose_start(idx,from_start=from_start)
         return idx, obs_idx, obs, defs
 
-
-    def reset_count(self,idx):
-        self.win_count[idx] = 0
-        self.count[idx] = 1
-    def reset_counts(self):
-        for i in range(len(self.count)):
-            self.reset_count(i)
-    def get_win_rate(self,idx):
-        return self.win_count[idx] / self.count[idx],self.count[idx]
-    def get_win_rates(self):
-        return self.win_count / self.count , self.count
-    def update_il_flag(self):
-        if not self.il_done:
-            self.il_done = self.count[0] > self.il_threshold_c and (self.win_count[0] / self.count[0] > self.il_threshold_wr)
 class H3Agent(PGPolicy):
 
     def __init__(self,
@@ -791,7 +759,6 @@ class H3Agent_rewarded_no_sil(H3Agent):
         interfaces check
         '''
         # H3SampleCollector.check_done = check_done_2
-        H3SampleCollector_SIL.record_sar = record_sar_2
 
         # agent.load_state_dict(torch.load("model_param.pkl"))
         count = 0
@@ -806,19 +773,16 @@ class H3Agent_rewarded_no_sil(H3Agent):
         if Linux:
             sample_num = 200
         else:
-            sample_num = 5
+            sample_num = 20
         print_len = 65
         logger.info(f"start training sample eps/epoch = {sample_num}")
         while True:
             self.eval()
             self.in_train = True
             collector.buffer.reset()
-            collector.max_sar_manager.reset_counts()
+            collector.reset_counts()
             for ii in range(sample_num):
-                # file_idx = random.choice(cache_idx)
-                # print_act = False
                 collector.collect_eps(-1,from_start=False)
-            collector.max_sar_manager.update_il_flag()
             batch_data = collector.buffer.sample(0)[0]
             sil_sars = max_sar_manager.get_sars()
             if len(sil_sars):
@@ -882,15 +846,16 @@ class H3Agent_rewarded_no_sil(H3Agent):
             self.eval()
             self.in_train = False
             '''test how many times agent can win'''
-            wr, wc = max_sar_manager.get_win_rates()
+            wr, wc = collector.get_win_rates()
             logger.info(f'win rate = {wr}')
-            logger.info(f'win cont = {wc}')
+            logger.info(f'cont = {wc}')
             # if max_sar_manager.il_done:
             #     test_battle_idx = cache_idx
             # else:
             #     test_battle_idx = [0]
             test_battle_idx = cache_idx
             win_count = []
+            collector.reset_counts()
             for file_idx in test_battle_idx:
                 collector.buffer.reset()
                 ct = collector.collect_eps(file_idx)
@@ -906,12 +871,12 @@ class H3Agent_rewarded_no_sil(H3Agent):
 reward_def = 1
 r_cum = 0
 class H3SampleCollector:
-    def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,format_postion=False):
+    def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,format_postion=False,il_threshold_c = 20,il_threshold_wr = 0.4):
         self.agent = agent
         self.buffer = full_buffer
         self.acted = False
         fl = len(file_list)
-        self.defender_states = [] * fl #type:List[BStack]
+        self.defender_states = [] #type:List[BStack]
         file_list_cache = []
         '''cache json'''
         for file in file_list:
@@ -923,6 +888,11 @@ class H3SampleCollector:
             self.defender_states.append(arena.defender_stacks)
         self.file_list = file_list
         self.file_list_cache = file_list_cache
+        self.win_count = np.zeros((fl,10),dtype=int)
+        self.count = np.ones((fl,))
+        # self.il_done = False
+        self.il_threshold_c = il_threshold_c
+        self.il_threshold_wr = il_threshold_wr
     def collect_1_ep(self,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
         if not battle:
             battle = Battle(agent=self.agent)
@@ -963,18 +933,19 @@ class H3SampleCollector:
     '''[single side Wheel fight]'''
     def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False,from_start=False):
         arena = Battle(by_AI=[2, 1], agent=self.agent)
-        obs_idx, obs, defender_stacks = self.choose_start(file_idx)
+        file_idx,obs_idx, obs, defender_stacks = self.choose_start(file_idx,from_start=from_start)
+        '''record start point'''
+        buf_start = self.buffer._index
+        if obs_idx > 0:
+            self.prepare_obs(file_idx,obs_idx)
         arena.load_battle(obs, load_ai_side=False, format_postion=False)
         win = False
-        buf_start = self.buffer._index
         for r in range(10):
             last_buf_start = self.buffer._index
             win = self.collect_1_ep(battle=arena)
             if win:
                 if r == 0 and obs_idx > 0:
-                    '''normal start after middle start
-                    need refresh inner states of stacks
-                    '''
+                    '''normal start after middle start need refresh inner states of stacks'''
                     for st in defender_stacks:
                         st.in_battle = arena
                     arena.defender_stacks = defender_stacks
@@ -984,7 +955,10 @@ class H3SampleCollector:
         '''win all'''
         if win:
             last_buf_start = self.buffer._index
+
+        self.count[file_idx] += 1
         if r > 0:
+            self.update_count(file_idx,obs_idx,self.buffer,buf_start,last_buf_start)
             cumulate_reward(self.buffer,buf_start,last_buf_start)
         '''win count'''
         return r
@@ -1018,6 +992,8 @@ class H3SampleCollector:
                 else:
                     logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 
+    def prepare_obs(self,file_idx,obs_idx):
+        raise Exception('prepare_obs should be implemented')
     def choose_start(self, idx, from_start=False):
         return -1, self.file_list_cache[idx], None  # RL
     def check_done(self,battle:Battle):
@@ -1039,52 +1015,49 @@ class H3SampleCollector:
             if done:
                 win = True
         return done,win
-
+    def reset_count(self,idx):
+        self.win_count[idx] *= 0
+        self.count[idx] = 1
+    def reset_counts(self):
+        for i in range(len(self.count)):
+            self.reset_count(i)
+    def get_win_rate(self,idx):
+        return self.win_count[idx] / self.count[idx],self.count[idx]
+    def get_win_rates(self):
+        return self.win_count / np.expand_dims(self.count,axis=1) , self.count
+    # def update_il_flag(self):
+    #     if not self.il_done:
+    #         self.il_done = self.count[0] > self.il_threshold_c and (self.win_count[0] / self.count[0] > self.il_threshold_wr)
+    def update_count(self,idx,obs_idx,data:ReplayBuffer,start,end):
+        assert data.done[end-1] > 0
+        assert data.rew[end-1] > 0
+        if end > start:
+            data_done_sum = int(sum(data.done[start:end]))
+        else:
+            indice = list(range(start, len(data))) + list(range(end))
+            data_done_sum = int(sum(data.done[indice]))
+        self.win_count[idx,data_done_sum - 1] += 1
 
 class H3SampleCollector_SIL(H3SampleCollector):
     def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager:H3ReplayManager_SIL,format_postion=False):
         super(H3SampleCollector_SIL, self).__init__(file_list,agent,full_buffer,format_postion)
         self.max_sar_manager = max_sar_manager
         self.start_HP = None
-    def collect_eps(self,file_idx,battle:Battle=None,n_step = 200,print_act = False,td=False,from_start=False):
-        arena = Battle(by_AI=[2, 1], agent=self.agent)
-        file_idx,obs_idx, obs, defender_stacks = self.choose_start(file_idx,from_start=from_start)
-        '''record start point'''
-        buf_start = self.buffer._index
-        if obs_idx > 0:
-            self.start_HP = self.get_start_HP(self.max_sar_manager.max_sar[file_idx][0])
-            traj = self.max_sar_manager.max_sar[file_idx][:obs_idx]
-            self.agent.process_gae(traj, single_batch=False, sil=True)
-            for i in range(obs_idx):
-                step = traj[i]
-                self.buffer.add(Batch(obs=step.obs, act=step.act, rew=step.rew, done=step.done, info=step.info,
-                                      policy={"value": step.policy.value, "logps": step.policy.logps}))
-        arena.load_battle(obs, load_ai_side=False, format_postion=False)
-        win = False
-        for r in range(10):
-            last_buf_start = self.buffer._index
-            win = self.collect_1_ep(battle=arena)
-            if win:
-                if r == 0 and obs_idx > 0:
-                    '''normal start after middle start need refresh inner states of stacks'''
-                    for st in defender_stacks:
-                        st.in_battle = arena
-                    arena.defender_stacks = defender_stacks
-                arena.split_army()
-            else:
-                break
-        '''win all'''
-        if win:
-            last_buf_start = self.buffer._index
 
-        self.max_sar_manager.count[file_idx] += 1
-        if r > 0:
-            self.max_sar_manager.update_max(file_idx,obs_idx,self.buffer,buf_start,last_buf_start)
-            cumulate_reward(self.buffer,buf_start,last_buf_start)
-        '''win count'''
-        return r
     def choose_start(self, idx = -1, from_start=False):
         return self.max_sar_manager.choose_start(idx,from_start=from_start)
+
+    def update_count(self, idx, obs_idx, data: ReplayBuffer, start, end):
+        super(H3SampleCollector_SIL, self).update_count(idx, obs_idx, data, start, end)
+        self.max_sar_manager.update_max(idx, obs_idx, data, start, end)
+
+    def prepare_obs(self,file_idx,obs_idx):
+        self.start_HP = self.get_start_HP(self.max_sar_manager.max_sar[file_idx][0])
+        traj = self.max_sar_manager.max_sar[file_idx][:obs_idx]
+        self.agent.process_gae(traj, single_batch=False, sil=True)
+        for i in range(obs_idx):
+            step = traj[i]
+            self.buffer.add(Batch(obs=step.obs, act=step.act, rew=step.rew, done=step.done, info=step.info,policy={"value": step.policy.value, "logps": step.policy.logps}))
     def get_start_HP(self,sar):
         ep = sar.obs.attri_stack
         start_mask = np.logical_and(ep[:, 0] == 0,ep[:, 3] > 0)
@@ -1094,6 +1067,55 @@ class H3SampleCollector_SIL(H3SampleCollector):
         start_stack = ep[start_mask]
         start_HP_def = ((start_stack[:, 3] - 1) * start_stack[:, 6] + start_stack[:, 5]).sum()
         return (start_HP_att,start_HP_def)
+
+    def record_sar(self, operator, battle: Battle, acting_stack, sars):
+        if acting_stack.side == 0:
+            self.acted = True
+            obs = sars["obs"]
+            acts = sars["act"]
+            done = sars["done"]
+            mask = sars["mask"]
+            logps = sars["logps"]
+            value = sars["value"]
+            if done:
+                if self.start_HP:
+                    att_HP = [self.start_HP[0]]
+                    def_HP = [self.start_HP[1]]
+                    self.start_HP = None
+                else:
+                    att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+                    def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+                att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                               st.amount > 0]
+                def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                               st.amount > 0]
+                reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+                self.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
+                                      policy={"value": value, "logps": logps}))
+            else:
+                self.buffer.add(
+                    Batch(obs=obs, act=acts, rew=0, done=0, info=mask, policy={"value": value, "logps": logps}))
+        else:
+            done = sars["done"]
+            if done:
+                if self.acted:
+                    last_idx = self.buffer.last_index
+                    if self.start_HP:
+                        att_HP = [self.start_HP[0]]
+                        def_HP = [self.start_HP[1]]
+                        self.start_HP = None
+                    else:
+                        att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+                        def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+                    att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                                   st.amount > 0]
+                    def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                                   st.amount > 0]
+                    reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+                    self.buffer.rew[last_idx] = reward
+                    self.buffer.done[last_idx] = 1
+                else:
+                    logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 
 class H3SampleCollector_expert(H3SampleCollector):
     def __init__(self,file_list,agent:H3Agent,full_buffer:ReplayBuffer,max_sar_manager:H3ReplayManager_SIL=None,format_postion=False):
@@ -1308,54 +1330,7 @@ def check_done_2(self,battle):
         win = battle.get_winner() == 0
     return done,win
 
-def record_sar_2(self: H3SampleCollector_SIL, operator, battle: Battle, acting_stack, sars):
-    if acting_stack.side == 0:
-        self.acted = True
-        obs = sars["obs"]
-        acts = sars["act"]
-        done = sars["done"]
-        mask = sars["mask"]
-        logps = sars["logps"]
-        value = sars["value"]
-        if done:
-            if self.start_HP:
-                att_HP = [self.start_HP[0]]
-                def_HP = [self.start_HP[1]]
-                self.start_HP = None
-            else:
-                att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
-                def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
-            att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
-                           st.amount > 0]
-            def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
-                           st.amount > 0]
-            reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
-            self.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
-                                  policy={"value": value, "logps": logps}))
-        else:
-            self.buffer.add(
-                Batch(obs=obs, act=acts, rew=0, done=0, info=mask, policy={"value": value, "logps": logps}))
-    else:
-        done = sars["done"]
-        if done:
-            if self.acted:
-                last_idx = self.buffer.last_index
-                if self.start_HP:
-                    att_HP = [self.start_HP[0]]
-                    def_HP = [self.start_HP[1]]
-                    self.start_HP = None
-                else:
-                    att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
-                    def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
-                att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
-                               st.amount > 0]
-                def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
-                               st.amount > 0]
-                reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
-                self.buffer.rew[last_idx] = reward
-                self.buffer.done[last_idx] = 1
-            else:
-                logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+
 
 def cumulate_reward(buffer,start,end):
     if end == start:
@@ -1447,7 +1422,7 @@ if __name__ == '__main__':
         start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        start_replay_m("ENV/max_sars",'max_data_4.npy')  #"ENV/max_sars" episode
-        # start_train(use_expert_data=True)
+        # start_replay_m("ENV/max_sars",'max_data_4.npy')  #"ENV/max_sars" episode
+        start_train(use_expert_data=True)
         # start_test()
 
