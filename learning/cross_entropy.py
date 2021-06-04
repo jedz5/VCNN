@@ -4,6 +4,7 @@ from torch import nn
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from scipy.special import softmax
 np.set_printoptions(precision=4,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.4f}'.format})
 torch.set_printoptions(precision=4,sci_mode=False,linewidth=800)
 '''交叉熵 p1 logp2作图'''
@@ -57,15 +58,33 @@ def get_cross_entropy(r,point_n = 100):
 # r = torch.tensor([4,2 , 1,2,2,2,2],dtype=torch.float32)
 # n = torch.tensor([1, 1 , 1, 1, 1, 1, 1],dtype=torch.float32)
 # logits = torch.tensor([1,1,1,1,1,1,1],requires_grad=True,dtype=torch.float32)
-'''交叉熵 梯度计算 梯度下降大头在负概率部分 正概率对梯度贡献小
+'''
+    eg. sample{(s,a1,r11,s'),(s,a1,r12,s'),(s,a1,r13,s'),(s,a2,r21,s'),(s,a3,r31,s')},r为GAE估计值
+    
+    loss_q = [(q1-r11)**2+(q1-r12)**2+(q1-r13)**2 +(q2-r21)**2 +(q3-r31)**2] / 5
+    △= d(loss_q)/d(q1) = 2 * [(q1-r11)+(q1-r12)+(q1-r13)] / 5
+                        = 2 * (3q1 - (r11+r12+r13))/3 * 3/5
+                        = 2 * (q1-r1) * p1
+    loss_v = [(v-r11)**2+(v-r12)**2+(v-r13)**2 +(v-r21)**2 +(v-r31)**2] / 5
+    △= d(loss_q)/d(v) = 2 * [(v-r11)+(v-r12)+(v-r13)+(v-r21)+(v-r31)] / 5
+                        = 2 * (v-r_mean)
     pred_p = logits.softmax()
-    loss = -sum(r * p * log(pred_p))
-    △= d(loss)/d(logits[i]) = -∑j [rj* pj * d(loss)/d(log(pred_pj)) * d(log(pred_pj))/d(logitsi)]
-                             = r_mean*pred_pi - ri*pi
-    △= d(loss)/d(logits[1]) = -d(r1*p1*log(pred_p1) + r2*p2*log(pred_p2) + r3*p3*log(pred_p3)) / d(logits1)
+    loss_p = -sum(r * log(pred_p)) / n_sample = -sum(r * p * log(pred_p)) 
+           = -[(r11+r12+r13)*log(pred_p1) + r21*log(pred_p2) + r31*log(pred_p3)] / 5
+           = -[(r11+r12+r13)/3 * 3/5 * log(pred_p1) + r21/1 * 1/5 *log(pred_p2) + r31/1 * 1/5 *log(pred_p3)]
+           = -[r1*p1*log(pred_p1) + r2*p2*log(pred_p2) + r3*p3*log(pred_p3)]
+    如果考虑adv,则ri' = ri - v
+                  ri'*pi = ri*pi - v*pi
+                  r_mean' = sum(ri'*pi) = sum(ri*pi) - v = r_mean - v
+    △= d(loss_p)/d(logits[1]) 
+                             = -d(r1*p1*log(pred_p1) + r2*p2*log(pred_p2) + r3*p3*log(pred_p3)) / d(logits1)
                              = -(r1*p1*(1/pred_p1)*pred_p1(1-pred_p1) + r2*p2(1/pred_p2)*(pred_p2*(0-pred_p1) + r3*p3(1/pred_p3)*(pred_p3*(0-pred_p1))
                              = -(r1*p1 - (p1*r1+p2*r2+p3*r3)*pred_p1)
                              = r_mean*pred_p1 - r1*p1
+    △= d(loss_p)/d(logits[i]) = -∑j [rj* pj * d(loss_p)/d(log(pred_pj)) * d(log(pred_pj))/d(logitsi)]
+                             = r_mean*pred_pi - ri*pi
+                             = (r_mean-v)*pred_pi - (ri*pi-v*pi) 当ri = ri' = ri - v
+    交叉熵 梯度计算 梯度下降大头在负概率部分 正概率对梯度贡献小
     ri = r[r>0],rj = r[r<0] ,δ=sum(rj*pj),N=len(ri)
     target = (ri*pi+δ/N)/r_mean
     对任意ri*pi > r_mean*pred_pi,△ < 0 ,logits增大
@@ -95,74 +114,108 @@ logits=[ 20.6662  20.4484  20.4484 -18.6501]	pred_p=[ 0.3834  0.3083  0.3083  0.
 但SGD能得到使结果更准确的梯度
 logits=[ 10.1542  5.1997  5.1997 -16.5534]	pred_p=[ 0.9861  0.0070  0.0070  0.0000]	loss=[ 0.0140  1.2421  1.2421 -23.3814] loss.sum=-20.883131
 '''
-r = np.array([-1.2,-.9,-1],dtype=float)
-n = np.array([100,  100,100],dtype=float)
-logits = np.array([2,1,1],dtype=float) #np.array([4,3.4,3.5,3.5],dtype=float)
-p = n / n.sum()
-r = r * p
-neg_rp = sum(r[r < 0])
-pos_N = len(r[r > 0])
-from scipy.special import softmax
-lr = 0.2
-pred_p = softmax(logits,axis=-1)
-pred_p_init = np.copy(pred_p)
-r_mean = sum(r)
-'''1/(1+(r2*p2+r3*p3)/r1*p1)'''
-target = r / r_mean
-target_2 = (r + neg_rp/pos_N) / r_mean
-'''(r2*p2+r3*p3)/r1*p1'''
-ratio = (r_mean - r)/r
-grads_l = []
-logits_l = []
-preds_l = []
-N = 500
-for i in range(N):
-    logits_l.append(np.copy(logits))
-    print(logits, end="\t")
-    preds_l.append(np.copy(pred_p))
-    print(pred_p,end="\t")
-    loss =  -r * np.log(pred_p)
-    print(loss, end="\t")
-    loss = loss.sum()
-    print(loss)
-    grad = r_mean*pred_p - r
-    grads_l.append(np.copy(grad))
-    logits = logits - lr*grad
-    print("grad ", grad, end="\t")
-    pred_p = softmax(logits-logits.max(),axis=-1)
-print()
-print(f'r_mean      ={r_mean}')
-print(f'r*p         ={r}')
-print(f'r_mean*p_   ={pred_p_init*r_mean}')
-print(f'p           ={p}')
-print(f'pred_p_init ={pred_p_init}')
-print(f'target      ={target}')
-print(f'target_2    ={target_2}')
-fig=plt.figure()
-x = np.array(list(range(N)))
-grads_l = np.array(grads_l).transpose()
-logits_l = np.array(logits_l).transpose()
-preds_l = np.array(preds_l).transpose()
-plt.subplot(3, 1, 1) #3行1列子图，当前画在第一行第一列图上
-for i in range(len(grads_l)):
-    plt.plot(x,grads_l[i])
-plt.subplot(3, 1, 2)
-for i in range(len(logits_l)):
-    plt.plot(x,logits_l[i])
-plt.subplot(3, 1, 3)
-for i in range(len(preds_l)):
-    plt.plot(x,preds_l[i])
-point_n = N
-z = get_cross_entropy(r,point_n) + 10
-xline = preds_l[0]*(point_n-1)
-yline = preds_l[2]*(point_n-1)
-zline = z[yline.astype(int),xline.astype(int)]
-X,Y=np.meshgrid(np.array(range(point_n))/point_n,np.array(range(point_n))/point_n)
-fig2=plt.figure()
-ax=Axes3D(fig2)
-ax.plot_surface(X,Y,z,cmap='rainbow',alpha=0.5)
-ax.scatter3D(preds_l[0], preds_l[2], zline,color='black')
-plt.show()
+def get_r_p(r,n):
+    p = n / n.sum()
+    rp = r * p
+    return rp,p
+def get_adv_grad(r1,n1,logz1,v):
+    r = np.array(r1,dtype=float)
+    n = np.array(n1,dtype=float)
+    logz = np.array(logz1,dtype=float)
+    rp,p = get_r_p(r,n) # r = r*p
+    rp_mean = rp.sum()
+    grad_v = 2 * (v - rp_mean)  # r = r*p
+    pred_p = softmax(logz - logz.max(), axis=-1)
+    grad_p = (rp_mean-v)*pred_p - (rp-v*p)
+    return grad_p,grad_v
+# r = np.array([-1.2,-.9,-1],dtype=float)
+# n = np.array([100,  100,100],dtype=float)
+# logits = np.array([2,1,1],dtype=float) #np.array([4,3.4,3.5,3.5],dtype=float)
+# p = n / n.sum()
+# r = r * p
+# neg_rp = sum(r[r < 0])
+# pos_N = len(r[r > 0])
+# lr = 0.2
+# pred_p = softmax(logits,axis=-1)
+# pred_p_init = np.copy(pred_p)
+# r_mean = sum(r)
+# '''1/(1+(r2*p2+r3*p3)/r1*p1)'''
+# target = r / r_mean
+# target_2 = (r + neg_rp/pos_N) / r_mean
+# '''(r2*p2+r3*p3)/r1*p1'''
+# ratio = (r_mean - r)/r
+# grads_l = []
+# logits_l = []
+# preds_l = []
+# N = 500
+# for i in range(N):
+#     logits_l.append(np.copy(logits))
+#     print(logits, end="\t")
+#     preds_l.append(np.copy(pred_p))
+#     print(pred_p,end="\t")
+#     loss =  -r * np.log(pred_p)
+#     print(loss, end="\t")
+#     loss = loss.sum()
+#     print(loss)
+#     grad = r_mean*pred_p - r
+#     grads_l.append(np.copy(grad))
+#     logits = logits - lr*grad
+#     print("grad ", grad, end="\t")
+#     pred_p = softmax(logits-logits.max(),axis=-1)
+# print()
+# print(f'r_mean      ={r_mean}')
+# print(f'r*p         ={r}')
+# print(f'r_mean*p_   ={pred_p_init*r_mean}')
+# print(f'p           ={p}')
+# print(f'pred_p_init ={pred_p_init}')
+# print(f'target      ={target}')
+# print(f'target_2    ={target_2}')
+# fig=plt.figure()
+# x = np.array(list(range(N)))
+# grads_l = np.array(grads_l).transpose()
+# logits_l = np.array(logits_l).transpose()
+# preds_l = np.array(preds_l).transpose()
+# plt.subplot(3, 1, 1) #3行1列子图，当前画在第一行第一列图上
+# for i in range(len(grads_l)):
+#     plt.plot(x,grads_l[i])
+# plt.subplot(3, 1, 2)
+# for i in range(len(logits_l)):
+#     plt.plot(x,logits_l[i])
+# plt.subplot(3, 1, 3)
+# for i in range(len(preds_l)):
+#     plt.plot(x,preds_l[i])
+# point_n = N
+# z = get_cross_entropy(r,point_n) + 10
+# xline = preds_l[0]*(point_n-1)
+# yline = preds_l[2]*(point_n-1)
+# zline = z[yline.astype(int),xline.astype(int)]
+# X,Y=np.meshgrid(np.array(range(point_n))/point_n,np.array(range(point_n))/point_n)
+# fig2=plt.figure()
+# ax=Axes3D(fig2)
+# ax.plot_surface(X,Y,z,cmap='rainbow',alpha=0.5)
+# ax.scatter3D(preds_l[0], preds_l[2], zline,color='black')
+# plt.show()
+'''
+    SIL
+    
+'''
+lr = 0.01
+logz = np.array([2,0,0,0,0,0,0,0,0],dtype=float) #np.array([4,3.4,3.5,3.5],dtype=float)
+v = 0
+# pp = softmax(logz,axis=-1)
+for i in range(200):
+    grad_p,grad_v = get_adv_grad([3,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0],logz,v)
+    print('grad1=',grad_p,grad_v)
+    logz = logz - lr * grad_p
+    v = v - lr *grad_v
+    print('p = ',softmax(logz, axis=-1))
+    print(f'v = {v}')
+    grad_p, grad_v = get_adv_grad([1.5,-1,-1,-1,-1,-1,-1,-1,-1],softmax(logz, axis=-1),logz,v)
+    print('grad2=',grad_p,grad_v)
+    logz = logz - lr * grad_p
+    v = v - lr * grad_v
+    print(softmax(logz, axis=-1))
+    print(f'v = {v}')
 '''log函数下降的速度并没有想象中快啊
 -np.log(0.1)
 2.3025850929940455

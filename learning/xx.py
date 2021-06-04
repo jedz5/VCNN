@@ -29,7 +29,11 @@ np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={
 # b.hh()
 
 
-batch_rew = np.array([0,0,0.1,0,0,0.2,0,0,0.3])
+batch_rew = np.array([1,0,0,0.1,0,0.2,0,0,0.3,0,-4])
+start = 1
+br_index = np.where(batch_rew[start:] > 0)
+end_bias = br_index[-1][-1] + 1
+print(batch_rew[start:start+end_bias])
 # a = np.argwhere(batch_rew> 0).squeeze()
 # b = np.append(0,(a + 1)[:-1])
 # # a = batch_rew[batch_rew > 0][::-1]
@@ -54,17 +58,18 @@ batch_rew = np.array([0,0,0.1,0,0,0.2,0,0,0.3])
 # buf.add(b)
 # import PG_model.h3_ppo
 # PG_model.h3_ppo.cumulate_reward_2(buf,start,end)
-r = np.array([1,2,-10])
-n = np.array([1,1,1])
-r1 = np.array([1,2,-1])
-n1 = np.array([1,1,10])
-def get_r_p(r,n):
-    p = n / n.sum()
-    r = r * p
-    return r,p
-r,p = get_r_p(r,n)
-r1,p1 = get_r_p(r1,n1)
-print(r)
-print(p)
-print(r1)
-print(p1)
+
+# r = np.array([1,2,-10])
+# n = np.array([1,1,1])
+# r1 = np.array([1,2,-1])
+# n1 = np.array([1,1,10])
+# def get_r_p(r,n):
+#     p = n / n.sum()
+#     r = r * p
+#     return r,p
+# r,p = get_r_p(r,n)
+# r1,p1 = get_r_p(r1,n1)
+# print(r)
+# print(p)
+# print(r1)
+# print(p1)

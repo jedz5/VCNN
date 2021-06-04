@@ -19,42 +19,45 @@ class my_reshape(nn.Module):
     def forward(self,x):
         x = x.reshape(*self.shape)
         return x
+id_emb_size = 16
+act_emb_size = 8
+stack_emb_size = 32
+stack_fc_size = 128
+all_fc_size = 128
 class in_pipe(nn.Module):
     def __init__(self, device='cpu'):
         super(in_pipe,self).__init__()
         self.device = device
-        self.id_emb = nn.Embedding(150, 64, padding_idx=122)
-        self.act_emb = nn.Embedding(10, 64, padding_idx=8)
-        self.stack_emb = nn.Sequential(nn.Linear(21 + 64, 64),
+        self.id_emb = nn.Embedding(150, id_emb_size, padding_idx=122)
+        self.act_emb = nn.Embedding(10, act_emb_size, padding_idx=8)
+        self.stack_emb = nn.Sequential(nn.Linear(21 + id_emb_size, 32), #stack feature + id_emb
                                        nn.ReLU(inplace=True),
-                                       nn.Linear(64, 64)
+                                       nn.Linear(32, stack_emb_size)
                                        )
         self.stack_fc = nn.Sequential(
-                                      my_reshape([-1,64 * 14]),
-                                      nn.Linear(64 * 14, 512),
+                                      my_reshape([-1,stack_emb_size * 14]),
+                                      nn.Linear(stack_emb_size * 14, 128),
                                       nn.ReLU(inplace=True),
-                                      nn.Linear(512, 512),
+                                      nn.Linear(128, stack_fc_size),
                                       nn.ReLU(inplace=True))
         self.stack_plane_conv  = nn.Sequential(my_reshape([-1, 3, 11, 17]),
-                                               nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               # nn.MaxPool2d(kernel_size=2),
-                                               my_reshape([-1, 14 * 32, 11, 17]),
-                                               nn.Conv2d(14 * 32, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               my_reshape([-1, 14 * 8, 11, 17]),
+                                               nn.Conv2d(14 * 8, out_channels=32, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                nn.Conv2d(32, out_channels=3, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                my_reshape([-1, 3 * 11 * 17]))
         self.global_plane_conv = nn.Sequential(my_reshape([-1, 3, 11, 17]),
-                                               nn.Conv2d(3, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               # nn.MaxPool2d(kernel_size=2),
-                                               nn.Conv2d(32, out_channels=32, kernel_size=3, stride=1, padding=1),
+                                               nn.Conv2d(8, out_channels=8, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
-                                               nn.Conv2d(32, out_channels=3, kernel_size=3, stride=1, padding=1),
+                                               nn.Conv2d(8, out_channels=3, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
                                                my_reshape([-1, 3 * 11 * 17]))
-        self.stack_plane_flat = nn.Sequential(nn.Linear(512 + 3 * 11 * 17 * 2, 512),nn.ReLU(inplace=True))
+        self.stack_plane_flat = nn.Sequential(nn.Linear(stack_fc_size + 3 * 11 * 17 * 2, all_fc_size),nn.ReLU(inplace=True))
         #
         self.id_emb.to(self.device)
         self.stack_fc.to(self.device)
@@ -76,13 +79,13 @@ class H3_net(nn.Module):
         super(H3_net,self).__init__()
         self.device = device
         self.inpipe = in_pipe(device=self.device)
-        self.act_ids = nn.Linear(512, 5) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(5))
-        self.position_h = nn.Linear(512, 64)
-        self.position = nn.Linear(192, 11*17) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(11*17))
-        self.targets_h = nn.Linear(512, 64) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(7))
-        self.targets = nn.Linear(128, 14)
-        self.spells = nn.Linear(512, 10) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
-        self.critic = nn.Linear(512, 1) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
+        self.act_ids = nn.Linear(all_fc_size, 5) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(5))
+        self.position_h = nn.Linear(all_fc_size, 32)
+        self.position = nn.Linear(32 + act_emb_size + stack_emb_size, 11*17) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(11*17))
+        self.targets_h = nn.Linear(all_fc_size, 32) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(7))
+        self.targets = nn.Linear(32 + act_emb_size, 14)
+        self.spells = nn.Linear(all_fc_size, 10) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
+        self.critic = nn.Linear(all_fc_size, 1) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
 
         self.act_ids.to(self.device)
         self.position_h.to(self.device)
