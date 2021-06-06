@@ -30,6 +30,122 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
     else:
         logits3 = (logits.sub(logits.min(dim=-1,keepdim=True)[0]) + 1)* mask
     return logits3
+class StateNode(object):
+    def __init__(self,parent,side,left_base,right_base,name=0):
+        self._parent = parent
+        self.side = side
+        self._actions = {}  # a map from action to TreeNode
+        self._n_visits = 0
+        self._Q = 0
+        self.left_base = left_base
+        self.right_base = right_base
+        self.name = name
+
+    def update(self, left,right,value = -2):
+        """Update node values from leaf evaluation.
+        leaf_value: the value of subtree evaluation from the current player's
+            perspective.
+        """
+        # Count visit.
+        self._n_visits += 1
+        if value != -2:
+            leaf_value = value
+        else:
+            if self.side == 1:
+                leaf_value = 1.0 - (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10)
+            else:
+                leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
+
+            # Update Q, a running average of values for all visits.
+        self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
+    def update_recursive(self, left,right,valueL = -2,valueR = -2):
+        """Like a call to update(), but applied recursively for all ancestors.
+        """
+        # If it is not root, this node's parent should be updated first.
+        if(self.side == 1):
+            self.update(left,right,valueR)
+        else:
+            self.update(left, right, valueL)
+        if self._parent:
+            self._parent.update_recursive(left,right,valueL,valueR)
+
+    def is_leaf(self):
+        """Check if leaf node (i.e. no nodes below this have been expanded)."""
+        return self._actions == {}
+    def is_root(self):
+        return self._parent is None
+class ActionNode(object):
+    """A node in the MCTS tree.
+
+    Each node keeps track of its own value Q, prior probability P, and
+    its visit-count-adjusted prior score u.
+    """
+
+    def __init__(self, parent, prior_p,side,name=0):
+        self._parent = parent
+        self.side = side
+        self._states = {}  # states hash
+        self.curState = 0
+        self._n_visits = 0
+        self._Q = 0
+        self._u = 0
+        self._P = prior_p
+        self.name = name
+        self._aplayout = 0
+    def setCurentState(self,gameState):
+        stateHash = gameState.getHash()
+        left, leftBase, right, rightBase = gameState.getStackHPBySlots()
+        if stateHash not in self._states.keys():
+            self._states[stateHash] = StateNode(self, gameState.currentPlayer(), left, right, gameState.cur_stack.name)
+        else:
+            self._states[stateHash].left_base = left
+            self._states[stateHash].right_base = right
+            logger.debug('found same hash ')
+        self.curState = self._states[stateHash]
+    def update(self, left,right,value = -2):
+        """Update node values from leaf evaluation.
+        leaf_value: the value of subtree evaluation from the current player's
+            perspective.
+        """
+        # Count visit.
+        self._n_visits += 1
+        if value != -2:
+            leaf_value = value
+            logger.info('{} side {}, q={}, n={},p_n={},p={},update leaf_value = {}'.format(self.name, self.side,self._Q,self._n_visits,self._parent._n_visits,self._P,leaf_value))
+        else:
+            if self.side == 1:
+                leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
+            else:
+                leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
+            logger.info('{} side {}, q={}, n={},p_n={},p={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
+                                                                                    self._n_visits,self._parent._n_visits, self._P,
+                                                                                    leaf_value))
+
+        self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
+
+    def update_recursive(self, left,right,valueL = -2,valueR = -2):
+        """Like a call to update(), but applied recursively for all ancestors.
+        """
+        # If it is not root, this node's parent should be updated first.
+        if(self.side == 1):
+            self.update(left,right,valueR)
+        else:
+            self.update(left, right, valueL)
+        if self._parent:
+            self._parent.update_recursive(left,right,valueL,valueR)
+
+    def get_value(self, c_puct):
+        """Calculate and return the value for this node.
+        It is a combination of leaf evaluations Q, and this node's prior
+        adjusted for its visit count, u.
+        c_puct: a number in (0, inf) controlling the relative impact of
+            value Q, and prior probability P, on this node's score.
+        """
+        self._u = (c_puct * self._P *
+                   np.sqrt(self._parent._n_visits) / (1 + self._n_visits))
+        return self._Q + self._u
+
+
 class H3AgentQ(nn.Module):
 
     def __init__(self,
@@ -279,6 +395,9 @@ class H3ReplayManager:
             logger.info('buff size is not enough update_max return')
             return
         if data.rew[end - 1] < 0:
+            record_done = int(sum(self.max_sar[idx].done))
+            if record_done < 2:
+                return
             br_index = np.where(data.rew[start:end] > 0)
             end_bias = br_index[-1][-1] + 1
             end = start + end_bias
@@ -1060,8 +1179,7 @@ class H3SampleCollector_SIL(H3SampleCollector):
 
     def update_count(self, idx, obs_idx, data: ReplayBuffer, start, end):
         win_count = super(H3SampleCollector_SIL, self).update_count(idx, obs_idx, data, start, end)
-        if win_count > 0:
-            self.max_sar_manager.update_max(idx, obs_idx, data, start, end)
+        self.max_sar_manager.update_max(idx, obs_idx, data, start, end)
         return win_count
 
     def prepare_obs(self,file_idx,obs_idx):
