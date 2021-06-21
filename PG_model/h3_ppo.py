@@ -30,120 +30,110 @@ def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
     else:
         logits3 = (logits.sub(logits.min(dim=-1,keepdim=True)[0]) + 1)* mask
     return logits3
-class StateNode(object):
-    def __init__(self,parent,side,left_base,right_base,name=0):
+class H3_node:
+    def update(self):
+        raise Exception('interface should be implemented')
+
+def MaxUpdate(self, child):
+    pass
+def AvgUpdate(self, child):
+    pass
+def setCurentState(self,gameState):
+    stateHash = gameState.getHash()
+    left, leftBase, right, rightBase = gameState.getStackHPBySlots()
+    if stateHash not in self._states.keys():
+        self._states[stateHash] = StateNode(self, gameState.currentPlayer(), left, right, gameState.cur_stack.name)
+    else:
+        self._states[stateHash].left_base = left
+        self._states[stateHash].right_base = right
+        logger.debug('found same hash ')
+    self.curState = self._states[stateHash]
+class StateNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
         self._parent = parent
-        self.side = side
+        self.act_mask = act_mask
         self._actions = {}  # a map from action to TreeNode
         self._n_visits = 0
-        self._Q = 0
-        self.left_base = left_base
-        self.right_base = right_base
+        self._n_nodes = 0
+        self._V = 0
         self.name = name
+        self.state = state
+        self.update = MaxUpdate
+        self.setCurentState = setCurentState
 
-    def update(self, left,right,value = -2):
-        """Update node values from leaf evaluation.
-        leaf_value: the value of subtree evaluation from the current player's
-            perspective.
-        """
-        # Count visit.
-        self._n_visits += 1
-        if value != -2:
-            leaf_value = value
-        else:
-            if self.side == 1:
-                leaf_value = 1.0 - (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10)
-            else:
-                leaf_value = (left*self.left_value).sum()/((self.left_base*self.left_value).sum()+1e-10) - (right*self.right_value).sum()/((self.right_base*self.right_value).sum()+1e-10)
-
-            # Update Q, a running average of values for all visits.
-        self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
-    def update_recursive(self, left,right,valueL = -2,valueR = -2):
-        """Like a call to update(), but applied recursively for all ancestors.
-        """
-        # If it is not root, this node's parent should be updated first.
-        if(self.side == 1):
-            self.update(left,right,valueR)
-        else:
-            self.update(left, right, valueL)
-        if self._parent:
-            self._parent.update_recursive(left,right,valueL,valueR)
-
-    def is_leaf(self):
-        """Check if leaf node (i.e. no nodes below this have been expanded)."""
-        return self._actions == {}
-    def is_root(self):
-        return self._parent is None
-class ActionNode(object):
-    """A node in the MCTS tree.
-
-    Each node keeps track of its own value Q, prior probability P, and
-    its visit-count-adjusted prior score u.
-    """
-
-    def __init__(self, parent, prior_p,side,name=0):
+class WaitNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
         self._parent = parent
-        self.side = side
-        self._states = {}  # states hash
+        self.act_mask = act_mask
+        self._n_visits = 0
+        self._n_nodes = 0
+        self._V = 0
+        self.name = name
+        self.state = state
+        self.update = AvgUpdate
+        self.setCurentState = setCurentState
+class DefendNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
+        self._parent = parent
+        self.act_mask = act_mask
+        self._n_visits = 0
+        self._n_nodes = 0
+        self._V = 0
+        self.name = name
+        self.state = state
+        self.update = AvgUpdate
+        self.setCurentState = setCurentState
+class MoveNode(H3_node):
+    def __init__(self, parent,act_id,mask,name=None):
+        self._parent = parent
+        self.act_id  = act_id
+        self._nodes = {}  # states hash
         self.curState = 0
         self._n_visits = 0
+        self._n_nodes = 0
         self._Q = 0
-        self._u = 0
-        self._P = prior_p
+        self.act_mask = mask
         self.name = name
-        self._aplayout = 0
-    def setCurentState(self,gameState):
-        stateHash = gameState.getHash()
-        left, leftBase, right, rightBase = gameState.getStackHPBySlots()
-        if stateHash not in self._states.keys():
-            self._states[stateHash] = StateNode(self, gameState.currentPlayer(), left, right, gameState.cur_stack.name)
-        else:
-            self._states[stateHash].left_base = left
-            self._states[stateHash].right_base = right
-            logger.debug('found same hash ')
-        self.curState = self._states[stateHash]
-    def update(self, left,right,value = -2):
-        """Update node values from leaf evaluation.
-        leaf_value: the value of subtree evaluation from the current player's
-            perspective.
-        """
-        # Count visit.
-        self._n_visits += 1
-        if value != -2:
-            leaf_value = value
-            logger.info('{} side {}, q={}, n={},p_n={},p={},update leaf_value = {}'.format(self.name, self.side,self._Q,self._n_visits,self._parent._n_visits,self._P,leaf_value))
-        else:
-            if self.side == 1:
-                leaf_value = 1.0 - (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10)
-            else:
-                leaf_value = (left * self._parent.left_value).sum() / ((self._parent.left_base * self._parent.left_value).sum()+1e-10) - (right * self._parent.right_value).sum() / ((self._parent.right_base * self._parent.right_value).sum()+1e-10)
-            logger.info('{} side {}, q={}, n={},p_n={},p={},update from simulate leaf_value = {}'.format(self.name, self.side, self._Q,
-                                                                                    self._n_visits,self._parent._n_visits, self._P,
-                                                                                    leaf_value))
+        self.update = MaxUpdate
+class TargetShootNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
+        self._parent = parent
+        self.act_mask = act_mask
+        self._n_visits = 0
+        self._n_nodes = 0
+        self._V = 0
+        self.name = name
+        self.state = state
+        self.update = AvgUpdate
+        self.setCurentState = setCurentState
+class TargetMeleeNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
+        self._parent = parent
+        self.act_mask = act_mask
+        self._actions = {}  # a map from action to TreeNode
+        self._n_visits = 0
+        self._n_nodes = 0
+        self._V = 0
+        self.name = name
+        self.state = state
+        self.update = MaxUpdate
 
-        self._Q += 1.0*(leaf_value - self._Q) / self._n_visits
+class PositionNode(H3_node):
+    def __init__(self,parent,state,act_mask,name=None):
+        self._parent = parent
+        self.act_mask = act_mask
+        self._actions = {}  # a map from action to TreeNode
+        self._n_visits = 0
+        self._n_nodes = 0
+        self._V = 0
+        self.name = name
+        self.state = state
+        self.update = AvgUpdate
+        self.setCurentState = setCurentState
 
-    def update_recursive(self, left,right,valueL = -2,valueR = -2):
-        """Like a call to update(), but applied recursively for all ancestors.
-        """
-        # If it is not root, this node's parent should be updated first.
-        if(self.side == 1):
-            self.update(left,right,valueR)
-        else:
-            self.update(left, right, valueL)
-        if self._parent:
-            self._parent.update_recursive(left,right,valueL,valueR)
 
-    def get_value(self, c_puct):
-        """Calculate and return the value for this node.
-        It is a combination of leaf evaluations Q, and this node's prior
-        adjusted for its visit count, u.
-        c_puct: a number in (0, inf) controlling the relative impact of
-            value Q, and prior probability P, on this node's score.
-        """
-        self._u = (c_puct * self._P *
-                   np.sqrt(self._parent._n_visits) / (1 + self._n_visits))
-        return self._Q + self._u
+
+
 
 
 class H3AgentQ(nn.Module):
@@ -353,8 +343,17 @@ class H3AgentQ(nn.Module):
                 self.to_dev(agent, "cpu")
             agent.eval()
             agent.in_train = False
-class H3ReplayManager:
-    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False, format_postion=False):
+class H3ReplayManager_interface:
+    def init_expert_data(self):
+        raise Exception('interface should be implemented')
+    def choose_start(self,idx,from_start=False):
+        raise Exception('interface should be implemented')
+    def update_max(self, idx, obs_idx, data: ReplayBuffer, start, end):
+        raise Exception('interface should be implemented')
+    def get_sars(self):
+        raise Exception('interface should be implemented')
+class H3ReplayManager(H3ReplayManager_interface):
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.5,use_expert_data=False, format_postion=False):
         fl = len(file_list)
         self.defender_states = []  # type:List[BStack]
         file_list_cache = []
@@ -434,13 +433,59 @@ class H3ReplayManager:
                 logger.info(f"exp.rew={sum(exp.rew)}")
         return bats
 class H3ReplayManager_SIL(H3ReplayManager):
-    def __init__(self,file_list,agent,p_start_from_scratch = 0.2,use_expert_data=False,format_postion=False):
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.5,use_expert_data=False,format_postion=False):
         super(H3ReplayManager_SIL, self).__init__(file_list,agent,p_start_from_scratch,use_expert_data,format_postion)
     def choose_start(self,idx=-1,from_start=False):
         if idx < 0:
             idx = random.choice(range(len(self.max_sar)))
         obs_idx, obs, defs = super(H3ReplayManager_SIL, self).choose_start(idx,from_start=from_start)
         return idx, obs_idx, obs, defs
+class H3ReplayManager_SIL_tree(H3ReplayManager_interface):
+    def __init__(self,file_list,agent,p_start_from_scratch = 0.5,use_expert_data=False, format_postion=False):
+        fl = len(file_list)
+        self.defender_states = []  # type:List[BStack]
+        file_list_cache = []
+        '''cache json'''
+        for file in file_list:
+            arena = Battle()
+            arena.load_battle(file, load_ai_side=False, format_postion=format_postion)
+            arena.checkNewRound()
+            start = arena.current_state_feature(curriculum=True)
+            file_list_cache.append((start, arena.round))
+            self.defender_states.append(arena.defender_stacks)
+        self.file_list = file_list
+        self.file_list_cache = file_list_cache
+        self.max_sar = [None] * fl #type:List[StateNode]
+        self.agent = agent
+        self.use_expert_data = use_expert_data
+        if use_expert_data:
+            self.init_expert_data()
+        self.p_start_from_scratch = p_start_from_scratch
+    def init_expert_data(self):
+        expert = load_episo("ENV/episode")
+        if expert:
+            compute_reward_from_episodes(expert, 0, len(expert))
+            self.max_sar[0] = Batch(expert, copy=True)
+            self.agent.process_gae(expert, single_batch=False, sil=True)
+            '''fill in policy'''
+            self.max_sar[0].policy = expert.policy
+    def build_tree_node(self,state_node:StateNode,sar):
+        obs,acts,mask = sar
+        if not state_node:
+            root = StateNode(None,obs,mask.act_mask)
+            act_id = acts.act_id
+            target_id = acts.target_id
+            position_id = acts.position_id
+            if act_id == action_type.wait.value:
+                return ActionNode(root,act_id,None)
+            elif act_id == action_type.defend.value:
+                return ActionNode(root,act_id,None)
+            elif act_id == action_type.move.value:
+                move = ActionNode(root,act_id,None)
+                position = ActionNode(move,position_id,None)
+
+
+
 
 class H3Agent(PGPolicy):
 
@@ -833,7 +878,7 @@ class H3Agent_rewarded(H3Agent):
             sil_sars = max_sar_manager.get_sars()
             if len(sil_sars):
                 sil_sars = Batch.cat(sil_sars)
-                self.process_gae(sil_sars, single_batch=False,sil=True)
+                # self.process_gae(sil_sars, single_batch=False,sil=True)
                 logger.info("sil act_logp before")
                 logger.info(sil_sars.policy.logps.act_logp[:print_len])
                 logger.info(sil_sars.act.act_id.astype(np.float)[:print_len])

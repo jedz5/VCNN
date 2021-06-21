@@ -95,7 +95,7 @@ def policy_iteration_demo2():
     pi_algo.policy_iteration(agent)
     print('return_pi={}'.format(eval_game(env,agent)))
     print(agent.pi)
-def xxx():
+def portfolio():
     cs = cp = 0.0025
     def close(mon,t,new_v):
         m = mon[t]

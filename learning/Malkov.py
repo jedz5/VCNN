@@ -178,5 +178,11 @@ def coconuts_and_islanders():
 M = 0
 if __name__ == '__main__':
     # coconuts_and_islanders()
-    X = np.array([[.3, .5, .2], [.5, .1, .4], [.2, .4, .4]])
-    p = get_stationary_prob(X)
+    X = np.array([[.3, .5, .2],
+                  [.5, .1, .4],
+                  [.3, .3, .4]])
+    xx = X
+    for i in range(100):
+        xx = np.matmul(xx,X)
+        print(xx)
+    # p = get_stationary_prob(X)
