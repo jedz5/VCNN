@@ -394,10 +394,11 @@ class H3ReplayManager(H3ReplayManager_interface):
             logger.info('buff size is not enough update_max return')
             return
         if data.rew[end - 1] < 0:
-            record_done = int(sum(self.max_sar[idx].done))
+            tmp_data = data[start:end]
+            record_done = int(sum(tmp_data.done))
             if record_done < 2:
                 return
-            br_index = np.where(data.rew[start:end] > 0)
+            br_index = np.where(tmp_data.rew > 0)
             end_bias = br_index[-1][-1] + 1
             end = start + end_bias
         data_rew = data.rew[start:end]
@@ -809,8 +810,8 @@ class H3Agent_rewarded(H3Agent):
     def start_train(self,use_expert_data=False):
         # H3SampleCollector_SIL.check_done = check_done_2
         count = 0
-        # file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json','ENV/battles/4.json']
-        file_list = ['ENV/battles/0.json']
+        file_list = ['ENV/battles/0.json', 'ENV/battles/1.json', 'ENV/battles/2.json', 'ENV/battles/3.json','ENV/battles/4.json']
+        # file_list = ['ENV/battles/0.json']
         format_postion = False
         replay_buffer = ReplayBuffer(50000, ignore_obs_next=True)
         max_sar_manager = H3ReplayManager_SIL(file_list, self, use_expert_data=use_expert_data,
@@ -1089,6 +1090,7 @@ class H3SampleCollector:
             #buffer sar
             if had_acted:
                 sars["done"] = done
+                sars["win"] = win
                 self.record_sar(0,battle,acting_stack,sars)
             #get winner
             if done:
@@ -1243,7 +1245,20 @@ class H3SampleCollector_SIL(H3SampleCollector):
         start_stack = ep[start_mask]
         start_HP_def = ((start_stack[:, 3] - 1) * start_stack[:, 6] + start_stack[:, 5]).sum()
         return (start_HP_att,start_HP_def)
-
+    def compute_reward(self,battle: Battle):
+        if self.start_HP:
+            att_HP = [self.start_HP[0]]
+            def_HP = [self.start_HP[1]]
+            self.start_HP = None
+        else:
+            att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+            def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+        att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                       st.amount > 0]
+        def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                       st.amount > 0]
+        reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+        return reward
     def record_sar(self, operator, battle: Battle, acting_stack, sars):
         if acting_stack.side == 0:
             self.acted = True
@@ -1254,18 +1269,11 @@ class H3SampleCollector_SIL(H3SampleCollector):
             logps = sars["logps"]
             value = sars["value"]
             if done:
-                if self.start_HP:
-                    att_HP = [self.start_HP[0]]
-                    def_HP = [self.start_HP[1]]
-                    self.start_HP = None
+                win = sars["win"]
+                if win:
+                    reward = self.compute_reward(battle)
                 else:
-                    att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
-                    def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
-                att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
-                               st.amount > 0]
-                def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
-                               st.amount > 0]
-                reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+                    reward = -reward_def
                 self.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
                                       policy={"value": value, "logps": logps}))
             else:
@@ -1275,19 +1283,12 @@ class H3SampleCollector_SIL(H3SampleCollector):
             done = sars["done"]
             if done:
                 if self.acted:
-                    last_idx = self.buffer.last_index
-                    if self.start_HP:
-                        att_HP = [self.start_HP[0]]
-                        def_HP = [self.start_HP[1]]
-                        self.start_HP = None
+                    win = sars["win"]
+                    if win:
+                        reward = self.compute_reward(battle)
                     else:
-                        att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
-                        def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
-                    att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
-                                   st.amount > 0]
-                    def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
-                                   st.amount > 0]
-                    reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+                        reward = -reward_def
+                    last_idx = self.buffer.last_index
                     self.buffer.rew[last_idx] = reward
                     self.buffer.done[last_idx] = 1
                 else:
@@ -1482,7 +1483,7 @@ def load_episo(dir,file=None):
     '''empty policy will results in batch length = 0'''
     expert = Batch(obs=obs2,obs_next=obs2,act=act2, rew=rew2, done=done2,info=mask2) #,policy = Batch()
     return expert
-def start_test():
+def start_test(file):
     import pygame
     pygame.init()  # 初始化pygame
     pygame.display.set_caption('This is my first pyVCMI')  # 设置窗口标题
@@ -1496,7 +1497,7 @@ def start_test():
     agent.in_train = False
     from ENV.H3_battleInterface import start_game_s_gui
     battle = Battle(agent=agent)
-    battle.load_battle(file="ENV/battles/0.json")
+    battle.load_battle(file=file)
     start_game_s_gui(battle=battle)
 
 def check_done_2(self,battle):
@@ -1641,7 +1642,7 @@ if __name__ == '__main__':
         start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        # start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
+        # start_replay_m("ENV/max_sars",'max_data_1.npy')  #"ENV/max_sars" episode
         # start_train(use_expert_data=True)
-        start_test()
+        start_test(file="ENV/battles/3.json")
 
