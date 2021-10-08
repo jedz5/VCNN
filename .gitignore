@@ -22,3 +22,6 @@ VCCC/.vs
 bak.idea/
 .vs/
 *.pyperf
+learning/upgo_meta/log/
+learning/upgo_meta/ckpt/
+*.png

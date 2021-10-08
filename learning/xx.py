@@ -1,69 +1,51 @@
-import gym
-import numpy as np
+import pytest
 import torch
-from collections import defaultdict
-from tianshou.data import Batch,ReplayBuffer
-np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
+from ding.rl_utils.upgo import upgo_loss, upgo_returns, tb_cross_entropy
+from torch.optim import SGD
+import torch.nn.functional as F
 
+def test_upgo2():
+    S, B, A, N2 = 4, 8, 5, 7
 
+    reward = torch.zeros(S, B,dtype=torch.float32)
+    reward[-1,:2] = 1.
+    reward[-1, 2:] = -1.
+    bootstrap_values_orig = torch.zeros((S+1,),dtype=torch.float32).requires_grad_(True)
 
-# batch_rew = np.array([1,0,0,0.1,0,0.2,0,0,0.3,0,-4])
-# start = 1
-# br_index = np.where(batch_rew[start:] > 0)
-# end_bias = br_index[-1][-1] + 1
-# print(batch_rew[start:start+end_bias])
-# a = np.argwhere(batch_rew> 0).squeeze()
-# b = np.append(0,(a + 1)[:-1])
-# # a = batch_rew[batch_rew > 0][::-1]
-# # batch_rew[batch_rew > 0] = np.add.accumulate(a)[::-1]
-#
-# buf = ReplayBuffer(10,ignore_obs_next=False)
-# a = Batch(obs=1,act=2,rew=0,done=False)
-# buf.add(a)
-# buf.add(a)
-# b = Batch(obs=1,act=2,rew=1,done=True)
-# buf.add(b)
-# buf.add(a)
-# start = buf._index
-# buf.add(a)
-# buf.add(b)
-# buf.add(a)
-# buf.add(a)
-# buf.add(b)
-# end = buf._index
-# buf.add(a)
-# buf.add(a)
-# buf.add(b)
-# import PG_model.h3_ppo
-# PG_model.h3_ppo.cumulate_reward_2(buf,start,end)
+    # upgo loss
+    logit_q = torch.zeros((S, A),dtype=torch.float32,requires_grad=True)
+    opt = SGD([logit_q,bootstrap_values_orig],0.1)
+    action = torch.zeros(S,B,dtype=torch.long)
+    for i in range(10):
+        logit = torch.stack([logit_q.softmax(-1)] * B).transpose(0,1)
+        bootstrap_values = torch.stack([bootstrap_values_orig] * B).transpose(0,1)
+        rhos = torch.ones(S, B)
+        up_loss = upgo_loss(logit, rhos, action, reward, bootstrap_values)
+        with torch.no_grad():
+            returns = upgo_returns(reward, bootstrap_values)
 
-# A = np.array([[1,1,1]]).transpose()
-# a = np.linalg.pinv(A)
-
-
-# pi = np.array([[0.2,0.8,0,0,0,0], # a1/s1 a2/s1
-#                [0, 0, 0.3, 0.7, 0, 0], # a1/s2 a2/s2
-#                [0, 0, 0, 0,0.6, 0.4]]) # a1/s3 a2/s3
-# pt = np.array([[.3,.4,.3],   #s1/s1a1 s2/s1a1 s3/s1a1
-#                [.2, .5, .3], #s1/s1a2 s2/s1a2 s3/s1a2
-#                [.3, .2, .5], #s1/s2a1 s2/s2a1 s3/s2a1
-#                [.13, .4, .47], #s1/s2a2 s2/s2a2 s3/s2a2
-#                [.3, .48, .22], #s1/s3a1 s2/s3a1 s3/s3a1
-#                [.1, .1, .8] #s1/s3a2 s2/s3a2 s3/s3a2
-#                ])
-# pss = np.matmul(pi,pt)
-# tmp = np.eye(3) - 0.9*pss
-# c = np.linalg.inv(tmp)
-# print(c)
-ll = [1, 2, 5, 2, 2,3]
-it = iter(ll)
-i = 0
-while True:
-    x = next(it, 'a')
-    if x == 2:
-        ll.pop(i)
-    else:
-        i += 1
-    print(x)
-    if x == 'a':
-        break
+        print("values:")
+        print(bootstrap_values_orig.detach().numpy())
+        mask = reward + bootstrap_values[1:] - bootstrap_values[:-1]
+        print("mask:")
+        print(mask.transpose(0,1).detach().numpy())
+        print("returns:")
+        print(returns.transpose(0,1).detach().numpy())
+        v_loss = 1/2 *(returns - bootstrap_values[:-1]) ** 2
+        v_loss = v_loss.mean()
+        # assert logit.requires_grad
+        # assert bootstrap_values.requires_grad
+        # for t in [logit, bootstrap_values]:
+        #     assert t.grad is None
+        opt.zero_grad()
+        loss = up_loss + v_loss
+        loss.backward()
+        opt.step()
+def xx():
+    tensor_0 = torch.arange(3, 12).view(3, 3)
+    print(tensor_0)
+    index = torch.tensor([2, 1, 0,2,1,1,2])
+    tensor_1 = tensor_0.gather(0,index.unsqueeze(-1).expand((index.shape[0],tensor_0.shape[1])).long())
+    print(tensor_1)
+if __name__ == '__main__':
+    xx()
