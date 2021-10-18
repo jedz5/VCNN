@@ -11,17 +11,18 @@ upgo_env_config = dict(
     policy=dict(
         cuda=False,
         model=dict(
-            obs_shape=4,
+            obs_shape=6,
             action_shape=3,
             dueling=True,
         ),
         nstep=1,
         discount_factor=0.97,
         learn=dict(
-            batch_size=64,
-            learning_rate=0.001,
+            batch_size=16,
+            learning_rate=0.1,
+            update_per_collect = 1
         ),
-        collect=dict(n_sample=256),
+        collect=dict(n_sample=1024),
         eval=dict(evaluator=dict(eval_freq=50, )),
         other=dict(
             eps=dict(

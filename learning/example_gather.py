@@ -29,5 +29,13 @@ def xx():
     tensor_1 = q_table.gather(0, index.unsqueeze(-1)).squeeze(-1).long()
     print(tensor_1)
 
+def step_obs():
+    q_table = torch.arange(60).view(3,4, 5)
+    idx = torch.tensor([2,1],dtype=torch.long)
+    r"""
+        q_table[2,1] == tensor([45, 46, 47, 48, 49])
+        用q_table.gather(idx)怎么做???
+    """
+    print()
 if __name__ == '__main__':
-    xx()
+    step_obs()

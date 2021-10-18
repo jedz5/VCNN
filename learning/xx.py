@@ -1,3 +1,6 @@
+from collections import defaultdict
+
+
 import pytest
 import torch
 from ding.rl_utils.upgo import upgo_loss, upgo_returns, tb_cross_entropy
@@ -41,11 +44,52 @@ def test_upgo2():
         loss = up_loss + v_loss
         loss.backward()
         opt.step()
+def defaultdict_int():
+    return defaultdict(int)
 def xx():
-    tensor_0 = torch.arange(3, 12).view(3, 3)
-    print(tensor_0)
-    index = torch.tensor([2, 1, 0,2,1,1,2])
-    tensor_1 = tensor_0.gather(0,index.unsqueeze(-1).expand((index.shape[0],tensor_0.shape[1])).long())
-    print(tensor_1)
+    # tensor_0 = torch.arange(3, 12).view(3, 3)
+    # print(tensor_0)
+    # index = torch.tensor([2, 1, 0,2,1,1,2])
+    # tensor_1 = tensor_0.gather(0,index.unsqueeze(-1).expand((index.shape[0],tensor_0.shape[1])).long())
+    # print(tensor_1)
+    pass
+def upgo_VQG():
+    Q = defaultdict(dict)
+    V = defaultdict(dict)
+    sars_count = defaultdict(defaultdict_int)
+    Q[(1, 3)][1] = torch.tensor(-1.)
+    Q[(1, 4)][2] = torch.tensor(-.02)
+    V[(1, 3)] = max(Q[(1, 3)].values())
+    V[(1, 4)] = max(Q[(1, 4)].values())
+    #
+    sars_count[((1, 1),4)][(1, 4)] = 99
+    sars_count[((1, 1),4)][(1, 3)] = 1
+    s = (1, 1)
+    a = 4
+    Q[s][a] = sum([sars_count[(s,a)][s_] * V[s_] for s_ in sars_count[(s,a)].keys()]) / sum(sars_count[(s,a)].values())
+    print(Q)
+    #(1, 1), 4, (1, 4) ][(1, 4), 5, (1, 5)
+    sars_count[((1, 4), 5)][(1, 5)] += 1
+    Q[(1, 4)][5] = 1.
+    s = (1, 1)
+    a = 4
+    s_ = (1,4)
+    sars_count[s,a][s_] += 1
+    V[s_] = max(Q[s_].values())
+    Q[s][a] = sum([sars_count[(s, a)][s_] * V[s_] for s_ in sars_count[(s, a)].keys()]) / sum(
+        sars_count[(s, a)].values())
+    print(Q)
+def ddd(a,b,c,d):
+    print('hh')
+def abc(*par,**par2):
+    ddd(*par,**par2)
 if __name__ == '__main__':
-    xx()
+    a = torch.tensor([0.,0.,0.,0.,0.,0.,0.,0.],requires_grad=True)
+    opt = SGD([a],lr=0.1)
+    # loss = .5 * (a - 1)**2
+    loss = .5 * F.mse_loss(a, torch.tensor([1.,1.,1.,1.,1.,1.,1.,1.]), reduction='sum')#.sum()
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+    print(a)
+
