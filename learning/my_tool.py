@@ -47,6 +47,8 @@ class hashable(object):
             return array(self.__wrapped)
 
         return self.__wrapped
+    def __repr__(self):
+        return 'sss'
 
 class np_hash(ndarray):
     def __hash__(self):

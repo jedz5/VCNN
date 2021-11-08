@@ -190,9 +190,10 @@ class upgo_policy(A2CPolicy):
         # Forced cutoff at the last one
         # result[-1, :] = (rewards[-1,:] + value[-1]) if (rewards[-1,:] + value[-1]) > value[-2] else value[-2]
         r'''
-        G   G   G <- 求V
-        S - S - S - T
-            G+r G+r G+r <-求Q
+        G(s) = γ* G(s')+r
+        G   G   G <- 求V         Gs = max(Vs,Gs)        Vs = E(Gs)
+        S - S - S - Ts   
+            G+r G+r G+r <-求Q    Gs' = max(Vs',Gs')     Qsa = E(γ* Gs'+r)
         搞清楚(S,A,R,S',G)中的G到底对应哪个S 很重要
         '''
         result[-1, :] = rewards[-1, :]
@@ -210,8 +211,6 @@ class upgo_policy(A2CPolicy):
                 first_done = True
                 self.sars_count[s, a][(0,0,0,s,a)] += 1
                 G = t['reward'].item()
-                if G > .5:
-                    print()
                 # T = (0,0,0,s,a)
                 # self.V[T] += (G - self.V[T]) / self.sars_count[s, a][T]
             else:
@@ -222,8 +221,8 @@ class upgo_policy(A2CPolicy):
                 if self.V[s_] > G:
                     print()
                 G = max([self.V[s_],G,t['value']])
-                self.V[s_] = .9 * G
-            self.Q[s][a] = .9 * G
+                self.V[s_] = G -0.01
+            self.Q[s][a] = G -0.01
             # self.Q[s][a] = sum([self.sars_count[(s, a)][s_] * self.V[s_] for s_ in self.sars_count[(s, a)].keys()]) / sum(
             #     self.sars_count[(s, a)].values())
         return self.Q_to_sars()

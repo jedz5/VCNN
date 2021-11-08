@@ -1,6 +1,18 @@
 import torch as t
 from torch.autograd import Variable as v
+from torch.optim import SGD
+import torch.nn.functional as F
 
+def xx():
+    #梯度与样本量成比例
+    a = t.tensor([0., 0., 0., 0., 0., 0., 0., 0.], requires_grad=True)
+    opt = SGD([a], lr=0.1)
+    # loss = .5 * (a - 1)**2
+    loss = .5 * F.mse_loss(a, t.tensor([1., 1., 1., 1., 1., 1., 1., 1.]), reduction='sum')  # .sum()
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+    print(a)
 # simple gradient
 a = v(t.FloatTensor([2, 3]), requires_grad=True)
 b = a + 3

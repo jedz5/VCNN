@@ -23,7 +23,9 @@ id_emb_size = 16
 act_emb_size = 8
 stack_emb_size = 32
 stack_fc_size = 128
-all_fc_size = 128
+all_fc_size = 512
+position_h_size = 32
+target_h_size = 32
 class in_pipe(nn.Module):
     def __init__(self, device='cpu'):
         super(in_pipe,self).__init__()
@@ -79,13 +81,13 @@ class H3_net(nn.Module):
         super(H3_net,self).__init__()
         self.device = device
         self.inpipe = in_pipe(device=self.device)
-        self.act_ids = nn.Linear(all_fc_size, 5) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(5))
-        self.position_h = nn.Linear(all_fc_size, 32)
-        self.position = nn.Linear(32 + act_emb_size + stack_emb_size, 11*17) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(11*17))
-        self.targets_h = nn.Linear(all_fc_size, 32) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(7))
-        self.targets = nn.Linear(32 + act_emb_size, 14)
-        self.spells = nn.Linear(all_fc_size, 10) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
-        self.critic = nn.Linear(all_fc_size, 1) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,1))#,nn.BatchNorm1d(1))
+        self.act_ids = nn.Linear(all_fc_size, 5)
+        self.position_h = nn.Linear(all_fc_size, position_h_size)
+        self.position = nn.Linear(position_h_size + act_emb_size + stack_emb_size, 11*17)
+        self.targets_h = nn.Linear(all_fc_size, target_h_size)
+        self.targets = nn.Linear(target_h_size + act_emb_size, 14)
+        self.spells = nn.Linear(all_fc_size, 10)
+        self.critic = nn.Linear(all_fc_size, 1)
 
         self.act_ids.to(self.device)
         self.position_h.to(self.device)
@@ -164,42 +166,52 @@ class H3_Q_net(nn.Module):
         super(H3_Q_net,self).__init__()
         self.device = device
         self.inpipe = in_pipe(device=self.device)
-        self.act_ids = nn.Linear(512, 5) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(5))
-        self.position_h = nn.Linear(512, 64)
-        self.position = nn.Linear(192, 11*17) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(11*17))
-        self.targets_h = nn.Linear(512, 64) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),)#,nn.BatchNorm1d(7))
-        self.targets = nn.Linear(128, 14)
-        self.spells = nn.Linear(512, 10) #nn.Sequential(nn.Linear(512, 512),nn.ReLU(inplace=True),nn.Linear(512,10))#,nn.BatchNorm1d(10))
+        self.act_ids = nn.Linear(all_fc_size, 5)
+        self.position_h = nn.Linear(all_fc_size, position_h_size)
+        self.position = nn.Linear(position_h_size + act_emb_size + stack_emb_size, 11 * 17)
+        self.targets_h = nn.Linear(all_fc_size, target_h_size)
+        self.targets = nn.Linear(target_h_size + act_emb_size, 14)
+        # self.spells = nn.Linear(all_fc_size, 10)
 
         self.act_ids.to(self.device)
         self.position_h.to(self.device)
         self.position.to(self.device)
         self.targets_h.to(self.device)
         self.targets.to(self.device)
-        self.spells.to(self.device)
+        # self.spells.to(self.device)
 
-        self.act_imt = nn.Linear(512, 5)
-        self.position_imt = nn.Linear(192, 11 * 17)
-        self.targets_imt = nn.Linear(128, 14)
-        # self.spells_imt = nn.Linear(512,10)
-        self.act_imt.to(self.device)
-        self.position_imt.to(self.device)
-        self.targets_imt.to(self.device)
-        # self.spells_imt.to(self.device)
+        self.Va = nn.Linear(all_fc_size, 1)
+        self.Vp = nn.Linear(position_h_size + act_emb_size + stack_emb_size, 1)
+        self.Vt = nn.Linear(target_h_size + act_emb_size, 1)
+
+        self.Va_mask = nn.Sequential(nn.Linear(all_fc_size, 1),nn.Sigmoid())
+        self.Vp_mask = nn.Sequential(nn.Linear(position_h_size + act_emb_size + stack_emb_size, 1),nn.Sigmoid())
+        self.Vt_mask = nn.Sequential(nn.Linear(target_h_size + act_emb_size, 1),nn.Sigmoid())
+
+        self.Va.to(self.device)
+        self.Vp.to(self.device)
+        self.Vt.to(self.device)
+        self.Va_mask.to(self.device)
+        self.Vp_mask.to(self.device)
+        self.Vt_mask.to(self.device)
+        # self.spells_q.to(self.device)
 
     #@profile
-    def forward(self,ind,attri_stack,planes_stack,plane_glb):
+    def forward(self,ind,attri_stack,planes_stack,plane_glb,single_batch):
         ind_t = torch.tensor(ind, device=self.device, dtype=torch.long)
         attri_stack_t = torch.tensor(attri_stack, device=self.device, dtype=torch.float32)
         planes_stack_t = torch.tensor(planes_stack, device=self.device, dtype=torch.float32)
         plane_glb_t = torch.tensor(plane_glb, device=self.device, dtype=torch.float32)
         h,stack_emb = self.inpipe(ind_t,attri_stack_t,planes_stack_t,plane_glb_t)
-        act_q = self.act_ids(h)
-        act_imt = self.act_imt(h)
-        targets_logits = self.targets_h(h)
-        position_logits = self.position_h(h)
-        spell_logits = self.spells(h)
-        return act_q,act_imt,targets_logits,stack_emb,position_logits,spell_logits
+        act_logits = self.act_ids(h)
+        targets_h = self.targets_h(h)
+        position_h = self.position_h(h)
+        if single_batch:
+            return act_logits,targets_h, stack_emb, position_h
+        else:
+            Va = self.Va(h)
+            Va_mask = self.Va_mask(h)
+            return act_logits,Va,Va_mask,targets_h,stack_emb,position_h
 
     def get_act_emb(self,act_id):
         act_emb = self.inpipe.act_emb(act_id)
@@ -215,14 +227,19 @@ class H3_Q_net(nn.Module):
               after act emb -> (batch,1,embbeding) -> (batch,embbeding)
            '''
             act_emb = self.inpipe.act_emb(act_id).squeeze(1)
-        target_h = torch.cat([target_h,act_emb],dim=-1)
-        target_q = self.targets(target_h)
-        target_imt =self.targets_imt(target_h)
+        target_h = torch.cat([act_emb,target_h],dim=-1)
+        target_logits = self.targets(target_h)
+        if single_batch:
+            return target_logits
+        else:
+            Vt =self.Vt(target_h)
+            Vt_mask = self.Vt_mask(target_h)
+            return target_logits,Vt,Vt_mask
         '''target attention, not tested'''
         # act_emb = torch.sigmoid(act_emb)
         # target_h *= act_emb
         # target_logits = torch.mm(target_h.unsqueeze(dim=-2),target_emb.permute(0,2,1))
-        return target_q,target_imt
+
     def get_position_q(self,act_id,target_id,target_embs,mask_orig,position_h,single_batch=False):
         if single_batch:
             '''single mode xxx_id is int -> (1,) -> act emb -> (1,embbeding)
@@ -234,9 +251,9 @@ class H3_Q_net(nn.Module):
                 target_emb = target_embs[:,target_id]
             else:
                 target_emb = torch.zeros((1,target_embs.shape[-1]))
-            position_h = torch.cat([position_h, act_emb, target_emb], dim=-1)
-            position_q = self.position(position_h)
-            position_imt = self.position_imt(position_h)
+            position_h = torch.cat([act_emb, target_emb,position_h], dim=-1)
+            position_logits = self.position(position_h)
+            return position_logits
         else:
             '''batch mode xxx_id is pre_processed like shape = (batch,1) -> act emb -> (batch,1,embbeding) -> (batch,embbeding)
               target emb=(batch,14,embbeding).gather((batch,1,embbeding))  -> (batch,1,embbeding) -> (batch,embbeding)
@@ -248,10 +265,11 @@ class H3_Q_net(nn.Module):
             expande_shape = (target_embs.shape[0],1,target_embs.shape[-1])
             '''target_id (batch,1) -> (batch,1,1) -> (batch,1,embbeding)'''
             target_emb = target_embs.gather(dim=1,index=target_id.unsqueeze(-1).expand(expande_shape)).squeeze(1)
-            position_h = torch.cat([position_h,act_emb,target_emb],dim=-1)
-            position_q = self.position(position_h)
-            position_imt = self.position_imt(position_h)
-        return position_q,position_imt
+            position_h = torch.cat([act_emb, target_emb,position_h],dim=-1)
+            position_logits = self.position(position_h)
+            Vp = self.Vp(position_h)
+            Vp_mask = self.Vp_mask(position_h)
+            return position_logits,Vp,Vp_mask
 
 
 

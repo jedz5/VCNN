@@ -483,7 +483,7 @@ def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=Non
         bi = battle_int
         bi.init_battle(battle)
     act_batch = game_acts[0]
-    bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id, act_batch.spell_id,battle)
+    bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id,battle)
     bi.running = True
     frame_count = 0
     # 事件循环(main loop)
@@ -497,7 +497,7 @@ def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=Non
             battle.load_battle((game_states[frame_count],0))
             battle.checkNewRound()
             act_batch = game_acts[frame_count]
-            bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id,act_batch.spell_id, battle)
+            bi.next_act = BAction.idx_to_action(act_batch.act_id, act_batch.position_id, act_batch.target_id, battle)
 
         bi.renderFrame()
     return bi

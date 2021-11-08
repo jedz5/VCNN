@@ -83,7 +83,7 @@ def get_cross_entropy(r,point_n = 100):
                              = r_mean*pred_p1 - r1*p1
     △= d(loss_p)/d(logits[i]) = -∑j [rj* pj * d(loss_p)/d(log(pred_pj)) * d(log(pred_pj))/d(logitsi)]
                              = r_mean*pred_pi - ri*pi
-                             = (r_mean-v)*pred_pi - (ri*pi-v*pi) 当ri = ri' = ri - v
+                             = (r_mean-v)*pred_pi - (ri-v)*pi 当ri = ri' = ri - v
     交叉熵 梯度计算 梯度下降大头在负概率部分 正概率对梯度贡献小
     ri = r[r>0],rj = r[r<0] ,δ=sum(rj*pj),N=len(ri)
     target = (ri*pi+δ/N)/r_mean

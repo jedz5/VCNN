@@ -1,11 +1,16 @@
+import json
 from collections import defaultdict
 
 
 import pytest
 import torch
 from ding.rl_utils.upgo import upgo_loss, upgo_returns, tb_cross_entropy
+from ding.worker import EpisodeReplayBuffer
+from dizoo.classic_control.bitflip.config import bitflip_her_dqn_config
+from easydict import EasyDict
+from tianshou.data import Batch
 from torch.optim import SGD
-import torch.nn.functional as F
+import numpy as np
 
 def test_upgo2():
     S, B, A, N2 = 4, 8, 5, 7
@@ -46,13 +51,6 @@ def test_upgo2():
         opt.step()
 def defaultdict_int():
     return defaultdict(int)
-def xx():
-    # tensor_0 = torch.arange(3, 12).view(3, 3)
-    # print(tensor_0)
-    # index = torch.tensor([2, 1, 0,2,1,1,2])
-    # tensor_1 = tensor_0.gather(0,index.unsqueeze(-1).expand((index.shape[0],tensor_0.shape[1])).long())
-    # print(tensor_1)
-    pass
 def upgo_VQG():
     Q = defaultdict(dict)
     V = defaultdict(dict)
@@ -83,13 +81,69 @@ def ddd(a,b,c,d):
     print('hh')
 def abc(*par,**par2):
     ddd(*par,**par2)
-if __name__ == '__main__':
-    a = torch.tensor([0.,0.,0.,0.,0.,0.,0.,0.],requires_grad=True)
-    opt = SGD([a],lr=0.1)
-    # loss = .5 * (a - 1)**2
-    loss = .5 * F.mse_loss(a, torch.tensor([1.,1.,1.,1.,1.,1.,1.,1.]), reduction='sum')#.sum()
-    opt.zero_grad()
-    loss.backward()
-    opt.step()
-    print(a)
+def fff(*par,e=0):
+    print(e)
+    ddd(*par)
+def param_test():
+    d = 1
+    # bcd = {'b':1,'c':2,'a':3}
+    # abc(d=d,**bcd)
+    fff(2,3,4,5)
+class Ax:
+    def __init__(self,aa):
+        self.aa = aa
+    def __hash__(self):
+        return hash(self.aa)
 
+    def __eq__(self, other):
+        return self.aa == other.aa
+def hash_test():
+    dic = {}
+    dic[Ax(3)] = 3
+    dic[Ax(4)] = 4
+    dic[Ax(4)] = 5
+    print(dic.keys())
+def xx():
+    with open(r"D:\project\VCNN\ENV\battles\0.json") as JsonFile:
+        js = json.load(JsonFile)
+    curr = js["stacks"]
+    attri_stack_orig = np.array(curr)
+    attri_stack = np.copy(attri_stack_orig)
+    r'''部队基础总生命值'''
+    health_baseline = attri_stack[..., 4] * attri_stack[..., 6]
+    health_baseline = health_baseline.astype('int')
+    r'''部队基础总生命值中最大值'''
+    health_baseline_max = np.max(health_baseline, axis=-1)
+    r'''部队当前总生命值'''
+    health_current = np.clip(attri_stack[..., 3] - 1, 0, np.inf) * attri_stack[..., 6] + attri_stack[..., 5]
+    health_current = health_current.astype('int')
+    r'''部队基础总生命值 / 部队基础总生命值中最大值'''
+    health_ratio_bymax = health_baseline * 10 // health_baseline_max[..., None]
+    r'''部队当前总生命值 / 部队基础总生命值'''
+    health_current_ratio = (health_current * 10 // (health_baseline + 1E-9)).astype('int') + (
+            health_current > 0).astype('int')
+    r'''部队当前数量 / 部队基础数量'''
+    amount_ratio = (attri_stack[..., 3] * 10 // (attri_stack[..., 4] + 1E-9)).astype('int') + (
+            attri_stack[..., 3] > 0).astype('int')
+    r'''远程弹药数量 / 基数16'''
+    shoots_ratio = (attri_stack[..., 14] * 4 // 16.0001).astype('int') + (attri_stack[..., 14] > 0).astype('int')
+    attri_stack[..., 3] = amount_ratio
+    attri_stack[..., 5] = health_current_ratio
+    attri_stack[..., 6] = health_ratio_bymax
+    attri_stack[..., 14] = shoots_ratio
+    print()
+def list_sort():
+    l = [Ax(6), Ax(3), Ax(2), Ax(5), Ax(4)]
+    l.sort(key=lambda x: x.aa)
+    print(l)
+def epi_buffer():
+    cfg = EasyDict(replay_buffer_size=50, deepcopy=False, exp_name='test_episode_buffer', enable_track_used_data=False)
+    replay_buffer = EpisodeReplayBuffer(
+        cfg, exp_name=cfg.exp_name, instance_name='episode_buffer'
+    )
+    for i in range(1, 10):
+        replay_buffer.push(Batch.stack([Batch({'a': 1, 'b': 2})] * i), i)
+    print()
+M = 5
+if __name__ == '__main__':
+    param_test()

@@ -923,7 +923,6 @@ class Battle(object):
     def state_represent(self):
         attri_stack = []
         for i, st in enumerate(self.stackQueue):
-
             attri_stack.append((st.side,st.y, st.x, st.id,2 if st.amount > 1 else 1,int(st.had_moved),int(st.had_waited)))
         return tuple(attri_stack)
     def getStackHPBySlots(self):
@@ -976,8 +975,27 @@ class Battle(object):
             return True,0
         return not (live[0] and live[1]),self.currentPlayer()
 
-    def getHash(self):
-        pass
+    def getHash(self,attri_stack_orig):
+        # attri_stack[i] = np.array(
+        #     [st.side, st.slotId, st.id, st.amount, st.amount_base, st.first_HP_Left, st.health, st.luck, st.attack,
+        #      st.defense, st.max_damage, st.min_damage,
+        #      st.speed, st.morale, st.shots, st.y, st.x, int(st.had_moved), int(st.had_waited), int(st.had_retaliated),
+        #      int(st.had_defended)])
+        attri_stack = np.copy(attri_stack_orig)
+        health_baseline = attri_stack[:, 4] * attri_stack[:, 6]
+        health_baseline = health_baseline.astype('int')
+        health_baseline_max = max(health_baseline)
+        health_current = np.clip(attri_stack[:, 3] - 1, 0, np.inf) * attri_stack[:, 6] + attri_stack[:, 5]
+        health_current = health_current.astype('int')
+        health_ratio_bymax = health_baseline * 10 // health_baseline_max
+        health_current_ratio = (health_current * 10 / (health_baseline + 1E-9)).round().astype('int')
+        amount_ratio = (attri_stack[:, 3] * 10 / (attri_stack[:, 4] + 1E-9)).round().astype('int')
+        attri_stack[:,3] = amount_ratio
+        attri_stack[:,5] = health_current_ratio
+        attri_stack[:, 6] = health_ratio_bymax
+        attri_stack = tuple(map(tuple, attri_stack))
+        return attri_stack
+
     def check_battle_end(self):
         att_alive = False
         def_alive = False
@@ -1000,6 +1018,7 @@ class Battle(object):
     def checkNewRound(self,is_self_play = 0):
         self.sortStack()
         if self.check_battle_end():
+            self.newRound()
             logger.debug("battle end~")
             return
         if(self.stackQueue[0].had_moved):
@@ -1119,7 +1138,7 @@ class BAction:
         self.target = target
         self.spell = spell
     @staticmethod
-    def idx_to_action(act_id,position_id,target_id,spell_id,in_battle):
+    def idx_to_action(act_id,position_id,target_id,in_battle):
         if act_id == action_type.wait.value:
             next_act = BAction(action_type.wait)
         elif act_id == action_type.defend.value:
