@@ -71,16 +71,62 @@ class H3AgentQ(nn.Module):
         self.V = defaultdict(lambda: -reward_def - 100.)
         self.sars_count = defaultdict(defaultdict_int)
         self.S = {}
+        self.sa1_count = defaultdict(int)
+        self.sa2_count = defaultdict(int)
+        self.sa3_count = defaultdict(int)
     def Q_to_sars(self):
-        sars = []
-        for a,s in self.sars_count.keys():
-            a1,a2,a3 = a
-            q1 = self.Q1[s][a1]
-            q2 = self.Q2[a1,s][a2]
-            q3 = self.Q3[(a1, a2),s][a3]
+        sa1sr = []
+        for a1,s in self.sa1_count.keys():
             state = self.S[s]
-            sars.append({'obs': state['obs'],'info': state['info'], 'act': state['act'], 'q1': q1,'q2': q2,'q3': q3})  # 'next_obs':torch.tensor(s_)
-        sars = Batch.stack(sars)
+            qa = self.Q1[s][a1]
+            # sa1sr.append({'obs': state['obs'],'info': state['info'], 'act': state['act'], 'q': qa})
+            sa1sr.append({'obs': state['obs'], 'info': state['info'],'act': state['act'],'mask_a': 1.,'mask_t': 0.,'mask_p': 0.,  'qa': qa,'qt': 0., 'qp': 0.})
+        for (a1,a2), s in self.sa2_count.keys():
+            state = self.S[s]
+            if a1 == 2:
+                r'''record move'''
+                qp = self.Q2[a1,s][a2]
+                sa1sr.append(
+                    {'obs': state['obs'], 'info': state['info'],'info': state['info'],'mask_a': 0., 'mask_t': 0., 'mask_p': 1., 'act': state['act'], 'qa': 0.,
+                     'qt': 0., 'qp': qp})
+            elif a1 == 3:
+                r'''record shoot'''
+                qt = self.Q2[a1, s][a2]
+                sa1sr.append(
+                    {'obs': state['obs'], 'info': state['info'],'mask_a': 0., 'mask_t': 1., 'mask_p': 0., 'act': state['act'], 'qa': 0.,
+                     'qt': qt, 'qp': 0.})
+            else:
+                logger.error(f"wrong a1 = {a1}")
+                sys.exit(-1)
+        for (a1, a2,a3), s in self.sa3_count.keys():
+            assert a1 == 3
+            r'''only record melee'''
+            if a1 == 3 and a3 != 0:
+                state = self.S[s]
+                qp = self.Q3[(a1, a2),s][a3]
+                sa1sr.append(
+                    {'obs': state['obs'],'info': state['info'], 'mask_a': 0., 'mask_t': 0., 'mask_p': 1., 'act': state['act'], 'qa': 0.,
+                     'qt': 0., 'qp': qp})
+            else:
+                print()
+        # sars = []
+        # for a,s in self.sars_count.keys():
+        #     a1,a2,a3 = a
+        #     qa = self.Q1[s][a1]
+        #     if a1 < 2:
+        #         qt = qp = 0
+        #     elif a1 == 2:
+        #         qp = self.Q2[a1,s][a2]
+        #         qt = 0
+        #     elif a1 == 3:
+        #         qt = self.Q2[a1,s][a2]
+        #         qp = self.Q3[(a1, a2),s][a3]
+        #     else:
+        #         logger.error(f'wrong act = {a1}')
+        #         sys.exit(-1)
+        #     state = self.S[s]
+        #     sars.append({'obs': state['obs'],'info': state['info'], 'act': state['act'], 'q1': qa,'q2': qt,'q3': qp})  # 'next_obs':torch.tensor(s_)
+        sars = Batch.stack(sa1sr)
         return sars
     def clear_table(self):
         self.V.clear()
@@ -88,6 +134,9 @@ class H3AgentQ(nn.Module):
         self.Q1.clear()
         self.Q2.clear()
         self.Q3.clear()
+        self.sa1_count.clear()
+        self.sa2_count.clear()
+        self.sa3_count.clear()
         self.sars_count.clear()
     def process_max_tree(self,batch):
         for i, traj in enumerate(batch):
@@ -138,21 +187,34 @@ class H3AgentQ(nn.Module):
                     r = t['rew']
                     self.V[s_] += r
                 a1, a2, a3 = a
+
+                self.sa1_count[a1, s] += 1
                 r'''step3                                            step2  V[s_] == Gs_, 其他s_下的r=0   '''
-                self.Q3[(a1,a2),s][a3] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
+                if a1 < 2:
+                    self.Q1[s][a1] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
                     self.sars_count[a,s].values())
+                elif a1 == 2:
+                    self.Q2[a1, s][a2] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
+                    self.sars_count[a,s].values())
+                    self.Q1[s][a1] = max(self.Q2[a1,s].values())
+                    self.sa2_count[(a1,a2),s] += 1
+                elif a1 == 3:
+                    self.Q3[(a1,a2),s][a3] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
+                        self.sars_count[a,s].values())
+                    self.Q2[a1,s][a2] = max(self.Q3[(a1,a2),s].values())
+                    self.Q1[s][a1] = max(self.Q2[a1,s].values())
+                    self.sa2_count[(a1,a2),s] += 1
+                    self.sa3_count[(a1,a2,a3), s] += 1
+                else:
+                    logger.error(f'wrong act = {a1}')
+                    sys.exit(-1)
                 r'''terminal步的Vs_没有意义'''
                 if not t['done']:
                     self.V[s_] -= r
-                self.Q2[a1,s][a2] = max(self.Q3[(a1,a2),s].values())
-                self.Q1[s][a1] = max(self.Q2[a1,s].values())
             vs = max(self.Q1[s].values())
             r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
             self.V[s] = max([self.V[s], vs])
             assert self.V[s] > -2.
-            # traj.Gs = np.array([r + Gs_ - self.discount_factor] * len(traj.rew))
-            # traj.reward_cum = np.add.accumulate(traj.rew[::-1])[::-1]
-            # traj.reward_cum[0] -= len(traj.reward_cum) * self.discount_factor
         return self.V[s]
     def show_traj_Gs(self,batch):
         for i, traj in enumerate(batch):
@@ -273,9 +335,9 @@ class H3AgentQ(nn.Module):
         pcount = 0
         for _ in range(repeat):
             for b in batch.split(batch_size,shuffle=False):
-                mask_acts = b.info.mask_acts
+                # mask_act = b.info.
                 mask_targets = b.info.mask_targets
-                mask_position = b.info.mask_position
+                # mask_position = b.info.mask_position
                 act_index = torch.tensor(b.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
                 targets_index = torch.tensor(b.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
                 position_index = torch.tensor(b.act.position_id, device=self.device,
@@ -284,19 +346,18 @@ class H3AgentQ(nn.Module):
                 current_targets_q, Vt,Vt_mask = self.net.get_target_q(act_index, targets_logits_h,single_batch=False)
                 current_position_q, Vp,Vp_mask = self.net.get_position_q(act_index, targets_index, target_embs, mask_targets,position_logits_h,single_batch=False)
                 # logit, action, q_value, adv, return_, weight = data
-                qa = torch.tensor(b.q1, device=self.device, dtype=torch.float32)
+                qa = torch.tensor(b.qa, device=self.device, dtype=torch.float32)
                 qa_value = current_act_q.gather(1, act_index).squeeze(-1)
-                qt = torch.tensor(b.q2, device=self.device, dtype=torch.float32)
+                qa_v_mask = torch.tensor(b.mask_a, device=self.device, dtype=torch.float32)
+                qt = torch.tensor(b.qt, device=self.device, dtype=torch.float32)
                 qt_value = current_targets_q.gather(1, targets_index).squeeze(-1)
-                qp = torch.tensor(b.q3, device=self.device, dtype=torch.float32)
+                qt_v_mask = torch.tensor(b.mask_t, device=self.device, dtype=torch.float32)
+                qp = torch.tensor(b.qp, device=self.device, dtype=torch.float32)
                 qp_value = current_position_q.gather(1, position_index).squeeze(-1)
-                # act_dist = torch.distributions.categorical.Categorical(logits=current_act_logtis)
-                # act_logp = act_dist.log_prob(act_index.squeeze(-1)).squeeze(-1)
-                # adv1 = torch.tensor(b.adv1, device=self.device, dtype=torch.float32)
-                # policy_loss = -(act_logp * adv1).sum()
-                qa_loss = F.smooth_l1_loss(qa, qa_value, reduction='sum')  # .sum()
-                qt_loss = F.smooth_l1_loss(qt, qt_value, reduction='sum')  # .sum()
-                qp_loss = F.smooth_l1_loss(qp, qp_value, reduction='sum')  # .sum()
+                qp_v_mask = torch.tensor(b.mask_p, device=self.device, dtype=torch.float32)
+                qa_loss = F.smooth_l1_loss(qa, qa_value*qa_v_mask, reduction='sum')  # .sum()
+                qt_loss = F.smooth_l1_loss(qt, qt_value*qt_v_mask, reduction='sum')  # .sum()
+                qp_loss = F.smooth_l1_loss(qp, qp_value*qp_v_mask, reduction='sum')  # .sum()
                 # entropy_loss = (dist.entropy()).sum()
                 loss = qa_loss + qt_loss + qp_loss
                 # if pcount < 5:
@@ -368,6 +429,8 @@ class H3AgentQ(nn.Module):
             sample_num = 100
         logger.info(f"start training sample eps/epoch = {sample_num}")
         print_len = 35
+        eval_frq = 5
+        bi = None
         while True:
             logger.info(f'train iter = {count}')
             agent.eval()
@@ -402,7 +465,7 @@ class H3AgentQ(nn.Module):
             me_amount = np.zeros((print_len, 2))
             enemy_amount = np.zeros((print_len, 3))
             best_hist_buffer_1 = collector.best_hist_buffer[0]
-            if (count + 1) % 1 == 0:
+            if (count + 1) % eval_frq == 0:
                 self.show_traj_Gs(collector.best_hist_buffer[:5])
 
                 for ii in range(5):
@@ -416,10 +479,10 @@ class H3AgentQ(nn.Module):
                     print(bf.q2_value)
                     print(bf.q3)
                     print(bf.q3_value)
-                    bf.obs.attri_stack = bf.policy.attri_stack_orig
-                    dump_episo([bf.obs, bf.act, bf.rew, bf.done, bf.info], "ENV/max_sars",
-                               f'max_data_{ii}.npy')
-                    logger.info(f"states dumped in max_data_{ii}.npy")
+                    # bf.obs.attri_stack = bf.policy.attri_stack_orig
+                    # dump_episo([bf.obs, bf.act, bf.rew, bf.done, bf.info], "ENV/max_sars",
+                    #            f'max_data_{ii}.npy')
+                    # logger.info(f"states dumped in max_data_{ii}.npy")
             mask_acts = torch.tensor(best_hist_buffer_1.info.mask_acts,dtype=torch.float32)
             mask_targets = best_hist_buffer_1.info.mask_targets
             act_index = torch.tensor(best_hist_buffer_1.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
@@ -495,11 +558,12 @@ class H3AgentQ(nn.Module):
                 self.to_dev(agent, "cpu")
             agent.eval()
             agent.mode = 1
-            observe = False
+            observe = ((count + 1) % eval_frq == 0)
             if observe:
-                arena = Battle(by_AI=[2, 1], agent=self.agent)
-                arena.load_battle(file=, load_ai_side=False, format_postion=False)
-                start_game_s_gui(battle=test_battle_idx)
+                arena = Battle(by_AI=[2, 1], agent=self)
+                arena.load_battle(file="ENV/battles/0.json")
+
+                bi = start_game_s_gui(battle=arena,battle_int=bi)
             else:
                 '''test how many times agent can win'''
                 wr, wc = collector.get_win_rates()
@@ -1920,7 +1984,7 @@ if __name__ == '__main__':
         start_train(use_expert_data=True)
     else:
         # start_game_record_s()
-        start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
-        # start_train(use_expert_data=False)
+        # start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
+        start_train(use_expert_data=False)
         # start_test(file="ENV/battles/0.json")
 

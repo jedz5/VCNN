@@ -34,10 +34,13 @@ def get_logger():
     return log_gui_on,logger
 set_logger(False,std_logger)
 batId = 0
+with open("ENV/creatureData.json") as JsonFile:
+    crList = json.load(JsonFile)["creatures"]
 #[0 fly,1 shooter,2 block_retaliate,3 attack_all,4 wide_breath,5 infinite_retaliate]
 creature_ability = {0:[0,0,0,0,0,0,0],1:[0,0,0,0,0,0,0],3:[0,1,0,0,0,0,1],5:[1,0,0,0,0,1,0],7:[0,0,0,0,0,0,1],19:[0,1,0,0,0,0,1],
                     41: [0, 0, 0, 0, 0, 0, 0],50:[0,0,0,0,0,0,0],51:[0,0,0,0,0,0,0],52:[1,0,0,0,0,0,0],85:[0,0,0,0,0,0,0],99:[0,0,0,0,0,0,0],112:[0,0,0,0,0,0,0],118:[1,0,0,0,0,0,0],119:[1,0,1,0,0,0,0],
                             121:[0,0,1,1,0,0,0],125:[0,0,0,0,0,0,0],131:[1,0,0,0,1,0,0],}
+shots_def = 16
 diretMap = {'0':3,'1':4,'2':5,'3':0,'4':1,'5':2}
 battle_start_pos_att = \
 [[ 86 ],
@@ -109,78 +112,47 @@ def neb_id(self, nb):
 #     def flat(self):
 #         return self.y * Battle.bFieldHeight + self.x
 class BStack(BHex):
-    def __init__(self):
+    def __init__(self,side,slotId,cre_id,amount,amount_base,first_HP_Left,health,luck,attack,defense,max_damage,min_damage,speed,morale,shots,
+                 y, x, had_moved, had_waited, had_retaliated,had_defended,in_battle,by_AI):
         super().__init__()
-        self.amount = 0
-        self.amount_base = 0
-        self.attack = 0
-        self.defense = 0
-        self.max_damage = 0
-        self.min_damage = 0
-        self.first_HP_Left = 0
-        self.health = 0
-        self.side = 0
-        self.had_moved = False
-        self.had_retaliated = False
-        self.had_waited = False
-        self.had_defended = False
-        self.speed = 0
-        self.luck = 0
-        self.morale = 0
-        self.id = 0
-        self.shots = 10
-        self.slotId = 0
+        self.side = side
+        self.id = cre_id
+        self.slotId = slotId
+        self.amount = amount
+        self.amount_base = amount_base
+        self.first_HP_Left = first_HP_Left
+        self.health = health
+        self.luck = luck
+        self.attack = attack
+        self.defense = defense
+        self.max_damage = max_damage
+        self.min_damage = min_damage
+        self.speed = speed
+        self.morale = morale
+        self.shots = shots
+        self.y = y
+        self.x = x
+        self.had_moved = had_moved
+        self.had_waited = had_waited
+        self.had_retaliated = had_retaliated
+        self.had_defended = had_defended
         # self.hex_type = hexType.creature
         #辅助参数
-        self.by_AI = 1
-        self.name = 'unKnown'
-        self.is_wide = False
-        self.is_fly = False
-        self.is_shooter = False
-        self.block_retaliate = False
-        self.attack_nearby_all = False
-        self.wide_breath = False
-        self.infinite_retaliate = False
-        self.attack_twice = False
-        self.in_battle = None #type:Battle
+        self.by_AI = by_AI
+        self.name = crList[cre_id]['name']
+        # self.is_wide = False
+        self.is_fly = creature_ability[cre_id][0]
+        self.is_shooter = creature_ability[cre_id][1]
+        self.block_retaliate = creature_ability[cre_id][2]
+        self.attack_nearby_all = creature_ability[cre_id][3]
+        self.wide_breath = creature_ability[cre_id][4]
+        self.infinite_retaliate = creature_ability[cre_id][5]
+        self.attack_twice = creature_ability[cre_id][6]
+        self.in_battle:Battle = in_battle
     def __copy__(self):
-        cp = BStack()
-        cp.amount = self.amount
-        cp.amount_base = self.amount_base
-        cp.attack = self.attack
-        cp.defense = self.defense
-        cp.max_damage = self.max_damage
-        cp.min_damage = self.min_damage
-        cp.first_HP_Left = self.first_HP_Left
-        cp.health = self.health
-        cp.side = self.side
-        cp.had_moved = self.had_moved
-        cp.had_retaliated = self.had_retaliated
-        cp.had_waited = self.had_waited
-        cp.had_defended = self.had_defended
-        cp.speed = self.speed
-        cp.luck = self.luck
-        cp.morale = self.morale
-        cp.id = self.id
-        cp.shots = self.shots
-        cp.slotId = self.slotId
-        # self.hex_type = hexType.creature
-        # 辅助参数
-        cp.x = self.x
-        cp.y = self.y
-        cp.by_AI = self.by_AI
-        cp.name = self.name
-        cp.is_wide = self.is_wide
-        cp.is_fly = self.is_fly
-        cp.is_shooter = self.is_shooter
-        cp.block_retaliate = self.block_retaliate
-        cp.attack_nearby_all = self.attack_nearby_all
-        cp.wide_breath = self.wide_breath
-        cp.infinite_retaliate = self.infinite_retaliate
-        cp.attack_twice = self.attack_twice
-        cp.in_battle = self.in_battle
-        cp.ai_value = self.ai_value
-        cp.fight_value = self.fight_value
+        cp = BStack(self.side,self.slotId,self.id,self.amount,self.amount_base,self.first_HP_Left,self.health,self.luck,self.attack,self.defense,
+                    self.max_damage,self.min_damage,self.speed,self.morale,self.shots,
+                    self.y, self.x, self.had_moved, self.had_waited, self.had_retaliated,self.had_defended,self.in_battle,self.by_AI)
         return cp
     def __repr__(self):
         w = 'w'if self.had_waited else ''
@@ -526,7 +498,7 @@ class Battle(object):
         if(gui):
             self.bat_interface = gui
         if(load_file):
-            self.loadFile(load_file)
+            self.load_battle(load_file)
             self.checkNewRound()
 
     def reset(self):
@@ -655,91 +627,46 @@ class Battle(object):
         cp.attacker_stacks = list(filter(lambda x: x.side == 0, cp.stacks))
         cp.sortStack()
         return cp
-    def loadFile(self,file,shuffle_postion = True,load_ai_side = True):
-        self.clear()
-        bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
-        with open("ENV/creatureData.json") as JsonFile:
-            crList = json.load(JsonFile)["creatures"]
-        with open(file) as jsonFile:
-            root = json.load(jsonFile)
-            if load_ai_side:
-                self.by_AI = [1,1]
-                agent_s = random.choice(root["agent_side"])
-                self.by_AI[agent_s] = 2
-            slot0, slot1 = 0, 0
-            for i in range(2):
-                li = list(range(11))
-                j = 0
-                for id,num,py,px in root['army{}'.format(i)]:
-                    if not shuffle_postion:
-                        assert bf[py, px] != 1
-                    bf[py, px] = 1
-                    x = crList[id]
-                    st = BStack()
-                    st.attack = x['attack']
-                    st.defense = x['defense']
-                    st.amount = num
-                    st.amount_base = num
-                    st.health = x['health']
-                    st.first_HP_Left = x['health']
-                    st.id = id
-                    if i == 0:
-                        st.slotId = slot0
-                        slot0 += 1
-                    else:
-                        st.slotId = slot1
-                        slot1 += 1
-                    st.side = i
-                    st.by_AI = self.by_AI[i]
-                    #st.isWide = x['isWide']
-                    st.luck = x['luck']
-                    st.morale = x['morale']
-                    st.max_damage = x['max_damage']
-                    st.min_damage = x['min_damage']
-                    st.name = x['name']
-                    st.speed = x['speed']
-                    st.shots = 16
-                    st.is_fly = creature_ability[id][0]
-                    st.is_shooter = creature_ability[id][1]
-                    st.block_retaliate = creature_ability[id][2]
-                    st.attack_nearby_all = creature_ability[id][3]
-                    st.wide_breath = creature_ability[id][4]
-                    st.infinite_retaliate = creature_ability[id][5]
-                    st.attack_twice = creature_ability[id][6]
-                    #st.slotId = x['slot']
-                    # if shuffle_postion:
-                    #     st.x = 15 if i else 1
-                    #     # st.x = px
-                    #     st.y = int(ys[j])
-                    # else:
-                    #     st.x = px
-                    #     st.y = py
-                    st.ai_value = x['ai_value']
-                    st.fight_value = x['fight_value']
-                    j += 1
-                    st.in_battle = self
-                    self.stacks.append(st)
-                    if st.side:
-                        self.defender_stacks.append(st)
-                    else:
-                        self.attacker_stacks.append(st)
-        if shuffle_postion:
-            self.init_stack_position()
-            # for x in root['obstacles']:
-            #     obs = BObstacle()
-            #     obs.kind = x['type']
-            #     obs.x = x['x']
-            #     obs.y = x['y']
-            #     self.obstacles.append(obs)
-            # for x in root['obs']:
-            #     oi = BObstacleInfo(x["pos"],x["width"],x["height"],bool(x["isabs"]),x["imname"])
-            #     self.obsinfo.append(oi)
+    # def loadFile(self,file,shuffle_postion = True,load_ai_side = True):
+    #     self.clear()
+    #     bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
+    #     with open(file) as jsonFile:
+    #         root = json.load(jsonFile)
+    #         if load_ai_side:
+    #             self.by_AI = [1,1]
+    #             agent_s = random.choice(root["agent_side"])
+    #             self.by_AI[agent_s] = 2
+    #         slot0, slot1 = 0, 0
+    #         for i in range(2):
+    #             j = 0
+    #             for cre_id,num,py,px in root['army{}'.format(i)]:
+    #                 if not shuffle_postion:
+    #                     assert bf[py, px] != 1
+    #                 bf[py, px] = 1
+    #                 x = crList[cre_id]
+    #                 if i == 0:
+    #                     slotId = slot0
+    #                     slot0 += 1
+    #                 else:
+    #                     slotId = slot1
+    #                     slot1 += 1
+    #
+    #                 r'''side,cre_id,slotId,amount,amount_base,first_HP_Left,health,luck,attack,defense,max_damage,min_damage,speed,morale,shots,
+    #                     py, px, had_moved, had_waited, had_retaliated,had_defended'''
+    #                 st = BStack(i,slotId,cre_id,num,num,x['health'],x['health'],x['luck'],x['attack'],x['defense'],x['max_damage'],x['min_damage'],
+    #                             x['speed'],x['morale'],shots_def,py, px, False, False, False,False,self,self.by_AI[i])
+    #                 j += 1
+    #                 self.stacks.append(st)
+    #                 if st.side:
+    #                     self.defender_stacks.append(st)
+    #                 else:
+    #                     self.attacker_stacks.append(st)
+    #     if shuffle_postion:
+    #         self.init_stack_position()
 
     def load_battle(self,file,load_ai_side = False, shuffle_postion=False,format_postion = False):
         self.clear()
         bf = np.zeros([self.bFieldHeight,self.bFieldWidth])
-        with open("ENV/creatureData.json") as JsonFile:
-            crList = json.load(JsonFile)["creatures"]
         if isinstance(file,str):
             with open(file) as JsonFile:
                 js = json.load(JsonFile)
@@ -750,52 +677,18 @@ class Battle(object):
                     agent_side = random.choice(js['agent_side'])
                     self.by_AI = [1,1]
                     self.by_AI[agent_side] = 2
+
         else:
             curr,self.round = file
         for i in range(14):
-            side, slotId, id, amount, amount_base, first_HP_Left, health, luck, attack, defense, max_damage, min_damage,speed, morale,shots,py, px, had_moved, had_waited, had_retaliated, had_defended= curr[i]
+            side, slotId, cre_id, amount, amount_base, first_HP_Left, health, luck, attack, defense, max_damage, min_damage,speed, morale,shots,py, px, had_moved, had_waited, had_retaliated, had_defended= curr[i]
             if px == 0:
                 break
             if not (shuffle_postion or format_postion):
                 assert bf[py,px] != 1
                 bf[py, px] = 1
-            x = crList[id]
-            st = BStack()
-            st.attack = attack
-            st.defense = defense
-            st.amount = amount
-            st.amount_base = amount_base
-            st.health = health
-            st.first_HP_Left = first_HP_Left
-            st.id = id
-            st.slotId = slotId
-            st.side = side
-            st.by_AI = self.by_AI[side]
-            st.luck = luck
-            st.morale = morale
-            st.max_damage = max_damage
-            st.min_damage = min_damage
-            st.name = x['name']
-            st.speed = speed
-            st.shots = shots
-            st.had_moved = had_moved
-            st.had_defended = had_defended
-            st.had_retaliated = had_retaliated
-            st.had_waited = had_waited
-            st.is_fly = creature_ability[id][0]
-            st.is_shooter = creature_ability[id][1]
-            st.block_retaliate = creature_ability[id][2]
-            st.attack_nearby_all = creature_ability[id][3]
-            st.wide_breath = creature_ability[id][4]
-            st.infinite_retaliate = creature_ability[id][5]
-            st.attack_twice = creature_ability[id][6]
-            st.x = px
-            st.y = py
-            st.ai_value = x['ai_value']
-            st.fight_value = x['fight_value']
-            # st.ai_R1 = speed * int((max_damage + min_damage) / 2) * attack * (1 + int(st.is_shooter))
-            # st.ai_R2 = health * defense
-            st.in_battle = self
+            st = BStack(side,slotId,cre_id,amount,amount_base,first_HP_Left,health,luck,attack,defense,max_damage,min_damage,speed,morale,shots,
+                        py, px, had_moved, had_waited, had_retaliated,had_defended,self,self.by_AI[side])
             self.stacks.append(st)
             if st.side:
                 self.defender_stacks.append(st)

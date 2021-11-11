@@ -25,7 +25,8 @@ class log_with_gui(object):
         self.logger.error(text)
         if(to_gui):
             self.log_text.append(text)
-
+    def setLevel(self,lvl):
+        self.logger.setLevel(lvl)
 logger = log_with_gui(get_logger()[1])
 set_logger(True,logger)
 class BPoint:
@@ -440,7 +441,7 @@ def start_game_gui(battle=None,battle_int=None,by_AI = [2,1],agent=None,file = "
         bi.renderFrame()
     return bi
 M=0
-def start_game_s_gui(battle:Battle):
+def start_game_s_gui(battle:Battle,battle_int:BattleInterface = None):
     if not battle:
         arena = Battle(by_AI=[0, 1])
         arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
@@ -448,7 +449,10 @@ def start_game_s_gui(battle:Battle):
         arena = battle
     arena.split_army()
     arena.checkNewRound()
-    bi = start_game_gui(battle=arena)
+    bi = battle_int
+    if not battle_int:
+        bi = start_game_gui(battle=arena)
+    bi.running = True
     '''true win'''
     if arena.check_battle_end():
         arena.merge_stacks()
@@ -466,6 +470,7 @@ def start_game_s_gui(battle:Battle):
                 bi.running = True
         count += 1
     print(f"battle count = {count}")
+    return bi
 def start_replay(game_frames,battle=None,battle_int=None,by_AI = [2,2],agent=None, shuffle_postion=False,load_ai_side=False):
     game_states = game_frames.obs.attri_stack
     game_acts = game_frames.act
