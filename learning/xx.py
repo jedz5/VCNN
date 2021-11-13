@@ -193,9 +193,32 @@ def get_data():
             'd': np.random.randint(0, 10, size=(1,))
         }
     }
-M = 5
-if __name__ == '__main__':
+def tree_func_test():
     a = [get_data() for i in range(10)]
     # batch_, mean_b, even_index_a = without_treevalue(a)
     batch_, mean_b, even_index_a = with_treevalue(a)
     print()
+def cmp_to_key11(mycmp):
+    """Convert a cmp= function into a key= function"""
+    class K(object):
+        __slots__ = ['obj']
+        def __init__(self, obj):
+            self.obj = obj
+        def __lt__(self, other):
+            return mycmp(self.obj, other.obj) < 0
+        def __gt__(self, other):
+            return mycmp(self.obj, other.obj) > 0
+        def __eq__(self, other):
+            return mycmp(self.obj, other.obj) == 0
+        def __le__(self, other):
+            return mycmp(self.obj, other.obj) <= 0
+        def __ge__(self, other):
+            return mycmp(self.obj, other.obj) >= 0
+        __hash__ = None
+    return K
+def compare11(x,y):
+    return x >= y
+M = 5
+if __name__ == '__main__':
+    ll = [1,3,2,5,9,4,2]
+    ll.sort(key=cmp_to_key11(compare11))

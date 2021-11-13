@@ -452,7 +452,9 @@ def start_game_s_gui(battle:Battle,battle_int:BattleInterface = None):
     bi = battle_int
     if not battle_int:
         bi = start_game_gui(battle=arena)
-    bi.running = True
+    else:
+        bi = start_game_gui(battle=arena,battle_int=bi)
+    bi.running = False
     '''true win'''
     if arena.check_battle_end():
         arena.merge_stacks()

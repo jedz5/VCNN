@@ -1,6 +1,7 @@
 
 import sys
 from collections import defaultdict
+from functools import cmp_to_key
 
 from ding.worker import EpisodeReplayBuffer
 from easydict import EasyDict
@@ -60,7 +61,7 @@ class H3AgentQ(nn.Module):
         else:
             self.net = model
 
-        self.optim = torch.optim.Adam(model.parameters(), lr=0.001)
+        self.optim = torch.optim.Adam(model.parameters(), lr=0.01)
         self._batch_size = 512
         self.dist_fn = dist_fn
         self.device = device
@@ -140,6 +141,7 @@ class H3AgentQ(nn.Module):
         self.sars_count.clear()
     def process_max_tree(self,batch):
         for i, traj in enumerate(batch):
+            traj.q1 = np.zeros(len(traj.rew))
             for j,t in enumerate(reversed(traj)):
                 s = tuple(map(tuple, t['obs']['attri_stack']))
                 a = (t['act']['act_id'],t['act']['position_id'],t['act']['target_id'])  #{'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
@@ -211,6 +213,7 @@ class H3AgentQ(nn.Module):
                 r'''terminal步的Vs_没有意义'''
                 if not t['done']:
                     self.V[s_] -= r
+                traj.q1[-(j+1)] = self.Q1[s][a1]
             vs = max(self.Q1[s].values())
             r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
             self.V[s] = max([self.V[s], vs])
@@ -387,15 +390,55 @@ class H3AgentQ(nn.Module):
         acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id}
         mask = {'mask_acts': result['mask_acts'], 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
         return next_act,{"act":acts,"obs":obs,"mask":mask}
-
-    def sort_reward_func(self,episode):
-        assert episode.done[-1]
-        r1 = sum(episode.rew)
-        if episode.rew[-1] < 0 and sum(episode.done) > 1:
-            r1 += 1.
-        r1 = r1 - len(episode.rew) * self.discount_factor
-        # r2 = r1 - abs(r1 - self.Vstart)
-        return r1
+    def cmp_single_state(self,sars1,sars2):
+        s1 = tuple(map(tuple, sars1.obs.attri_stack))
+        s1_ = tuple(map(tuple, sars2.obs.attri_stack))
+        a1, a2, a3 = (sars1.act.act_id, sars1.act.position_id, sars1.act.target_id)
+        if a1 == 3:
+            a2, a3 = a3, a2
+        a1_, a2_, a3_ = (sars2.act.act_id, sars2.act.position_id, sars2.act.target_id)
+        if a1_ == 3:
+            a2_, a3_ = a3_, a2_
+        qa = self.Q1[s1][a1]
+        qa_ = self.Q1[s1_][a1_]
+        # qt = self.Q2[a1, s1][a2]
+        # qt_ = self.Q2[a1_, s1_][a2_]
+        # qp = self.Q3[(a1, a2), s1][a3]
+        # qp_ = self.Q3[(a1_, a2_), s1_][a3_]
+        error1 = qa - qa_
+        # error2 = qa - qa_
+        # error3 = qa - qa_
+        if abs(error1) < 1E-6:
+            error1 = 0
+        return error1
+        # if abs(error2) < 1E-6:
+        #     error2 = 0
+        # if abs(error3) < 1E-6:
+        #     error3 = 0
+        # if error1 == 0:
+        #     if error2 == 0:
+        #         if error3 == 0:
+        #             return 0
+        #         else:
+        #             return error3
+        #     else:
+        #         return error2
+        # else:
+        #     return error1
+    def cmp_reward_func(self,episode1,episode2):
+        # assert episode.done[-1]
+        # r1 = sum(episode.rew)
+        # if episode.rew[-1] < 0 and sum(episode.done) > 1:
+        #     r1 += 1.
+        # r1 = r1 - len(episode.rew) * self.discount_factor
+        # r1 = sum(episode1.rew)
+        length = min(len(episode1.rew),len(episode2.rew))
+        for i in range(length):
+            # err = self.cmp_single_state(episode1[i],episode2[i])
+            err = episode1.q1[i] - episode2.q1[i]
+            if abs(err) > 1E-6:
+                return err
+        return 0
     def start_train(self):
         # 初始化 ag
         agent = self
@@ -408,27 +451,27 @@ class H3AgentQ(nn.Module):
         Q_replay_buffer = ReplayBuffer(200000, ignore_obs_next=True)
         # max_sar_manager = H3ReplayManager(file_list, agent)
         collector = H3SampleCollector(record_sar_max_tree,file_list,agent, Q_replay_buffer)
-        expert_list = load_episo("ENV/episode")
-        for expert in expert_list:
-            idx = np.argwhere(expert.done)[:-1]
-            expert.obs_next[idx] = expert.obs[idx + 1]
-            expert.policy = Batch()
-            expert.policy.done_ = expert.done
-            expert.done[:-1] = 0
-            attri_stack_orig = expert.obs['attri_stack']
-            expert.policy.attri_stack_orig = attri_stack_orig
-            expert.obs['attri_stack'] = get_tuple(attri_stack_orig)
-            attri_stack_orig = expert.obs_next['attri_stack']
-            # expert.policy.attri_stack_orig = attri_stack_orig
-            expert.obs_next['attri_stack'] = get_tuple(attri_stack_orig)
-            collector.best_hist_buffer.append(expert)
+        # expert_list = load_episo("ENV/episode")
+        # for expert in expert_list:
+        #     idx = np.argwhere(expert.done)[:-1]
+        #     expert.obs_next[idx] = expert.obs[idx + 1]
+        #     expert.policy = Batch()
+        #     expert.policy.done_ = expert.done
+        #     expert.done[:-1] = 0
+        #     attri_stack_orig = expert.obs['attri_stack']
+        #     expert.policy.attri_stack_orig = attri_stack_orig
+        #     expert.obs['attri_stack'] = get_tuple(attri_stack_orig)
+        #     attri_stack_orig = expert.obs_next['attri_stack']
+        #     # expert.policy.attri_stack_orig = attri_stack_orig
+        #     expert.obs_next['attri_stack'] = get_tuple(attri_stack_orig)
+        #     collector.best_hist_buffer.append(expert)
         cache_idx = range(len(file_list))
         if Linux:
             sample_num = 500
         else:
             sample_num = 100
         logger.info(f"start training sample eps/epoch = {sample_num}")
-        print_len = 35
+        print_len_ = 35
         eval_frq = 5
         bi = None
         while True:
@@ -455,16 +498,17 @@ class H3AgentQ(nn.Module):
              min(self.V.values())
              '''
 
-            batch_data.sort(key=self.sort_reward_func,reverse=True)
+            batch_data.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
             collector.best_hist_buffer = batch_data[:50]
             collector.history_buffer.push(current_data,-1)
             collector.current_buffer.clear()
             batch_data_treed = self.Q_to_sars()
             logger.info(f'batch data size = {len(batch_data)}')
             logger.info(f'batch tree size = {len(batch_data_treed)}')
+            best_hist_buffer_1 = collector.best_hist_buffer[0]
+            print_len = min(len(best_hist_buffer_1),print_len_)
             me_amount = np.zeros((print_len, 2))
             enemy_amount = np.zeros((print_len, 3))
-            best_hist_buffer_1 = collector.best_hist_buffer[0]
             if (count + 1) % eval_frq == 0:
                 self.show_traj_Gs(collector.best_hist_buffer[:5])
 
@@ -553,7 +597,7 @@ class H3AgentQ(nn.Module):
             self.clear_table()
             if Linux:
                 self.to_dev(agent, "cuda")
-            loss = agent.learn(batch_data_treed,repeat=10, batch_size=512)
+            loss = agent.learn(batch_data_treed,repeat=10, batch_size=5120)
             if Linux:
                 self.to_dev(agent, "cpu")
             agent.eval()
@@ -561,7 +605,7 @@ class H3AgentQ(nn.Module):
             observe = ((count + 1) % eval_frq == 0)
             if observe:
                 arena = Battle(by_AI=[2, 1], agent=self)
-                arena.load_battle(file="ENV/battles/0.json")
+                arena.load_battle(file=file_list[0])
 
                 bi = start_game_s_gui(battle=arena,battle_int=bi)
             else:
@@ -1843,7 +1887,10 @@ def start_test(file):
     from ENV.H3_battleInterface import start_game_s_gui
     battle = Battle(agent=agent)
     battle.load_battle(file=file)
-    start_game_s_gui(battle=battle)
+    bi = start_game_s_gui(battle=battle)
+    battle = Battle(agent=agent)
+    battle.load_battle(file=file)
+    start_game_s_gui(battle=battle,battle_int=bi)
 
 def check_done_2(self,battle):
     done = battle.check_battle_end()
