@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 '''
     input.shape = (q,3)
     idx.shape = (1,3) = out.shape
@@ -37,5 +38,16 @@ def step_obs():
         用q_table.gather(idx)怎么做???
     """
     print()
+def np_array_idx():
+    ll = np.array([[[1, 1, 9,2,3], [2, 2, 8,2,3]],[[1, 2, 9,4,3], [2, 3, 8,4,3]],[[0, 1, 9,2,6], [1, 2, 8,2,6]]])
+    mapp = np.arange(72*2).reshape((3,4,6,2))
+    r'''
+    arr维度为mapp没有被index的维度+(i1,i2,,,in)
+    arr[i1,i2,,,in] = mapp[idx1[i1,i2,,,in],idx2[i1,i2,,,in],idx3[i1,i2,,,in],idx4[i1,i2,,,in],,,idxn[i1,i2,,,in]]
+    index之外的维度可能需要broadcast过滤
+        broadcast dim0 (3,)->(3,1)->(3,2)         
+                                    idx1        idx2'''
+    mapp[np.array([0, 1, 2])[:, None], ll[:, :, 0], ll[:, :, 1]] = ll[...,[2,4]]
+    print()
 if __name__ == '__main__':
-    step_obs()
+    np_array_idx()

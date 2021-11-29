@@ -218,7 +218,9 @@ def cmp_to_key11(mycmp):
     return K
 def compare11(x,y):
     return x >= y
+def compare_sort():
+    ll = [1, 3, 2, 5, 9, 4, 2]
+    ll.sort(key=cmp_to_key11(compare11))
 M = 5
 if __name__ == '__main__':
-    ll = [1,3,2,5,9,4,2]
-    ll.sort(key=cmp_to_key11(compare11))
+    compare_sort()

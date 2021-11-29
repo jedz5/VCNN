@@ -778,7 +778,7 @@ class Battle(object):
 
         self.toMove.sort(key=lambda elem:(-elem.speed,elem.slotId,elem.side))
         self.waited.sort(key=lambda elem: (elem.speed, -elem.slotId,-elem.side))
-        self.moved.sort(key=lambda elem: (-elem.speed))
+        self.moved.sort(key=lambda elem: (-elem.speed,elem.slotId,elem.side))
         self.stackQueue = self.toMove + self.waited + self.moved
         self.cur_stack = self.stackQueue[0]
     def currentPlayer(self):
