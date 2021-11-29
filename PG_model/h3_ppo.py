@@ -61,8 +61,8 @@ class H3AgentQ(nn.Module):
         else:
             self.net = model
 
-        self.optim = torch.optim.Adam(model.parameters(), lr=0.01)
-        self._batch_size = 512
+        self.optim = torch.optim.Adam(model.parameters(), lr=0.02)
+        # self._batch_size = 512
         self.dist_fn = dist_fn
         self.device = device
         self.mode = 0 # 0:collect, 1:eval, 2:train
@@ -108,8 +108,6 @@ class H3AgentQ(nn.Module):
                 sa1sr.append(
                     {'obs': state['obs'],'info': state['info'], 'mask_a': 0., 'mask_t': 0., 'mask_p': 1., 'act': state['act'], 'qa': 0.,
                      'qt': 0., 'qp': qp})
-            else:
-                print()
         # sars = []
         # for a,s in self.sars_count.keys():
         #     a1,a2,a3 = a
@@ -141,7 +139,6 @@ class H3AgentQ(nn.Module):
         self.sars_count.clear()
     def process_max_tree(self,batch):
         for i, traj in enumerate(batch):
-            traj.q1 = np.zeros(len(traj.rew))
             for j,t in enumerate(reversed(traj)):
                 s = tuple(map(tuple, t['obs']['attri_stack']))
                 a = (t['act']['act_id'],t['act']['position_id'],t['act']['target_id'])  #{'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
@@ -189,20 +186,18 @@ class H3AgentQ(nn.Module):
                     r = t['rew']
                     self.V[s_] += r
                 a1, a2, a3 = a
-
                 self.sa1_count[a1, s] += 1
                 r'''step3                                            step2  V[s_] == Gs_, 其他s_下的r=0   '''
+                qvalue = sum([self.sars_count[a, s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a, s].keys()]) / \
+                sum(self.sars_count[a, s].values())
                 if a1 < 2:
-                    self.Q1[s][a1] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
-                    self.sars_count[a,s].values())
+                    self.Q1[s][a1] = qvalue
                 elif a1 == 2:
-                    self.Q2[a1, s][a2] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
-                    self.sars_count[a,s].values())
+                    self.Q2[a1, s][a2] = qvalue
                     self.Q1[s][a1] = max(self.Q2[a1,s].values())
                     self.sa2_count[(a1,a2),s] += 1
                 elif a1 == 3:
-                    self.Q3[(a1,a2),s][a3] = sum([self.sars_count[a,s][s_] * (self.V[s_] - self.discount_factor) for s_ in self.sars_count[a,s].keys()]) / sum(
-                        self.sars_count[a,s].values())
+                    self.Q3[(a1,a2),s][a3] = qvalue
                     self.Q2[a1,s][a2] = max(self.Q3[(a1,a2),s].values())
                     self.Q1[s][a1] = max(self.Q2[a1,s].values())
                     self.sa2_count[(a1,a2),s] += 1
@@ -213,7 +208,6 @@ class H3AgentQ(nn.Module):
                 r'''terminal步的Vs_没有意义'''
                 if not t['done']:
                     self.V[s_] -= r
-                traj.q1[-(j+1)] = self.Q1[s][a1]
             vs = max(self.Q1[s].values())
             r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
             self.V[s] = max([self.V[s], vs])
@@ -390,52 +384,43 @@ class H3AgentQ(nn.Module):
         acts = {'act_id': act_id, 'position_id': position_id, 'target_id': target_id}
         mask = {'mask_acts': result['mask_acts'], 'mask_targets': result['mask_targets'], 'mask_position': result['mask_position']}
         return next_act,{"act":acts,"obs":obs,"mask":mask}
-    def cmp_single_state(self,sars1,sars2):
-        s1 = tuple(map(tuple, sars1.obs.attri_stack))
-        s1_ = tuple(map(tuple, sars2.obs.attri_stack))
-        a1, a2, a3 = (sars1.act.act_id, sars1.act.position_id, sars1.act.target_id)
-        if a1 == 3:
+    def get_end_Q(self,sars):
+        s = tuple(map(tuple, sars.obs.attri_stack))
+        a1, a2, a3 = (sars.act.act_id, sars.act.position_id, sars.act.target_id)
+        assert a1 < 4
+        if a1 < 2:
+            q = self.Q1[s][a1]
+        elif a1 == 2:
+            q = self.Q2[a1, s][a2]
+        else:
             a2, a3 = a3, a2
-        a1_, a2_, a3_ = (sars2.act.act_id, sars2.act.position_id, sars2.act.target_id)
-        if a1_ == 3:
-            a2_, a3_ = a3_, a2_
-        qa = self.Q1[s1][a1]
-        qa_ = self.Q1[s1_][a1_]
-        # qt = self.Q2[a1, s1][a2]
-        # qt_ = self.Q2[a1_, s1_][a2_]
-        # qp = self.Q3[(a1, a2), s1][a3]
-        # qp_ = self.Q3[(a1_, a2_), s1_][a3_]
-        error1 = qa - qa_
-        # error2 = qa - qa_
-        # error3 = qa - qa_
+            q = self.Q3[(a1, a2), s][a3]
+        return q
+
+    def cmp_single_state(self,sars1,sars2,r1,r2):
+        q1 = self.get_end_Q(sars1)
+        q2 = self.get_end_Q(sars2)
+        error1 = r1+q1 - (r2+q2)
         if abs(error1) < 1E-6:
             error1 = 0
         return error1
-        # if abs(error2) < 1E-6:
-        #     error2 = 0
-        # if abs(error3) < 1E-6:
-        #     error3 = 0
-        # if error1 == 0:
-        #     if error2 == 0:
-        #         if error3 == 0:
-        #             return 0
-        #         else:
-        #             return error3
-        #     else:
-        #         return error2
-        # else:
-        #     return error1
     def cmp_reward_func(self,episode1,episode2):
-        # assert episode.done[-1]
-        # r1 = sum(episode.rew)
-        # if episode.rew[-1] < 0 and sum(episode.done) > 1:
-        #     r1 += 1.
-        # r1 = r1 - len(episode.rew) * self.discount_factor
-        # r1 = sum(episode1.rew)
+        assert episode1.done[-1]
+        assert episode2.done[-1]
+        r1 = r2 = 0
+        for ii,episode in enumerate([episode1,episode2]):
+            rr = sum(episode.rew)
+            if episode.rew[-1] < 0 and sum(episode.done) > 1:
+                rr += 1.
+            # rr = rr - len(episode.rew) * self.discount_factor
+            if ii == 0:
+                r1 = rr
+            else:
+                r2 = rr
         length = min(len(episode1.rew),len(episode2.rew))
         for i in range(length):
-            # err = self.cmp_single_state(episode1[i],episode2[i])
-            err = episode1.q1[i] - episode2.q1[i]
+            err = self.cmp_single_state(episode1[i],episode2[i],r1,r2)
+            # err = (r1 + episode1.q1[i]) - (r2 + episode2.q1[i])
             if abs(err) > 1E-6:
                 return err
         return 0
@@ -451,20 +436,20 @@ class H3AgentQ(nn.Module):
         Q_replay_buffer = ReplayBuffer(200000, ignore_obs_next=True)
         # max_sar_manager = H3ReplayManager(file_list, agent)
         collector = H3SampleCollector(record_sar_max_tree,file_list,agent, Q_replay_buffer)
-        # expert_list = load_episo("ENV/episode")
-        # for expert in expert_list:
-        #     idx = np.argwhere(expert.done)[:-1]
-        #     expert.obs_next[idx] = expert.obs[idx + 1]
-        #     expert.policy = Batch()
-        #     expert.policy.done_ = expert.done
-        #     expert.done[:-1] = 0
-        #     attri_stack_orig = expert.obs['attri_stack']
-        #     expert.policy.attri_stack_orig = attri_stack_orig
-        #     expert.obs['attri_stack'] = get_tuple(attri_stack_orig)
-        #     attri_stack_orig = expert.obs_next['attri_stack']
-        #     # expert.policy.attri_stack_orig = attri_stack_orig
-        #     expert.obs_next['attri_stack'] = get_tuple(attri_stack_orig)
-        #     collector.best_hist_buffer.append(expert)
+        expert_list = load_episo("ENV/episode")
+        for expert in expert_list:
+            idx = np.argwhere(expert.done)[:-1]
+            expert.obs_next[idx] = expert.obs[idx + 1]
+            expert.policy = Batch()
+            expert.policy.done_ = expert.done
+            expert.done[:-1] = 0
+            attri_stack_orig = expert.obs['attri_stack']
+            expert.policy.attri_stack_orig = attri_stack_orig
+            expert.obs['attri_stack'] = get_tuple(attri_stack_orig)
+            attri_stack_orig = expert.obs_next['attri_stack']
+            # expert.policy.attri_stack_orig = attri_stack_orig
+            expert.obs_next['attri_stack'] = get_tuple(attri_stack_orig)
+            collector.best_hist_buffer.append(expert)
         cache_idx = range(len(file_list))
         if Linux:
             sample_num = 500
@@ -514,15 +499,15 @@ class H3AgentQ(nn.Module):
 
                 for ii in range(5):
                     bf = collector.best_hist_buffer[ii]
-                    print('Gs')
-                    print(bf.Gs)
-                    print('q - qvalue')
-                    print(bf.q1)
-                    print(bf.q1_value)
-                    print(bf.q2)
-                    print(bf.q2_value)
-                    print(bf.q3)
-                    print(bf.q3_value)
+                    logger.info('Gs')
+                    logger.info(bf.Gs)
+                    logger.info('q - qvalue')
+                    logger.info(bf.q1)
+                    logger.info(bf.q1_value)
+                    logger.info(bf.q2)
+                    logger.info(bf.q2_value)
+                    logger.info(bf.q3)
+                    logger.info(bf.q3_value)
                     # bf.obs.attri_stack = bf.policy.attri_stack_orig
                     # dump_episo([bf.obs, bf.act, bf.rew, bf.done, bf.info], "ENV/max_sars",
                     #            f'max_data_{ii}.npy')
@@ -569,7 +554,7 @@ class H3AgentQ(nn.Module):
             # logger.info(enemy_amount[0])
             # logger.info(enemy_amount[1])
             # logger.info(enemy_amount[2])
-            logger.info("act_q")
+            logger.info("act_qvalue 1 - 5")
             logger.info(qa_softm_act[:print_len])
             logger.info(qa_value[:print_len,0])
             logger.info(qa_value[:print_len,1])
@@ -602,7 +587,7 @@ class H3AgentQ(nn.Module):
                 self.to_dev(agent, "cpu")
             agent.eval()
             agent.mode = 1
-            observe = ((count + 1) % eval_frq == 0)
+            observe = False #((count + 1) % eval_frq == 0)
             if observe:
                 arena = Battle(by_AI=[2, 1], agent=self)
                 arena.load_battle(file=file_list[0])
@@ -1388,7 +1373,7 @@ def record_sar_ppo(self, battle, acting_stack, sars):
             else:
                 logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
 
-def record_sar_max_tree(self, battle, acting_stack, sars):
+def record_sar_max_tree(collector, battle, acting_stack, sars):
     if acting_stack.side == 0:
         obs = sars["obs"]
         acts = sars["act"]
@@ -1399,30 +1384,42 @@ def record_sar_max_tree(self, battle, acting_stack, sars):
         if done:
             win = sars["win"]
             if win:
-                reward = reward_def
+                reward = compute_reward(battle)
             else:
                 reward = -reward_def
-            self.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
+            # reward = compute_reward(battle)
+            collector.buffer.add(Batch(obs=obs, act=acts, rew=reward, done=1, info=mask,
                                   policy={'attri_stack_orig': attri_stack_orig,'done_':1}))
         else:
-            self.buffer.add(
+            collector.buffer.add(
                 Batch(obs=obs, act=acts, rew=0, done=0, info=mask,
                       policy={'attri_stack_orig': attri_stack_orig,'done_':0}))
     else:
         done = sars["done"]
         if done:
-            if len(self.buffer):
+            if len(collector.buffer):
                 win = sars["win"]
                 if win:
-                    reward = reward_def
+                    reward = compute_reward(battle)
                 else:
                     reward = -reward_def
-                last_idx = self.buffer.last_index[0]
-                self.buffer.rew[last_idx] = reward
-                self.buffer.done[last_idx] = 1
-                self.buffer.policy.done_[last_idx] = 1
+                # reward = compute_reward(battle)
+                last_idx = collector.buffer.last_index[0]
+                collector.buffer.rew[last_idx] = reward
+                collector.buffer.done[last_idx] = 1
+                collector.buffer.policy.done_[last_idx] = 1
             else:
                 logger.info("你的军队还没出手就被干掉了 (╯°Д°)╯︵┻━┻")
+
+def compute_reward(battle: Battle):
+    att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
+    def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
+    att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
+                   st.amount > 0]
+    def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
+                   st.amount > 0]
+    reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
+    return reward
 class H3SampleCollector:
     def __init__(self,record_sar_func,file_list,agent:H3Agent,full_buffer:ReplayBuffer,format_postion=False,win_count_size = 10):
         self.record_sar:record_sar_max_tree = record_sar_func
@@ -1454,9 +1451,6 @@ class H3SampleCollector:
         self.win_count_size = win_count_size
         self.win_count = np.zeros((fl,win_count_size),dtype=int)
         self.count = np.ones((fl,))
-        # self.il_done = False
-        # self.il_threshold_c = il_threshold_c
-        # self.il_threshold_wr = il_threshold_wr
     def collect_1_ep(self,file=None,battle:Battle=None,n_step = 200,print_act = False,td=False):
         if not battle:
             battle = Battle(agent=self.agent)
@@ -1509,6 +1503,7 @@ class H3SampleCollector:
         for r in range(10):
             self.buffer.reset()
             win = self.collect_1_ep(battle=arena)
+            r'''首场不论胜负,接下来只记录胜场'''
             if win:
                 traj,indice = self.buffer.sample(0)
                 episode.append(traj)
@@ -1519,7 +1514,6 @@ class H3SampleCollector:
                     arena.defender_stacks = defender_stacks
                 arena.split_army()
             else:
-                r'''win or (lose by round 0)'''
                 if r == 0:
                     traj, indice = self.buffer.sample(0)
                     episode.append(traj)
@@ -1532,6 +1526,7 @@ class H3SampleCollector:
         if win_count > 1:
             for ei in range(win_count - 1):
                 episode[ei].done[-1] = 0
+                episode[ei].rew[-1] = reward_def
                 episode[ei].obs_next[-1] = episode[ei+1].obs[0]
         episode = Batch.cat(episode)
         self.current_buffer.append(episode)
@@ -1580,15 +1575,7 @@ class H3SampleCollector:
         return self.win_count[idx] / self.count[idx],self.count[idx]
     def get_win_rates(self):
         return self.win_count / np.expand_dims(self.count,axis=1) , self.count
-    def compute_reward(self,battle: Battle):
-        att_HP = [st.amount_base * st.health for st in battle.attacker_stacks]
-        def_HP = [st.amount_base * st.health for st in battle.defender_stacks]
-        att_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.attacker_stacks if
-                       st.amount > 0]
-        def_HP_left = [(st.amount - 1) * st.health + st.first_HP_Left for st in battle.defender_stacks if
-                       st.amount > 0]
-        reward = reward_def * (sum(att_HP_left) / sum(att_HP) - sum(def_HP_left) / sum(def_HP))
-        return reward
+
     def update_count(self,idx,obs_idx,data:ReplayBuffer,start,end):
         self.count[idx] += 1
         if end == start:

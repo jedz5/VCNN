@@ -21,7 +21,10 @@ class my_reshape(nn.Module):
         return x
 id_emb_size = 16
 act_emb_size = 8
+speed_emb_size = 8
 stack_emb_size = 32
+x_emb_size = 8
+y_emb_size = 8
 stack_fc_size = 128
 all_fc_size = 512
 position_h_size = 32
@@ -32,16 +35,18 @@ class in_pipe(nn.Module):
         self.device = device
         self.id_emb = nn.Embedding(150, id_emb_size, padding_idx=122)
         self.act_emb = nn.Embedding(10, act_emb_size, padding_idx=8)
-        self.stack_emb = nn.Sequential(nn.Linear(21 + id_emb_size, 32), #stack feature + id_emb
-                                       nn.ReLU(inplace=True),
-                                       nn.Linear(32, stack_emb_size)
+        self.speed_emb = nn.Embedding(25, speed_emb_size, padding_idx=24)
+        self.x_emb = nn.Embedding(20, x_emb_size, padding_idx=19)
+        self.y_emb = nn.Embedding(13, y_emb_size, padding_idx=12)
+        self.stack_emb = nn.Sequential(nn.Linear(21 + id_emb_size, stack_emb_size), #stack feature + id_emb
+                                       nn.ReLU(inplace=True)
                                        )
         self.stack_fc = nn.Sequential(
                                       my_reshape([-1,stack_emb_size * 14]),
-                                      nn.Linear(stack_emb_size * 14, 128),
-                                      nn.ReLU(inplace=True),
-                                      nn.Linear(128, stack_fc_size),
+                                      nn.Linear(stack_emb_size * 14, stack_fc_size),
                                       nn.ReLU(inplace=True))
+                                      # nn.Linear(128, stack_fc_size),
+                                      # nn.ReLU(inplace=True))
         self.stack_plane_conv  = nn.Sequential(my_reshape([-1, 3, 11, 17]),
                                                nn.Conv2d(3, out_channels=8, kernel_size=3, stride=1, padding=1),
                                                nn.ReLU(inplace=True),
