@@ -74,7 +74,7 @@ class in_pipe(nn.Module):
         self.stack_plane_flat.to(self.device)
     #@profile
     def forward(self,ind,attri_stack,planes_stack,plane_glb):
-        id_emb = self.id_emb(ind)
+        id_emb = self.id_emb(ind)  ##self.id_emb(attri_stack[...,[2]].squeeze(-1).long())
         stack_emb = self.stack_emb(torch.cat([id_emb,attri_stack],dim=-1))
         stack_fc = self.stack_fc(stack_emb)
         planes_conv = self.stack_plane_conv(planes_stack)

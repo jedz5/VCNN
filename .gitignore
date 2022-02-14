@@ -25,3 +25,4 @@ bak.idea/
 learning/upgo_meta/log/
 learning/upgo_meta/ckpt/
 *.png
+vcnn_env/

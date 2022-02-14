@@ -1,13 +1,13 @@
 import gym
 import sys
 import keyboard
-from gym.envs.atari import AtariEnv
+# from gym.envs.atari import AtariEnv
 
 act = 0
 
 r''' v0 自带sticky=0.25、frameskip=2~5,deterministic下frameskip=4，noframeskip下frameskip=1，v4 sticky=0  '''
 def gym_ui():
-    env = gym.make("MontezumaRevenge-v0", render_mode='human')
+    env = gym.make("ALE/MontezumaRevenge-v5", render_mode='human') #MontezumaRevenge
     # env = AtariEnv("pong",frameskip=1,render_mode='human',repeat_action_probability=0.8)
     env.reset()
 

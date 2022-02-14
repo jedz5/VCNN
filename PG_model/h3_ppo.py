@@ -137,6 +137,9 @@ class H3AgentQ(nn.Module):
         self.sa2_count.clear()
         self.sa3_count.clear()
         self.sars_count.clear()
+    def pruning(self):
+        self.clear_table()
+        self.process_max_tree(self)
     def process_max_tree(self,batch):
         for i, traj in enumerate(batch):
             for j,t in enumerate(reversed(traj)):
@@ -397,30 +400,29 @@ class H3AgentQ(nn.Module):
             q = self.Q3[(a1, a2), s][a3]
         return q
 
-    def cmp_single_state(self,sars1,sars2,r1,r2):
+    def cmp_single_state(self,sars1,sars2):
         q1 = self.get_end_Q(sars1)
         q2 = self.get_end_Q(sars2)
-        error1 = r1+q1 - (r2+q2)
+        error1 = q1 - q2
         if abs(error1) < 1E-6:
             error1 = 0
         return error1
     def cmp_reward_func(self,episode1,episode2):
         assert episode1.done[-1]
         assert episode2.done[-1]
-        r1 = r2 = 0
-        for ii,episode in enumerate([episode1,episode2]):
-            rr = sum(episode.rew)
-            if episode.rew[-1] < 0 and sum(episode.done) > 1:
-                rr += 1.
-            # rr = rr - len(episode.rew) * self.discount_factor
-            if ii == 0:
-                r1 = rr
-            else:
-                r2 = rr
+        # r1 = r2 = 0
+        # for ii,episode in enumerate([episode1,episode2]):
+        #     rr = sum(episode.rew)
+        #     if episode.rew[-1] < 0 and sum(episode.done) > 1:
+        #         rr += 1.
+        #     # rr = rr - len(episode.rew) * self.discount_factor
+        #     if ii == 0:
+        #         r1 = rr
+        #     else:
+        #         r2 = rr
         length = min(len(episode1.rew),len(episode2.rew))
         for i in range(length):
-            err = self.cmp_single_state(episode1[i],episode2[i],r1,r2)
-            # err = (r1 + episode1.q1[i]) - (r2 + episode2.q1[i])
+            err = self.cmp_single_state(episode1[i],episode2[i])
             if abs(err) > 1E-6:
                 return err
         return 0
@@ -478,108 +480,110 @@ class H3AgentQ(nn.Module):
             agent.train()
             agent.mode = 2
             self.clear_table()
+            r'''build max tree'''
             self.Vstart = self.process_max_tree(batch_data)
             r'''[print(b.act.act_id) for b in batch_data]
              min(self.V.values())
              '''
-
+            r'''剪枝'''
             batch_data.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
             collector.best_hist_buffer = batch_data[:50]
+            self.clear_table()
             collector.history_buffer.push(current_data,-1)
             collector.current_buffer.clear()
             batch_data_treed = self.Q_to_sars()
-            logger.info(f'batch data size = {len(batch_data)}')
-            logger.info(f'batch tree size = {len(batch_data_treed)}')
-            best_hist_buffer_1 = collector.best_hist_buffer[0]
-            print_len = min(len(best_hist_buffer_1),print_len_)
-            me_amount = np.zeros((print_len, 2))
-            enemy_amount = np.zeros((print_len, 3))
-            if (count + 1) % eval_frq == 0:
-                self.show_traj_Gs(collector.best_hist_buffer[:5])
+            if True: # debug log
+                logger.info(f'batch data size = {len(batch_data)}')
+                logger.info(f'batch tree size = {len(batch_data_treed)}')
+                best_hist_buffer_1 = collector.best_hist_buffer[0]
+                print_len = min(len(best_hist_buffer_1),print_len_)
+                me_amount = np.zeros((print_len, 2))
+                enemy_amount = np.zeros((print_len, 3))
+                if (count + 1) % eval_frq == 0:
+                    self.show_traj_Gs(collector.best_hist_buffer[:5])
 
-                for ii in range(5):
-                    bf = collector.best_hist_buffer[ii]
-                    logger.info('Gs')
-                    logger.info(bf.Gs)
-                    logger.info('q - qvalue')
-                    logger.info(bf.q1)
-                    logger.info(bf.q1_value)
-                    logger.info(bf.q2)
-                    logger.info(bf.q2_value)
-                    logger.info(bf.q3)
-                    logger.info(bf.q3_value)
-                    # bf.obs.attri_stack = bf.policy.attri_stack_orig
-                    # dump_episo([bf.obs, bf.act, bf.rew, bf.done, bf.info], "ENV/max_sars",
-                    #            f'max_data_{ii}.npy')
-                    # logger.info(f"states dumped in max_data_{ii}.npy")
-            mask_acts = torch.tensor(best_hist_buffer_1.info.mask_acts,dtype=torch.float32)
-            mask_targets = best_hist_buffer_1.info.mask_targets
-            act_index = torch.tensor(best_hist_buffer_1.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
-            targets_index = torch.tensor(best_hist_buffer_1.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
-            position_index = torch.tensor(best_hist_buffer_1.act.position_id, device=self.device,
-                                         dtype=torch.long).unsqueeze(dim=-1)
+                    for ii in range(5):
+                        bf = collector.best_hist_buffer[ii]
+                        logger.info('Gs')
+                        logger.info(bf.Gs)
+                        logger.info('q - qvalue')
+                        logger.info(bf.q1)
+                        logger.info(bf.q1_value)
+                        logger.info(bf.q2)
+                        logger.info(bf.q2_value)
+                        logger.info(bf.q3)
+                        logger.info(bf.q3_value)
+                        # bf.obs.attri_stack = bf.policy.attri_stack_orig
+                        # dump_episo([bf.obs, bf.act, bf.rew, bf.done, bf.info], "ENV/max_sars",
+                        #            f'max_data_{ii}.npy')
+                        # logger.info(f"states dumped in max_data_{ii}.npy")
+                mask_acts = torch.tensor(best_hist_buffer_1.info.mask_acts,dtype=torch.float32)
+                mask_targets = best_hist_buffer_1.info.mask_targets
+                act_index = torch.tensor(best_hist_buffer_1.act.act_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
+                targets_index = torch.tensor(best_hist_buffer_1.act.target_id, device=self.device, dtype=torch.long).unsqueeze(dim=-1)
+                position_index = torch.tensor(best_hist_buffer_1.act.position_id, device=self.device,
+                                             dtype=torch.long).unsqueeze(dim=-1)
 
-            current_act_q, Va, Va_mask, targets_logits_h, target_embs, position_logits_h = self.net(single_batch=False,
-                                                                                                    **best_hist_buffer_1.obs)
-            # current_targets_q, Vt, Vt_mask = self.net.get_target_q(act_index, targets_logits_h, single_batch=False)
-            current_position_q, Vp, Vp_mask = self.net.get_position_q(act_index, targets_index, target_embs,
-                                                                      mask_targets, position_logits_h,
-                                                                      single_batch=False)
-            qa_value = current_act_q.detach().numpy()
-            qa_softm = (current_act_q - (1-mask_acts)*1E8).softmax(dim=-1)
-            qa_softm_act = qa_softm.gather(1, act_index).squeeze(-1).detach().numpy()
-            qa_softm_max = qa_softm.argmax(-1).float().squeeze(-1).detach().numpy()
-            # qt_value = current_targets_q.gather(1, targets_index).squeeze(-1).detach().numpy()
-            # qt_softm = current_targets_q.softmax(dim=-1).gather(1, targets_index).squeeze(-1).detach().numpy()
-            qp_value = current_position_q.gather(1,position_index ).squeeze(-1).detach().numpy()
-            qp_softm = current_position_q.softmax(dim=-1).gather(1, position_index).squeeze(-1).detach().numpy()
-            for i in range(print_len):
-                stacks = best_hist_buffer_1.obs.attri_stack[i]
-                mask = np.logical_and(stacks[:, 0] == 0, stacks[:, 3] > 1)
-                me_am = stacks[mask][:, 3]
-                me_amount[i, :min(2, len(me_am))] = me_am[:2]
+                current_act_q, Va, Va_mask, targets_logits_h, target_embs, position_logits_h = self.net(single_batch=False,
+                                                                                                        **best_hist_buffer_1.obs)
+                # current_targets_q, Vt, Vt_mask = self.net.get_target_q(act_index, targets_logits_h, single_batch=False)
+                current_position_q, Vp, Vp_mask = self.net.get_position_q(act_index, targets_index, target_embs,
+                                                                          mask_targets, position_logits_h,
+                                                                          single_batch=False)
+                qa_value = current_act_q.detach().numpy()
+                qa_softm = (current_act_q - (1-mask_acts)*1E8).softmax(dim=-1)
+                qa_softm_act = qa_softm.gather(1, act_index).squeeze(-1).detach().numpy()
+                qa_softm_max = qa_softm.argmax(-1).float().squeeze(-1).detach().numpy()
+                # qt_value = current_targets_q.gather(1, targets_index).squeeze(-1).detach().numpy()
+                # qt_softm = current_targets_q.softmax(dim=-1).gather(1, targets_index).squeeze(-1).detach().numpy()
+                qp_value = current_position_q.gather(1,position_index ).squeeze(-1).detach().numpy()
+                qp_softm = current_position_q.softmax(dim=-1).gather(1, position_index).squeeze(-1).detach().numpy()
+                for i in range(print_len):
+                    stacks = best_hist_buffer_1.obs.attri_stack[i]
+                    mask = np.logical_and(stacks[:, 0] == 0, stacks[:, 3] > 1)
+                    me_am = stacks[mask][:, 3]
+                    me_amount[i, :min(2, len(me_am))] = me_am[:2]
 
-                mask = stacks[:, 0] == 1
-                enemy_am = stacks[mask][:, 3]
-                enemy_amount[i, :min(3, len(enemy_am))] = enemy_am[:3]
+                    mask = stacks[:, 0] == 1
+                    enemy_am = stacks[mask][:, 3]
+                    enemy_amount[i, :min(3, len(enemy_am))] = enemy_am[:3]
 
-            me_amount = me_amount.transpose().astype(np.float) / 10
-            enemy_amount = enemy_amount.transpose().astype(np.float) / 10
-            # logger.info(best_hist_buffer_1.done.astype(np.float)[:print_len] * 1.1)
-            # logger.info("amount")
-            # logger.info(-best_hist_buffer_1.obs.attri_stack[:print_len, 0, 1].astype(np.float))
-            # logger.info(me_amount[0])
-            # logger.info(me_amount[1])
-            # logger.info("enemy_amount")
-            # logger.info(enemy_amount[0])
-            # logger.info(enemy_amount[1])
-            # logger.info(enemy_amount[2])
-            logger.info("act_qvalue 1 - 5")
-            logger.info(qa_softm_act[:print_len])
-            logger.info(qa_value[:print_len,0])
-            logger.info(qa_value[:print_len,1])
-            logger.info(qa_value[:print_len,2])
-            logger.info(qa_value[:print_len,3])
-            logger.info(qa_value[:print_len,4])
-            logger.info(qa_softm_max[:print_len])
-            logger.info(best_hist_buffer_1.act.act_id.astype(np.float)[:print_len])
-            logger.info("position_q")
-            logger.info(qp_value[:print_len])
-            logger.info(qp_softm[:print_len])
-            logger.info(-(best_hist_buffer_1.act.position_id.astype(np.float)[:print_len] // 17) / 10)
-            logger.info(-(best_hist_buffer_1.act.position_id.astype(np.float)[:print_len] % 17) / 10)
-            logger.info("target")
-            logger.info(best_hist_buffer_1.act.target_id.astype(np.float)[:print_len])
-            logger.info(f"G = {self.Vstart}")
+                me_amount = me_amount.transpose().astype(np.float) / 10
+                enemy_amount = enemy_amount.transpose().astype(np.float) / 10
+                # logger.info(best_hist_buffer_1.done.astype(np.float)[:print_len] * 1.1)
+                # logger.info("amount")
+                # logger.info(-best_hist_buffer_1.obs.attri_stack[:print_len, 0, 1].astype(np.float))
+                # logger.info(me_amount[0])
+                # logger.info(me_amount[1])
+                # logger.info("enemy_amount")
+                # logger.info(enemy_amount[0])
+                # logger.info(enemy_amount[1])
+                # logger.info(enemy_amount[2])
+                logger.info("act_qvalue 1 - 5")
+                logger.info(qa_softm_act[:print_len])
+                logger.info(qa_value[:print_len,0])
+                logger.info(qa_value[:print_len,1])
+                logger.info(qa_value[:print_len,2])
+                logger.info(qa_value[:print_len,3])
+                logger.info(qa_value[:print_len,4])
+                logger.info(qa_softm_max[:print_len])
+                logger.info(best_hist_buffer_1.act.act_id.astype(np.float)[:print_len])
+                logger.info("position_q")
+                logger.info(qp_value[:print_len])
+                logger.info(qp_softm[:print_len])
+                logger.info(-(best_hist_buffer_1.act.position_id.astype(np.float)[:print_len] // 17) / 10)
+                logger.info(-(best_hist_buffer_1.act.position_id.astype(np.float)[:print_len] % 17) / 10)
+                logger.info("target")
+                logger.info(best_hist_buffer_1.act.target_id.astype(np.float)[:print_len])
+                logger.info(f"G = {self.Vstart}")
 
-            # logger.info(best_hist_buffer_1.reward_cum.astype(np.float)[:print_len])
-            # logger.info(best_hist_buffer_1.Gs.astype(np.float)[:print_len])
-            r'''
-            from operator import itemgetter
-            keys = list(self.Q1.keys())[:10]
-            out = itemgetter(*keys)(self.Q1)
-            '''
-            self.clear_table()
+                # logger.info(best_hist_buffer_1.reward_cum.astype(np.float)[:print_len])
+                # logger.info(best_hist_buffer_1.Gs.astype(np.float)[:print_len])
+                r'''
+                from operator import itemgetter
+                keys = list(self.Q1.keys())[:10]
+                out = itemgetter(*keys)(self.Q1)
+                '''
             if Linux:
                 self.to_dev(agent, "cuda")
             loss = agent.learn(batch_data_treed,repeat=10, batch_size=5120)
@@ -1425,7 +1429,7 @@ class H3SampleCollector:
         self.record_sar:record_sar_max_tree = record_sar_func
         self.agent = agent
         self.buffer = full_buffer
-        cfg = EasyDict(replay_buffer_size=100, deepcopy=False, exp_name='test_episode_buffer',
+        cfg = EasyDict(replay_buffer_size=100, deepcopy=False, exp_name='test_episode_buffer',periodic_thruput_seconds=60,
                        enable_track_used_data=False)
         self.current_buffer = []
         cfg.replay_buffer_size = 1000

@@ -7,9 +7,11 @@ import torch.nn.functional as F
 r'''梯度与样本量成比例'''
 def xx():
     a = t.tensor([0., 0., 0., 0., 0., 0., 0., 0.], requires_grad=True)
+    b = t.tensor([[1., 1., 1., 1., 0., 0., 0., 0.],[1., 1., 0., 0., 1., 1., 0., 0.]])
     opt = SGD([a], lr=0.1)
-    # loss = .5 * (a - 1)**2
-    loss = .5 * F.mse_loss(a, t.tensor([1., 1., 1., 1., 1., 1., 1., 1.]), reduction='sum')  # .sum()
+    loss = .5 * (a - b)**2
+    loss = loss.sum()
+    # loss = .5 * F.mse_loss(a, ), reduction='sum')  # .sum()
     opt.zero_grad()
     loss.backward()
     opt.step()
@@ -28,4 +30,4 @@ def xx2():
     print(a)
 
 if __name__ == '__main__':
-    xx2()
+    xx()
