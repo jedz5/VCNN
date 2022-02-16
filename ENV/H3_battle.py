@@ -315,16 +315,25 @@ class BStack(BHex):
         return attacked
     def get_position(self):
         return BHex(self.x,self.y)
-    def get_neighbor(self, src = None):
+    def get_neighbor(self, src = None,check_border = True):
         adj = []
         if(not src ):
             src = self
-        self.checkAndPush(src.x - 1,src.y,  adj)
-        self.checkAndPush(src.x + 1,src.y,  adj)
-        self.checkAndPush((src.x - 1) if src.y%2 != 0 else (src.x + 1) ,src.y - 1,  adj)
-        self.checkAndPush(src.x,src.y - 1,  adj)
-        self.checkAndPush((src.x - 1) if src.y%2 != 0 else (src.x + 1),src.y + 1,  adj)
-        self.checkAndPush(src.x, src.y + 1, adj)
+        zigzag_correction = int(src.y%2 == 0)
+        if check_border:
+            self.checkAndPush(src.x - 1,src.y,  adj)
+            self.checkAndPush(src.x + zigzag_correction - 1,src.y - 1,  adj)
+            self.checkAndPush(src.x + zigzag_correction,src.y - 1,  adj)
+            self.checkAndPush(src.x + 1,src.y,  adj)
+            self.checkAndPush(src.x + zigzag_correction,src.y + 1,  adj)
+            self.checkAndPush(src.x + zigzag_correction - 1,src.y + 1,  adj)
+        else:
+            adj.append(BHex(src.x - 1,src.y))
+            adj.append(BHex(src.x + zigzag_correction - 1,src.y - 1))
+            adj.append(BHex(src.x + zigzag_correction,src.y - 1))
+            adj.append(BHex(src.x + 1,src.y))
+            adj.append(BHex(src.x + zigzag_correction,src.y + 1))
+            adj.append(BHex(src.x + zigzag_correction - 1,src.y + 1))
         return adj
     def checkAndPush(self,x,y,adj):
         if(vb.check_position(x,y)):
@@ -474,7 +483,8 @@ class Battle(object):
     bFieldStackPlanes = 46
     bPenaltyDistance = 10
     bFieldSize = (bFieldWidth - 2)* bFieldHeight
-    bTotalFieldSize = 2 + 8*bFieldSize
+    act_size_flat = 2+ bFieldSize + 14 + 14 * 6
+    # bTotalFieldSize = bFieldSize
     def __init__(self,by_AI = [2,1], gui = None , load_file = None,agent = None,debug = False,cur_stack:BStack=None,last_stack:BStack=None):
         #self.bField = [[0 for col in range(battle.bFieldWidth)] for row in range(battle.bFieldHeight)]
         self.stacks = [] #type:List[BStack]
@@ -501,14 +511,17 @@ class Battle(object):
             self.load_battle(load_file)
             self.checkNewRound()
 
-    def reset(self):
+    def reset(self,continue_round = True):
         self.attacker_stacks.sort(key=lambda elem: elem.slotId)
         self.defender_stacks.sort(key=lambda elem: elem.slotId)
         attackers = self.attacker_stacks
         defenders = self.defender_stacks
         self.clear()
         for att in attackers:
-            att.amount_base = att.amount
+            if continue_round:
+                att.amount_base = att.amount
+            else:
+                att.amount = att.amount_base
             att.first_HP_Left = att.health
             att.y, att.x, att.slotId = 0, 0, 0
             att.had_waited = False
@@ -569,10 +582,10 @@ class Battle(object):
             '''filter all killed stacks'''
             self.attacker_stacks = list(filter(lambda elem: elem.is_alive(),stacks))
 
-    def split_army(self,side=0):
+    def split_army(self,side=0,continue_round = True):
         if side == 0:
             self.merge_stacks()
-            self.reset()
+            self.reset(continue_round)
             stacks = self.attacker_stacks
             '''shooter first'''
             stacks.sort(key=lambda elem:(-elem.is_shooter))
@@ -784,10 +797,10 @@ class Battle(object):
     def currentPlayer(self):
         return 1 if self.stackQueue[0].side else 0
 
-    def currentState(self):
-        pass
-    def current_state_feature(self,curriculum = True):
-        planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),bool)
+    # def currentState(self):
+    #     pass
+    def current_state_feature(self,curriculum = False):
+        planes_stack  = np.zeros((14,3,self.bFieldHeight,self.bFieldWidth),dtype=np.float32)
         attri_stack = np.zeros((14,21),dtype=int)
         ind = np.array([122] * 14,dtype=int)
         for i,st in enumerate(self.stackQueue):
@@ -803,7 +816,7 @@ class Battle(object):
 
         if curriculum:
             return attri_stack
-        plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],bool)
+        plane_glb = np.zeros([3,self.bFieldHeight,self.bFieldWidth],dtype=np.float32)
         for st in self.attacker_stacks:
             plane_glb[0,st.y, st.x] = 1
         for st in self.defender_stacks:
@@ -825,7 +838,7 @@ class Battle(object):
         ret = list(filter(lambda elem: elem.x == dest.x and elem.y == dest.y and elem.is_alive() == alive, self.stacks))
         return ret
     def direction_to_hex(self, mySelf, dirct):
-        zigzagCorrection =0 if (mySelf.y % 2) else 1
+        zigzagCorrection = 0 if (mySelf.y % 2) else 1
         if(dirct < 0 or dirct > 5):
             logger.error('wrong direction {}'.format(dirct))
             sys.exit()
@@ -844,9 +857,50 @@ class Battle(object):
     def hexToDirection(self,mySelf,hex):
         pass
     def actionToIndex(self,action):
-        pass
+        if (actionType.wait == action.type):
+            return 0
+        if (actionType.defend == action.type):
+            return 1
+        if (actionType.move == action.type):
+            i = action.move.y
+            j = action.move.x
+            return 2 + i * (self.bFieldWidth - 2) + j - 1
+        if (actionType.attack == action.type):
+            enemy = action.attack
+            direct = self.hexToDirection(action.attack, action.move)
+            i = enemy.y
+            j = enemy.x
+            return 2 + self.bFieldSize + (i * (self.bFieldWidth - 2) + (j - 1)) * 6 + direct
+        if (actionType.shoot == action.type):
+            enemy = action.attack
+            i = enemy.y
+            j = enemy.x
+            return 2 + (7) * self.bFieldSize + (i * (self.bFieldWidth - 2) + j - 1)
+        logger.info('actionToIndex wrong action {}'.format(action))
     def indexToAction(self,move):
-        pass
+        if (move < 0):
+            logger.info('wrong move {}'.format(move))
+            return 0
+        if (move == 0):
+            return BAction(action_type.wait)
+        elif (move == 1):
+            return BAction(action_type.defend)
+        elif ((move - 2) >= 0 and (move - 2) < self.bFieldSize):
+            y = (move - 2) // (self.bFieldWidth - 2)
+            x = (move - 2) % (self.bFieldWidth - 2)
+            return BAction(action_type.move, BHex(x + 1,y))
+        elif ((move - 2 - self.bFieldSize) >= 0 and (move - 2 - self.bFieldSize) < 14):
+            enemy_id = move - 2 - self.bFieldSize
+            stack = self.stackQueue[enemy_id]
+            return BAction(action_type.attack, target=stack)
+        elif ((move - 2 - self.bFieldSize - 14) >= 0):
+            direction = (move - 2 - self.bFieldSize - 14) % 6
+            enemy_id = (move - 2 - self.bFieldSize - 14) // 6
+            enemy = self.stackQueue[enemy_id]
+            stand = self.direction_to_hex(enemy, direction)
+            return BAction(action_type.attack, stand, enemy)
+        else:
+            logger.info("wrong move {}".format(move))
     def action2Str(self,act):
         #act = self.indexToAction(act)
         if(act.type == action_type.wait):
@@ -1021,7 +1075,41 @@ class Battle(object):
             else:
                 logger.error(f"{act_id} of level2 is not implemented yet!")
                 sys.exit()
-class  BPlayer(object):
+    def act_mask_flatten(self):
+        cur_stack = self.cur_stack
+        assert not cur_stack.had_moved
+        mask = np.zeros((self.act_size_flat,))
+        if not cur_stack.had_waited:
+            mask[0] = 1
+        if not cur_stack.had_defended:
+            mask[1] = 1
+        bf = cur_stack.get_global_state(exclude_me = True) # can't move to where it stands
+        move_mask = (bf >= 0) & (bf < 50)
+        move_mask_flat = move_mask[:,1:Battle.bFieldWidth-1].reshape(-1)
+        mask[2:2+Battle.bFieldSize] = move_mask_flat
+        bf[cur_stack.y,cur_stack.x] = cur_stack.speed # attack from where it stands
+        sq_len = len(self.stackQueue)
+        if cur_stack.can_shoot():
+            for i, t in enumerate(self.stackQueue):
+                if bf[t.y,t.x] == 201:
+                    mask[2 + Battle.bFieldSize + i] = 1
+            # mask[2 + Battle.bFieldSize + sq_len:2 + Battle.bFieldSize + 14] = 0
+        else:
+            for i,t in enumerate(self.stackQueue):
+                # if bf[t.y,t.x] == 201:
+                #     mask[2 + Battle.bFieldSize + 14 + i * 6:2 + Battle.bFieldSize + 14 + i * 6 + 6] = 0
+                # else:
+                if bf[t.y,t.x] == 201:
+                    nb = t.get_neighbor(check_border=False)
+                    for j,n in enumerate(nb):
+                        if 0 <= n.y < Battle.bFieldHeight:
+                            if 50 > bf[n.y,n.x] >=0:
+                                att_point = i * 6 + j
+                                mask[2 + Battle.bFieldSize + 14 + att_point] = 1
+            # mask[2 + Battle.bFieldSize + 14 + sq_len * 6:] = 0
+        return mask
+
+class BPlayer(object):
     def getAction(self,battle):
         return  battle.cur_stack.active_stack()
 class BAction:

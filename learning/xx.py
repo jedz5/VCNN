@@ -102,14 +102,17 @@ def defaultdict_value_test():
     a = defaultdict(defaultdict_value)
     a[(1,2,3)][1].q = 1.
     print(a)
-def ddd(a,b,c,d):
-    print('hh')
-def abc(*par,**par2):
-    ddd(*par,**par2)
-def fff(*par,e=0):
-    print(e)
-    ddd(*par)
+
 def param_test():
+    def ddd(a, b, c, d):
+        print('hh')
+
+    def abc(*par, **par2):
+        ddd(*par, **par2)
+
+    def fff(*par, e=0):
+        print(e)
+        ddd(*par)
     d = 1
     # bcd = {'b':1,'c':2,'a':3}
     # abc(d=d,**bcd)
@@ -128,7 +131,7 @@ def hash_test():
     dic[Ax(4)] = 4
     dic[Ax(4)] = 5
     print(dic.keys())
-def xx():
+def h3_obs_norm():
     with open(r"D:\project\VCNN\ENV\battles\0.json") as JsonFile:
         js = json.load(JsonFile)
     curr = js["stacks"]
@@ -210,40 +213,52 @@ def with_treevalue(batch_):
     even_index_a = batch_.a[:, ::2]
     batch_ = split(batch_, indices_or_sections=B, axis=0)
     return batch_, mean_b, even_index_a
-def get_data():
-    return {
-        'a': np.random.random(size=(T, 8)),
-        'b': np.random.random(size=(6,)),
-        'c': {
-            'd': np.random.randint(0, 10, size=(1,))
-        }
-    }
+
 def tree_func_test():
+    def get_data():
+        return {
+            'a': np.random.random(size=(T, 8)),
+            'b': np.random.random(size=(6,)),
+            'c': {
+                'd': np.random.randint(0, 10, size=(1,))
+            }
+        }
     a = [get_data() for i in range(10)]
     # batch_, mean_b, even_index_a = without_treevalue(a)
     batch_, mean_b, even_index_a = with_treevalue(a)
     print()
-def cmp_to_key11(mycmp):
-    """Convert a cmp= function into a key= function"""
-    class K(object):
-        __slots__ = ['obj']
-        def __init__(self, obj):
-            self.obj = obj
-        def __lt__(self, other):
-            return mycmp(self.obj, other.obj) < 0
-        def __gt__(self, other):
-            return mycmp(self.obj, other.obj) > 0
-        def __eq__(self, other):
-            return mycmp(self.obj, other.obj) == 0
-        def __le__(self, other):
-            return mycmp(self.obj, other.obj) <= 0
-        def __ge__(self, other):
-            return mycmp(self.obj, other.obj) >= 0
-        __hash__ = None
-    return K
-def compare11(x,y):
-    return x >= y
+
 def compare_sort():
+    def compare11(x,y):
+        return x >= y
+
+    def cmp_to_key11(mycmp):
+        """Convert a cmp= function into a key= function"""
+
+        class K(object):
+            __slots__ = ['obj']
+
+            def __init__(self, obj):
+                self.obj = obj
+
+            def __lt__(self, other):
+                return mycmp(self.obj, other.obj) < 0
+
+            def __gt__(self, other):
+                return mycmp(self.obj, other.obj) > 0
+
+            def __eq__(self, other):
+                return mycmp(self.obj, other.obj) == 0
+
+            def __le__(self, other):
+                return mycmp(self.obj, other.obj) <= 0
+
+            def __ge__(self, other):
+                return mycmp(self.obj, other.obj) >= 0
+
+            __hash__ = None
+
+        return K
     ll = [1, 3, 2, 5, 9, 4, 2]
     ll.sort(key=cmp_to_key11(compare11))
 def tree_tensor_test():
@@ -287,121 +302,39 @@ def tree_tensor_test():
 
 def tree_build():
     import os
-
     from treevalue import FastTreeValue
-
-    if __name__ == '__main__':
-        data = [FastTreeValue({'state':{'global': np.ones((4,4)) + i , 'local': np.ones((4,4)) +i},'action':np.random.randint(0,5),'reward':i}) for i in range(10)]
-        last = True
-        for t in reversed(data):
-            if last:
-                last = False
-            else:
-                t.next_obs = last_obs
-            last_obs = t
-        # t.a = FastTreeValue({'s': {'global': np.ones((5,5)), 'local': np.ones((5,5))}})
-        # t = FastTreeValue({'a': 1, (2,2,2): 2, 'x': {'c': 3, 'd': 4}})
-        print("Original tree:", t, sep=os.linesep)
-
-
-        # Get values
-        print("Value of t.a: ", t.a)
-        print("Value of t.x.c:", t.x.c)
-        print("Value of t.x:", t.x, sep=os.linesep)
-
-        # Set values
-        t.a = 233
-        print("Value after t.a = 233:", t, sep=os.linesep)
-        t.x.d = -1
-        print("Value after t.x.d = -1:", t, sep=os.linesep)
-        t.x = FastTreeValue({'e': 5, 'f': 6})
-        print("Value after t.x = FastTreeValue({'e': 5, 'f': 6}):", t, sep=os.linesep)
-        t.x.g = {'e': 5, 'f': 6}
-        print("Value after t.x.g = {'e': 5, 'f': 6}:", t, sep=os.linesep)
-
-        # Delete values
-        del t.x.g
-        print("Value after del t.x.g:", t, sep=os.linesep)
-def default_collate(batch: Sequence,
-                    cat_1dim: bool = True,
-                    ignore_prefix: list = ['collate_ignore']) -> Union[torch.Tensor, Mapping, Sequence]:
-    """
-    Overview:
-        Put each data field into a tensor with outer dimension batch size.
-    Example:
-        >>> # a list with B tensors shaped (m, n) -->> a tensor shaped (B, m, n)
-        >>> a = [torch.zeros(2,3) for _ in range(4)]
-        >>> default_collate(a).shape
-        torch.Size([4, 2, 3])
-        >>>
-        >>> # a list with B lists, each list contains m elements -->> a list of m tensors, each with shape (B, )
-        >>> a = [[0 for __ in range(3)] for _ in range(4)]
-        >>> default_collate(a)
-        [tensor([0, 0, 0, 0]), tensor([0, 0, 0, 0]), tensor([0, 0, 0, 0])]
-        >>>
-        >>> # a list with B dicts, whose values are tensors shaped :math:`(m, n)` -->>
-        >>> # a dict whose values are tensors with shape :math:`(B, m, n)`
-        >>> a = [{i: torch.zeros(i,i+1) for i in range(2, 4)} for _ in range(4)]
-        >>> print(a[0][2].shape, a[0][3].shape)
-        torch.Size([2, 3]) torch.Size([3, 4])
-        >>> b = default_collate(a)
-        >>> print(b[2].shape, b[3].shape)
-        torch.Size([4, 2, 3]) torch.Size([4, 3, 4])
-    Arguments:
-        - batch (:obj:`Sequence`): a data sequence, whose length is batch size, whose element is one piece of data
-    Returns:
-        - ret (:obj:`Union[torch.Tensor, Mapping, Sequence]`): the collated data, with batch size into each data field.\
-            the return dtype depends on the original element dtype, can be [torch.Tensor, Mapping, Sequence].
-    """
-    elem = batch[0]
-    elem_type = type(elem)
-    if isinstance(elem, torch.Tensor):
-        out = None
-        if torch_gt_131() and torch.utils.data.get_worker_info() is not None:
-            # If we're in a background process, directly concatenate into a
-            # shared memory tensor to avoid an extra copy
-            numel = sum([x.numel() for x in batch])
-            storage = elem.storage()._new_shared(numel)
-            out = elem.new(storage)
-        if elem.shape == (1, ) and cat_1dim:
-            # reshape (B, 1) -> (B)
-            return torch.cat(batch, 0, out=out)
-            # return torch.stack(batch, 0, out=out)
+    data = [FastTreeValue({'state':{'global': np.ones((4,4)) + i , 'local': np.ones((4,4)) +i},'action':np.random.randint(0,5),'reward':i}) for i in range(10)]
+    last = True
+    for t in reversed(data):
+        if last:
+            last = False
         else:
-            return torch.stack(batch, 0, out=out)
-    elif elem_type.__module__ == 'numpy' and elem_type.__name__ != 'str_' \
-            and elem_type.__name__ != 'string_':
-        if elem_type.__name__ == 'ndarray':
-            # array of string classes and object
-            if np_str_obj_array_pattern.search(elem.dtype.str) is not None:
-                raise TypeError(default_collate_err_msg_format.format(elem.dtype))
-            return default_collate([torch.as_tensor(b) for b in batch], cat_1dim=cat_1dim)
-        elif elem.shape == ():  # scalars
-            return torch.as_tensor(batch)
-    elif isinstance(elem, float):
-        return torch.tensor(batch, dtype=torch.float32)
-    elif isinstance(elem, Qvalue):
-        return torch.tensor([x.q for x in batch], dtype=torch.float32)
-    elif isinstance(elem, int_classes):
-        dtype = torch.bool if isinstance(elem, bool) else torch.int64
-        return torch.tensor(batch, dtype=dtype)
-    elif isinstance(elem, string_classes):
-        return batch
-    elif isinstance(elem, container_abcs.Mapping):
-        ret = {}
-        for key in elem:
-            if any([key.startswith(t) for t in ignore_prefix]):
-                ret[key] = [d[key] for d in batch]
-            else:
-                ret[key] = default_collate([d[key] for d in batch], cat_1dim=cat_1dim)
-        return ret
-    elif isinstance(elem, tuple) and hasattr(elem, '_fields'):  # namedtuple
-        return elem_type(*(default_collate(samples, cat_1dim=cat_1dim) for samples in zip(*batch)))
-    elif isinstance(elem, container_abcs.Sequence):
-        transposed = zip(*batch)
-        return [default_collate(samples, cat_1dim=cat_1dim) for samples in transposed]
+            t.next_obs = last_obs
+        last_obs = t
+    # t.a = FastTreeValue({'s': {'global': np.ones((5,5)), 'local': np.ones((5,5))}})
+    # t = FastTreeValue({'a': 1, (2,2,2): 2, 'x': {'c': 3, 'd': 4}})
+    print("Original tree:", t, sep=os.linesep)
 
-    raise TypeError(default_collate_err_msg_format.format(elem_type))
+
+    # Get values
+    print("Value of t.a: ", t.a)
+    print("Value of t.x.c:", t.x.c)
+    print("Value of t.x:", t.x, sep=os.linesep)
+
+    # Set values
+    t.a = 233
+    print("Value after t.a = 233:", t, sep=os.linesep)
+    t.x.d = -1
+    print("Value after t.x.d = -1:", t, sep=os.linesep)
+    t.x = FastTreeValue({'e': 5, 'f': 6})
+    print("Value after t.x = FastTreeValue({'e': 5, 'f': 6}):", t, sep=os.linesep)
+    t.x.g = {'e': 5, 'f': 6}
+    print("Value after t.x.g = {'e': 5, 'f': 6}:", t, sep=os.linesep)
+
+    # Delete values
+    del t.x.g
+    print("Value after del t.x.g:", t, sep=os.linesep)
+
 def test_EpisodeSerialCollector():
     from ding.worker import EpisodeSerialCollector
     from ding.envs import BaseEnvManager, SyncSubprocessEnvManager, AsyncSubprocessEnvManager
@@ -421,6 +354,86 @@ def test_EpisodeSerialCollector():
     assert all([e[-1]['done'] for e in collected_episode])
     assert all([len(c) == 0 for c in collector._traj_buffer.values()])
 def traj_q():
+    def default_collate(batch: Sequence,
+                        cat_1dim: bool = True,
+                        ignore_prefix: list = ['collate_ignore']) -> Union[torch.Tensor, Mapping, Sequence]:
+        """
+        Overview:
+            Put each data field into a tensor with outer dimension batch size.
+        Example:
+            >>> # a list with B tensors shaped (m, n) -->> a tensor shaped (B, m, n)
+            >>> a = [torch.zeros(2,3) for _ in range(4)]
+            >>> default_collate(a).shape
+            torch.Size([4, 2, 3])
+            >>>
+            >>> # a list with B lists, each list contains m elements -->> a list of m tensors, each with shape (B, )
+            >>> a = [[0 for __ in range(3)] for _ in range(4)]
+            >>> default_collate(a)
+            [tensor([0, 0, 0, 0]), tensor([0, 0, 0, 0]), tensor([0, 0, 0, 0])]
+            >>>
+            >>> # a list with B dicts, whose values are tensors shaped :math:`(m, n)` -->>
+            >>> # a dict whose values are tensors with shape :math:`(B, m, n)`
+            >>> a = [{i: torch.zeros(i,i+1) for i in range(2, 4)} for _ in range(4)]
+            >>> print(a[0][2].shape, a[0][3].shape)
+            torch.Size([2, 3]) torch.Size([3, 4])
+            >>> b = default_collate(a)
+            >>> print(b[2].shape, b[3].shape)
+            torch.Size([4, 2, 3]) torch.Size([4, 3, 4])
+        Arguments:
+            - batch (:obj:`Sequence`): a data sequence, whose length is batch size, whose element is one piece of data
+        Returns:
+            - ret (:obj:`Union[torch.Tensor, Mapping, Sequence]`): the collated data, with batch size into each data field.\
+                the return dtype depends on the original element dtype, can be [torch.Tensor, Mapping, Sequence].
+        """
+        elem = batch[0]
+        elem_type = type(elem)
+        if isinstance(elem, torch.Tensor):
+            out = None
+            if torch_gt_131() and torch.utils.data.get_worker_info() is not None:
+                # If we're in a background process, directly concatenate into a
+                # shared memory tensor to avoid an extra copy
+                numel = sum([x.numel() for x in batch])
+                storage = elem.storage()._new_shared(numel)
+                out = elem.new(storage)
+            if elem.shape == (1,) and cat_1dim:
+                # reshape (B, 1) -> (B)
+                return torch.cat(batch, 0, out=out)
+                # return torch.stack(batch, 0, out=out)
+            else:
+                return torch.stack(batch, 0, out=out)
+        elif elem_type.__module__ == 'numpy' and elem_type.__name__ != 'str_' \
+                and elem_type.__name__ != 'string_':
+            if elem_type.__name__ == 'ndarray':
+                # array of string classes and object
+                if np_str_obj_array_pattern.search(elem.dtype.str) is not None:
+                    raise TypeError(default_collate_err_msg_format.format(elem.dtype))
+                return default_collate([torch.as_tensor(b) for b in batch], cat_1dim=cat_1dim)
+            elif elem.shape == ():  # scalars
+                return torch.as_tensor(batch)
+        elif isinstance(elem, float):
+            return torch.tensor(batch, dtype=torch.float32)
+        elif isinstance(elem, Qvalue):
+            return torch.tensor([x.q for x in batch], dtype=torch.float32)
+        elif isinstance(elem, int_classes):
+            dtype = torch.bool if isinstance(elem, bool) else torch.int64
+            return torch.tensor(batch, dtype=dtype)
+        elif isinstance(elem, string_classes):
+            return batch
+        elif isinstance(elem, container_abcs.Mapping):
+            ret = {}
+            for key in elem:
+                if any([key.startswith(t) for t in ignore_prefix]):
+                    ret[key] = [d[key] for d in batch]
+                else:
+                    ret[key] = default_collate([d[key] for d in batch], cat_1dim=cat_1dim)
+            return ret
+        elif isinstance(elem, tuple) and hasattr(elem, '_fields'):  # namedtuple
+            return elem_type(*(default_collate(samples, cat_1dim=cat_1dim) for samples in zip(*batch)))
+        elif isinstance(elem, container_abcs.Sequence):
+            transposed = zip(*batch)
+            return [default_collate(samples, cat_1dim=cat_1dim) for samples in transposed]
+
+        raise TypeError(default_collate_err_msg_format.format(elem_type))
     htable = {}
     htable[(1, 2, 3)] = Qvalue(1.)
     htable[(2, 2, 3)] = Qvalue(1.1)
@@ -441,7 +454,7 @@ def traj_q():
                 i.q.v = .5
                 print(i)
 
-    # batch = default_collate(traj)
+    batch = default_collate(traj)
     print()
 def exp_avg():
     a = [3, 4, 5]  # 1,2,
@@ -452,8 +465,6 @@ def exp_avg():
         summ += item * disc
         disc *= lamdda
     print(summ)
-def hash_list_test():
-    li = [(10,1,1,1)]
 M = 5
 if __name__ == '__main__':
     a = Qvalue(1.)
