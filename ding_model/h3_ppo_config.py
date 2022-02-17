@@ -1,10 +1,13 @@
 from easydict import EasyDict
 
+import sys
+
+Linux = "linux" == sys.platform
 gobigger_config = dict(
     exp_name='h3_ppo',
     env=dict(
-        collector_env_num=16,
-        evaluator_env_num=8,
+        collector_env_num=16 if Linux else 4,
+        evaluator_env_num=8 if Linux else 4,
         n_evaluator_episode=32,
         stop_value=3,
         manager=dict(shared_memory=False, ),
@@ -19,8 +22,8 @@ gobigger_config = dict(
         #     action_space='continuous',
         # ),
         learn=dict(
-            epoch_per_collect=10,
-            batch_size=64,
+            epoch_per_collect=4,
+            batch_size=256 if Linux else 16,
             learning_rate=3e-4,
             value_weight=0.5,
             entropy_weight=0.0,
@@ -29,7 +32,8 @@ gobigger_config = dict(
             value_norm=True,
         ),
         collect=dict(
-            n_episode=64, unroll_len=1,collector=dict(get_train_sample=True, )
+            n_episode=256 if Linux else 16,
+            unroll_len=1,collector=dict(get_train_sample=True, )
         ),
         # collect=dict(
         #     n_sample=2048,
