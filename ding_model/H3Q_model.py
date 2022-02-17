@@ -1,4 +1,5 @@
 import torch
+from ding.torch_utils import to_tensor
 from torch import nn
 import numpy as np
 # from H3_battle import logger
@@ -76,6 +77,7 @@ class H3Q_model(nn.Module):
         self.critic.to(self.device)
     #@profile
     def forward2(self,ind,attri_stack,planes_stack,plane_glb,action_mask=None):
+        ind = to_tensor(ind, dtype=torch.int32)
         id_emb = self.id_emb(ind)  ##self.id_emb(attri_stack[...,[2]].squeeze(-1).long())
         stack_emb = self.stack_emb(torch.cat([id_emb,attri_stack],dim=-1))
         stack_fc = self.stack_fc(stack_emb)

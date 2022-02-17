@@ -155,10 +155,14 @@ class DingH3Env(DingEnvWrapper):
         self._final_eval_reward += rew
         info['real_done'] = done
         if done:
-            if rew > 0 and self.outter_round < 10:
-                done = False
-                obs = self._env.reset()
+            if rew > 0:
+                if self.outter_round < 10:
+                    done = False
+                    obs = self._env.reset()
             else:
+                if self.outter_round > 0:
+                    self._final_eval_reward -= rew
+                    rew = -self.outter_round
                 info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
         rew = to_ndarray([rew])  # wrapped to be transferred to a Tensor with shape (1,)
