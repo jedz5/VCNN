@@ -24,5 +24,7 @@ bak.idea/
 *.pyperf
 learning/upgo_meta/log/
 learning/upgo_meta/ckpt/
+default_experiment/
+h3_ppo/
 *.png
 vcnn_env/
