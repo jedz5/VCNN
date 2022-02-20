@@ -6,29 +6,8 @@ from VCbattle import BHex
 COMBAT_BLOCKED, COMBAT_MOVE, COMBAT_FLY, COMBAT_SHOOT,COMBAT_HERO, COMBAT_QUERY, COMBAT_POINTER = range(7)
 COMBAT_SHOOT_PENALTY,COMBAT_SHOOT_CATAPULT, COMBAT_HEAL,COMBAT_SACRIFICE, COMBAT_TELEPORT = range(15,20)
 
-class log_with_gui(object):
-    def __init__(self,std_logger):
-        self.logger = std_logger
-        self.log_text = []
-    def info(self,text,to_gui = False):
-        # pass
-        self.logger.info(text)
-        if(to_gui):
-            self.log_text.append(text)
-    def debug(self,text,to_gui = False):
-        # pass
-        self.logger.debug(text)
-        if(to_gui):
-            self.log_text.append(text)
-    def error(self,text,to_gui = False):
-        # pass
-        self.logger.error(text)
-        if(to_gui):
-            self.log_text.append(text)
-    def setLevel(self,lvl):
-        self.logger.setLevel(lvl)
-logger = log_with_gui(get_logger()[1])
-set_logger(True,logger)
+import ENV.H3_battle
+ENV.H3_battle.log_gui_on = True
 class BPoint:
     def __init__(self,x,y):
         self.x = x
@@ -515,6 +494,7 @@ if __name__ == '__main__':
     # agent.load_state_dict(torch.load("model_param.pkl"))
     # arena = Battle(by_AI=[2, 1],agent=agent)
     # agent.in_train = False
+    std_logger.setLevel(logging.DEBUG)
     arena = Battle(by_AI=[0, 1])
     arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)

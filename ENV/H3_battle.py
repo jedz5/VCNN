@@ -9,6 +9,7 @@ import os
 import json
 np.set_printoptions(precision=2,suppress=True,sign=' ',linewidth=400,formatter={'float': '{: 0.2f}'.format})
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# std_logger = logging.getLogger('train')
 std_logger = logging.getLogger('train')
 handler = logging.FileHandler('train.log','w')
 handler.setLevel(logging.INFO)
@@ -25,14 +26,38 @@ else:
     sys.path.extend(['D:/project/VCNN', 'D:/project/VCNN/VCCC/lib/win'])
 import VCbattle  as vb
 from VCbattle import BHex
-def set_logger(lg_on,lg):
-    global log_gui_on
-    log_gui_on = lg_on
-    global logger
-    logger = lg
-def get_logger():
-    return log_gui_on,logger
-set_logger(False,std_logger)
+# def set_logger(lg_on,lg):
+#     global log_gui_on
+#     log_gui_on = lg_on
+#     global logger
+#     logger = lg
+# def get_logger():
+#     return log_gui_on,logger
+log_gui_on = False
+class log_with_gui(object):
+    def __init__(self):
+        # self.logger = std_logger
+        self.log_text = []
+    def info(self,text,to_gui = False):
+        # pass
+        std_logger.info(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def debug(self,text,to_gui = False):
+        # pass
+        std_logger.debug(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def error(self,text,to_gui = False):
+        # pass
+        std_logger.error(text)
+        if(to_gui):
+            self.log_text.append(text)
+    def setLevel(self,lvl):
+        std_logger.setLevel(lvl)
+        for h in std_logger.handlers:
+            h.setLevel(lvl)
+logger = log_with_gui()
 batId = 0
 with open("ENV/creatureData.json") as JsonFile:
     crList = json.load(JsonFile)["creatures"]
@@ -499,7 +524,9 @@ class Battle(object):
         self.stackQueue = [] #type:List[BStack]
         self.cur_stack = cur_stack
         self.last_stack = last_stack
-        self.batId = 0
+        global batId
+        batId += 1
+        self.batId = batId
         self.by_AI = by_AI
         self.ai_value = [0,0]
         self.bat_interface = None
@@ -973,7 +1000,7 @@ class Battle(object):
             self.sortStack()
         if(not is_self_play):
             side = "" if self.cur_stack.side else "me "
-            logger.debug("now it's {}{} turn".format(side, self.cur_stack.name), True)
+            logger.debug(f"now it's {side}{self.cur_stack.name} at ({self.cur_stack.y},{self.cur_stack.x}) turn", True)
 
     def newRound(self):
         self.round += 1
@@ -1088,7 +1115,7 @@ class Battle(object):
         move_mask_flat = move_mask[:,1:Battle.bFieldWidth-1].reshape(-1)
         mask[2:2+Battle.bFieldSize] = move_mask_flat
         bf[cur_stack.y,cur_stack.x] = cur_stack.speed # attack from where it stands
-        sq_len = len(self.stackQueue)
+        # sq_len = len(self.stackQueue)
         if cur_stack.can_shoot():
             for i, t in enumerate(self.stackQueue):
                 if bf[t.y,t.x] == 201:

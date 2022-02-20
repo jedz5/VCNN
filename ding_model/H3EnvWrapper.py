@@ -121,6 +121,8 @@ class DingH3Env(DingEnvWrapper):
             self._cfg = dict()
         self._env = env
         self.outter_round = 0
+        self.last_done_index = -1
+        self.step_count = 0
 
     # override
     def reset(self) -> None:
@@ -130,6 +132,8 @@ class DingH3Env(DingEnvWrapper):
         # elif hasattr(self, '_seed'):
         #     self._env.seed(self._seed)
         self.outter_round = 0
+        self.last_done_index = -1
+        self.step_count = 0
         obs = self._env.reset(continue_round=False)
         # obs = to_ndarray(obs).astype(np.float32)
         self._final_eval_reward = 0.0
@@ -152,19 +156,23 @@ class DingH3Env(DingEnvWrapper):
         if action.shape == (1, ) and self._action_type == 'scalar':
             action = action.squeeze()
         obs, rew, done, info = self._env.step(action)
-        self._final_eval_reward += rew
         info['real_done'] = done
         if done:
+            self._final_eval_reward += rew
             if rew > 0:
                 if self.outter_round < 10:
+                    self.last_done_index = self.step_count
+                    print(f"here round={self.outter_round}")
                     done = False
                     obs = self._env.reset()
             else:
                 if self.outter_round > 0:
                     self._final_eval_reward -= rew
-                    rew = -self.outter_round
-                info['final_eval_reward'] = self._final_eval_reward
+                    print(f"last done index={self.last_done_index}")
+                    rew = -self.last_done_index
+            info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
+        self.step_count += 1
         rew = to_ndarray([rew])  # wrapped to be transferred to a Tensor with shape (1,)
         return BaseEnvTimestep(obs, rew, done, info)
 

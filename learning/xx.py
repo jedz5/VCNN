@@ -465,6 +465,23 @@ def exp_avg():
         summ += item * disc
         disc *= lamdda
     print(summ)
+def _get_train_sample( data: list):
+    end_reward = data[-1]['reward']
+    last_rew = 0
+    if end_reward < -1:
+        last_done = data[int(-end_reward)]
+        assert data[last_done]
+        data = data[:last_done+1]
+    end_reward = data[-1]['reward']
+    for step in data:
+        step['g'] = end_reward - last_rew
+        step['adv'] = end_reward - last_rew - step['value']
+        last_rew = step['reward']
+    return data
+def test_get_train_sample():
+    data = [{'reward':1,'value':0.2},{'reward':2,'value':0.3},{'reward':3,'value':0.4},{'reward':4,'value':0.5},{'reward':5,'value':0.6}]
+    data2 = _get_train_sample(data)
+    print(data2)
 M = 5
 if __name__ == '__main__':
     a = Qvalue(1.)
