@@ -64,10 +64,10 @@ def compute_reward(battle: Battle):
 class GymH3EnvWrapper:
     def __init__(self,battle:Battle):
         self.battle = battle
-        self.orig_attacker_stacks = self.battle.attacker_stacks
+        self.orig_attacker_stacks = [copy.copy(st) for st in self.battle.attacker_stacks]
     def reset(self,**param):
         if not ('continue_round' in param and param['continue_round']):
-            self.battle.attacker_stacks = self.orig_attacker_stacks
+            self.battle.attacker_stacks = [copy.copy(st) for st in self.orig_attacker_stacks]
         self.battle.split_army(**param)
         self.battle.checkNewRound()
         end = self.battle.check_battle_end()
