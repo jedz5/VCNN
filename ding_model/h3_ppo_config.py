@@ -42,7 +42,7 @@ gobigger_config = dict(
         #     discount_factor=0.99,
         #     gae_lambda=0.97,
         # ),
-        eval=dict(evaluator=dict(eval_freq=300, )),
+        eval=dict(evaluator=dict(eval_freq=300,n_episode=32,stop_value=3, ),evaluator2=dict(eval_freq=300,n_episode=1,stop_value=3, )),
     )
 )
 main_config = EasyDict(gobigger_config)

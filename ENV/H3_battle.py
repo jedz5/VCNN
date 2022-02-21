@@ -1000,7 +1000,7 @@ class Battle(object):
             self.sortStack()
         if(not is_self_play):
             side = "" if self.cur_stack.side else "me "
-            logger.debug(f"now it's {side}{self.cur_stack.name} at ({self.cur_stack.y},{self.cur_stack.x}) turn", True)
+            logger.debug(f"now it's {side}{self.cur_stack.name}({self.cur_stack.amount}/{self.cur_stack.amount_base}) at ({self.cur_stack.y},{self.cur_stack.x}) turn", True)
 
     def newRound(self):
         self.round += 1

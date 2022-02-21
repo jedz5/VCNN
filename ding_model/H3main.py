@@ -32,13 +32,13 @@ def train():
         NaiveReplayBuffer,
         save_cfg=True
     )
-    collector_env_num, evaluator_env_num, evaluator_env_num2 = cfg.env.collector_env_num, cfg.env.evaluator_env_num, cfg.env.evaluator_env_num
+    collector_env_num, evaluator_env_num, evaluator_env_num2 = cfg.env.collector_env_num, cfg.env.evaluator_env_num, cfg.env.evaluator_env_num2
     collect_env = env_manager_class([lambda: DingH3Env(GymH3EnvWrapper(Battle(load_file='ENV/battles/0.json'))) for _ in range(collector_env_num)], cfg.env.manager)
     eval_env = env_manager_class(
         [lambda: DingH3Env(GymH3EnvWrapper(Battle(load_file='ENV/battles/0.json'))) for _ in range(evaluator_env_num)],
         cfg.env.manager)
     eval_env2 = BaseEnvManager(
-        [lambda: DingH3Env(GymH3EnvWrapper(Battle(load_file='ENV/battles/0.json'))) for _ in range(evaluator_env_num2)],
+        [lambda: DingH3Env(GymH3EnvWrapper(Battle(load_file='ENV/battles/0.json'))) for _ in range(1)],
         cfg.env.manager)
     # env.seed(0)
     tb_logger = SummaryWriter(os.path.join('./{}/log/'.format(cfg.exp_name), 'serial'))
@@ -50,7 +50,7 @@ def train():
         tb_logger,
         exp_name=cfg.exp_name,
         instance_name='evaluator')
-    evaluator2 = InteractionSerialEvaluator(cfg.policy.eval.evaluator,
+    evaluator2 = InteractionSerialEvaluator(cfg.policy.eval.evaluator2,
                                            eval_env2, policy.eval_mode,
                                            tb_logger,
                                            exp_name=cfg.exp_name,
@@ -62,13 +62,15 @@ def train():
     max_iterations = 1000
     for _ in range(max_iterations):
         if evaluator.should_eval(learner.train_iter):
+            logger.setLevel(logging.DEBUG)
+            logger.info(f"***********************eval {learner.train_iter}***********************")
+            for eval_i in range(evaluator_env_num2):
+                logger.debug(f"-------------eval env {eval_i}-------------")
+                evaluator2.eval()
+            logger.setLevel(logging.INFO)
             stop_flag, reward, = evaluator.eval(
                 learner.save_checkpoint, learner.train_iter, collector.envstep
             )
-            logger.setLevel(logging.DEBUG)
-            logger.info(f"eval {learner.train_iter}")
-            evaluator2.eval()
-            logger.setLevel(logging.INFO)
             if stop_flag:
                 break
         # Sampling data from environments

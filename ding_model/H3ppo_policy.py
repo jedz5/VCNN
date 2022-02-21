@@ -14,6 +14,7 @@ class h3_ppo_policy(PPOPolicy):
             print(f"end_reward={data[-1]['reward']}")
         end_reward = data[-1]['reward']
         for step in data:
+            assert step['obs']['action_mask'][step['action']].item() == 1,f"action id = {step['action'].item()}"
             step['g'] = end_reward - last_rew
             step['adv'] = end_reward - last_rew - step['value']
             last_rew = step['reward']
