@@ -65,7 +65,7 @@ def train():
             logger.setLevel(logging.DEBUG)
             logger.info(f"***********************eval {learner.train_iter}***********************")
             for eval_i in range(evaluator_env_num2):
-                logger.debug(f"-------------eval env {eval_i}-------------")
+                logger.debug(f"-------------eval-{learner.train_iter} env-{eval_i}-------------")
                 evaluator2.eval()
             logger.setLevel(logging.INFO)
             stop_flag, reward, = evaluator.eval(

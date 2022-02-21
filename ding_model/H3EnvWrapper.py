@@ -100,14 +100,10 @@ class GymH3EnvWrapper:
         # check done
         done, win = check_done(self.battle)
         info = {}
-        rew = 0.
         if done:
-            if win:
-                rew = compute_reward(self.battle)
-            else:
-                rew = -reward_def
-        else:
-            rew = compute_reward(self.battle)
+            info = {'win':win}
+        # else:
+        rew = compute_reward(self.battle)
         return obs,rew,done,info
     def close(self) -> None:
         self.battle.clear()
@@ -159,10 +155,10 @@ class DingH3Env(DingEnvWrapper):
         if action.shape == (1, ) and self._action_type == 'scalar':
             action = action.squeeze()
         obs, rew, done, info = self._env.step(action)
-        info['real_done'] = done
         if done:
+            win = info['win']
             self._final_eval_reward += rew
-            if rew > 0:
+            if win:
                 if self.outter_round < 10:
                     self.last_done_index = self.step_count
                     print(f"here round={self.outter_round}")

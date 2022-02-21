@@ -9,7 +9,7 @@ class h3_ppo_policy(PPOPolicy):
         last_rew = 0
         if end_reward < -1:
             last_done = int(-end_reward)
-            assert data[last_done]['reward'].item() > 0.3
+            # assert data[last_done]['reward'].item() > 0.3
             data = data[:last_done+1]
             print(f"end_reward={data[-1]['reward']}")
         end_reward = data[-1]['reward']
