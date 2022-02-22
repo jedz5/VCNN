@@ -60,6 +60,7 @@ def train():
     )
 
     max_iterations = 1000
+    eps = 0.3
     for _ in range(max_iterations):
         if evaluator.should_eval(learner.train_iter):
             logger.setLevel(logging.DEBUG)
@@ -74,7 +75,7 @@ def train():
             if stop_flag:
                 break
         # Sampling data from environments
-        collected_episode = collector.collect()
+        collected_episode = collector.collect(policy_kwargs={'eps': eps})
         print(f"data len = {len(collected_episode)}")
         learner.train(collected_episode, collector.envstep)
         torch.cuda.empty_cache()
