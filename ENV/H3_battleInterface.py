@@ -494,7 +494,7 @@ if __name__ == '__main__':
     # agent.load_state_dict(torch.load("model_param.pkl"))
     # arena = Battle(by_AI=[2, 1],agent=agent)
     # agent.in_train = False
-    std_logger.setLevel(logging.DEBUG)
+    # std_logger.setLevel(logging.DEBUG)
     arena = Battle(by_AI=[0, 1])
     arena.load_battle("ENV/battles/0.json", load_ai_side=False, format_postion=True)
     start_game_s_gui(battle=arena)

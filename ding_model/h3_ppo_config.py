@@ -34,7 +34,7 @@ gobigger_config = dict(
         ),
         collect=dict(
             n_episode=256 if Linux else 32,
-            unroll_len=1,collector=dict(get_train_sample=True, )
+            unroll_len=1,#collector=dict(get_train_sample=True, )
         ),
         # collect=dict(
         #     n_sample=2048,

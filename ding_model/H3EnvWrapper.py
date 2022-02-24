@@ -100,8 +100,9 @@ class GymH3EnvWrapper:
         # check done
         done, win = check_done(self.battle)
         info = {}
+        info["real_done"] = done
         if done:
-            info = {'win':win}
+            info["win"] = win
         # else:
         rew = compute_reward(self.battle)
         return obs,rew,done,info
@@ -159,16 +160,20 @@ class DingH3Env(DingEnvWrapper):
             win = info['win']
             self._final_eval_reward += rew
             if win:
-                if self.outter_round < 10:
-                    self.last_done_index = self.step_count
+                self.last_done_index = self.step_count
+                if self.outter_round < 10: #胜利次数不够10次，继续下一场
                     print(f"here round={self.outter_round}")
                     done = False
                     obs = self._env.reset()
-            else:
-                if self.outter_round > 0:
+                else: #胜利10次，结束采样
+                    info['real_done'] = self.step_count
+            else: #失败，结束采样
+                if self.outter_round > 0: #如果第一场胜利 则去掉最后一场失败的记录
                     self._final_eval_reward -= rew
                     print(f"last done index={self.last_done_index}")
-                    rew = -self.last_done_index
+                    info['real_done'] = self.last_done_index
+                else: #第一场就失败
+                    info['real_done'] = self.step_count
             info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
         self.step_count += 1

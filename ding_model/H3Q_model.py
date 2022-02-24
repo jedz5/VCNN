@@ -77,6 +77,8 @@ class H3Q_model(nn.Module):
         self.critic.to(self.device)
     #@profile
     def forward2(self,ind,attri_stack,planes_stack,plane_glb,action_mask=None):
+        orig_shape = ind.shape
+        batch_shape = orig_shape[:-1]
         ind = to_tensor(ind, dtype=torch.int32)
         id_emb = self.id_emb(ind)  ##self.id_emb(attri_stack[...,[2]].squeeze(-1).long())
         stack_emb = self.stack_emb(torch.cat([id_emb,attri_stack],dim=-1))
@@ -84,6 +86,9 @@ class H3Q_model(nn.Module):
         planes_conv = self.stack_plane_conv(planes_stack)
         glb_conv = self.global_plane_conv(plane_glb)
         all_fc = self.stack_plane_flat(torch.cat([stack_fc,planes_conv,glb_conv],dim=-1))
+        post_shape = all_fc.shape
+        rebatch_shape = [*batch_shape,post_shape[-1]]
+        all_fc = all_fc.reshape(rebatch_shape)
         return all_fc
     def forward(self, inputs: Union[torch.Tensor, Dict], mode: str) -> Dict:
         assert mode in self.mode, "not support forward mode: {}/{}".format(mode, self.mode)

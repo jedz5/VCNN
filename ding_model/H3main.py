@@ -6,13 +6,14 @@ import os
 import sys
 import torch
 import platform
+
 sys.path.extend('../')
+from ding_model.max_tree_collector import MaxTreeCollector
 from ENV.H3_battle import Battle
 from ENV.H3_battle import logger
 from ding.worker import EpisodeSerialCollector, BaseLearner, NaiveReplayBuffer, \
     InteractionSerialEvaluator
 from ding.envs import BaseEnvManager, SyncSubprocessEnvManager, AsyncSubprocessEnvManager
-from ding.policy import PPOPolicy
 from ding_model.H3EnvWrapper import DingH3Env,GymH3EnvWrapper
 from ding_model.H3Q_model import H3Q_model
 from ding_model.H3ppo_policy import h3_ppo_policy
@@ -44,7 +45,7 @@ def train():
     tb_logger = SummaryWriter(os.path.join('./{}/log/'.format(cfg.exp_name), 'serial'))
     model = H3Q_model()
     policy = h3_ppo_policy(cfg.policy, model=model)
-    collector = EpisodeSerialCollector(cfg.policy.collect.collector, collect_env, policy.collect_mode,tb_logger, exp_name=cfg.exp_name, instance_name='collector')
+    collector = MaxTreeCollector(cfg.policy.collect.collector, collect_env, policy.collect_mode,tb_logger, exp_name=cfg.exp_name, instance_name='collector')
     evaluator = InteractionSerialEvaluator(cfg.policy.eval.evaluator,
                                                 eval_env, policy.eval_mode,
         tb_logger,
