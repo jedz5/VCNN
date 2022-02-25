@@ -1,5 +1,6 @@
 import copy
 import json
+import logging
 from collections import defaultdict
 import re
 from collections.abc import Sequence, Mapping
@@ -478,38 +479,46 @@ def exp_avg():
 #         step['adv'] = end_reward - last_rew - step['value']
 #         last_rew = step['reward']
 #     return data
-def _get_train_sample(self, data: list):
+def process_standard_g(data: list,logger=None):
     r"""
     reward = [2,3,4,5]
     prev_reward = reward[:-1] = [0,2,3,4]
     r = reward - prev_reward = [2,1,1,1]
     g = reward[-1] - prev_reward = [5,3,2,1]
     """
-    last_done = data[-1]['real_done']
-    last_done = int(last_done)
-    if last_done < len(data)-1:
-        assert data[last_done]['real_done']
-        data = data[:last_done+1]
-        print(f"end_reward={data[-1]['reward']}")
+    # last_done = data[-1]['real_done']
+    # last_done = int(last_done)
+    # if last_done < len(data) - 1:
+    #     assert data[last_done]['real_done']
+    #     data = data[:last_done + 1]
+    #     data[-1]['done'] = True
+    #     data[-1]['real_done'] = last_done
+    #     logger.info(f"end_reward={data[-1]['reward']}")
+    win = False
+    prev_data = [None] + data[:-1]
     end_reward = 0
-    data[-1]['real_done'] = True
-    prev_data = [None]+data[:-1]
-    for step,prev_step in zip(data[::-1],prev_data[::-1]):
+    for step, prev_step in zip(data[::-1], prev_data[::-1]):
         # assert step['obs']['action_mask'][step['action']].item() == 1,f"action id = {step['action'].item()}"
         if step["real_done"]:
+            if win:
+                print(f"end_reward={data[-1]['reward']}")
+                end_reward = max(end_reward,0) #最后一场的负值不能传递到前面场次
+                print(f"current_reward={end_reward}")
             end_reward += step['reward']
+            win = True
         if prev_step:
-            step['g'] = end_reward - prev_step['reward'] * (1-int(prev_step["real_done"]))
+            step['g'] = end_reward - prev_step['reward'] * (1 - int(prev_step["real_done"]))
         else:
             step['g'] = end_reward
         step['adv'] = step['g'] - step['value']
     return data
 def test_get_train_sample():
     data = [{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},{'reward':4,'value':0.5,'real_done':False},
+            {'reward':5,'value':0.6,'real_done':True},{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},{'reward':4,'value':0.5,'real_done':False},
             {'reward':5,'value':0.6,'real_done':True},{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},
-            {'reward':4,'value':0.5,'real_done':False},{'reward':5,'value':0.6,'real_done':True}]
-    data[-1]['real_done'] = len(data)-1
-    data2 = _get_train_sample(0,data)
+            {'reward':4,'value':0.5,'real_done':False},{'reward':3,'value':0.6,'real_done':True}]
+    # data[-1]['real_done'] = len(data)-1
+    data2 = process_standard_g(data)
     print(data2)
 def reshape_test():
     a = torch.zeros((3,4,5,6))
@@ -517,4 +526,4 @@ def reshape_test():
     print(b)
 M = 5
 if __name__ == '__main__':
-    reshape_test()
+    test_get_train_sample()

@@ -65,10 +65,10 @@ class GymH3EnvWrapper:
     def __init__(self,battle:Battle):
         self.battle = battle
         self.orig_attacker_stacks = [copy.copy(st) for st in self.battle.attacker_stacks]
-    def reset(self,**param):
-        if not ('continue_round' in param and param['continue_round']):
+    def reset(self,continue_round=True):
+        if not continue_round:
             self.battle.attacker_stacks = [copy.copy(st) for st in self.orig_attacker_stacks]
-        self.battle.split_army(**param)
+        self.battle.split_army(continue_round=continue_round)
         self.battle.checkNewRound()
         end = self.battle.check_battle_end()
         while(not end and self.battle.cur_stack.by_AI == 1 ):
@@ -160,20 +160,21 @@ class DingH3Env(DingEnvWrapper):
             win = info['win']
             self._final_eval_reward += rew
             if win:
-                self.last_done_index = self.step_count
+                # self.last_done_index = self.step_count
                 if self.outter_round < 10: #胜利次数不够10次，继续下一场
                     print(f"here round={self.outter_round}")
                     done = False
                     obs = self._env.reset()
-                else: #胜利10次，结束采样
-                    info['real_done'] = self.step_count
+                # else: #胜利10次，结束采样
+                #     info['real_done'] = self.step_count
             else: #失败，结束采样
-                if self.outter_round > 0: #如果第一场胜利 则去掉最后一场失败的记录
-                    self._final_eval_reward -= rew
+                if self.outter_round > 0: #如果第一场胜利
+                    if rew < 0: #最后一场rew若为负，则rew = 0
+                        self._final_eval_reward -= rew
                     print(f"last done index={self.last_done_index}")
-                    info['real_done'] = self.last_done_index
-                else: #第一场就失败
-                    info['real_done'] = self.step_count
+                    # info['real_done'] = self.last_done_index
+                # else: #第一场就失败
+                #     info['real_done'] = self.step_count
             info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
         self.step_count += 1

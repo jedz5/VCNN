@@ -914,8 +914,8 @@ class Battle(object):
             return BAction(action_type.defend)
         elif ((move - 2) >= 0 and (move - 2) < self.bFieldSize):
             y = (move - 2) // (self.bFieldWidth - 2)
-            x = (move - 2) % (self.bFieldWidth - 2)
-            return BAction(action_type.move, BHex(x + 1,y))
+            x = (move - 2) % (self.bFieldWidth - 2) + 1
+            return BAction(action_type.move, BHex(x,y))
         elif ((move - 2 - self.bFieldSize) >= 0 and (move - 2 - self.bFieldSize) < 14):
             enemy_id = move - 2 - self.bFieldSize
             stack = self.stackQueue[enemy_id]

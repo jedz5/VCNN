@@ -6,7 +6,7 @@ from functools import cmp_to_key
 # from typing import Optional, Any, List, Tuple
 # import torch
 # from tianshou.data.batch import Batch
-from ding_model.collect_utils import process_standard_g
+from ding_model.collect_utils import process_standard_g, indexToAction_simple
 
 
 class Value:
@@ -109,7 +109,7 @@ class MaxTreeCollector(EpisodeSerialCollector):
         #     if abs(err) > 1E-6:
         #         return err
         # return 0
-        err = episode1[-1]['reward'] - episode2[-1]['reward']
+        err = episode1[0]['g'] - episode2[0]['g']
         if abs(err) > 1E-6:
             return err
         return 0
@@ -122,7 +122,6 @@ class MaxTreeCollector(EpisodeSerialCollector):
             for step,step_value,step_logit in zip(traj,policy_output['value'],policy_output['logit']):
                 step['value'] = step_value
                 step['logit'] = step_logit
-        print()
     def collect(self,*args,**kwargs):
         trajs = super(MaxTreeCollector, self).collect(*args,**kwargs)
         self.re_compute_ac(self.best_buffer)
@@ -134,7 +133,13 @@ class MaxTreeCollector(EpisodeSerialCollector):
         data.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
         self.best_buffer = data[:50]
         for t in self.best_buffer[:5]:
-            self._logger.info(f"best buffer reward = {t[-1]['reward']}")
+            act_str = "O"
+            for step in t:
+                act_str +=f"->{indexToAction_simple(step['action'])} "
+                if step["real_done"]:
+                    act_str +="T "
+            self._logger.info(act_str)
+            self._logger.info(f"best buffer reward = {t[0]['g']}")
         trajs.clear()
         for t in data:
             trajs.extend(t)
