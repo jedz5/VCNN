@@ -76,7 +76,7 @@ class H3Q_model(nn.Module):
         self.actor.to(self.device)
         self.critic.to(self.device)
     #@profile
-    def forward2(self,ind,attri_stack,planes_stack,plane_glb,action_mask=None):
+    def forward2(self,ind,attri_stack,attri_stack_orig,planes_stack,plane_glb,action_mask=None):
         orig_shape = ind.shape
         batch_shape = orig_shape[:-1]
         ind = to_tensor(ind, dtype=torch.int32)

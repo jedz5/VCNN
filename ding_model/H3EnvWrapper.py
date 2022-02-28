@@ -10,6 +10,8 @@ from ding.envs import BaseEnvTimestep, BaseEnvInfo, DingEnvWrapper
 from ding.envs.common.env_element import EnvElementInfo
 from ding.torch_utils import to_ndarray
 
+from ding_model.collect_utils import get_normalized_obs
+
 
 def check_done(battle:Battle):
     '''single troop get killed over 40% or shooter killed over 20%'''
@@ -79,9 +81,10 @@ class GymH3EnvWrapper:
         if end:
             print("died at first?")
             sys.exit(-1)
-        ind, attri_stack, planes_stack, plane_glb = self.battle.current_state_feature()
+        ind, attri_stack_orig, planes_stack, plane_glb = self.battle.current_state_feature()
         action_mask = self.battle.act_mask_flatten()
-        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb,'action_mask':action_mask}
+        attri_stack = get_normalized_obs(attri_stack_orig)
+        obs = {'ind': ind, 'attri_stack': attri_stack,'attri_stack_orig': attri_stack_orig, 'planes_stack': planes_stack, 'plane_glb': plane_glb,'action_mask':action_mask}
         return obs
     def step(self,action):
         act = self.battle.indexToAction(action)
@@ -93,9 +96,10 @@ class GymH3EnvWrapper:
             self.battle.doAction(act)
             self.battle.checkNewRound()
             end = self.battle.check_battle_end()
-        ind, attri_stack, planes_stack, plane_glb = self.battle.current_state_feature()
+        ind, attri_stack_orig, planes_stack, plane_glb = self.battle.current_state_feature()
         action_mask = self.battle.act_mask_flatten()
-        obs = {'ind': ind, 'attri_stack': attri_stack, 'planes_stack': planes_stack, 'plane_glb': plane_glb,'action_mask':action_mask}
+        attri_stack = get_normalized_obs(attri_stack_orig)
+        obs = {'ind': ind, 'attri_stack': attri_stack,'attri_stack_orig': attri_stack_orig, 'planes_stack': planes_stack, 'plane_glb': plane_glb,'action_mask':action_mask}
         # battle.curStack had updated
         # check done
         done, win = check_done(self.battle)
@@ -177,6 +181,8 @@ class DingH3Env(DingEnvWrapper):
                 #     info['real_done'] = self.step_count
             info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
+        else:
+            rew = 0
         self.step_count += 1
         rew = to_ndarray([rew])  # wrapped to be transferred to a Tensor with shape (1,)
         return BaseEnvTimestep(obs, rew, done, info)

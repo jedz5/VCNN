@@ -7,7 +7,7 @@ from ding.torch_utils import to_device
 from ding.utils.data import default_collate, default_decollate
 
 import torch
-from typing import Any
+from typing import Any, Dict
 
 
 class h3_ppo_policy(PPOPolicy):
@@ -16,8 +16,6 @@ class h3_ppo_policy(PPOPolicy):
         self._action_space = self._cfg.action_space
         self._collect_model = model_wrap(self._model, wrapper_name='eps_greedy_multinomial_sample')
         self._collect_model.reset()
-        self._gamma = self._cfg.collect.discount_factor
-        self._gae_lambda = self._cfg.collect.gae_lambda
         self._recompute_adv = self._cfg.recompute_adv
     def _process_transition(self, obs: Any, model_output: dict, timestep: namedtuple) -> dict:
         transition = {

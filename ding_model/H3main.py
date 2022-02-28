@@ -7,6 +7,8 @@ import sys
 import torch
 import platform
 
+from ding_model.H3Q_policy import h3_SQL_policy
+
 sys.path.extend('../')
 from ding_model.max_tree_collector import MaxTreeCollector
 from ENV.H3_battle import Battle
@@ -26,7 +28,7 @@ def train():
     cfg = compile_config(
         cfg,
         env_manager_class,
-        h3_ppo_policy,
+        h3_SQL_policy,
         BaseLearner,
         EpisodeSerialCollector,
         InteractionSerialEvaluator,
@@ -44,7 +46,7 @@ def train():
     # env.seed(0)
     tb_logger = SummaryWriter(os.path.join('./{}/log/'.format(cfg.exp_name), 'serial'))
     model = H3Q_model()
-    policy = h3_ppo_policy(cfg.policy, model=model)
+    policy = h3_SQL_policy(cfg.policy, model=model)
     collector = MaxTreeCollector(cfg.policy.collect.collector, collect_env, policy.collect_mode,tb_logger, exp_name=cfg.exp_name, instance_name='collector')
     evaluator = InteractionSerialEvaluator(cfg.policy.eval.evaluator,
                                                 eval_env, policy.eval_mode,
