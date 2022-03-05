@@ -28,3 +28,4 @@ default_experiment/
 h3_ppo/
 *.png
 vcnn_env/
+vcnn_env_scrash/
