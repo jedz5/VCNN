@@ -67,14 +67,14 @@ class H3Q_model(nn.Module):
         self.actor = nn.Linear(256, Battle.act_size_flat)
         self.critic = nn.Linear(256, 1)
         #
-        self.id_emb.to(self.device)
-        self.stack_fc.to(self.device)
-        self.stack_emb.to(self.device)
-        self.stack_plane_conv.to(self.device)
-        self.global_plane_conv.to(self.device)
-        self.stack_plane_flat.to(self.device)
-        self.actor.to(self.device)
-        self.critic.to(self.device)
+        # self.id_emb.to(self.device)
+        # self.stack_fc.to(self.device)
+        # self.stack_emb.to(self.device)
+        # self.stack_plane_conv.to(self.device)
+        # self.global_plane_conv.to(self.device)
+        # self.stack_plane_flat.to(self.device)
+        # self.actor.to(self.device)
+        # self.critic.to(self.device)
     #@profile
     def forward2(self,ind,attri_stack,attri_stack_orig,planes_stack,plane_glb,action_mask=None):
         orig_shape = ind.shape
@@ -109,3 +109,12 @@ class H3Q_model(nn.Module):
         logit = self.actor(all_fc)
         v = self.critic(all_fc)
         return {'logit': logit, 'value': v,'action_mask':x['action_mask']}
+    def to_dev(self,dev):
+        self.id_emb.to(dev)
+        self.stack_fc.to(dev)
+        self.stack_emb.to(dev)
+        self.stack_plane_conv.to(dev)
+        self.global_plane_conv.to(dev)
+        self.stack_plane_flat.to(dev)
+        self.actor.to(dev)
+        self.critic.to(dev)

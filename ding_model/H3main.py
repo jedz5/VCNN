@@ -6,10 +6,9 @@ import os
 import sys
 import torch
 import platform
+sys.path.extend('../')
 
 from ding_model.H3Q_policy import h3_SQL_policy
-
-sys.path.extend('../')
 from ding_model.max_tree_collector import MaxTreeCollector
 from ENV.H3_battle import Battle
 from ENV.H3_battle import logger
@@ -33,7 +32,7 @@ def train():
         EpisodeSerialCollector,
         InteractionSerialEvaluator,
         NaiveReplayBuffer,
-        save_cfg=True
+        save_cfg=False
     )
     collector_env_num, evaluator_env_num, evaluator_env_num2 = cfg.env.collector_env_num, cfg.env.evaluator_env_num, cfg.env.evaluator_env_num2
     collect_env = env_manager_class([lambda: DingH3Env(GymH3EnvWrapper(Battle(load_file='ENV/battles/0.json'))) for _ in range(collector_env_num)], cfg.env.manager)
@@ -61,13 +60,15 @@ def train():
     learner = BaseLearner(
         cfg.policy.learn.learner, policy.learn_mode, tb_logger, exp_name=cfg.exp_name, instance_name='learner'
     )
-
+    leanr_device = 'cuda' if cfg.policy.cuda else 'cpu'
     max_iterations = 1000
     eps = 0.3
+    model.to_dev('cpu')
     for _ in range(max_iterations):
         if evaluator.should_eval(learner.train_iter):
             logger.setLevel(logging.DEBUG)
             logger.info(f"***********************eval {learner.train_iter}***********************")
+            policy._device = 'cpu'
             for eval_i in range(evaluator_env_num2):
                 logger.debug(f"-------------eval-{learner.train_iter} env-{eval_i}-------------")
                 evaluator2.eval()
@@ -79,8 +80,11 @@ def train():
         # Sampling data from environments
         collected_episode = collector.collect(policy_kwargs={'eps': eps})
         print(f"data len = {len(collected_episode)}")
+        model.to_dev(leanr_device)
+        policy._device = leanr_device
         learner.train(collected_episode, collector.envstep)
         torch.cuda.empty_cache()
-
+        model.to_dev('cpu')
+        policy._device = 'cpu'
 if __name__ == '__main__':
     train()

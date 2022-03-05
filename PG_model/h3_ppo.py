@@ -3,8 +3,8 @@ import sys
 from collections import defaultdict
 from functools import cmp_to_key
 
-from ding.worker import EpisodeReplayBuffer
-from easydict import EasyDict
+# from ding.worker import EpisodeReplayBuffer
+# from easydict import EasyDict
 
 from ENV.H3_battleInterface import start_game_s_gui
 
@@ -23,7 +23,7 @@ import torch.nn.functional as F
 # import pdb
 
 np.set_printoptions(precision=1,suppress=True,sign=' ',linewidth=600,formatter={'float': '{: 0.1f}'.format})
-logger = get_logger()[1]
+# logger = get_logger()[1]
 logger.setLevel(logging.INFO)
 dev = 'cpu'
 def softmax(logits, mask_orig,dev,add_little = False,in_train = True):
@@ -471,15 +471,15 @@ class H3AgentQ(nn.Module):
                 collector.collect_eps(file_idx)
 
             current_data = collector.current_buffer
-            history = collector.history_buffer.sample(400,0)
+            # history = collector.history_buffer.sample(400,0)
             batch_data = current_data
-            if history:
-                batch_data = batch_data + history
+            # if history:
+            #     batch_data = batch_data + history
             if len(collector.best_hist_buffer):
-                batch_data = batch_data + collector.best_hist_buffer
+                batch_data = collector.best_hist_buffer + batch_data
             agent.train()
             agent.mode = 2
-            self.clear_table()
+            # self.clear_table()
             r'''build max tree'''
             self.Vstart = self.process_max_tree(batch_data)
             r'''[print(b.act.act_id) for b in batch_data]
@@ -488,8 +488,8 @@ class H3AgentQ(nn.Module):
             r'''剪枝'''
             batch_data.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
             collector.best_hist_buffer = batch_data[:50]
-            self.clear_table()
-            collector.history_buffer.push(current_data,-1)
+            # self.clear_table()
+            # collector.history_buffer.push(current_data,-1)
             collector.current_buffer.clear()
             batch_data_treed = self.Q_to_sars()
             if True: # debug log
@@ -1429,13 +1429,13 @@ class H3SampleCollector:
         self.record_sar:record_sar_max_tree = record_sar_func
         self.agent = agent
         self.buffer = full_buffer
-        cfg = EasyDict(replay_buffer_size=100, deepcopy=False, exp_name='test_episode_buffer',periodic_thruput_seconds=60,
-                       enable_track_used_data=False)
+        # cfg = EasyDict(replay_buffer_size=100, deepcopy=False, exp_name='test_episode_buffer',periodic_thruput_seconds=60,
+        #                enable_track_used_data=False)
         self.current_buffer = []
-        cfg.replay_buffer_size = 1000
-        self.history_buffer = EpisodeReplayBuffer(
-            cfg, exp_name=cfg.exp_name, instance_name='history_buffer'
-        )
+        # cfg.replay_buffer_size = 1000
+        # self.history_buffer = EpisodeReplayBuffer(
+        #     cfg, exp_name=cfg.exp_name, instance_name='history_buffer'
+        # )
         self.max_win_count = 0
         self.best_hist_buffer = []
         self.acted = False

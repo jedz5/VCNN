@@ -15,7 +15,7 @@ default_collate_err_msg_format = (
 int_classes = int
 np_str_obj_array_pattern = re.compile(r'[SaUO]')
 class Value:
-    def __init__(self,v=0.):
+    def __init__(self,v=0):
         self.v = v
     def __repr__(self):
         return f"{self.v}"

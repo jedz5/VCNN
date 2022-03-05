@@ -17,9 +17,10 @@ class MaxTreeCollector(EpisodeSerialCollector):
         self.Q = defaultdict(defaultdict_value) #Q[s] = {a,q}
         self.V = defaultdict(lambda : Value(-100.))
         self.sars_count = defaultdict(defaultdict_value)
-        self.S = {}
+        # self.S = {}
         self.sa_count = defaultdict(lambda : Value(0))
     def process_max_tree(self,data:list):
+        self.V.clear()
         for i,traj in enumerate(data):
             for j, t in enumerate(reversed(traj)):
                 s = tuple(map(tuple, t['obs']['attri_stack'].numpy()))
@@ -41,6 +42,14 @@ class MaxTreeCollector(EpisodeSerialCollector):
                     vs_ = max(map(lambda x:x.v,self.Q[s_].values()))
                     r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
                     self.V[s_].v = max([self.V[s_].v, vs_])
+                    r'''
+                   pre_step2  预备工作
+                   Gs = rss' + Gs_ - self.discount_factor
+                   为保证rss'不随策略pi改变,一种最简单实现方式为中间reward统统=0
+                   只有real_done=True时，r != 0
+                   '''
+                    r = t['reward']
+                    self.V[s_].v += r
                 nsa = self.sa_count[a, s]
                 nsa.v += 1
                 r'''step3                                            step2  V[s_] == Gs_, 其他s_下的r=0   '''
@@ -49,6 +58,9 @@ class MaxTreeCollector(EpisodeSerialCollector):
                          sum(map(lambda x:x.v,self.sars_count[a, s].values()))
                 qsa = self.Q[s][a]
                 qsa.v = qvalue
+                r'''对应real_done=True'''
+                if not t['done']:
+                    self.V[s_].v -= r
                 t['q'] = qsa
                 t['nsa'] = nsa
                 t['nsas'] = n
@@ -84,7 +96,7 @@ class MaxTreeCollector(EpisodeSerialCollector):
                 step['logit'] = step_logit
     def collect(self,*args,**kwargs):
         trajs = super(MaxTreeCollector, self).collect(*args,**kwargs)
-        self.re_compute_ac(self.best_buffer)
+        # self.re_compute_ac(self.best_buffer)
         trajs.extend(self.best_buffer)
         # data = []
         # for t in trajs:
@@ -93,10 +105,13 @@ class MaxTreeCollector(EpisodeSerialCollector):
         self.process_max_tree(trajs)
         trajs.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
         self.best_buffer = trajs[:50]
+        self._logger.info("-----------------------------------------------------------")
         for t in self.best_buffer[:5]:
             act_str = "O"
             for step in t:
-                act_str +=f"->{indexToAction_simple(step['action'])} "
+                stack_orig = tuple(step['obs']['attri_stack_orig'][0,2:5].numpy())
+                stack = tuple(step['obs']['attri_stack'][0, 3:7].numpy())
+                act_str +=f"->[{stack_orig[0]},{stack_orig[1]},{stack_orig[2]},{stack[0]},{stack[2]},{stack[3]}]{indexToAction_simple(step['action'])} {step['nsas'].v}/{step['nsa'].v} "
                 if step["real_done"]:
                     act_str +="T "
             self._logger.info(act_str)

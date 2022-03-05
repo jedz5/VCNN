@@ -1105,7 +1105,7 @@ class Battle(object):
     def act_mask_flatten(self):
         cur_stack = self.cur_stack
         assert not cur_stack.had_moved
-        mask = np.zeros((self.act_size_flat,))
+        mask = np.zeros((self.act_size_flat,),dtype=np.float32)
         if not cur_stack.had_waited:
             mask[0] = 1
         if not cur_stack.had_defended:

@@ -1,25 +1,86 @@
 from collections import namedtuple
-from ding.model import model_wrap
+from ding.model import model_wrap, IModelWrapper
+from ding.model.wrapper.model_wrappers import sample_action
 from ding.policy import PPOPolicy
 
 import sys
-from ding.policy.common_utils import default_preprocess_learn
+# from ding.policy.common_utils import default_preprocess_learn
 from ding.torch_utils import to_device
-from ding.utils import split_data_generator
-from ding.utils.data import default_collate, default_decollate
+from ding.utils import split_data_generator, MODEL_REGISTRY
+from ding.utils.data import default_decollate
 
 import torch
-from typing import Any, Dict
+import numpy as np
+from typing import Any, Dict, Optional, List
 import torch.nn.functional as F
 
 from ding_model.collect_utils import h3q_collate
+
+act_space = 265
+def epsilon_greedy(prob,ep,mask):
+    p = prob * (1-ep) + mask * ep/mask.sum(dim=-1,keepdim=True)
+    return p
+def gumbel_sample(logits,mask):
+    noise = np.random.gumbel(size=len(logits))
+    gl = logits + noise - 1E8*(1-mask)
+    sample = np.argmax(gl)
+    # noise = torch.Tensor(logits.shape).uniform_() #tf.random_uniform(tf.shape(logits))
+    # sample = torch.argmax(logits - torch.log(-torch.log(noise)), -1)
+    return sample
+class EpsGreedyMultinomialGumbleSampleWrapper(IModelWrapper):
+    r"""
+    Overview:
+        Epsilon greedy sampler coupled with multinomial sample used in collector_model
+        to help balance exploration and exploitation.
+    Interfaces:
+        register
+    """
+    def __init__(self, model: Any,env_n) -> None:
+        super(EpsGreedyMultinomialGumbleSampleWrapper, self).__init__(model)
+        self.gumble_noise = torch.zeros((env_n,act_space),dtype=torch.float32)
+
+    def forward(self, *args, **kwargs):
+        eps = kwargs.pop('eps')
+        env_ids = kwargs.pop('env_ids')
+        output = self._model.forward(*args, **kwargs)
+        assert isinstance(output, dict), "model output must be dict, but find {}".format(type(output))
+        logit = output['logit']
+        assert isinstance(logit, torch.Tensor) or isinstance(logit, list)
+        if isinstance(logit, torch.Tensor):
+            logit = [logit]
+        if 'action_mask' in output:
+            mask = output['action_mask']
+            if isinstance(mask, torch.Tensor):
+                mask = [mask]
+            logit = [l.sub_(1e8 * (1 - m)) for l, m in zip(logit, mask)]
+        else:
+            mask = None
+        action = []
+        for l,m in zip(logit,mask):
+            prob = torch.softmax(l, dim=-1)
+            prob = epsilon_greedy(prob, eps,m)
+            l2 = torch.log(prob)
+            gl = l2 + self.gumble_noise[env_ids] - 1E8*(1-m)
+            action.append(gl.argmax(dim=-1))
+        if len(action) == 1:
+            action, logit = action[0], logit[0]
+        output['action'] = action
+        return output
+    def reset(self,data_id: Optional[List[int]] = None):
+        if data_id is None:
+            noise = torch.Tensor(self.gumble_noise.shape).uniform_()
+            self.gumble_noise =  -torch.log(-torch.log(noise))
+        else:
+            env_id = data_id[0]
+            noise = torch.Tensor(torch.Size([act_space])).uniform_()
+            self.gumble_noise[env_id] = -torch.log(-torch.log(noise))#tf.random_uniform(tf.shape(logits))
 
 
 class h3_SQL_policy(PPOPolicy):
     def _init_collect(self):
         self._unroll_len = self._cfg.collect.unroll_len
         self._action_space = self._cfg.action_space
-        self._collect_model = model_wrap(self._model, wrapper_name='eps_greedy_multinomial_sample')
+        self._collect_model = EpsGreedyMultinomialGumbleSampleWrapper(self._model,self._cfg.collect.env_n)
         self._collect_model.reset()
         self._recompute_adv = self._cfg.recompute_adv
 
@@ -34,6 +95,8 @@ class h3_SQL_policy(PPOPolicy):
             "real_done": timestep.info["real_done"]
         }
         return transition
+    def _reset_collect(self, data_id: Optional[List[int]] = None) -> None:
+        self._collect_model.reset(data_id)
 
     # def _get_train_sample(self, data: list):
     #     r"""
@@ -65,13 +128,10 @@ class h3_SQL_policy(PPOPolicy):
     def _forward_collect(self, data: dict, eps: float = -1) -> dict:
         data_id = list(data.keys())
         data = h3q_collate(list(data.values()))
-        if self._cuda:
-            data = to_device(data, self._device)
+        data = to_device(data, 'cpu')
         self._collect_model.eval()
         with torch.no_grad():
-            output = self._collect_model.forward(data, mode='compute_actor', eps=eps)
-        if self._cuda:
-            output = to_device(output, 'cpu')
+            output = self._collect_model.forward(data, mode='compute_actor', eps=eps,env_ids=data_id)
         output = default_decollate(output)
         return {i: d for i, d in zip(data_id, output)}
 

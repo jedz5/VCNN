@@ -3,10 +3,11 @@ from easydict import EasyDict
 import platform
 
 Linux = "Linux" == platform.system()
+env_n = 32 if Linux else 4
 gobigger_config = dict(
     exp_name='h3_ppo',
     env=dict(
-        collector_env_num=32 if Linux else 4,
+        collector_env_num=env_n,
         evaluator_env_num=8 if Linux else 4,
         evaluator_env_num2=4 if Linux else 2,
         n_evaluator_episode=32,
@@ -35,6 +36,7 @@ gobigger_config = dict(
         collect=dict(
             n_episode=256 if Linux else 32,
             unroll_len=1,#collector=dict(get_train_sample=True, )
+            env_n = env_n
         ),
         # collect=dict(
         #     n_sample=2048,

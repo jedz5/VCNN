@@ -4,6 +4,7 @@ import logging
 from collections import defaultdict
 import re
 from collections.abc import Sequence, Mapping
+# from matplotlib.pyplot import hist, ylabel, xlabel
 from tianshou.data import Batch
 from typing import List, Dict, Union, Any
 from torch._six import string_classes
@@ -496,8 +497,45 @@ def reshape_test():
     a = torch.zeros((3,4,5,6))
     b = a.reshape(-1,30)
     print(b)
+def sum_map():
+    a = {'1': Qvalue(1), '2': Qvalue(2), '3': Qvalue(3)}
+    b = sum(map(lambda x: x.v, a.values()))
+    print()
+def epsilon_greedy(prob,ep,mask):
+    p = prob * (1-ep) + mask * ep/sum(mask)
+    return p
+def gumbel_sample(logits,mask=None):
+    noise = np.random.gumbel(size=len(logits))
+    gl = logits + noise
+    if mask is not None:
+        gl -= 1E8*(1-mask)
+    sample = np.argmax(gl)
+    # noise = torch.Tensor(logits.shape).uniform_() #tf.random_uniform(tf.shape(logits))
+    # sample = torch.argmax(logits - torch.log(-torch.log(noise)), -1)
+    return sample
+
+def gumble_max():
+    n_cats = 265
+    mask = np.zeros((n_cats,))
+    mask[[2,3,5]] = 1
+    mask[40:67] = 1
+    prob = torch.zeros((n_cats,),dtype=torch.float32)
+    prob[2] = .2
+    prob[3] = .3
+    prob[5] = .5
+    prob_ep = epsilon_greedy(prob,0.4,mask)
+    prob_ep = prob_ep.numpy()
+    # sample = np.random.choice(range(n_cats), p=prob_ep, size=100)
+    for i in range(100):
+        gumble_sample = np.array([gumbel_sample(np.log(prob_ep+1E-10),mask) for _ in range(100)])
+        a2 = sum(gumble_sample == 2)
+        a3 = sum(gumble_sample == 3)
+        a5 = sum(gumble_sample == 5)
+        z = a2+a3+a5
+        print(f"{a2/z}+{a3/z}+{a5/z} = {z}")
+
+
+
 M = 5
 if __name__ == '__main__':
-    a = {'1':Qvalue(1),'2':Qvalue(2),'3':Qvalue(3)}
-    b = sum(map(lambda x:x.v,a.values()))
-    print()
+    gumble_max()
