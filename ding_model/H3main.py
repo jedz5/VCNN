@@ -60,7 +60,7 @@ def train():
     learner = BaseLearner(
         cfg.policy.learn.learner, policy.learn_mode, tb_logger, exp_name=cfg.exp_name, instance_name='learner'
     )
-    leanr_device = 'cuda' if cfg.policy.cuda else 'cpu'
+    leanr_device = 'cuda' if Linux and cfg.policy.cuda else 'cpu'
     max_iterations = 1000
     eps = 0.3
     model.to_dev('cpu')
