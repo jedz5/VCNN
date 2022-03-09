@@ -20,7 +20,7 @@ act_space = 265
 def epsilon_greedy(prob,ep,mask):
     p = prob * (1-ep) + mask * ep/mask.sum(dim=-1,keepdim=True)
     return p
-def gumbel_sample(logits,mask):
+def gumbel_sample(logits,mask): #TODO 优化logit计算流程
     noise = np.random.gumbel(size=len(logits))
     gl = logits + noise - 1E8*(1-mask)
     sample = np.argmax(gl)

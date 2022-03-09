@@ -5,9 +5,12 @@ import numpy as np
 from functools import cmp_to_key
 # from typing import Optional, Any, List, Tuple
 # import torch
-from ding_model.collect_utils import process_standard_g, indexToAction_simple, Value, defaultdict_value, h3q_collate
+from ding_model.collect_utils import process_standard_g, indexToAction_simple, Value, defaultdict_value, h3q_collate, \
+    process_maxtree_g
 
-
+def compare_stack(step1,step2):
+    e = np.equal(step1['obs']['attri_stack'].numpy(),step2['obs']['attri_stack'].numpy())
+    return e.all()
 class MaxTreeCollector(EpisodeSerialCollector):
     def __init__(self,*args,**kwargs):
         cfg = args[0]
@@ -20,7 +23,7 @@ class MaxTreeCollector(EpisodeSerialCollector):
         # self.S = {}
         self.sa_count = defaultdict(lambda : Value(0))
     def process_max_tree(self,data:list):
-        for i,traj in enumerate(data):
+        for i, traj in enumerate(data):
             for j, t in enumerate(reversed(traj)):
                 s = tuple(map(tuple, t['obs']['attri_stack'].numpy()))
                 a = t['action'].item()  # {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
@@ -41,14 +44,14 @@ class MaxTreeCollector(EpisodeSerialCollector):
                     vs_ = max(map(lambda x:x.v,self.Q[s_].values()))
                     r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
                     self.V[s_].v = max([self.V[s_].v, vs_])
-                    r'''
-                   pre_step2  预备工作
-                   Gs = rss' + Gs_ - self.discount_factor
-                   为保证rss'不随策略pi改变self,一种最简单实现方式为中间reward统统=0
-                   只有real_done=True时，r != 0
-                   '''
-                    r = t['reward'].item()
-                    self.V[s_].v += r
+                   #  r'''
+                   # pre_step2  预备工作
+                   # Gs = rss' + Gs_ - self.discount_factor
+                   # 为保证rss'不随策略pi改变self,一种最简单实现方式为中间reward统统=0
+                   # 只有real_done=True时，r != 0
+                   # '''
+                    # r = t['reward'].item()
+                    # self.V[s_].v += r
                 nsa = self.sa_count[a, s]
                 nsa.v += 1
                 r'''step3                                            step2  V[s_] == Gs_, 其他s_下的r=0   '''
@@ -57,9 +60,9 @@ class MaxTreeCollector(EpisodeSerialCollector):
                          sum(map(lambda x:x.v,self.sars_count[a, s].values()))
                 qsa = self.Q[s][a]
                 qsa.v = qvalue
-                r'''对应real_done=True'''
-                if not t['done']:
-                    self.V[s_].v -= r
+                # r'''对应real_done=True'''
+                # if not t['done']:
+                #     self.V[s_].v -= r
                 t['q'] = qsa
                 t['nsa'] = nsa
                 t['nsas'] = n
@@ -95,7 +98,8 @@ class MaxTreeCollector(EpisodeSerialCollector):
                 step['logit'] = step_logit
     def collect(self,*args,**kwargs):
         trajs = super(MaxTreeCollector, self).collect(*args,**kwargs)
-        # self.re_compute_ac(self.best_buffer)
+        for i,traj in enumerate(trajs):
+            process_maxtree_g(traj,compare_stack)
         trajs.extend(self.best_buffer)
         # data = []
         # for t in trajs:
@@ -107,12 +111,12 @@ class MaxTreeCollector(EpisodeSerialCollector):
         self._logger.info("-----------------------------------------------------------")
         for t in self.best_buffer[:5]:
             act_str = "O"
-            for step in t:
+            for i,step in enumerate(t):
                 stack_orig = tuple(step['obs']['attri_stack_orig'][0,2:5].numpy())
                 stack = tuple(step['obs']['attri_stack'][0, 3:7].numpy())
-                act_str +=f"->[{stack_orig[0]},{stack_orig[1]},{stack_orig[2]},{stack[0]},{stack[2]},{stack[3]}]{indexToAction_simple(step['action'])} {step['nsas'].v}/{step['nsa'].v} "
+                act_str +=f"->[{stack_orig[0]},{stack_orig[1]},{stack_orig[2]},{stack[0]},{stack[2]},{stack[3]}]{indexToAction_simple(step)} {step['nsas'].v}/{step['nsa'].v} "
                 if step["real_done"]:
-                    act_str +="T "
+                    act_str +="T \nO**********************************************************************" if i+1<len(t) else "T"
             self._logger.info(act_str)
             self._logger.info(f"head/tail/reward/ = {t[0]['q']}/{t[-1]['q']}/{t[-1]['reward'].item()}")
         data = []

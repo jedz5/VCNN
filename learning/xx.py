@@ -5,11 +5,13 @@ from collections import defaultdict
 import re
 from collections.abc import Sequence, Mapping
 # from matplotlib.pyplot import hist, ylabel, xlabel
-from tianshou.data import Batch
+# from tianshou.data import Batch
 from typing import List, Dict, Union, Any
 from torch._six import string_classes
 import collections.abc as container_abcs
 from ding.compatibility import torch_gt_131
+
+
 int_classes = int
 np_str_obj_array_pattern = re.compile(r'[SaUO]')
 
@@ -485,14 +487,40 @@ def process_standard_g(data: list,logger=None):
             step['g'] = end_reward
         step['adv'] = step['g'] - step['value']
     return data
+def process_maxtree_g(data:list):
+    last_start = 0
+    reward_cum = 0
+    for i,step in enumerate(data):
+        if step['real_done']:
+            if i+1 < len(data):
+                if data[last_start]['obs'] == data[i+1]['obs']:
+                    reward_cum += step['reward']
+                    step['reward'] = 0
+                else:
+                    step['reward'] += reward_cum
+                    reward_cum = 0
+                    step['done'] = True
+            else:
+                step['reward'] += reward_cum
+    reward_cum = 0
+    for step in reversed(data):
+        if step['done']:
+            step['reward'] += reward_cum
+            reward_cum = step['reward']
 def test_get_train_sample():
-    data = [{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},{'reward':4,'value':0.5,'real_done':False},
-            {'reward':5,'value':0.6,'real_done':True},{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},{'reward':4,'value':0.5,'real_done':False},
-            {'reward':5,'value':0.6,'real_done':True},{'reward':1,'value':0.2,'real_done':False},{'reward':2,'value':0.3,'real_done':False},{'reward':3,'value':0.4,'real_done':False},
-            {'reward':4,'value':0.5,'real_done':False},{'reward':3,'value':0.6,'real_done':True}]
+    data = [{'obs':1,'reward':1,'value':0.2,'real_done':False},{'obs':2,'reward':2,'value':0.3,'real_done':False},{'obs':3,'reward':3,'value':0.4,'real_done':False},{'obs':4,'reward':4,'value':0.5,'real_done':False},
+            {'obs':5,'reward':5,'value':0.6,'real_done':True},{'obs':1,'reward':1,'value':0.2,'real_done':False},{'obs':1,'reward':2,'value':0.3,'real_done':False},{'obs':1,'reward':3,'value':0.4,'real_done':False},
+            {'obs':1,'reward':4,'value':0.5,'real_done':False},
+            {'obs':5,'reward':5,'value':0.6,'real_done':True},{'obs':2,'reward':1,'value':0.2,'real_done':False},{'obs':1,'reward':2,'value':0.3,'real_done':False},{'obs':1,'reward':3,'value':0.4,'real_done':False},
+            {'obs':1,'reward':4,'value':0.5,'real_done':False},{'obs':1,'reward':3,'value':0.6,'real_done':True},{'obs':2,'reward':1,'value':0.2,'real_done':False},{'obs':1,'reward':2,'value':0.3,'real_done':False},
+            {'obs':1,'reward':3,'value':0.4,'real_done':False},
+            {'obs':1,'reward':4,'value':0.5,'real_done':False},{'obs':1,'reward':3,'value':0.6,'real_done':True}]
     # data[-1]['real_done'] = len(data)-1
-    data2 = process_standard_g(data)
-    print(data2)
+    for step in data:
+        step['done'] = False
+    data[-1]['done'] = True
+    data2 = process_maxtree_g(data)
+    print(data)
 def reshape_test():
     a = torch.zeros((3,4,5,6))
     b = a.reshape(-1,30)
@@ -538,4 +566,4 @@ def gumble_max():
 
 M = 5
 if __name__ == '__main__':
-    gumble_max()
+    test_get_train_sample()

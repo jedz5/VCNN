@@ -55,6 +55,26 @@ def process_standard_g(data: list,logger=None):
             step['g'] = end_reward
         step['adv'] = step['g'] - step['value']
     return data
+def process_maxtree_g(data:list,compare_equal_func):
+    last_start = 0
+    reward_cum = 0
+    for i,step in enumerate(data):
+        if step['real_done']:
+            if i+1 < len(data):
+                if compare_equal_func(data[last_start],data[i+1]):
+                    reward_cum += step['reward']
+                    step['reward'] -= step['reward']
+                else:
+                    step['reward'] += reward_cum
+                    reward_cum = 0
+                    step['done'] = True
+            else:
+                step['reward'] += reward_cum
+    reward_cum = 0
+    for step in reversed(data):
+        if step['done']:
+            step['reward'] += reward_cum
+            reward_cum = step['reward']
 def get_normalized_obs(attri_stack_orig):
     # attri_stack[i] = np.array(
     #     [st.side, st.slotId, st.id, st.amount, st.amount_base, st.first_HP_Left, st.health, st.luck, st.attack,
@@ -94,8 +114,8 @@ def get_normalized_obs(attri_stack_orig):
     return attri_stack
 bFieldWidth = 17
 bFieldSize = 15 * 11
-def indexToAction_simple(move):
-    move = int(move)
+def indexToAction_simple(step):
+    move = int(step['action'])
     if (move < 0):
         print('wrong move {}'.format(move))
         exit(-1)
@@ -109,11 +129,14 @@ def indexToAction_simple(move):
         return f"m({y},{x})"
     elif ((move - 2 - bFieldSize) >= 0 and (move - 2 - bFieldSize) < 14):
         enemy_id = move - 2 - bFieldSize
-        return f"sh({enemy_id})"
+        stack_orig = tuple(step['obs']['attri_stack_orig'][enemy_id, 2:5].numpy())
+        # stack = tuple(step['obs']['attri_stack'][enemy_id, 3:7].numpy())
+        return f"sh({enemy_id}[{stack_orig[1]}/{stack_orig[2]}])"
     elif ((move - 2 - bFieldSize - 14) >= 0):
         direction = (move - 2 - bFieldSize - 14) % 6
         enemy_id = (move - 2 - bFieldSize - 14) // 6
-        return f"att({enemy_id},d{direction})"
+        stack_orig = tuple(step['obs']['attri_stack_orig'][enemy_id, 2:5].numpy())
+        return f"att({enemy_id}[{stack_orig[1]}/{stack_orig[2]}],d{direction})"
     else:
         print('wrong move {}'.format(move))
         exit(-1)

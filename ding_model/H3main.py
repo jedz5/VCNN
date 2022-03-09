@@ -62,7 +62,7 @@ def train():
     )
     leanr_device = 'cuda' if Linux and cfg.policy.cuda else 'cpu'
     max_iterations = 1000
-    eps = 0.3
+    eps = 0.8
     model.to_dev('cpu')
     for _ in range(max_iterations):
         if evaluator.should_eval(learner.train_iter):
