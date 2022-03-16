@@ -11,6 +11,7 @@ from torch._six import string_classes
 import collections.abc as container_abcs
 from ding.compatibility import torch_gt_131
 
+from ding_model.max_tree_collector import MaxTreeCollector
 
 int_classes = int
 np_str_obj_array_pattern = re.compile(r'[SaUO]')
@@ -497,6 +498,7 @@ def process_maxtree_g(data:list):
                     reward_cum += step['reward']
                     step['reward'] = 0
                 else:
+                    last_start = i+1
                     step['reward'] += reward_cum
                     reward_cum = 0
                     step['done'] = True
@@ -515,12 +517,66 @@ def test_get_train_sample():
             {'obs':1,'reward':4,'value':0.5,'real_done':False},{'obs':1,'reward':3,'value':0.6,'real_done':True},{'obs':2,'reward':1,'value':0.2,'real_done':False},{'obs':1,'reward':2,'value':0.3,'real_done':False},
             {'obs':1,'reward':3,'value':0.4,'real_done':False},
             {'obs':1,'reward':4,'value':0.5,'real_done':False},{'obs':1,'reward':3,'value':0.6,'real_done':True}]
-    # data[-1]['real_done'] = len(data)-1
+    data[-1]['real_done'] = len(data)-1
     for step in data:
         step['done'] = False
     data[-1]['done'] = True
     data2 = process_maxtree_g(data)
     print(data)
+def max_tree_backprop():
+    data = []
+    # data += [[{'obs': (0,0), 'next_obs': (0,1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (0,1), 'next_obs': (1,0), 'action': 0, 'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+    #           {'obs': (1,0), 'next_obs': (1,1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (1,1), 'next_obs': (1,5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True,'done': True}] for i in range(9)]
+    # data += [[{'obs': (0,0), 'next_obs': (0,1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (0, 1), 'next_obs': (1, 0), 'action': 0, 'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+    #           {'obs': (1, 0), 'next_obs': (1, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (1, 1), 'next_obs': (2, 0), 'action': 0,'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+    #           {'obs': (2, 0), 'next_obs': (2, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (2, 1), 'next_obs': (2, 5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True, 'done': True}]]
+    # data += [[{'obs': (0,0), 'next_obs': (0,1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+    #           {'obs': (0, 1), 'next_obs': (0, 5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True, 'done': True}] for i in range(90)]
+    data += [
+        [{'obs': (0, 0), 'next_obs': (0, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 1), 'next_obs': (0, 5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True, 'done': True}]
+        for i in range(90)]
+    data += [
+        [{'obs': (0, 0), 'next_obs': (0, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 1), 'next_obs': (0, 0), 'action': 0, 'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+         {'obs': (0, 0), 'next_obs': (0, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 1), 'next_obs': (0, 5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True, 'done': True}]
+        for i in range(9)]
+    data += [
+        [{'obs': (0, 0), 'next_obs': (0, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 1), 'next_obs': (0, 0), 'action': 0, 'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+         {'obs': (0, 0), 'next_obs': (0, 1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 1), 'next_obs': (0, 2), 'action': 0, 'reward': 0.7, 'value': 0., 'real_done': True, 'done': False},
+         {'obs': (0, 2), 'next_obs': (0, 3), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
+         {'obs': (0, 3), 'next_obs': (0, 5), 'action': 0, 'reward': 0.4, 'value': 0., 'real_done': True, 'done': True}]]
+
+
+
+
+
+    for traj in data:
+        process_maxtree_g(traj)
+    print()
+    np.random.shuffle(data)
+    from ding.worker import EpisodeSerialCollector
+    from ding.envs import BaseEnvManager, SyncSubprocessEnvManager, AsyncSubprocessEnvManager
+    from ding.policy import DQNPolicy
+    from ding.model import DQN
+    from dizoo.classic_control.cartpole.envs import CartPoleEnv
+    env = BaseEnvManager([lambda: CartPoleEnv({}) for _ in range(8)], BaseEnvManager.default_config())
+    env.seed(0)
+    model = DQN(obs_shape=4, action_shape=1)
+    policy = DQNPolicy(DQNPolicy.default_config(), model=model).collect_mode
+    collector = MaxTreeCollector(EpisodeSerialCollector.default_config(), env, policy)
+    collector.process_max_tree(data)
+    print(data)
+
+
 def reshape_test():
     a = torch.zeros((3,4,5,6))
     b = a.reshape(-1,30)
@@ -566,4 +622,4 @@ def gumble_max():
 
 M = 5
 if __name__ == '__main__':
-    test_get_train_sample()
+    max_tree_backprop()

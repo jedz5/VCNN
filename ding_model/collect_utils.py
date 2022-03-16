@@ -65,6 +65,7 @@ def process_maxtree_g(data:list,compare_equal_func):
                     reward_cum += step['reward']
                     step['reward'] -= step['reward']
                 else:
+                    last_start = i + 1
                     step['reward'] += reward_cum
                     reward_cum = 0
                     step['done'] = True

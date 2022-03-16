@@ -35,10 +35,11 @@ class EpsGreedyMultinomialGumbleSampleWrapper(IModelWrapper):
     Interfaces:
         register
     """
-    def __init__(self, model: Any,env_n) -> None:
+    def __init__(self, model: Any,env_n,eps2 = 0.9) -> None:
         super(EpsGreedyMultinomialGumbleSampleWrapper, self).__init__(model)
         self.gumble_noise = torch.zeros((env_n,act_space),dtype=torch.float32)
-
+        self.eps2 = eps2
+        self.env_n = env_n
     def forward(self, *args, **kwargs):
         eps = kwargs.pop('eps')
         env_ids = kwargs.pop('env_ids')
@@ -68,12 +69,24 @@ class EpsGreedyMultinomialGumbleSampleWrapper(IModelWrapper):
         return output
     def reset(self,data_id: Optional[List[int]] = None):
         if data_id is None:
-            noise = torch.Tensor(self.gumble_noise.shape).uniform_()
-            self.gumble_noise =  -torch.log(-torch.log(noise))
+            for ii in range(self.env_n):
+                if np.random.random() > self.eps2:
+                    noise =  torch.zeros((act_space,),dtype=torch.float32)
+                else:
+                    noise_0 = torch.Tensor(torch.Size([act_space])).uniform_()
+                    noise = -torch.log(-torch.log(noise_0))
+                self.gumble_noise[ii] = noise
+
         else:
             env_id = data_id[0]
-            noise = torch.Tensor(torch.Size([act_space])).uniform_()
-            self.gumble_noise[env_id] = -torch.log(-torch.log(noise))#tf.random_uniform(tf.shape(logits))
+            if np.random.random() > self.eps2:
+                noise = torch.zeros((act_space,), dtype=torch.float32)
+            else:
+                noise_0 = torch.Tensor(torch.Size([act_space])).uniform_()
+                noise = -torch.log(-torch.log(noise_0))
+            self.gumble_noise[env_id] = noise
+            # noise = torch.Tensor(torch.Size([act_space])).uniform_()
+            # self.gumble_noise[env_id] = -torch.log(-torch.log(noise))#tf.random_uniform(tf.shape(logits))
 
 
 class h3_SQL_policy(PPOPolicy):

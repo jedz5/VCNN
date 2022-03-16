@@ -5,7 +5,7 @@ import numpy as np
 
 import sys
 
-from ENV.H3_battle import Battle
+from ENV.H3_battle import Battle,logger
 from ding.envs import BaseEnvTimestep, BaseEnvInfo, DingEnvWrapper
 from ding.envs.common.env_element import EnvElementInfo
 from ding.torch_utils import to_ndarray
@@ -65,9 +65,11 @@ def compute_reward(battle: Battle):
     return reward
 class GymH3EnvWrapper:
     def __init__(self,battle:Battle):
+        self.step_count = 0
         self.battle = battle
         self.orig_attacker_stacks = [copy.copy(st) for st in self.battle.attacker_stacks]
     def reset(self,continue_round=True):
+        self.step_count = 0
         if not continue_round:
             self.battle.attacker_stacks = [copy.copy(st) for st in self.orig_attacker_stacks]
         self.battle.split_army(continue_round=continue_round)
@@ -109,9 +111,21 @@ class GymH3EnvWrapper:
             info["win"] = win
         # else:
         rew = compute_reward(self.battle)
+        self.step_count += 1
+        if self.step_count == 4:
+            bf = self.battle.cur_stack.get_global_state()
+            if bf[0,2] >= 400:
+                logger.info("right 1")
+            if bf[1,1] >= 400:
+                logger.info("right 2")
+            if bf[1,2] >= 400:
+                logger.info("right 3")
+            if bf[0,1] >= 400 and bf[0,2] >= 400 and bf[1,1] >= 400 and bf[1,2] >= 400:
+                logger.info("<<<<<<<<<<<<<<<<<<<<<you stand right!>>>>>>>>>>>>>>>>>>>>>")
         return obs,rew,done,info
     def close(self) -> None:
         self.battle.clear()
+        self.step_count = 0
     # override
     # def seed(self, seed: int, dynamic_seed: bool = True) -> None:
     #     self._seed = seed
@@ -126,7 +140,6 @@ class DingH3Env(DingEnvWrapper):
         self._env = env
         self.outter_round = 0
         self.last_done_index = -1
-        self.step_count = 0
 
     # override
     def reset(self) -> None:
@@ -137,7 +150,6 @@ class DingH3Env(DingEnvWrapper):
         #     self._env.seed(self._seed)
         self.outter_round = 0
         self.last_done_index = -1
-        self.step_count = 0
         obs = self._env.reset(continue_round=False)
         # obs = to_ndarray(obs).astype(np.float32)
         self._final_eval_reward = 0.0
@@ -183,7 +195,6 @@ class DingH3Env(DingEnvWrapper):
             self.outter_round += 1
         else:
             rew = 0
-        self.step_count += 1
         rew = to_ndarray([rew])  # wrapped to be transferred to a Tensor with shape (1,)
         return BaseEnvTimestep(obs, rew, done, info)
 

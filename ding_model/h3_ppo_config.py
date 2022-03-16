@@ -8,8 +8,8 @@ gobigger_config = dict(
     exp_name='h3_ppo',
     env=dict(
         collector_env_num=env_n,
-        evaluator_env_num=8 if Linux else 4,
-        evaluator_env_num2=4 if Linux else 2,
+        evaluator_env_num=8 if Linux else 8,
+        evaluator_env_num2=8 if Linux else 8,
         n_evaluator_episode=32,
         stop_value=3,
         manager=dict(shared_memory=False, ),

@@ -11,6 +11,11 @@ from ding_model.collect_utils import process_standard_g, indexToAction_simple, V
 def compare_stack(step1,step2):
     e = np.equal(step1['obs']['attri_stack'].numpy(),step2['obs']['attri_stack'].numpy())
     return e.all()
+def copy_table(table_from,table_to, key):
+    if key not in table_to:
+        table_to[key] = table_from[key]
+    else:
+        assert table_to[key] == table_from[key]
 class MaxTreeCollector(EpisodeSerialCollector):
     def __init__(self,*args,**kwargs):
         cfg = args[0]
@@ -19,8 +24,7 @@ class MaxTreeCollector(EpisodeSerialCollector):
         self.best_buffer = []
         self.Q = defaultdict(defaultdict_value) #Q[s] = {a,q}
         self.V = defaultdict(lambda : Value(-100.))
-        self.sars_count = defaultdict(defaultdict_value)
-        # self.S = {}
+        self.sars_count = defaultdict(defaultdict_value) #
         self.sa_count = defaultdict(lambda : Value(0))
     def process_max_tree(self,data:list):
         for i, traj in enumerate(data):
@@ -28,6 +32,10 @@ class MaxTreeCollector(EpisodeSerialCollector):
                 s = tuple(map(tuple, t['obs']['attri_stack'].numpy()))
                 a = t['action'].item()  # {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
                 s_ = tuple(map(tuple, t['next_obs']['attri_stack'].numpy()))
+                # s = t['obs']
+                # a = t['action']  # {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
+                # s_ = t['next_obs']
+                # r = t['reward']
                 if t['done']:
                     first_done = True
                     T = (0, 0, 0, a, s)
@@ -43,7 +51,7 @@ class MaxTreeCollector(EpisodeSerialCollector):
                     n.v += 1
                     vs_ = max(map(lambda x:x.v,self.Q[s_].values()))
                     r'''step1 Vs_ = max(Vs_,max(Qs_a))'''
-                    self.V[s_].v = max([self.V[s_].v, vs_])
+                    self.V[s_].v = vs_ #max([self.V[s_].v, ])
                    #  r'''
                    # pre_step2  预备工作
                    # Gs = rss' + Gs_ - self.discount_factor
@@ -96,16 +104,49 @@ class MaxTreeCollector(EpisodeSerialCollector):
             for step,step_logit in zip(traj,policy_output['logit']):
                 # step['value'] = step_value
                 step['logit'] = step_logit
+
+
+    def clear_table(self,save_best=True):
+        if save_best and len(self.best_buffer)> 0:
+            Q1 = defaultdict(defaultdict_value)  # Q[s] = {a,q}
+            V1 = defaultdict(lambda: Value(-100.))
+            sars_count1 = defaultdict(defaultdict_value)  #
+            sa_count1 = defaultdict(lambda: Value(0))
+            for traj in self.best_buffer:
+                for j,t in enumerate(traj):
+                    s = tuple(map(tuple, t['obs']['attri_stack'].numpy()))
+                    a = t['action'].item()  # {'act_id': act_id, 'spell_id': spell_id, 'target_id': target_id, 'position_id': position_id,
+                    s_ = tuple(map(tuple, t['next_obs']['attri_stack'].numpy()))
+                    if t['done']:
+                        s_ = (0, 0, 0, a, s)
+                    copy_table(self.V, V1, s_)
+                    copy_table(self.Q, Q1, s)
+                    sars_count1[a, s] = self.sars_count[a, s]
+                    sa_count1[a,s] = self.sa_count[a,s]
+                    for ss_ in self.sars_count[a, s].keys():
+                        copy_table(self.V,V1,ss_)
+            self.Q.clear()
+            self.V.clear()
+            self.sars_count.clear()
+            self.sa_count.clear()
+            self.Q = Q1
+            self.V = V1
+            self.sars_count = sars_count1
+            self.sa_count = sa_count1
+        else: #just clear them
+            self.Q.clear()
+            self.V.clear()
+            self.sars_count.clear()
+            self.sa_count.clear()
+
+
     def collect(self,*args,**kwargs):
         trajs = super(MaxTreeCollector, self).collect(*args,**kwargs)
+        self.clear_table()
         for i,traj in enumerate(trajs):
             process_maxtree_g(traj,compare_stack)
-        trajs.extend(self.best_buffer)
-        # data = []
-        # for t in trajs:
-            # t1 = process_standard_g(t,self._logger)
-            # data.append(t1)
         self.process_max_tree(trajs)
+        trajs.extend(self.best_buffer)
         trajs.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
         self.best_buffer = trajs[:50]
         self._logger.info("-----------------------------------------------------------")
