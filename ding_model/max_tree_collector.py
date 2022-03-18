@@ -11,6 +11,26 @@ from ding_model.collect_utils import process_standard_g, indexToAction_simple, V
 def compare_stack(step1,step2):
     e = np.equal(step1['obs']['attri_stack'].numpy(),step2['obs']['attri_stack'].numpy())
     return e.all()
+def compare_traj(traj1,traj2):
+    if len(traj1) == len(traj2):
+        for step1,step2 in zip(traj1,traj2):
+            if step1['action'].item() != step2['action'].item():
+                return False
+        return True
+    else:
+        return False
+class hash_traj(object):
+    __slots__ = ['traj','plain_text']
+
+    def __init__(self, traj):
+        self.traj = traj
+        self.plain_text = tuple([len(self.traj)] + [step1['action'].item() for step1 in traj])
+    def __eq__(self, other):
+        return self.plain_text == other.plain_text
+    def __hash__(self):
+        return hash(self.plain_text)
+
+
 def copy_table(table_from,table_to, key):
     if key not in table_to:
         table_to[key] = table_from[key]
@@ -143,14 +163,23 @@ class MaxTreeCollector(EpisodeSerialCollector):
     def collect(self,*args,**kwargs):
         trajs = super(MaxTreeCollector, self).collect(*args,**kwargs)
         self.clear_table()
+        right_traj = []
+        for traj in trajs:
+            if traj[3]['reward'].item() > 10:
+                right_traj.append(traj)
         for i,traj in enumerate(trajs):
             process_maxtree_g(traj,compare_stack)
         self.process_max_tree(trajs)
         trajs.extend(self.best_buffer)
         trajs.sort(key=cmp_to_key(self.cmp_reward_func),reverse=True)
-        self.best_buffer = trajs[:50]
+        filt_trajs = set(map(hash_traj,trajs))
+        filt_trajs = list(map(lambda x:x.traj,filt_trajs))
+        filt_trajs.sort(key=cmp_to_key(self.cmp_reward_func), reverse=True)
+        self.best_buffer = filt_trajs[:100]
+        if len(right_traj) > 0:
+            self._logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         self._logger.info("-----------------------------------------------------------")
-        for t in self.best_buffer[:5]:
+        for t in right_traj + self.best_buffer[:10]:
             act_str = "O"
             for i,step in enumerate(t):
                 stack_orig = tuple(step['obs']['attri_stack_orig'][0,2:5].numpy())

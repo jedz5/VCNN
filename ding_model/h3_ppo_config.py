@@ -25,7 +25,7 @@ gobigger_config = dict(
         # ),
         learn=dict(
             epoch_per_collect=4,
-            batch_size=512 if Linux else 64,
+            batch_size=2048 if Linux else 64,
             learning_rate=3e-4,
             value_weight=0.5,
             entropy_weight=0.5,
@@ -34,7 +34,7 @@ gobigger_config = dict(
             value_norm=False,
         ),
         collect=dict(
-            n_episode=256 if Linux else 32,
+            n_episode=1024 if Linux else 32,
             unroll_len=1,#collector=dict(get_train_sample=True, )
             env_n = env_n
         ),

@@ -523,6 +523,19 @@ def test_get_train_sample():
     data[-1]['done'] = True
     data2 = process_maxtree_g(data)
     print(data)
+
+
+class hash_traj(object):
+    __slots__ = ['traj','plain_text']
+
+    def __init__(self, traj):
+        self.traj = traj
+        self.plain_text = tuple([len(self.traj)] + [step1['action']for step1 in traj])
+    def __eq__(self, other):
+        return self.plain_text == other.plain_text
+    def __hash__(self):
+        return hash(self.plain_text)
+
 def max_tree_backprop():
     data = []
     # data += [[{'obs': (0,0), 'next_obs': (0,1), 'action': 0, 'reward': 0., 'value': 0., 'real_done': False, 'done': False},
@@ -574,7 +587,8 @@ def max_tree_backprop():
     policy = DQNPolicy(DQNPolicy.default_config(), model=model).collect_mode
     collector = MaxTreeCollector(EpisodeSerialCollector.default_config(), env, policy)
     collector.process_max_tree(data)
-    print(data)
+    data2 = set(map(hash_traj,data))
+    print(data2)
 
 
 def reshape_test():
@@ -623,3 +637,4 @@ def gumble_max():
 M = 5
 if __name__ == '__main__':
     max_tree_backprop()
+    # compare_sort()

@@ -107,21 +107,26 @@ class GymH3EnvWrapper:
         done, win = check_done(self.battle)
         info = {}
         info["real_done"] = done
+        rew = 0
         if done:
             info["win"] = win
-        # else:
-        rew = compute_reward(self.battle)
+            rew = compute_reward(self.battle)
         self.step_count += 1
+        right = 0
         if self.step_count == 4:
             bf = self.battle.cur_stack.get_global_state()
             if bf[0,2] >= 400:
-                logger.info("right 1")
+                # logger.info(f"right 1")
+                right += 1
             if bf[1,1] >= 400:
-                logger.info("right 2")
+                # logger.info(f"right 2")
+                right += 1
             if bf[1,2] >= 400:
-                logger.info("right 3")
-            if bf[0,1] >= 400 and bf[0,2] >= 400 and bf[1,1] >= 400 and bf[1,2] >= 400:
-                logger.info("<<<<<<<<<<<<<<<<<<<<<you stand right!>>>>>>>>>>>>>>>>>>>>>")
+                # logger.info(f"right 3")
+                right += 1
+            logger.info(f"right={right}")
+            if right == 3:
+                rew = 20
         return obs,rew,done,info
     def close(self) -> None:
         self.battle.clear()
@@ -194,7 +199,8 @@ class DingH3Env(DingEnvWrapper):
             info['final_eval_reward'] = self._final_eval_reward
             self.outter_round += 1
         else:
-            rew = 0
+            if rew < 10:
+                rew = 0
         rew = to_ndarray([rew])  # wrapped to be transferred to a Tensor with shape (1,)
         return BaseEnvTimestep(obs, rew, done, info)
 
