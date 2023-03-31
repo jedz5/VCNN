@@ -11,6 +11,8 @@ from torch._six import string_classes
 import collections.abc as container_abcs
 from ding.compatibility import torch_gt_131
 
+import math
+
 from ding_model.max_tree_collector import MaxTreeCollector
 
 int_classes = int
@@ -631,10 +633,50 @@ def gumble_max():
         a5 = sum(gumble_sample == 5)
         z = a2+a3+a5
         print(f"{a2/z}+{a3/z}+{a5/z} = {z}")
+def bycicle_model():
+    import matplotlib.pyplot as plt
+    dt = 0.1
+    L = 4
+    class vehicle: #自行车模型
+        def __init__(self,x=0.0,y=0.0,yaw=0.0,v=0.0):
+            self.x = x
+            self.y = y
+            self.yaw = yaw
+            self.v = v
+            self.dt = 0.5
+        def update(self,a,delta):
+            self.x = self.x + self.v*math.cos(self.yaw)*dt
+            self.y = self.y + self.v*math.sin(self.yaw)*dt
+            self.yaw = self.yaw + self.v/L*math.tan(delta)*dt
+            self.v = self.v + a*dt
 
+    class vehicle_2: #中间质心模型
+        def __init__(self, x=0.0, y=0.0, yaw=0.0, v=0.0):
+            self.x = x
+            self.y = y
+            self.yaw = yaw
+            self.v = v
+            self.delta = 0
+            self.dt = 0.1
 
+        def update(self, a, steering):
+            self.x = self.x + self.v * math.cos(self.yaw + self.delta) * dt
+            self.y = self.y + self.v * math.sin(self.yaw + self.delta) * dt
+            self.yaw = self.yaw + self.v / l_r * math.tan(self.delta) * dt
+            self.v = self.v + a * dt
+            self.delta = math.atan(l_r / (l_f + l_r) * math.tan(steering))
+
+    car = vehicle(6,6,0,10)
+    xs,ys,yaws = [],[],[]
+    for t in range(5):
+        xs.append(car.x)
+        ys.append(car.y)
+        yaws.append(car.yaw)
+        car.update(0,dt)
+    plt.scatter(xs,ys)
+    plt.show()
 
 M = 5
 if __name__ == '__main__':
-    max_tree_backprop()
+    bycicle_model()
     # compare_sort()
