@@ -2021,8 +2021,9 @@ if __name__ == '__main__':
     if Linux:
         start_train(use_expert_data=True)
     else:
-        # start_game_record_s()
-        # start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
-        start_train(use_expert_data=False)
+        start_replay_m("ENV/max_sars",'max_data_0.npy')  #"ENV/max_sars" episode
+        # start_replay_m("ENV/episode", '0.npy')
+        # start_replay_m("ENV/episode", '1.npy')
+        # start_train(use_expert_data=True)
         # start_test(file="ENV/battles/0.json")
 
